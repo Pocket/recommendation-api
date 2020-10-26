@@ -24,6 +24,7 @@ USER appuser
 
 # FastAPI config
 ENV PORT=8000
+EXPOSE $PORT
 
 # Install application into container
 WORKDIR /

@@ -1,17 +1,6 @@
 version: '3.8'
 
 services:
-
-  nginx:
-    build:
-      dockerfile: Dockerfile
-      context: images/nginx
-    ports:
-      - "80:80"
-    depends_on:
-      - app_dev
-    network_mode: host
-
   app_dev:
     build:
       dockerfile: ./images/app/Dockerfile
@@ -22,7 +11,6 @@ services:
     volumes:
       - "./app:/app:ro"
       - "./app:/opt/project/src:ro" # PyCharm overrides app to /opt/project/src
-    network_mode: host
     depends_on:
       - s3
 
@@ -30,7 +18,6 @@ services:
     image: pocket/fake-s3:20190604
     ports:
     - "4569:4569"
-    network_mode: host
     volumes:
       - "fake_s3_vol:/fakes3/data"
 
