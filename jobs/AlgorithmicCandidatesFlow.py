@@ -1,6 +1,16 @@
-from metaflow import FlowSpec, step
+from metaflow import FlowSpec, step, Parameter
 
 class AlgorithmicCanidatesFlow(FlowSpec):
+
+    topic = Parameter('topic',
+                      help="Filter a particular topic",
+                      default='finance')
+
+    recommendations = Parameter('recommendations',
+                                help="The number of items to recommend in "
+                                     "the topic.",
+                                default=5)
+
     """
     A flow where Metaflow prints 'Hi'.
     Run this flow to validate that Metaflow is installed correctly.
