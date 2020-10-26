@@ -46,9 +46,7 @@ jobs:
 #          account-id: $ACCOUNT_ID_DEV
 #      - aws-ecr/build-and-push-image:
       - aws-ecr/build-image:
-          checkout: false
           repo: $MAIN_IMAGE_NAME
-          setup-remote-docker: true
           tag: $CIRCLE_SHA1
           dockerfile: ./images/app/Dockerfile
 
