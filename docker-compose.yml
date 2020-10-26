@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+
+  nginx:
+    build:
+      dockerfile: Dockerfile
+      context: images/nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - app_dev
+    network_mode: host
+
+  app_dev:
+    build:
+      dockerfile: ./images/app/Dockerfile
+      context: .
+    command: /start-reload.sh # Only for development. Reloads Gunicorn when source changes.
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./app:/app:ro"
+      - "./app:/opt/project/src:ro" # PyCharm overrides app to /opt/project/src
+    network_mode: host
+    depends_on:
+      - s3
+
+  s3:
+    image: pocket/fake-s3:20190604
+    ports:
+    - "4569:4569"
+    network_mode: host
+    volumes:
+      - "fake_s3_vol:/fakes3/data"
+
+volumes:
+  fake_s3_vol:
