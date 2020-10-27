@@ -1,0 +1,8 @@
+{
+  "TableName": "explore_topics_metadata",
+  "KeySchema": [{ "AttributeName": "slug", "KeyType": "HASH" }],
+  "AttributeDefinitions": [
+    { "AttributeName": "slug", "AttributeType": "S" }
+  ],
+  "ProvisionedThroughput": { "ReadCapacityUnits": 5, "WriteCapacityUnits": 5 }
+}

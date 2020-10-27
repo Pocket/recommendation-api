@@ -3,7 +3,7 @@ version: '3.8'
 services:
   app_dev:
     build:
-      dockerfile: ./images/app/Dockerfile
+      dockerfile: .docker/images/app/Dockerfile
       context: .
     command: /start-reload.sh # Only for development. Reloads Gunicorn when source changes.
     ports:
@@ -12,14 +12,24 @@ services:
       - "./app:/app:ro"
       - "./app:/opt/project/src:ro" # PyCharm overrides app to /opt/project/src
     depends_on:
-      - s3
+      - localstack
 
-  s3:
-    image: pocket/fake-s3:20190604
+  localstack:
+    image: localstack/localstack:0.12.1
+    env_file:
+      - .docker/local.env
     ports:
-    - "4569:4569"
+      - '4566-4599:4566-4599'
+      - '8080:8080'
     volumes:
-      - "fake_s3_vol:/fakes3/data"
-
-volumes:
-  fake_s3_vol:
+      - ./.docker/localstack:/docker-entrypoint-initaws.d
+    environment:
+      - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY}
+      - DEBUG=1
+      - SERVICES=dynamodb
+      - DATA_DIR=/tmp/localstack/data
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - PORT_WEB_UI=8080
+      - EXTRA_CORS_ALLOWED_HEADERS=Content-Disposition, Content-Type, x-amz-acl
+      - EXTRA_CORS_EXPOSE_HEADERS=ETag
+      - HOSTNAME_EXTERNAL=localstack
