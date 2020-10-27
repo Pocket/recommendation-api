@@ -133,3 +133,5 @@ dmypy.json
 .pyre/
 /.metaflow
 /test-reports/
+/.aws/node_modules/
+/.aws/cdktf.out/
