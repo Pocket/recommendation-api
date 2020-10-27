@@ -2,6 +2,7 @@ import {Construct} from 'constructs';
 import {App, RemoteBackend, TerraformStack} from 'cdktf';
 import {AwsProvider} from '../.gen/providers/aws';
 import {config} from './config';
+import {DynamoDB} from "./dynamodb";
 
 class ExploreTopics extends TerraformStack {
     constructor(scope: Construct, name: string) {
@@ -20,6 +21,8 @@ class ExploreTopics extends TerraformStack {
                 },
             ],
         });
+
+        new DynamoDB(scope, 'dynamodb');
     }
 }
 
