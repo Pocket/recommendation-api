@@ -1,0 +1,75 @@
+version: 2.1
+
+orbs:
+  aws-cli: circleci/aws-cli@0.1.13
+  aws-ecr: circleci/aws-ecr@6.5.0
+  assume-role: airswap/assume-role@0.2.0
+
+jobs:
+
+  test:
+    docker:
+      - image: python:3.8-alpine
+    steps:
+      - checkout
+      - run:
+          name: Build environment and install requirements
+          command: |
+            pip install pipenv
+            pipenv install --dev
+      - run:
+          name: Run tests
+          command: |
+            mkdir test-reports
+            pipenv run pytest tests/ --junitxml=test-reports/junit.xml
+      - store_test_results:
+          path: test-reports
+
+
+  build:
+    docker:
+      - image: pocket/ops-cli:v0.0.5
+        environment:
+          MAIN_IMAGE_NAME: explore-topics
+    steps:
+      - checkout
+      - run:
+          name: Setup common environment variables
+          command: |
+            echo 'export AWS_ECR_ACCOUNT_PROD_URL="${ACCOUNT_ID_PROD}.dkr.ecr.us-east-1.amazonaws.com"' >> $BASH_ENV
+            echo 'export AWS_ECR_ACCOUNT_DEV_URL="${ACCOUNT_ID_DEV}.dkr.ecr.us-east-1.amazonaws.com"' >> $BASH_ENV
+      - run:
+          command: |
+            echo 'export AWS_ECR_ACCOUNT_URL="${AWS_ECR_ACCOUNT_DEV_URL}"' >> $BASH_ENV
+# When we have AWS setup start pushing the image.
+#      - assume-role/assume-role:
+#          account-id: $ACCOUNT_ID_DEV
+#      - aws-ecr/build-and-push-image:
+      - setup_remote_docker
+      - aws-ecr/build-image:
+          repo: $MAIN_IMAGE_NAME
+          tag: $CIRCLE_SHA1
+          dockerfile: ./images/app/Dockerfile
+
+
+# Workflow shortcuts
+not_main: &not_main
+  filters:
+    branches:
+      ignore:
+        - main
+
+only_main: &only_main
+  filters:
+    branches:
+      only:
+        - master
+
+workflows:
+   all:
+     jobs:
+       - test:
+           <<: *not_main
+           context: pocket
+       - build:
+           context: pocket
