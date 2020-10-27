@@ -7,9 +7,27 @@ orbs:
 
 jobs:
 
+  apollo:
+    docker:
+      - image: circleci/node:14
+    steps:
+      - checkout
+      - run:
+          name: install apollo
+          # CircleCI needs global installs to be sudo
+          command: |
+            sudo npm install -g apollo
+      - run:
+          name: push service
+          command: |
+            apollo service:push --graph=pocket-client-api --localSchemaFile=schema.graphql --key=$APOLLO_KEY --serviceURL=https://explore-topics.readitatler.com/ --serviceName=explore-topics
+
   test:
     docker:
       - image: python:3.8-alpine
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - run:
@@ -29,6 +47,9 @@ jobs:
   build:
     docker:
       - image: pocket/ops-cli:v0.0.5
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
         environment:
           MAIN_IMAGE_NAME: explore-topics
     steps:
@@ -49,7 +70,7 @@ jobs:
       - aws-ecr/build-image:
           repo: $MAIN_IMAGE_NAME
           tag: $CIRCLE_SHA1
-          dockerfile: ./images/app/Dockerfile
+          dockerfile: ./.docker/images/app/Dockerfile
 
 
 # Workflow shortcuts

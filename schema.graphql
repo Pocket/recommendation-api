@@ -1,0 +1,11 @@
+type Query {
+  getFeedItemsForTopic(topic: String = "finance"): [FeedItem]
+}
+
+
+type FeedItem {
+  id: ID!
+  itemId: ID!
+  title: String
+  topic: String
+}
