@@ -7,6 +7,7 @@ export class DynamoDB extends TerraformStack {
     constructor(scope: Construct, name: string) {
         super(scope, name);
         this.setupCandidatesTable();
+        this.setupTopicsMetadataTable();
     }
 
     /**
