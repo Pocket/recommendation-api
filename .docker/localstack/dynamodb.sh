@@ -3,6 +3,7 @@ set -x
 
 TABLE_DEFINITIONS=(
   'explore_topics_metadata.json'
+  'explore_topics_candidates.json'
 )
 
 for json_file in "${TABLE_DEFINITIONS[@]}"; do
