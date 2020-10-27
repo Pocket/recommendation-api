@@ -9,7 +9,7 @@
           "is_displayed": {
             "BOOL": true
           },
-          "curator_Label": {
+          "curator_label": {
             "S": "Business"
           },
           "page_type": {
@@ -36,7 +36,7 @@
           "is_displayed": {
             "BOOL": true
           },
-          "curator_Label": {
+          "curator_label": {
             "S": "Career"
           },
           "page_type": {
@@ -63,7 +63,7 @@
           "is_displayed": {
             "BOOL": false
           },
-          "curator_Label": {
+          "curator_label": {
             "S": "Education"
           },
           "page_type": {
@@ -90,7 +90,7 @@
           "is_displayed": {
             "BOOL": true
           },
-          "curator_Label": {
+          "curator_label": {
             "S": "Entertainment"
           },
           "page_type": {
@@ -117,7 +117,7 @@
           "is_displayed": {
             "BOOL": true
           },
-          "curator_Label": {
+          "curator_label": {
             "S": "Food"
           },
           "page_type": {
@@ -144,7 +144,7 @@
           "is_displayed": {
             "BOOL": false
           },
-          "curator_Label": {
+          "curator_label": {
             "S": "Gaming"
           },
           "page_type": {
@@ -171,7 +171,7 @@
           "is_displayed": {
             "BOOL": true
           },
-          "curator_Label": {
+          "curator_label": {
             "S": "Parenting"
           },
           "page_type": {
@@ -198,7 +198,7 @@
           "is_displayed": {
             "BOOL": false
           },
-          "curator_Label": {
+          "curator_label": {
             "S": "Personal Finance"
           },
           "page_type": {
@@ -225,7 +225,7 @@
           "is_displayed": {
             "BOOL": true
           },
-          "curator_Label": {
+          "curator_label": {
             "S": "Politics"
           },
           "page_type": {
@@ -252,7 +252,7 @@
           "is_displayed": {
             "BOOL": true
           },
-          "curator_Label": {
+          "curator_label": {
             "S": "Science"
           },
           "page_type": {
@@ -279,7 +279,7 @@
           "is_displayed": {
             "BOOL": true
           },
-          "curator_Label": {
+          "curator_label": {
             "S": "Self Improvement"
           },
           "page_type": {
@@ -306,7 +306,7 @@
           "is_displayed": {
             "BOOL": false
           },
-          "curator_Label": {
+          "curator_label": {
             "S": "Sports"
           },
           "page_type": {
@@ -333,7 +333,7 @@
           "is_displayed": {
             "BOOL": true
           },
-          "curator_Label": {
+          "curator_label": {
             "S": "Technology"
           },
           "page_type": {
@@ -360,7 +360,7 @@
           "is_displayed": {
             "BOOL": true
           },
-          "curator_Label": {
+          "curator_label": {
             "S": "Travel"
           },
           "page_type": {
@@ -387,7 +387,7 @@
           "is_displayed": {
             "BOOL": true
           },
-          "curator_Label": {
+          "curator_label": {
             "S": "Health & Fitness"
           },
           "page_type": {
@@ -414,7 +414,7 @@
           "is_displayed": {
             "BOOL": true
           },
-          "curator_Label": {
+          "curator_label": {
             "S": "COVID-19"
           },
           "page_type": {
