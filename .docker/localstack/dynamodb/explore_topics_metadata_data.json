@@ -22,7 +22,7 @@
             "S": "Business"
           },
           "is_promoted": {
-            "BOOL": "Business"
+            "BOOL": false
           }
         }
       }
