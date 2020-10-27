@@ -3,26 +3,26 @@
     {
       "PutRequest": {
         "Item": {
-          "Slug": {
+          "slug": {
             "S": "business"
           },
-          "IsDisplayed": {
-            "B": true
+          "is_displayed": {
+            "BOOL": true
           },
-          "CuratorLabel": {
+          "curator_Label": {
             "S": "Business"
           },
-          "PageType": {
+          "page_type": {
             "S": "topic_page"
           },
-          "Query": {
+          "query": {
             "S": "business corporate finance biomedical commerce management economics industry"
           },
-          "DisplayName": {
+          "displayName": {
             "S": "Business"
           },
-          "IsPromoted": {
-            "B": "Business"
+          "is_promoted": {
+            "BOOL": "Business"
           }
         }
       }

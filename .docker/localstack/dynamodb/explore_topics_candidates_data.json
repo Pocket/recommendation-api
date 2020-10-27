@@ -3,7 +3,7 @@
     {
       "PutRequest": {
         "Item": {
-          "Id": {
+          "id": {
             "S": "1234"
           }
         }
