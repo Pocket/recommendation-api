@@ -10,6 +10,9 @@ jobs:
   test:
     docker:
       - image: python:3.8-alpine
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - run:
@@ -29,6 +32,9 @@ jobs:
   build:
     docker:
       - image: pocket/ops-cli:v0.0.5
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
         environment:
           MAIN_IMAGE_NAME: explore-topics
     steps:
@@ -49,7 +55,7 @@ jobs:
       - aws-ecr/build-image:
           repo: $MAIN_IMAGE_NAME
           tag: $CIRCLE_SHA1
-          dockerfile: ./images/app/Dockerfile
+          dockerfile: ./.docker/images/app/Dockerfile
 
 
 # Workflow shortcuts
