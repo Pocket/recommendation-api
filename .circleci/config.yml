@@ -10,6 +10,11 @@ jobs:
   test:
     docker:
       - image: python:3.8-alpine
+        environment:
+          # There seems to be some bug with python path in circleci...
+          # Without this the tests cannot resolve the app module.
+          # https://stackoverflow.com/questions/43728431/relative-imports-modulenotfounderror-no-module-named-x
+          PYTHON_PATH: "${PYTHONPATH}:~/project"
     steps:
       - checkout
       - run:
@@ -21,7 +26,7 @@ jobs:
           name: Run tests
           command: |
             mkdir test-reports
-            pipenv run pytest tests --junitxml=test-reports/junit.xml
+            pipenv run pytest tests/ --junitxml=test-reports/junit.xml
       - store_test_results:
           path: test-reports
 
@@ -68,6 +73,7 @@ workflows:
    all:
      jobs:
        - test:
+           <<: *not_main
            context: pocket
        - build:
            context: pocket
