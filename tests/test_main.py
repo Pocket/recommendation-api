@@ -4,10 +4,21 @@ from fastapi.testclient import TestClient
 test_client = TestClient(app)
 
 
-def test_main_root():
-    response = test_client.get('/')
+def test_main_graphql():
+    response = test_client.post('/', json={"query":"query {\n  getFeedItemsForTopic(topic: \"buisness\") {\n    id\n    title\n    topic\n  }\n}\n","variables":None})
     assert response.status_code == 200
-    assert response.json() == {"Hello": "World"}
+    assert response.json() == {
+            "data": {
+                "getFeedItemsForTopic": [
+                    {
+                        "id": "1",
+                        "title": "title resolver",
+                        "topic": "buisness"
+                    }
+                ]
+            }
+        }
+
 
 
 def test_main_feed_success():

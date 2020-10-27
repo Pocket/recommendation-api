@@ -1,18 +1,16 @@
-import os
-
 import uvicorn
+import os
 from fastapi import FastAPI
 
+from starlette.graphql import GraphQLApp
+from app.graphql.graphql import schema
 from app.models.feed_item import FeedItem
 
 app = FastAPI()
 
 
-@app.get("/")
-def read_root():
-    return {
-        "Hello": "World",
-    }
+# Add our GraphQL route to the main url
+app.add_route("/", GraphQLApp(schema=schema))
 
 
 @app.get("/feed/{item_id}", response_model=FeedItem)
