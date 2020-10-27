@@ -27,7 +27,7 @@ phases:
     commands:
       - echo Installing JQ, AWS CLI, Perl Utils, Node, NPM
       # Within our terraform files we execute jq, and aws-cli
-      - apk add jq aws-cli perl-utils nodejs npm bash
+      - apk add jq aws-cli perl-utils nodejs npm bash curl
 
   pre_build:
     commands:
