@@ -1,0 +1,31 @@
+{
+  "explore_topics_metadata": [
+    {
+      "PutRequest": {
+        "Item": {
+          "Slug": {
+            "S": "business"
+          },
+          "IsDisplayed": {
+            "B": true
+          },
+          "CuratorLabel": {
+            "S": "Business"
+          },
+          "PageType": {
+            "S": "topic_page"
+          },
+          "Query": {
+            "S": "business corporate finance biomedical commerce management economics industry"
+          },
+          "DisplayName": {
+            "S": "Business"
+          },
+          "IsPromoted": {
+            "B": "Business"
+          }
+        }
+      }
+    }
+  ]
+}

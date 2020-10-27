@@ -1,0 +1,13 @@
+{
+  "explore_topics_candidates": [
+    {
+      "PutRequest": {
+        "Item": {
+          "Id": {
+            "S": "1234"
+          }
+        }
+      }
+    }
+  ]
+}
