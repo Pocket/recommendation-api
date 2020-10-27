@@ -13,6 +13,9 @@ requests = "*"
 fastapi = "*"
 uvicorn = "*"
 metaflow = "*"
+graphene = "*"
+graphene-federation = "*"
+starlette = "*"
 
 [requires]
 python_version = "3.8"
