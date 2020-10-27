@@ -49,7 +49,7 @@ jobs:
       - aws-ecr/build-image:
           repo: $MAIN_IMAGE_NAME
           tag: $CIRCLE_SHA1
-          dockerfile: ./images/app/Dockerfile
+          dockerfile: ./.docker/images/app/Dockerfile
 
 
 # Workflow shortcuts

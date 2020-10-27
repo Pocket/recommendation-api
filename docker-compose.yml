@@ -15,7 +15,7 @@ services:
       - localstack
 
   localstack:
-    image: localstack/localstack
+    image: localstack/localstack:0.12.1
     env_file:
       - .docker/local.env
     ports:
