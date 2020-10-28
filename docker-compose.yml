@@ -13,7 +13,6 @@ services:
     volumes:
       - "./app:/app:ro"
       - "./app:/opt/project/src:ro" # PyCharm overrides app to /opt/project/src
-      - './tests:/tests:ro'
     depends_on:
       - localstack
 
