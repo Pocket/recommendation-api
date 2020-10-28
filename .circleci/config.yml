@@ -44,9 +44,7 @@ jobs:
       - checkout
       - run:
           name: Build environment and install requirements
-          #we need bash for our setup scripts below
           command: |
-            apk add bash
             pip install pipenv
             pipenv install --dev
       - run:
