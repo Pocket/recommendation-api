@@ -28,17 +28,35 @@ jobs:
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
+      - image: localstack/localstack:0.12.1
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          DEBUG: 1
+          SERVICES: 'dynamodb'
+          DATA_DIR: /tmp/localstack/data
+          EXTRA_CORS_ALLOWED_HEADERS: Content-Disposition, Content-Type, x-amz-acl
+          EXTRA_CORS_EXPOSE_HEADERS: ETag
+          HOSTNAME_EXTERNAL: localstack
+          PORT_WEB_UI: 8080
     steps:
       - checkout
       - run:
           name: Build environment and install requirements
+          #we need bash for our setup scripts below
           command: |
+            apk add bash
             pip install pipenv
             pipenv install --dev
+      - run:
+          name: run setup.sh
+          command: export $(egrep -v '^#' .docker/local.env | xargs -0) && ./.circleci/scripts/setup.sh --aws
       - run:
           name: Run tests
           command: |
             mkdir test-reports
+            export $(egrep -v '^#' .docker/local.env | xargs -0)
             pipenv run pytest tests/ --junitxml=test-reports/junit.xml
       - store_test_results:
           path: test-reports
