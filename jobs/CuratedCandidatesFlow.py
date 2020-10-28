@@ -1,7 +1,7 @@
 from metaflow import FlowSpec, step, Parameter
 
 
-class AlgorithmicCandidatesFlow(FlowSpec):
+class CuratedCandidatesFlow(FlowSpec):
     recommendations = Parameter('recommendations',
                                 help="The number of items to recommend in "
                                      "the topic.",
@@ -16,7 +16,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         This is the 'start' step. All flows must have a step named 'start' that
         is the first step in the flow.
         """
-        print("AlgorithmicCandidatesFlow is starting.")
+        print("CuratedCandidatesFlow is starting.")
         # TODO: Grab topics from the api
         self.topics = ['Business',
                        'Finance',
@@ -72,8 +72,8 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         This is the 'end' step. All flows must have an 'end' step, which is the
         last step in the flow.
         """
-        print("AlgorithmicCanidatesFlow is all done.")
+        print("CuratedCandidatesFlow is all done.")
 
 
 if __name__ == '__main__':
-    AlgorithmicCandidatesFlow()
+    CuratedCandidatesFlow()
