@@ -10,7 +10,8 @@ RUN pip install pipenv
 WORKDIR /
 COPY Pipfile .
 COPY Pipfile.lock .
-RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
+ENV PIPENV_VENV_IN_PROJECT=1
+RUN if [ "$APP_ENV" = "production" ]; then pipenv install --deploy; else pipenv install --dev; fi
 
 FROM base AS runtime
 
