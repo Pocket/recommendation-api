@@ -15,6 +15,8 @@ env:
     MAIN_BRANCH: 'refs/heads/main'
     #The ref of the dev branch we work against
     DEV_BRANCH: 'refs/heads/dev'
+    #Metaflow requires a username to run
+    USERNAME: 'codebuild'
   secrets-manager:
     #Pull in the default terraform cloud token
     TERRAFORM_TOKEN: 'CodeBuild/Default:terraform_token'
