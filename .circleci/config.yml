@@ -77,8 +77,8 @@ jobs:
       - run:
           name: Run flow validation
           command: |
-            python jobs/AlgorithmicCandidatesFlow.py check
-            python jobs/CuratedCandidatesFlow.py check
+            pipenv run jobs/AlgorithmicCandidatesFlow.py check
+            pipenv run jobs/CuratedCandidatesFlow.py check
 
   build:
     docker:
