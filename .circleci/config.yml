@@ -45,6 +45,7 @@ jobs:
       - run:
           name: Build environment and install requirements
           command: |
+            apt-get update && apt-get install bash
             pip install pipenv
             pipenv install --dev
       - run:
