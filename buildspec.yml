@@ -40,7 +40,7 @@ env:
 
 #All phases are ran within the hashicorp/terraform:light docker image
 phases:
-  install:
+  install:w
     commands:
       - echo Installing JQ, AWS CLI, Perl Utils, Node, NPM
       # Within our terraform files we execute jq, and aws-cli and python
@@ -67,7 +67,7 @@ phases:
       - git clone https://github.com/tfutils/tfenv.git ~/.tfenv
       - ln -s ~/.tfenv/bin/* /usr/bin
       - tfenv install
-      - tfenv use $(cat .terrform-version)
+      - tfenv use $(cat .terraform-version)
 
       - npm install
       - npm run get
