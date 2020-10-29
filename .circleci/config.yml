@@ -62,6 +62,26 @@ jobs:
       - store_test_results:
           path: test-reports
 
+  check_metaflow:
+    docker:
+      - image: python:3.8
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          USERNAME: 'test'
+    steps:
+      - checkout
+      - run:
+          name: Build environment and install requirements
+          command: |
+            pip install pipenv
+            pipenv install --deploy
+      - run:
+          name: Run flow validation
+          command: |
+            pipenv run python jobs/AlgorithmicCandidatesFlow.py check
+            pipenv run python jobs/CuratedCandidatesFlow.py check
 
   build:
     docker:
@@ -109,6 +129,9 @@ workflows:
    all:
      jobs:
        - test:
+           <<: *not_main
+           context: pocket
+       - check_metaflow:
            <<: *not_main
            context: pocket
        - build:

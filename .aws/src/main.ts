@@ -22,7 +22,7 @@ class ExploreTopics extends TerraformStack {
             ],
         });
 
-        new DynamoDB(scope, 'dynamodb');
+        new DynamoDB(this, 'dynamodb');
     }
 }
 
