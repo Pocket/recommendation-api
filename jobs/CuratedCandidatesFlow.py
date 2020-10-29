@@ -1,6 +1,6 @@
-from metaflow import FlowSpec, step, Parameter
+from metaflow import FlowSpec, step, Parameter, schedule
 
-
+@schedule(hourly=True)
 class CuratedCandidatesFlow(FlowSpec):
     recommendations = Parameter('recommendations',
                                 help="The number of items to recommend in "
