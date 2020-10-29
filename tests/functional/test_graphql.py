@@ -11,6 +11,7 @@ TABLE_NAME = 'explore_topics_metadata'
 class TestGraphQL(TestDynamoDBBase):
     def setup_method(self, method):
         # unsetting this env var so moto can successfully mock the dynamodb requests
+        self.environ = dict(os.environ)
         del os.environ['AWS_DYNAMODB_ENDPOINT_URL']
         super().setup_method(self)
         self.table = self.create_explore_topics_metadata_table()
@@ -20,6 +21,8 @@ class TestGraphQL(TestDynamoDBBase):
     def teardown_method(self, method):
         super().teardown_method(self)
         self.table.delete()
+        os.environ.clear()
+        os.environ.update(self.environ)
 
     def test_main_list_topics(self):
         executed = self.client.execute('''{ listTopics { displayName} }''')
