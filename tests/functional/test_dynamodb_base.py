@@ -1,13 +1,11 @@
 import boto3
-import os
 import json
-
-TABLE_NAME = 'explore_topics_metadata'
+from app.config import dynamodb as dynamodb_config
 
 
 class TestDynamoDBBase:
     def setup_method(self, method):
-        self.dynamodb = boto3.resource('dynamodb', endpoint_url=os.getenv('AWS_DYNAMODB_ENDPOINT_URL'))
+        self.dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
 
     def teardown_method(self, method):
         self.dynamodb = None
@@ -17,7 +15,7 @@ class TestDynamoDBBase:
             table_schema_json = json.load(f)
 
         table = self.dynamodb.create_table(**table_schema_json)
-        table.meta.client.get_waiter('table_exists').wait(TableName=TABLE_NAME)
+        table.meta.client.get_waiter('table_exists').wait(TableName=dynamodb_config['explore_topics_metadata_table'])
         assert table.table_status == 'ACTIVE'
 
         return table

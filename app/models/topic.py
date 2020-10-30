@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 import boto3
-import os
+from app.config import dynamodb as dynamodb_config
 
 
 class Topic(BaseModel):
@@ -16,7 +16,7 @@ class Topic(BaseModel):
 
     @staticmethod
     def get_all():
-        dynamodb = boto3.resource('dynamodb', endpoint_url=os.getenv('AWS_DYNAMODB_ENDPOINT_URL'))
+        dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
         table = dynamodb.Table('explore_topics_metadata')
         response = table.scan()
         return response['Items']

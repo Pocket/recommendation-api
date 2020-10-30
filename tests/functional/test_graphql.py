@@ -2,17 +2,13 @@ from moto import mock_dynamodb2
 from graphene.test import Client
 from app.graphql.graphql import schema
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
-import os
-
-TABLE_NAME = 'explore_topics_metadata'
+from app.config import dynamodb as dynamodb_config
 
 
 @mock_dynamodb2
 class TestGraphQL(TestDynamoDBBase):
     def setup_method(self, method):
-        # unsetting this env var so moto can successfully mock the dynamodb requests
-        self.environ = dict(os.environ)
-        del os.environ['AWS_DYNAMODB_ENDPOINT_URL']
+        dynamodb_config['endpoint_url'] = None
         super().setup_method(self)
         self.table = self.create_explore_topics_metadata_table()
         self.populate_explore_topics_metadata_table()
@@ -21,8 +17,6 @@ class TestGraphQL(TestDynamoDBBase):
     def teardown_method(self, method):
         super().teardown_method(self)
         self.table.delete()
-        os.environ.clear()
-        os.environ.update(self.environ)
 
     def test_main_list_topics(self):
         executed = self.client.execute('''{ listTopics { displayName} }''')
