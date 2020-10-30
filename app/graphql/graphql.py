@@ -2,8 +2,6 @@ from graphene import ObjectType, String, List, Schema
 from app.graphql.feed_item import FeedItem
 from app.graphql.topic import Topic
 from app.models.topic import Topic as TopicModel
-import os
-from boto3.dynamodb.conditions import Key
 
 
 class Query(ObjectType):
