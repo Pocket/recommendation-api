@@ -25,6 +25,51 @@ jobs:
           command: |
             apollo service:push --graph=pocket-client-api --localSchemaFile=schema.graphql --key=$APOLLO_KEY --serviceURL=https://explore-topics.readitatler.com/ --serviceName=explore-topics
 
+
+  eslint:
+      docker:
+        - image: node:14
+          auth:
+            username: $DOCKERHUB_USERNAME
+            password: $DOCKERHUB_PASSWORD
+      steps:
+        - checkout
+        - restore_cache:
+              key: 'node-cache-{{ .Branch }}-{{ checksum ".aws/package-lock.json" }}'
+        - run:
+            command: cd .aws && npm install
+            name: install dependencies
+        - save_cache:
+            key: 'node-cache-{{ .Branch }}-{{ checksum ".aws/package-lock.json" }}'
+            paths:
+              - .aws/node_modules
+        - run:
+            name: Run tests
+            command: |
+              cd .aws
+              npm run lint:check
+
+  pylint:
+      docker:
+        - image: python:3.8
+          auth:
+            username: $DOCKERHUB_USERNAME
+            password: $DOCKERHUB_PASSWORD
+      steps:
+        - checkout
+        - run:
+            name: Build environment and install requirements
+            #we need bash for our setup scripts below
+            command: |
+              pip install pipenv
+              pipenv install --dev
+        - run:
+            name: Run tests
+            command: |
+              pipenv run pylint app jobs
+
+
+
   test:
     docker:
       - image: python:3.8
@@ -128,6 +173,12 @@ only_main: &only_main
 workflows:
    all:
      jobs:
+       - eslint:
+           <<: *not_main
+           context: pocket
+       - pylint:
+           <<: *not_main
+           context: pocket
        - test:
            <<: *not_main
            context: pocket
