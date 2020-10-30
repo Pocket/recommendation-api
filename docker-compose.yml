@@ -5,6 +5,8 @@ services:
     build:
       dockerfile: .docker/images/app/Dockerfile
       context: .
+    env_file:
+      - .docker/local.env
     command: /start-reload.sh # Only for development. Reloads Gunicorn when source changes.
     ports:
       - "8000:8000"

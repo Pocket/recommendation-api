@@ -10,6 +10,9 @@ jobs:
   apollo:
     docker:
       - image: circleci/node:14
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - run:
@@ -44,13 +47,12 @@ jobs:
       - checkout
       - run:
           name: Build environment and install requirements
-          #we need bash for our setup scripts below
           command: |
             pip install pipenv
             pipenv install --dev
       - run:
           name: run setup.sh
-          command: export $(egrep -v '^#' .docker/local.env | xargs -0) && ./.circleci/scripts/setup.sh --aws
+          command: export $(egrep -v '^#' .docker/local.env | xargs -0) && ./.circleci/scripts/setup.sh --hosts --aws
       - run:
           name: Run tests
           command: |

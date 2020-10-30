@@ -1,5 +1,6 @@
 from graphene import ObjectType, ID, String
 
+
 class FeedItem(ObjectType):
     id = ID()
     item_id = ID()
