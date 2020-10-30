@@ -17,6 +17,6 @@ class Topic(BaseModel):
     @staticmethod
     def get_all():
         dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
-        table = dynamodb.Table('explore_topics_metadata')
+        table = dynamodb.Table(dynamodb_config['explore_topics_metadata_table'])
         response = table.scan()
         return response['Items']
