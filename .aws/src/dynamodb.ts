@@ -53,10 +53,16 @@ export class DynamoDB extends TerraformStack {
                 hashKey: 'slug',
                 writeCapacity: 5,
                 readCapacity: 5,
-                attribute: [{
-                    name: 'slug',
-                    type: 'S'
-                }],
+                attribute: [
+                    {
+                        name: 'slug',
+                        type: 'S'
+                    },
+                    {
+                        name: 'curator_label',
+                        type: 'S'
+                    }
+                ],
                 globalSecondaryIndex: [
                     {
                         hashKey: 'curator_label',
