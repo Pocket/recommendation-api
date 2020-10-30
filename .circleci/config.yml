@@ -34,6 +34,10 @@ jobs:
             password: $DOCKERHUB_PASSWORD
       steps:
         - checkout
+        # Add user to npmrc
+        - run:
+            name: Authenticate with GitHub package registry
+            command: echo "//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}" > ~/.npmrc
         - restore_cache:
               key: 'node-cache-{{ .Branch }}-{{ checksum ".aws/package-lock.json" }}'
         - run:
