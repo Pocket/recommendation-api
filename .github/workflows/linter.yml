@@ -53,4 +53,5 @@ jobs:
           VALIDATE_MD: trueK
           VALIDATE_TYPESCRIPT_ES: true
           VALIDATE_YAML: true
-          VALIDATE_PYTHON3: true
+          PYTHON_PYLINT_CONFIG_FILE: .python-lint
+          VALIDATE_PYTHON_PYLINT: true
