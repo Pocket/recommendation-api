@@ -13,6 +13,7 @@ if (process.env.NODE_ENV === 'development') {
 export const config = {
   name,
   prefix: `${name}-${environment}`,
+  shortName: 'EXTOP',
   environment,
   domain,
   tags: {
