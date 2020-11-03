@@ -8,6 +8,7 @@ pytest = "*"
 pytest-cov = "*"
 coverage = "*"
 requests = "*"
+ipython = "*"
 
 [packages]
 fastapi = "*"
@@ -16,6 +17,8 @@ metaflow = "*"
 graphene = "*"
 graphene-federation = "*"
 starlette = "*"
+elasticsearch = "==7.1.0"
+elasticsearch-dsl = "==7.1.0"
 
 [requires]
 python_version = "3.8"
