@@ -3,6 +3,7 @@ import {App, RemoteBackend, TerraformStack} from 'cdktf';
 import {AwsProvider} from '../.gen/providers/aws';
 import {config} from './config';
 import {DynamoDB} from "./dynamodb";
+import {PocketALBApplication} from "@pocket/terraform-modules";
 
 class ExploreTopics extends TerraformStack {
     constructor(scope: Construct, name: string) {
@@ -23,6 +24,15 @@ class ExploreTopics extends TerraformStack {
         });
 
         new DynamoDB(this, 'dynamodb');
+
+        new PocketALBApplication(this, 'application', {
+            internal: true,
+            prefix: config.name,
+            alb6CharacterPrefix: config.shortName,
+            tags: config.tags,
+            cdn: false,
+            domain: config.domain
+        })
     }
 }
 
