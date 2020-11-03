@@ -1,11 +1,29 @@
 type Query {
-  getFeedItemsForTopic(topic: String = "finance"): [FeedItem]
+  getTopicRecommendations(slug: String!): TopicRecommendations
+  listTopics: [Topic!]!
 }
 
+type Topic {
+ id: ID!
+ displayName: String!
+ slug: String!
+ query: [String!]!
+ curatorLabel: String!
+ isDisplayed: Boolean!
+ isPromoted: Boolean!
+ socialTitle: String
+ socialDescription: String
+ socialImage: String
+}
 
-type FeedItem {
-  id: ID!
+type TopicRecommendations {
+  curatedRecommendations: [Recommendation!]!
+  algorithmicRecommendations: [Recommendation!]!
+}
+
+type Recommendation {
+  feedItemId: ID!
   itemId: ID!
-  title: String
-  topic: String
+  feedId: Int
 }
+# test
