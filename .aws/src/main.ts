@@ -34,7 +34,7 @@ class ExploreTopics extends TerraformStack {
 
         new PocketALBApplication(this, 'application', {
             internal: true,
-            prefix: config.name,
+            prefix: config.prefix,
             alb6CharacterPrefix: config.shortName,
             tags: config.tags,
             cdn: false,
@@ -57,7 +57,6 @@ class ExploreTopics extends TerraformStack {
                 port: 8080,
             },
             ecsIamConfig: {
-                name: config.name,
                 prefix: config.prefix,
                 taskExecutionRolePolicyStatements: [
                     //This policy could probably go in the shared module in the future.
@@ -70,7 +69,8 @@ class ExploreTopics extends TerraformStack {
                             `arn:aws:secretsmanager:${region.name}:${caller.accountId}:secret:Shared`,
                             `arn:aws:secretsmanager:${region.name}:${caller.accountId}:secret:Shared/*`,
                             secretsManager.targetKeyArn
-                        ]
+                        ],
+                        effect: 'Allow'
                     }
                 ],
                 taskRolePolicyStatements: [],
