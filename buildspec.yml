@@ -44,10 +44,7 @@ phases:
     commands:
       - echo Installing JQ, AWS CLI, Perl Utils, Node, NPM
       # Within our terraform files we execute jq, and aws-cli and python
-      - apk add jq aws-cli perl-utils nodejs npm bash curl py-pip gcc python3-dev
-      # Install pipenv and we need to ignore what exists because distutils does not uninstall
-      # https://github.com/pypa/virtualenv/issues/1907
-      - pip install pipenv --ignore-installed
+      - apk add jq aws-cli perl-utils nodejs npm bash curl py-pip
 
   pre_build:
     commands:
@@ -90,14 +87,11 @@ phases:
       # CD back to the project directory root
       - cd ../../
 
-      # Install our deployment packages so we can run metaflow
-      # TODO: see if theres a way in pipenv to just have a --metaflow that will install only metaflow packages
-      # so we can remove gcc and python3-dev
-      - pipenv install --deploy
+      - pip install metaflow
 
       #### If the branch is main lets generate our metaflow functions
-      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then pipenv run python jobs/AlgorithmicCandidatesFlow.py --with retry step-functions create; fi'
-      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then pipenv run python jobs/CuratedCandidatesFlow.py --with retry step-functions create; fi'
+      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then python jobs/AlgorithmicCandidatesFlow.py --with retry step-functions create; fi'
+      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then python jobs/CuratedCandidatesFlow.py --with retry step-functions create; fi'
   post_build:
     commands:
       - echo Build completed on `date`
