@@ -4,6 +4,7 @@ orbs:
   aws-cli: circleci/aws-cli@0.1.13
   aws-ecr: circleci/aws-ecr@6.5.0
   assume-role: airswap/assume-role@0.2.0
+  pocket: pocket/circleci-orbs@1.0.0
 
 jobs:
 
@@ -83,33 +84,61 @@ jobs:
             pipenv run python jobs/AlgorithmicCandidatesFlow.py check
             pipenv run python jobs/CuratedCandidatesFlow.py check
 
-  build:
+  docker_build:
+    parameters:
+      tag:
+        description: 'The docker tag name'
+        type: string
+      environment:
+        description: 'The environment name'
+        type: string
+      ecr_url:
+        description: 'The ecr url'
+        type: string
+      repo_name:
+        description: 'The ecr repo name'
+        type: string
+      push:
+        description: 'Whether or not to push the code'
+        type: boolean
+        default: false
     docker:
-      - image: pocket/ops-cli:v0.0.5
+      - image: python:3.8
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
-        environment:
-          MAIN_IMAGE_NAME: explore-topics
     steps:
       - checkout
       - run:
           name: Setup common environment variables
           command: |
-            echo 'export AWS_ECR_ACCOUNT_PROD_URL="${ACCOUNT_ID_PROD}.dkr.ecr.us-east-1.amazonaws.com"' >> $BASH_ENV
-            echo 'export AWS_ECR_ACCOUNT_DEV_URL="${ACCOUNT_ID_DEV}.dkr.ecr.us-east-1.amazonaws.com"' >> $BASH_ENV
+            echo 'export AWS_ECR_ACCOUNT_URL="<< parameters.ecr_url >>"' >> $BASH_ENV
+            echo 'export AWS_REGION=${<< parameters.environment >>_AWS_DEFAULT_REGION}' >> $BASH_ENV
       - run:
+          name: Setup docker build
           command: |
-            echo 'export AWS_ECR_ACCOUNT_URL="${AWS_ECR_ACCOUNT_DEV_URL}"' >> $BASH_ENV
-# When we have AWS setup start pushing the image.
-#      - assume-role/assume-role:
-#          account-id: $ACCOUNT_ID_DEV
-#      - aws-ecr/build-and-push-image:
-      - setup_remote_docker
-      - aws-ecr/build-image:
-          repo: $MAIN_IMAGE_NAME
-          tag: $CIRCLE_SHA1
-          dockerfile: ./.docker/images/app/Dockerfile
+            cp .docker/images/app/Dockerfile .
+      - when:
+          condition: <<parameters.push>>
+          steps:
+            - aws-ecr/build-and-push-image:
+                checkout: false
+                repo: << parameters.repo_name >>
+                setup-remote-docker: true
+                aws-access-key-id: << parameters.environment >>_AWS_ACCESS_KEY
+                aws-secret-access-key: << parameters.environment >>_AWS_SECRET_ACCESS_KEY
+                tag: << parameters.tag >>
+                extra-build-args: --build-arg GIT_SHA=${CIRCLE_SHA1}
+      - unless:
+          condition: <<parameters.push>>
+          steps:
+            - setup_remote_docker
+            - aws-ecr/build-image:
+                repo: << parameters.repo_name >>
+                tag: << parameters.tag >>
+                extra-build-args: --build-arg GIT_SHA=${CIRCLE_SHA1}
+
+
 
 
 # Workflow shortcuts
@@ -123,16 +152,92 @@ only_main: &only_main
   filters:
     branches:
       only:
-        - master
+        - main
+
+not_dev: &not_dev
+  filters:
+    branches:
+      ignore:
+        - dev
+
+not_dev_main: &not_dev_main
+  filters:
+    branches:
+      ignore:
+        - dev
+        - main
+
+only_dev: &only_dev
+  filters:
+    branches:
+      only:
+        - dev
 
 workflows:
-   all:
-     jobs:
-       - test:
-           <<: *not_main
-           context: pocket
-       - check_metaflow:
-           <<: *not_main
-           context: pocket
-       - build:
-           context: pocket
+  all:
+    jobs:
+      - test:
+          <<: *not_main
+          context: pocket
+      - check_metaflow:
+          <<: *not_main
+          context: pocket
+
+      # Try building the ECS docker image on each branch
+      - docker_build:
+          <<: *not_dev_main
+          context: pocket
+          name: build_docker
+          environment: 'Dev'
+          tag: latest,$CIRCLE_SHA1
+          repo_name: exploretopics-dev-app
+          ecr_url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
+          push: false
+
+      # Build & Deploy the Dev Docker Image
+      - docker_build:
+          <<: *only_dev
+          context: pocket
+          name: build_docker_dev
+          environment: 'Dev'
+          tag: latest,$CIRCLE_SHA1
+          repo_name: exploretopics-dev-app
+          ecr_url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
+          push: true
+
+      # Bu›ild & Deploy the Prod Docker Image
+      - docker_build:
+          <<: *only_main
+          context: pocket
+          name: build_docker_prod
+          environment: 'Prod'
+          tag: latest,$CIRCLE_SHA1
+          repo_name: exploretopics-prod-app
+          ecr_url: 996905175585.dkr.ecr.us-east-1.amazonaws.com
+          push: true
+
+      # Notify sentry of main deployment
+      - pocket/sentry_release_notification:
+          <<: *only_main
+          name: sentry-release-notification-prod
+          context: pocket
+          repository_name: Pocket/explore-topics
+          sentry_project_name: explore-topics
+          sentry_env: production
+          sentry_org: pocket
+          workspace-path: /tmp/workspace
+          requires:
+            - build_docker_prod
+
+      # Notify sentry of dev deployment
+      - pocket/sentry_release_notification:
+          <<: *only_dev
+          name: sentry-release-notification-dev
+          context: pocket
+          repository_name: Pocket/explore-topics
+          sentry_project_name: explore-topics
+          sentry_env: development
+          sentry_org: pocket
+          workspace-path: /tmp/workspace
+          requires:
+            - build_docker_dev
