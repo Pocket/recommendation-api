@@ -17,10 +17,13 @@ graphene-federation = "*"
 starlette = "*"
 boto3 = "==1.16.6"
 sentry-sdk = "*"
-# we need to install gunicorn, uvicorn and fastapi so it starts in the virtualenv instead of the one in the docker image
+# we need to install gunicorn, uvicorn, uvloop, httptools, and fastapi
+# so it starts in the virtualenv instead of the one in the docker image
 gunicorn = "*"
 uvicorn = "*"
 fastapi = "*"
+uvloop = "*"
+httptools = "*"
 
 [requires]
 python_version = "3.8"
