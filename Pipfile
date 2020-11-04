@@ -18,6 +18,7 @@ graphene = "*"
 graphene-federation = "*"
 starlette = "*"
 boto3 = "==1.16.6"
+sentry-sdk = "*"
 
 [requires]
 python_version = "3.8"
