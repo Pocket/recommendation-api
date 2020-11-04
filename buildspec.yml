@@ -91,6 +91,8 @@ phases:
       - cd ../../
 
       # Install our deployment packages so we can run metaflow
+      # TODO: see if theres a way in pipenv to just have a --metaflow that will install only metaflow packages
+      # so we can remove gcc and python3-dev
       - pipenv install --deploy
 
       #### If the branch is main lets generate our metaflow functions
