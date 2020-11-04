@@ -1,3 +1,4 @@
+ARG GIT_SHA=local
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8 as base
 
 # Based on https://sourcery.ai/blog/python-docker/
@@ -26,6 +27,9 @@ USER appuser
 # FastAPI config
 ENV PORT=8000
 EXPOSE $PORT
+
+#Sentry GITSHA
+ENV GIT_SHA=$GIT_SHA
 
 # Install application into container
 WORKDIR /
