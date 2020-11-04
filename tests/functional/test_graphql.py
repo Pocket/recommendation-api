@@ -28,6 +28,22 @@ class TestGraphQL(TestDynamoDBBase):
             }
         }
 
+    def test_main_get_topic_recommendations(self):
+        executed = self.client.execute('''{
+            getTopicRecommendations(slug: "business") {
+                algorithmicRecommendations {feedItemId itemId feedId}
+                curatedRecommendations {feedItemId itemId feedId}
+            }
+        }''')
+        assert executed == {
+            'data': {
+                'getTopicRecommendations': {
+                    'algorithmicRecommendations': [{'feedItemId': 'ExploreTopics/123', 'feedId': 1, 'itemId': '123'}],
+                    'curatedRecommendations': [],
+                }
+            }
+        }
+
     def populate_explore_topics_metadata_table(self):
         self.table.put_item(Item={
             "display_name": 'tech',
