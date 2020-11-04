@@ -12,7 +12,7 @@ WORKDIR /
 COPY Pipfile .
 COPY Pipfile.lock .
 ENV PIPENV_VENV_IN_PROJECT=1
-RUN if [ "$APP_ENV" = "production" ]; then pipenv install --deploy; else pipenv install --dev; fi
+RUN if [ "$GIT_SHA" = "local" ]; then pipenv install --dev; else pipenv install --deploy; fi
 
 FROM base AS runtime
 
