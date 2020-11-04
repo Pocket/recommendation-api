@@ -102,7 +102,7 @@ jobs:
         type: boolean
         default: false
     docker:
-      - image: python:3.8
+      - image: cimg/base:2020.01
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
