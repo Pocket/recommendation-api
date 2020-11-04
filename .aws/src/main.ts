@@ -42,12 +42,12 @@ class ExploreTopics extends TerraformStack {
             containerConfigs: [
                 {
                     name: 'app',
-                    hostPort: 8080,
-                    containerPort: 8080,
+                    hostPort: 8000,
+                    containerPort: 8000,
                     envVars: [
                         {
-                            name: 'foo',
-                            value: 'bar',
+                            name: 'ENVIRONMENT',
+                            value: process.env.NODE_ENV, // this gives us a nice lowercase production and development
                         },
                     ]
                 }

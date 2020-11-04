@@ -44,7 +44,8 @@ phases:
     commands:
       - echo Installing JQ, AWS CLI, Perl Utils, Node, NPM
       # Within our terraform files we execute jq, and aws-cli and python
-      - apk add jq aws-cli perl-utils nodejs npm bash curl py-pip
+      # httptools in our pipenv requires gcc, python3-dev and build-base
+      - apk add jq aws-cli perl-utils nodejs npm bash curl py-pip python3-dev build-base
       # Install pipenv and we need to ignore what exists because distutils does not uninstall
       # https://github.com/pypa/virtualenv/issues/1907
       - pip install pipenv --ignore-installed
@@ -83,7 +84,7 @@ phases:
       ### If the branch is not main and its not dev, lets do a plan on prod.
       - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" != "$MAIN_BRANCH" ] && [ "$CODEBUILD_WEBHOOK_HEAD_REF" != "$DEV_BRANCH" ]; then terraform plan -lock=false -refresh=false -no-color; fi'
       #### If the branch is dev, lets do an apply on dev.
-      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then TF_WORKSPACE=$TF_DEV_WORKSPACE terraform apply -auto-approve -no-color; fi'
+      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then TF_WORKSPACE=$TF_DEV_WORKSPACE TF_LOG=INFO terraform apply -auto-approve -no-color; fi'
       #### If the branch is main lets apply.
       - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ]; then terraform apply -auto-approve -no-color; fi'
 
@@ -91,6 +92,8 @@ phases:
       - cd ../../
 
       # Install our deployment packages so we can run metaflow
+      # TODO: see if theres a way in pipenv to just have a --metaflow that will install only metaflow packages
+      # so we can remove gcc and python3-dev
       - pipenv install --deploy
 
       #### If the branch is main lets generate our metaflow functions
