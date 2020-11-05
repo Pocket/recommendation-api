@@ -156,7 +156,7 @@ export class EventBridgeLambda extends TerraformStack {
         const lambda = new LambdaFunction(this, 'lambda-translation', {
             functionName: `${config.prefix}-Translation`,
             filename: defaultLambda.outputPath,
-            handler: 'lambda_handler',
+            handler: 'index.lambda_handler',
             runtime: 'python3.8',
             sourceCodeHash: defaultLambda.outputBase64Sha256,
             role: lambdaExecutionRole.arn,
@@ -167,10 +167,14 @@ export class EventBridgeLambda extends TerraformStack {
             lifecycle: {
                 ignoreChanges: [
                     'filename',
-                    'source_code_hash',
-                    'reserved_concurrent_executions'
+                    'source_code_hash'
                 ]
-            }
+            },
+            tracingConfig: [
+                {
+                    mode: 'Active'
+                }
+            ]
         });
 
         return new LambdaAlias(this, 'lambda-alias', {
@@ -269,7 +273,7 @@ export class EventBridgeLambda extends TerraformStack {
             type: 'zip',
             source: [
                 {
-                    content: 'lambda_handler(event, context):\n return',
+                    content: 'lambda_handler(event, context):\n\treturn',
                     filename: 'index.py'
                 }
             ],
