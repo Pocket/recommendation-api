@@ -5,7 +5,6 @@ from app.config import sentry as sentry_config
 from fastapi import FastAPI, Request
 from starlette.graphql import GraphQLApp
 from app.graphql.graphql import schema
-from app.models.feed_item import FeedItem
 
 sentry_sdk.init(
     dsn=sentry_config['dsn'],
@@ -18,11 +17,6 @@ app = FastAPI()
 
 # Add our GraphQL route to the main url
 app.add_route("/", GraphQLApp(schema=schema))
-
-
-@app.get("/feed/{item_id}", response_model=FeedItem)
-def read_item(item_id: int):
-    return FeedItem(id=item_id, title="Essential Reads")
 
 # Middleware for FastAPI to grab http exceptions
 # https://medium.com/@PhilippeGirard5/integrate-sentry-to-fastapi-7250603c070f

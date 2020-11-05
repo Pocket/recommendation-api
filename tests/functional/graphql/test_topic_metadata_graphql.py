@@ -1,12 +1,16 @@
 from moto import mock_dynamodb2
 from graphene.test import Client
+from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 from app.graphql.graphql import schema
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 from app.config import dynamodb as dynamodb_config
 
 
 @mock_dynamodb2
-class TestGraphQL(TestDynamoDBBase):
+class TestGraphQLMetadata(TestDynamoDBBase):
+    table: DynamoDBServiceResource.Table
+    client: Client
+
     def setup_method(self, method):
         dynamodb_config['endpoint_url'] = None
         super().setup_method(self)
@@ -28,24 +32,9 @@ class TestGraphQL(TestDynamoDBBase):
             }
         }
 
-    def test_main_get_topic_recommendations(self):
-        executed = self.client.execute('''{
-            getTopicRecommendations(slug: "business") {
-                algorithmicRecommendations {feedItemId itemId feedId}
-                curatedRecommendations {feedItemId itemId feedId}
-            }
-        }''')
-        assert executed == {
-            'data': {
-                'getTopicRecommendations': {
-                    'algorithmicRecommendations': [{'feedItemId': 'ExploreTopics/123', 'feedId': 1, 'itemId': '123'}],
-                    'curatedRecommendations': [],
-                }
-            }
-        }
-
     def populate_explore_topics_metadata_table(self):
         self.table.put_item(Item={
+            'id': 'a187ffb4-5c6f-4079-bad9-92442e97bdd1',
             "display_name": 'tech',
             "slug": 'tech',
             "query": 'query',
