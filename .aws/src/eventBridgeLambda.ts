@@ -239,7 +239,7 @@ export class EventBridgeLambda extends TerraformStack {
     private createCloudwatchEventRule(lambda: LambdaAlias) {
         const rule = new CloudwatchEventRule(this, 'step-function-event-bridge-rule', {
             name: `${config.prefix}-StepFunctionRule`,
-            description: 'Capture Metaflow Step Function SUCCEEDED status',
+            description: 'Capture Metaflow Step Functions SUCCEEDED status',
             eventPattern: JSON.stringify({
                 "source": [
                     "aws.states"
@@ -251,10 +251,7 @@ export class EventBridgeLambda extends TerraformStack {
                     "status": [
                         "SUCCEEDED"
                     ],
-                    "stateMachineArn": [
-                        "arn:aws:states:::stateMachine:CuratedCandidatesFlow",
-                        "arn:aws:states:::stateMachine:AlgorithmicCandidatesFlow",
-                    ]
+                    "stateMachineArn": config.stateMachines.map(name => "arn:aws:states:*:*:stateMachine:" + name)
                 }
             })
         });

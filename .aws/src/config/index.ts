@@ -16,6 +16,10 @@ export const config = {
   shortName: 'EXTOP',
   environment,
   domain,
+  stateMachines: [
+      'CuratedCandidatesFlow',
+      'AlgorithmicCandidatesFlow'
+  ],
   tags: {
       service: name,
       environment
