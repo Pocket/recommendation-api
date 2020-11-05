@@ -169,12 +169,7 @@ export class EventBridgeLambda extends TerraformStack {
                     'filename',
                     'source_code_hash'
                 ]
-            },
-            tracingConfig: [
-                {
-                    mode: 'Active'
-                }
-            ]
+            }
         });
 
         return new LambdaAlias(this, 'lambda-alias', {
