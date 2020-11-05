@@ -1,29 +1,21 @@
 from graphene import ObjectType, String, Field, List, Schema
-from app.graphql.topic_recommendations import TopicRecommendations
-from app.graphql.recommendation import Recommendation
+
+from app.models.topic import TopicModel
+from app.models.topic_recommendations import TopicRecommendationsModel
+
 from app.graphql.topic import Topic
-from app.models.topic import Topic as TopicModel
+from app.graphql.topic_recommendations import TopicRecommendations
+
 
 
 class Query(ObjectType):
     get_topic_recommendations = Field(TopicRecommendations, slug=String(required=True))
     list_topics = List(Topic)
 
-    # our Resolver method takes the GraphQL context (root, info) as well as
-    # Argument (name) for the Field and returns data for the query Response
-    def resolve_get_topic_recommendations(self, info, slug):
-        topic_recommendations = TopicRecommendations()
+    def resolve_get_topic_recommendations(self, info, slug) -> TopicRecommendations:
+        return TopicRecommendationsModel.get_recommendations(slug=slug)
 
-        recommendation = Recommendation()
-        recommendation.feed_item_id = 'ExploreTopics/123'
-        recommendation.feed_id = 1
-        recommendation.item_id = 123
-
-        topic_recommendations.algorithmic_recommendations = [recommendation]
-        topic_recommendations.curated_recommendations = []
-        return topic_recommendations
-
-    def resolve_list_topics(self, info):
+    def resolve_list_topics(self, info) -> [TopicModel]:
         return TopicModel.get_all()
 
 

@@ -2,26 +2,26 @@
   "TableName": "explore_topics_metadata",
   "KeySchema": [
     {
-      "AttributeName": "slug",
+      "AttributeName": "id",
       "KeyType": "HASH"
     }
   ],
   "AttributeDefinitions": [
     {
-      "AttributeName": "slug",
+      "AttributeName": "id",
       "AttributeType": "S"
     },
     {
-      "AttributeName": "curator_label",
+      "AttributeName": "slug",
       "AttributeType": "S"
     }
   ],
   "GlobalSecondaryIndexes": [
     {
-      "IndexName": "curator_label-index",
+      "IndexName": "slug",
       "KeySchema": [
         {
-          "AttributeName": "curator_label",
+          "AttributeName": "slug",
           "KeyType": "HASH"
         }
       ],

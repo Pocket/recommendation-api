@@ -4,14 +4,14 @@ import {config} from "./config";
 import {ApplicationDynamoDBTable} from "@pocket/terraform-modules";
 
 export class DynamoDB extends TerraformStack {
-    readonly candidatesTable: ApplicationDynamoDBTable;
-    readonly topicsMetadataTable: ApplicationDynamoDBTable;
+
+    public readonly candidatesTable: ApplicationDynamoDBTable
+    public readonly metadataTable: ApplicationDynamoDBTable
 
     constructor(scope: Construct, name: string) {
         super(scope, name);
-
         this.candidatesTable = this.setupCandidatesTable();
-        this.topicsMetadataTable = this.setupTopicsMetadataTable();
+        this.metadataTable = this.setupTopicsMetadataTable();
     }
 
     /**
@@ -23,13 +23,33 @@ export class DynamoDB extends TerraformStack {
             tags: config.tags,
             prefix: `${config.prefix}-Candidates`,
             tableConfig: {
-                hashKey: 'item_id',
+                hashKey: 'id',
                 writeCapacity: 5,
                 readCapacity: 5,
-                attribute: [{
-                    name: 'item_id',
-                    type: 'S'
-                }]
+                attribute: [
+                    {
+                        name: 'id',
+                        type: 'S'
+                    },
+                    {
+                        name: 'created_at',
+                        type: 'S'
+                    },
+                    {
+                        name: 'topic_id-type',
+                        type: 'S'
+                    }
+                ],
+                globalSecondaryIndex: [
+                    {
+                        name: 'topic_id-type',
+                        hashKey: 'topic_id-type',
+                        rangeKey: 'created_at',
+                        projectionType: 'ALL',
+                        readCapacity: 5,
+                        writeCapacity: 5,
+                    }
+                ]
             },
             readCapacity: {
                 tracking: 70,
@@ -54,23 +74,23 @@ export class DynamoDB extends TerraformStack {
             tags: config.tags,
             prefix: `${config.prefix}-TopicMetadata`,
             tableConfig: {
-                hashKey: 'slug',
+                hashKey: 'id',
                 writeCapacity: 5,
                 readCapacity: 5,
                 attribute: [
                     {
-                        name: 'slug',
+                        name: 'id',
                         type: 'S'
                     },
                     {
-                        name: 'curator_label',
+                        name: 'slug',
                         type: 'S'
                     }
                 ],
                 globalSecondaryIndex: [
                     {
-                        hashKey: 'curator_label',
-                        name: 'curator_label-index',
+                        name: 'slug',
+                        hashKey: 'slug',
                         projectionType: 'ALL',
                         readCapacity: 5,
                         writeCapacity: 5,

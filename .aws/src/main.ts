@@ -31,7 +31,7 @@ class ExploreTopics extends TerraformStack {
         });
 
 
-        new DynamoDB(this, 'dynamodb');
+        const dynamodb = new DynamoDB(this, 'dynamodb');
 
         new PocketALBApplication(this, 'application', {
             internal: true,
@@ -74,7 +74,22 @@ class ExploreTopics extends TerraformStack {
                         effect: 'Allow'
                     }
                 ],
-                taskRolePolicyStatements: [],
+                taskRolePolicyStatements: [
+                    {
+                        actions: [
+                            'dynamodb:BatchGet*',
+                            'dynamodb:DescribeTable',
+                            'dynamodb:Get*',
+                            'dynamodb:Query',
+                            'dynamodb:Scan',
+                        ],
+                        resources: [
+                            dynamodb.candidatesTable.dynamodb.arn,
+                            dynamodb.metadataTable.dynamodb.arn
+                        ],
+                        effect: 'Allow'
+                    }
+                ],
                 taskExecutionDefaultAttachmentArn: 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy',
             }
         });
