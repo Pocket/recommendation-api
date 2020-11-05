@@ -174,7 +174,7 @@ export class EventBridgeLambda extends TerraformStack {
             tags: config.tags
         });
 
-        return new LambdaAlias(this, 'lambda-alias', {
+        const lambdaAlias = new LambdaAlias(this, 'lambda-alias', {
             functionName: lambda.functionName,
             functionVersion: lambda.version,
             name: 'DEPLOYED',
@@ -183,6 +183,10 @@ export class EventBridgeLambda extends TerraformStack {
             },
             dependsOn: [lambda]
         });
+
+        lambdaAlias.addOverride('function_version', `split(":", ${lambda.qualifiedArn})[7]`);
+
+        return lambdaAlias;
     }
 
     private getLambdaAssumePolicyDocument() {
