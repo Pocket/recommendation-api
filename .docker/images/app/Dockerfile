@@ -1,3 +1,4 @@
+ARG GIT_SHA=local
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8 as base
 
 # Based on https://sourcery.ai/blog/python-docker/
@@ -10,7 +11,8 @@ RUN pip install pipenv
 WORKDIR /
 COPY Pipfile .
 COPY Pipfile.lock .
-RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
+ENV PIPENV_VENV_IN_PROJECT=1
+RUN if [ "$GIT_SHA" = "local" ]; then pipenv install --dev; else pipenv install --deploy; fi
 
 FROM base AS runtime
 
@@ -25,6 +27,9 @@ USER appuser
 # FastAPI config
 ENV PORT=8000
 EXPOSE $PORT
+
+#Sentry GITSHA
+ENV GIT_SHA=$GIT_SHA
 
 # Install application into container
 WORKDIR /

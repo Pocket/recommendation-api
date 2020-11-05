@@ -1,8 +1,41 @@
 {
   "TableName": "explore_topics_metadata",
-  "KeySchema": [{ "AttributeName": "slug", "KeyType": "HASH" }],
-  "AttributeDefinitions": [
-    { "AttributeName": "slug", "AttributeType": "S" }
+  "KeySchema": [
+    {
+      "AttributeName": "slug",
+      "KeyType": "HASH"
+    }
   ],
-  "ProvisionedThroughput": { "ReadCapacityUnits": 5, "WriteCapacityUnits": 5 }
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "slug",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "curator_label",
+      "AttributeType": "S"
+    }
+  ],
+  "GlobalSecondaryIndexes": [
+    {
+      "IndexName": "curator_label-index",
+      "KeySchema": [
+        {
+          "AttributeName": "curator_label",
+          "KeyType": "HASH"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      },
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      }
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5
+  }
 }

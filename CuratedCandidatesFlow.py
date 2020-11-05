@@ -3,7 +3,7 @@ import logging
 import time
 import boto3
 import os
-from metaflow import FlowSpec, step, Parameter, IncludeFile, conda_base, conda
+from metaflow import FlowSpec, step, Parameter, IncludeFile, conda_base
 
 from jobs.query import organic_by_topic, transform_results
 from jobs.utils import setup_logger

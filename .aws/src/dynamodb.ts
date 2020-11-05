@@ -1,4 +1,4 @@
-import {RemoteBackend, TerraformStack} from "cdktf";
+import {TerraformStack} from "cdktf";
 import {Construct} from "constructs";
 import {config} from "./config";
 import {ApplicationDynamoDBTable} from "@pocket/terraform-modules";
@@ -19,13 +19,13 @@ export class DynamoDB extends TerraformStack {
             tags: config.tags,
             prefix: `${config.prefix}-Candidates`,
             tableConfig: {
-                hashKey: 'id',
+                hashKey: 'item_id',
                 writeCapacity: 5,
                 readCapacity: 5,
-                attribute: [ {
-                    name: 'id',
+                attribute: [{
+                    name: 'item_id',
                     type: 'S'
-                }],
+                }]
             },
             readCapacity: {
                 tracking: 70,
@@ -53,10 +53,25 @@ export class DynamoDB extends TerraformStack {
                 hashKey: 'slug',
                 writeCapacity: 5,
                 readCapacity: 5,
-                attribute: [ {
-                    name: 'slug',
-                    type: 'S'
-                }],
+                attribute: [
+                    {
+                        name: 'slug',
+                        type: 'S'
+                    },
+                    {
+                        name: 'curator_label',
+                        type: 'S'
+                    }
+                ],
+                globalSecondaryIndex: [
+                    {
+                        hashKey: 'curator_label',
+                        name: 'curator_label-index',
+                        projectionType: 'ALL',
+                        readCapacity: 5,
+                        writeCapacity: 5,
+                    }
+                ]
             },
             readCapacity: {
                 tracking: 70,
