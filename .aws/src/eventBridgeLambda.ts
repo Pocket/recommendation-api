@@ -3,7 +3,7 @@ import {Construct} from "constructs";
 import {config} from "./config";
 import {
     CloudwatchEventRule,
-    CloudwatchEventTarget,
+    CloudwatchEventTarget, CloudwatchLogGroup,
     CodedeployApp,
     CodedeployDeploymentGroup,
     CodestarnotificationsNotificationRule,
@@ -172,6 +172,12 @@ export class EventBridgeLambda extends TerraformStack {
                 ]
             },
             tags: config.tags
+        });
+
+        new CloudwatchLogGroup(this, 'lambda-log-group', {
+            name: `/aws/lambda/${lambda.functionName}`,
+            retentionInDays: 14,
+            dependsOn: [lambda]
         });
 
         const lambdaAlias = new LambdaAlias(this, 'lambda-alias', {
