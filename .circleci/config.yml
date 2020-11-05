@@ -171,8 +171,6 @@ jobs:
                   cd lambda
                   pipenv lock -r > requirements.txt
                   pip install -r requirements.txt --no-deps -t package
-                  rm -rf lambda.zip
-                  COMMIT_HASH=$(git rev-parse HEAD)
                   mkdir -p /tmp && zip -r9 "/tmp/$CIRCLE_SHA1.zip" . -x Pipfile* requirements.txt bin/\*
                   cp "/tmp/$CIRCLE_SHA1.zip" /tmp/build.zip
             - run:
