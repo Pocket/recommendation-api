@@ -4,6 +4,10 @@ import {config} from "./config";
 import {ApplicationDynamoDBTable} from "@pocket/terraform-modules";
 
 export class DynamoDB extends TerraformStack {
+
+    public candidatesTable: ApplicationDynamoDBTable
+    public metadataTable: ApplicationDynamoDBTable
+
     constructor(scope: Construct, name: string) {
         super(scope, name);
         this.setupCandidatesTable();
@@ -15,7 +19,7 @@ export class DynamoDB extends TerraformStack {
      * @private
      */
     private setupCandidatesTable() {
-        new ApplicationDynamoDBTable(this, `candidates`, {
+        this.candidatesTable = new ApplicationDynamoDBTable(this, `candidates`, {
             tags: config.tags,
             prefix: `${config.prefix}-Candidates`,
             tableConfig: {
@@ -66,7 +70,7 @@ export class DynamoDB extends TerraformStack {
      * @private
      */
     private setupTopicsMetadataTable() {
-        new ApplicationDynamoDBTable(this, `topic_metadata`, {
+        this.metadataTable = new ApplicationDynamoDBTable(this, `topic_metadata`, {
             tags: config.tags,
             prefix: `${config.prefix}-TopicMetadata`,
             tableConfig: {
