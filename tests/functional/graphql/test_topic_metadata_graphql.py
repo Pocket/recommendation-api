@@ -1,12 +1,16 @@
 from moto import mock_dynamodb2
 from graphene.test import Client
+from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 from app.graphql.graphql import schema
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 from app.config import dynamodb as dynamodb_config
 
 
 @mock_dynamodb2
-class TestGraphQL(TestDynamoDBBase):
+class TestGraphQLMetadata(TestDynamoDBBase):
+    table: DynamoDBServiceResource.Table
+    client: Client
+
     def setup_method(self, method):
         dynamodb_config['endpoint_url'] = None
         super().setup_method(self)
