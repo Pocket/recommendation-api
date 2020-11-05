@@ -137,3 +137,8 @@ dmypy.json
 /.aws/cdktf.out/
 /.aws/.gen/
 /.aws/.terraform
+
+# lambda artifacts
+lambda/*.zip
+lambda/package
+lambda/requirements.txt

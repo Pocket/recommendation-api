@@ -136,9 +136,57 @@ jobs:
                 repo: << parameters.repo_name >>
                 tag: << parameters.tag >>
                 extra-build-args: --build-arg GIT_SHA=${CIRCLE_SHA1}
+  lambdas:
+    description: Builds and Optionaly deploys all the associated lambdas
+    parameters:
+      env_lower_name:
+        type: string
+        description: The lower case env name
+      env_capital_name:
+        default: Env Name
+        description: The env capital name
+        type: string
+      deploy:
+        type: boolean
+        default: true
+    docker:
+      - image: python:3.8
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - when:
+          condition: << parameters.deploy >>
+          steps:
+            - aws-cli/setup:
+                aws-access-key-id: << parameters.env_capital_name >>_AWS_ACCESS_KEY
+                aws-secret-access-key: << parameters.env_capital_name >>_AWS_SECRET_ACCESS_KEY
+                aws-region: << parameters.env_capital_name >>_AWS_DEFAULT_REGION
+            - run:
+                name: Package Lambda
+                command: |
+                  cd lambda
+                  pipenv lock -r > requirements.txt
+                  pip install -r requirements.txt --no-deps -t package
+                  rm -rf lambda.zip
+                  COMMIT_HASH=$(git rev-parse HEAD)
+                  mkdir -p /tmp && zip -r9 "/tmp/$CIRCLE_SHA1.zip" . -x Pipfile* requirements.txt bin/\*
+                  cp "/tmp/$CIRCLE_SHA1.zip" /tmp/build.zip
+            - run:
+                name: Upload Package
+                command: aws s3 cp "/tmp/$CIRCLE_SHA1.zip" s3://<< parameters.s3-bucket >>/
+            - pocket/deploy_lambda:
+                s3-bucket: pocket-exploretopics-<< parameters.env_lower_name >>-Translation
+                aws-access-key-id: << parameters.env_capital_name >>_AWS_ACCESS_KEY
+                aws-secret-access-key: << parameters.env_capital_name >>_AWS_SECRET_ACCESS_KEY
+                aws-region: << parameters.env_capital_name >>_AWS_DEFAULT_REGION
+                codedeploy-application-name: ExploreTopics-<< parameters.env_capital_name >>-Translation
+                codedeploy-deployment-group-name: ExploreTopics-<< parameters.env_capital_name >>-Translation
+                function-name: ExploreTopics-<< parameters.env_capital_name >>-Translation
 
-
-
+      - store_artifacts:
+          path: /tmp/build.zip
 
 # Workflow shortcuts
 not_main: &not_main
@@ -204,7 +252,7 @@ workflows:
           ecr_url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
           push: true
 
-      # Bu›ild & Deploy the Prod Docker Image
+      # Build & Deploy the Prod Docker Image
       - docker_build:
           <<: *only_main
           context: pocket
@@ -214,6 +262,24 @@ workflows:
           repo_name: exploretopics-prod-app
           ecr_url: 996905175585.dkr.ecr.us-east-1.amazonaws.com
           push: true
+
+      # Build & Deploy Development Lambdas
+      - lambdas:
+          <<: *only_dev
+          context: pocket
+          name: deploy_lambdas_dev
+          env_lower_name: dev
+          env_capital_name: Dev
+          deploy: true
+
+      # Build & Deploy Production Lambdas
+      - lambdas:
+          <<: *only_main
+          context: pocket
+          name: deploy_lambdas_prod
+          env_lower_name: prod
+          env_capital_name: Prod
+          deploy: true
 
       # Notify sentry of main deployment
       - pocket/sentry_release_notification:
