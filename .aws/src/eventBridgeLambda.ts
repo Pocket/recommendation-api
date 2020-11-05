@@ -255,7 +255,7 @@ export class EventBridgeLambda extends TerraformStack {
         });
 
         new CloudwatchEventTarget(this, 'step-function-event-bridge-target', {
-            rule: rule.arn,
+            rule: rule.name,
             targetId: 'lambda',
             arn: lambda.arn,
             dependsOn: [lambda, rule]
