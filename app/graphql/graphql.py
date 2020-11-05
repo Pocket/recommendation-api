@@ -1,10 +1,11 @@
 from graphene import ObjectType, String, Field, List, Schema
-from app.graphql.topic_recommendations import TopicRecommendations
 
 from app.models.topic import TopicModel
-from app.graphql.topic import Topic
+from app.models.topic_recommendations import TopicRecommendationsModel
 
-from app.models.recommendation import RecommendationModel, RecommendationType
+from app.graphql.topic import Topic
+from app.graphql.topic_recommendations import TopicRecommendations
+
 
 
 class Query(ObjectType):
@@ -12,16 +13,7 @@ class Query(ObjectType):
     list_topics = List(Topic)
 
     def resolve_get_topic_recommendations(self, info, slug) -> TopicRecommendations:
-        topic_recommendations = TopicRecommendations()
-        topic_recommendations.algorithmic_recommendations = RecommendationModel.get_recommendations(
-            slug=slug,
-            recommendation_type=RecommendationType.ALGORITHMIC
-        )
-        topic_recommendations.curated_recommendations = RecommendationModel.get_recommendations(
-            slug=slug,
-            recommendation_type=RecommendationType.CURATED
-        )
-        return topic_recommendations
+        return TopicRecommendationsModel.get_recommendations(slug=slug)
 
     def resolve_list_topics(self, info) -> [TopicModel]:
         return TopicModel.get_all()
