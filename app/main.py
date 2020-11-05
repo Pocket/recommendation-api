@@ -18,6 +18,10 @@ app = FastAPI()
 # Add our GraphQL route to the main url
 app.add_route("/", GraphQLApp(schema=schema))
 
+@app.get("/health-check")
+def read_root():
+    return {"Hello": "World"}
+
 # Middleware for FastAPI to grab http exceptions
 # https://medium.com/@PhilippeGirard5/integrate-sentry-to-fastapi-7250603c070f
 @app.middleware("http")
