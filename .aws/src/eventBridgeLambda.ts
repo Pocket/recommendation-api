@@ -23,8 +23,14 @@ import {PocketVPC} from "@pocket/terraform-modules";
 import {DataArchiveFile} from "@pocket/terraform-modules/dist/.gen/providers/archive";
 
 export class EventBridgeLambda extends TerraformStack {
+    private region: DataAwsRegion;
+    private callerIdentity: DataAwsCallerIdentity;
+
     constructor(private scope: Construct, private name: string) {
         super(scope, name);
+
+        this.region = new DataAwsRegion(this, 'current-region');
+        this.callerIdentity = new DataAwsCallerIdentity(this, 'current-identity');
 
         const lambda = this.createLambdaFunction();
         this.setupLambdaResourcePermission(lambda, this.createCloudwatchEventRule(lambda));
@@ -105,8 +111,6 @@ export class EventBridgeLambda extends TerraformStack {
     }
 
     private setupCodeDeployNotifications(lambdaCodeDeployApp: CodedeployApp) {
-        const currentRegion = new DataAwsRegion(this, 'current-region');
-        const currentCallerIdentity = new DataAwsCallerIdentity(this, 'current-identity');
         const backendDeployTopic = new DataAwsSnsTopic(this, 'backend-deploy-topic', {
             name: `Backend-${config.environment}-ChatBot`
         });
@@ -115,7 +119,7 @@ export class EventBridgeLambda extends TerraformStack {
             detailType: 'BASIC',
             eventTypeIds: ['codedeploy-application-deployment-failed'],
             name: lambdaCodeDeployApp.name,
-            resource: `arn:aws:codedeploy:${currentRegion.name}:${currentCallerIdentity.accountId}:application:${lambdaCodeDeployApp.name}`,
+            resource: `arn:aws:codedeploy:${this.region.name}:${this.callerIdentity.accountId}:application:${lambdaCodeDeployApp.name}`,
             target: [
                 {
                     address: backendDeployTopic.arn
@@ -257,7 +261,9 @@ export class EventBridgeLambda extends TerraformStack {
                     "status": [
                         "SUCCEEDED"
                     ],
-                    "stateMachineArn": config.stateMachines.map(name => "arn:aws:states:*:*:stateMachine:" + name)
+                    "stateMachineArn": config.stateMachines.map(name => {
+                        return `arn:aws:states:${this.region.name}:${this.callerIdentity.accountId}:stateMachine:${name}`
+                    })
                 }
             })
         });
