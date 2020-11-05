@@ -147,7 +147,7 @@ export class EventBridgeLambda extends TerraformStack {
         new IamRolePolicy(this, 'lambda-execution-role-policy', {
             name: `${config.prefix}-TranslationLambdaExecutionRolePolicy`,
             policy: this.getLambdaExecutionPolicyDocument().json,
-            role: lambdaExecutionRole.arn
+            role: lambdaExecutionRole.name
         })
 
         const vpc = new PocketVPC(this, 'pocket-shared-vpc');
