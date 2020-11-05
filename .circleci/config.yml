@@ -166,6 +166,7 @@ jobs:
             - run:
                 name: Package Lambda
                 command: |
+                  apt-get update && apt-get install zip
                   pip install pipenv
                   cd lambda
                   pipenv lock -r > requirements.txt
