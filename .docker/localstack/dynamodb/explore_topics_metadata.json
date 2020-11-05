@@ -2,13 +2,13 @@
   "TableName": "explore_topics_metadata",
   "KeySchema": [
     {
-      "AttributeName": "slug",
+      "AttributeName": "id",
       "KeyType": "HASH"
     }
   ],
   "AttributeDefinitions": [
     {
-      "AttributeName": "slug",
+      "AttributeName": "id",
       "AttributeType": "S"
     },
     {

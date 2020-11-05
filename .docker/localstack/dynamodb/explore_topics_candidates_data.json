@@ -3,8 +3,42 @@
     {
       "PutRequest": {
         "Item": {
-          "item_id": {
-            "S": "1234"
+          "id": {
+            "S": "a187ffb4-5c6f-4079-bad9-92442e97bdd1"
+          },
+          "topic_id": {
+            "S": "1bf756c0-632f-49e8-9cce-324f38f4cc71"
+          },
+          "type": {
+            "S": "curated"
+          },
+          "created_at": {
+            "S": "2020-03-05T00:13:52.093Z"
+          },
+          "candidates": {
+            "L": [
+              {
+                "item_id": {
+                  "I": 5
+                },
+                "feed_id": {
+                  "I": 2
+                }
+              },
+              {
+                "item_id": {
+                  "I": 9
+                },
+                "feed_id": {
+                  "I": 2
+                }
+              },
+              {
+                "item_id": {
+                  "I": 123
+                }
+              }
+            ]
           }
         }
       }

@@ -1,8 +1,8 @@
 {
   "TableName": "explore_topics_candidates",
-  "KeySchema": [{ "AttributeName": "item_id", "KeyType": "HASH" }],
+  "KeySchema": [{ "AttributeName": "id", "KeyType": "HASH" }],
   "AttributeDefinitions": [
-    { "AttributeName": "item_id", "AttributeType": "S" }
+    { "AttributeName": "id", "AttributeType": "S" }
   ],
   "ProvisionedThroughput": { "ReadCapacityUnits": 5, "WriteCapacityUnits": 5 }
 }

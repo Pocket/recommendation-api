@@ -3,6 +3,9 @@
     {
       "PutRequest": {
         "Item": {
+          "id": {
+            "S": "1bf756c0-632f-49e8-9cce-324f38f4cc71"
+          },
           "slug": {
             "S": "business"
           },
@@ -30,6 +33,9 @@
     {
       "PutRequest": {
         "Item": {
+          "id": {
+            "S": "1c5f278c-2b59-48aa-96fc-da6b84798474"
+          },
           "slug": {
             "S": "career"
           },
@@ -57,6 +63,9 @@
     {
       "PutRequest": {
         "Item": {
+          "id": {
+            "S": "52f6285f-21e5-4492-a31d-d18367042702"
+          },
           "slug": {
             "S": "education"
           },
@@ -84,6 +93,9 @@
     {
       "PutRequest": {
         "Item": {
+          "id": {
+            "S": "c6242e35-4ef7-494f-ae9f-51f95b836424"
+          },
           "slug": {
             "S": "entertainment"
           },
@@ -111,6 +123,9 @@
     {
       "PutRequest": {
         "Item": {
+          "id": {
+            "S": "6795f425-2991-4698-86d2-b4cd986b6e93"
+          },
           "slug": {
             "S": "food"
           },
@@ -138,6 +153,9 @@
     {
       "PutRequest": {
         "Item": {
+          "id": {
+            "S": "fea00efc-ee03-48f5-95dc-148550c0b69c"
+          },
           "slug": {
             "S": "gaming"
           },
@@ -165,6 +183,9 @@
     {
       "PutRequest": {
         "Item": {
+          "id": {
+            "S": "c000cae6-1ec2-416d-9e8c-e9579b22dd45"
+          },
           "slug": {
             "S": "parenting"
           },
@@ -192,6 +213,9 @@
     {
       "PutRequest": {
         "Item": {
+          "id": {
+            "S": "1134bf31-c167-4d00-8178-7e5b02b5fc01"
+          },
           "slug": {
             "S": "personal-finance"
           },
@@ -219,6 +243,9 @@
     {
       "PutRequest": {
         "Item": {
+          "id": {
+            "S": "0ea5e739-7f95-4703-b824-5c5a4d834388"
+          },
           "slug": {
             "S": "politics"
           },
@@ -246,6 +273,9 @@
     {
       "PutRequest": {
         "Item": {
+          "id": {
+            "S": "058011b8-c70d-4a25-92e5-478e3ff0f0e6"
+          },
           "slug": {
             "S": "science"
           },
@@ -273,6 +303,9 @@
     {
       "PutRequest": {
         "Item": {
+          "id": {
+            "S": "45f8e740-42e0-4f54-8363-21310a084f1f"
+          },
           "slug": {
             "S": "self-improvement"
           },
@@ -300,6 +333,9 @@
     {
       "PutRequest": {
         "Item": {
+          "id": {
+            "S": "06bbe29a-7ae8-4e66-a94e-0dbf10bf2f70"
+          },
           "slug": {
             "S": "sports"
           },
@@ -327,6 +363,9 @@
     {
       "PutRequest": {
         "Item": {
+          "id": {
+            "S": "25c716f1-e1b2-43db-bf52-1a5553d9fb74"
+          },
           "slug": {
             "S": "technology"
           },
@@ -354,6 +393,9 @@
     {
       "PutRequest": {
         "Item": {
+          "id": {
+            "S": "7dc49254-686d-46e1-aa94-7ac3e7767f66"
+          },
           "slug": {
             "S": "travel"
           },
@@ -380,6 +422,9 @@
     },
     {
       "PutRequest": {
+        "id": {
+          "S": "26a3efb4-0f82-415a-9f47-7893df85853f"
+        },
         "Item": {
           "slug": {
             "S": "health"
@@ -408,6 +453,9 @@
     {
       "PutRequest": {
         "Item": {
+          "id": {
+            "S": "c29fbf48-0093-49d2-ae55-4e01a3cf800e"
+          },
           "slug": {
             "S": "coronavirus"
           },
