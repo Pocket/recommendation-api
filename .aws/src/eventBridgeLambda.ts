@@ -176,7 +176,7 @@ export class EventBridgeLambda extends TerraformStack {
 
         return new LambdaAlias(this, 'lambda-alias', {
             functionName: lambda.functionName,
-            functionVersion: lambda.qualifiedArn.split(':')[7],
+            functionVersion: lambda.version,
             name: 'DEPLOYED',
             lifecycle: {
                 ignoreChanges: ['function_version']
