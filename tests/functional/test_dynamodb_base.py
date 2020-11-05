@@ -15,7 +15,7 @@ class TestDynamoDBBase:
             table_schema_json = json.load(f)
 
         table = self.dynamodb.create_table(**table_schema_json)
-        table.meta.client.get_waiter('table_exists').wait(TableName=table_schema_json.keys()[0])
+        table.meta.client.get_waiter('table_exists').wait(TableName=table.name)
         assert table.table_status == 'ACTIVE'
 
         return table

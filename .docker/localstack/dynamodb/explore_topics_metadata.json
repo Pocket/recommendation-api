@@ -12,16 +12,16 @@
       "AttributeType": "S"
     },
     {
-      "AttributeName": "curator_label",
+      "AttributeName": "slug",
       "AttributeType": "S"
     }
   ],
   "GlobalSecondaryIndexes": [
     {
-      "IndexName": "curator_label-index",
+      "IndexName": "slug",
       "KeySchema": [
         {
-          "AttributeName": "curator_label",
+          "AttributeName": "slug",
           "KeyType": "HASH"
         }
       ],

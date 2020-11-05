@@ -12,6 +12,9 @@
           "type": {
             "S": "curated"
           },
+          "topic_id-type": {
+            "S": "1bf756c0-632f-49e8-9cce-324f38f4cc71|curated"
+          },
           "created_at": {
             "S": "2020-03-05T00:13:52.093Z"
           },
@@ -57,6 +60,9 @@
           },
           "topic_id": {
             "S": "1bf756c0-632f-49e8-9cce-324f38f4cc71"
+          },
+          "topic_id-type": {
+            "S": "1bf756c0-632f-49e8-9cce-324f38f4cc71|curated"
           },
           "type": {
             "S": "curated"

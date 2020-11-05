@@ -30,6 +30,7 @@ class TestGraphQL(TestDynamoDBBase):
 
     def populate_explore_topics_metadata_table(self):
         self.table.put_item(Item={
+            'id': 'a187ffb4-5c6f-4079-bad9-92442e97bdd1',
             "display_name": 'tech',
             "slug": 'tech',
             "query": 'query',
