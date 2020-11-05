@@ -164,18 +164,20 @@ export class EventBridgeLambda extends TerraformStack {
                 securityGroupIds: vpc.defaultSecurityGroups.ids,
                 subnetIds: vpc.privateSubnetIds
             }],
+            publish: true,
             lifecycle: {
                 ignoreChanges: [
                     'filename',
                     'source_code_hash'
                 ]
-            }
+            },
+            tags: config.tags
         });
 
         return new LambdaAlias(this, 'lambda-alias', {
             functionName: lambda.functionName,
-            functionVersion: lambda.version,
-            name: 'DEPLOYED',
+            functionVersion: lambda.qualifiedArn.split(':')[7],
+            name: lambda.qualifiedArn,
             lifecycle: {
                 ignoreChanges: ['function_version']
             },
