@@ -15,10 +15,13 @@ class TestDynamoDBBase:
             table_schema_json = json.load(f)
 
         table = self.dynamodb.create_table(**table_schema_json)
-        table.meta.client.get_waiter('table_exists').wait(TableName=dynamodb_config['explore_topics_metadata_table'])
+        table.meta.client.get_waiter('table_exists').wait(TableName=table_schema_json.keys()[0])
         assert table.table_status == 'ACTIVE'
 
         return table
 
     def create_explore_topics_metadata_table(self):
         return self.create_table('.docker/localstack/dynamodb/explore_topics_metadata.json')
+
+    def create_explore_topics_candidates_table(self):
+        return self.create_table('.docker/localstack/dynamodb/explore_topics_candidates.json')
