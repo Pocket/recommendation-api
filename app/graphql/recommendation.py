@@ -1,7 +1,7 @@
-from graphene import ObjectType, Int, ID
+from graphene_pydantic import PydanticObjectType
+from app.models.recommendation import RecommendationModel
 
 
-class Recommendation(ObjectType):
-    feed_item_id = ID()
-    item_id = ID()
-    feed_id = Int()
+class Recommendation(PydanticObjectType):
+    class Meta:
+        model = RecommendationModel

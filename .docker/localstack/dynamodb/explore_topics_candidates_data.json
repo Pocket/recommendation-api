@@ -18,24 +18,30 @@
           "candidates": {
             "L": [
               {
-                "item_id": {
-                  "I": 5
-                },
-                "feed_id": {
-                  "I": 2
+                "M": {
+                  "item_id": {
+                    "N": "5"
+                  },
+                  "feed_id": {
+                    "N": "2"
+                  }
                 }
               },
               {
-                "item_id": {
-                  "I": 9
-                },
-                "feed_id": {
-                  "I": 2
+                "M": {
+                  "item_id": {
+                    "N": "7"
+                  },
+                  "feed_id": {
+                    "N": "7"
+                  }
                 }
               },
               {
-                "item_id": {
-                  "I": 123
+                "M": {
+                  "item_id": {
+                    "N": "9"
+                  }
                 }
               }
             ]

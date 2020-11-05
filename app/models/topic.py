@@ -3,7 +3,7 @@ import boto3
 from app.config import dynamodb as dynamodb_config
 
 
-class Topic(BaseModel):
+class TopicModel(BaseModel):
     display_name: str
     slug: str
     query: str

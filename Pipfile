@@ -24,6 +24,7 @@ uvicorn = "*"
 fastapi = "*"
 uvloop = "*"
 httptools = "*"
+graphene-pydantic = "*"
 
 [requires]
 python_version = "3.8"
