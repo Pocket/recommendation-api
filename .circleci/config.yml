@@ -211,7 +211,7 @@ workflows:
           family: 'ExploreTopics-Dev'
           cluster-name: 'ExploreTopics-Dev'
           deployment-controller: 'CODE_DEPLOY'
-          codedeploy-application-name: 'ExploreTopics-Dev'
+          codedeploy-application-name: 'ExploreTopics-Dev-ECS'
           codedeploy-deployment-group-name: 'ExploreTopics-Dev-ECS'
           codedeploy-load-balanced-container-name: app
           codedeploy-load-balanced-container-port: 8000
@@ -239,7 +239,7 @@ workflows:
           family: 'ExploreTopics-Prod'
           cluster-name: 'ExploreTopics-Prod'
           deployment-controller: 'CODE_DEPLOY'
-          codedeploy-application-name: 'ExploreTopics-Prod'
+          codedeploy-application-name: 'ExploreTopics-Prod-ECS'
           codedeploy-deployment-group-name: 'ExploreTopics-Prod-ECS'
           codedeploy-load-balanced-container-name: app
           codedeploy-load-balanced-container-port: 8000
