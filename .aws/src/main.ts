@@ -1,6 +1,12 @@
 import {Construct} from 'constructs';
 import {App, RemoteBackend, TerraformStack} from 'cdktf';
-import {AwsProvider, DataAwsCallerIdentity, DataAwsKmsAlias, DataAwsRegion} from '../.gen/providers/aws';
+import {
+    AwsProvider,
+    DataAwsCallerIdentity,
+    DataAwsKmsAlias,
+    DataAwsRegion,
+    DataAwsSnsTopic
+} from '../.gen/providers/aws';
 import {config} from './config';
 import {DynamoDB} from "./dynamodb";
 import {PocketALBApplication} from "@pocket/terraform-modules";
@@ -30,6 +36,9 @@ class ExploreTopics extends TerraformStack {
             name: 'alias/aws/secretsmanager'
         });
 
+        const snsTopic = new DataAwsSnsTopic(this, 'backend_notifications', {
+            name: `Backend-${config.environment}-ChatBot`
+        })
 
         const dynamodb = new DynamoDB(this, 'dynamodb');
 
@@ -65,6 +74,11 @@ class ExploreTopics extends TerraformStack {
                     ]
                 }
             ],
+            codeDeploy: {
+                useCodeDeploy: true,
+                // Disabling because of module bug atm.. and unique names..
+                snsNotificationTopicArn: snsTopic.arn,
+            },
             exposedContainer: {
                 name: 'app',
                 port: 8000,
@@ -98,7 +112,9 @@ class ExploreTopics extends TerraformStack {
                         ],
                         resources: [
                             dynamodb.candidatesTable.dynamodb.arn,
-                            dynamodb.metadataTable.dynamodb.arn
+                            dynamodb.metadataTable.dynamodb.arn,
+                            `${dynamodb.candidatesTable.dynamodb.arn}/*`,
+                            `${dynamodb.metadataTable.dynamodb.arn}/*`,
                         ],
                         effect: 'Allow'
                     }
