@@ -215,7 +215,7 @@ workflows:
           codedeploy-deployment-group-name: 'ExploreTopics-Dev'
           codedeploy-load-balanced-container-name: app
           codedeploy-load-balanced-container-port: 8000
-          container-image-name-updates: 'container=node,image-and-tag=410318598490.dkr.ecr.us-east-1.amazonaws.com/exploretopics-dev-app:$CIRCLE_SHA1'
+          container-image-name-updates: 'container=app,image-and-tag=410318598490.dkr.ecr.us-east-1.amazonaws.com/exploretopics-dev-app:$CIRCLE_SHA1'
           aws-access-key-id: $Dev_AWS_ACCESS_KEY
           aws-secret-access-key: $Dev_AWS_SECRET_ACCESS_KEY
           aws-region: $Dev_AWS_DEFAULT_REGION
@@ -243,7 +243,7 @@ workflows:
           codedeploy-deployment-group-name: 'ExploreTopics-Prod'
           codedeploy-load-balanced-container-name: app
           codedeploy-load-balanced-container-port: 8000
-          container-image-name-updates: 'container=node,image-and-tag=996905175585.dkr.ecr.us-east-1.amazonaws.com/exploretopics-prod-app:$CIRCLE_SHA1'
+          container-image-name-updates: 'container=app,image-and-tag=996905175585.dkr.ecr.us-east-1.amazonaws.com/exploretopics-prod-app:$CIRCLE_SHA1'
           aws-access-key-id: $Prod_AWS_ACCESS_KEY
           aws-secret-access-key: $Prod_AWS_SECRET_ACCESS_KEY
           aws-region: $Prod_AWS_DEFAULT_REGION
