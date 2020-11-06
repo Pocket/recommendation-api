@@ -137,9 +137,57 @@ jobs:
                 repo: << parameters.repo_name >>
                 tag: << parameters.tag >>
                 extra-build-args: --build-arg GIT_SHA=${CIRCLE_SHA1}
+  lambdas:
+    description: Builds and Optionaly deploys all the associated lambdas
+    parameters:
+      env_lower_name:
+        type: string
+        description: The lower case env name
+      env_capital_name:
+        default: Env Name
+        description: The env capital name
+        type: string
+      deploy:
+        type: boolean
+        default: true
+    docker:
+      - image: python:3.8
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - when:
+          condition: << parameters.deploy >>
+          steps:
+            - aws-cli/setup:
+                aws-access-key-id: << parameters.env_capital_name >>_AWS_ACCESS_KEY
+                aws-secret-access-key: << parameters.env_capital_name >>_AWS_SECRET_ACCESS_KEY
+                aws-region: << parameters.env_capital_name >>_AWS_DEFAULT_REGION
+            - run:
+                name: Package Lambda
+                command: |
+                  apt-get update && apt-get install zip
+                  pip install pipenv
+                  cd lambda
+                  pipenv lock -r > requirements.txt
+                  pip install -r requirements.txt --no-deps -t package
+                  mkdir -p /tmp && zip -r9 "/tmp/$CIRCLE_SHA1.zip" . -x Pipfile* requirements.txt bin/\*
+                  cp "/tmp/$CIRCLE_SHA1.zip" /tmp/build.zip
+            - run:
+                name: Upload Package
+                command: aws s3 cp "/tmp/$CIRCLE_SHA1.zip" s3://pocket-exploretopics-<< parameters.env_lower_name >>-translation/
+            - pocket/deploy_lambda:
+                s3-bucket: pocket-exploretopics-<< parameters.env_lower_name >>-translation
+                aws-access-key-id: << parameters.env_capital_name >>_AWS_ACCESS_KEY
+                aws-secret-access-key: << parameters.env_capital_name >>_AWS_SECRET_ACCESS_KEY
+                aws-region: << parameters.env_capital_name >>_AWS_DEFAULT_REGION
+                codedeploy-application-name: ExploreTopics-<< parameters.env_capital_name >>-Translation-Lambda
+                codedeploy-deployment-group-name: ExploreTopics-<< parameters.env_capital_name >>-Translation-Lambda
+                function-name: ExploreTopics-<< parameters.env_capital_name >>-Translation-Function
 
-
-
+      - store_artifacts:
+          path: /tmp/build.zip
 
 # Workflow shortcuts
 not_main: &not_main
@@ -182,6 +230,24 @@ workflows:
       - check_metaflow:
           <<: *not_main
           context: pocket
+
+      # Build & Deploy Development Lambdas
+      - lambdas:
+          <<: *only_dev
+          context: pocket
+          name: deploy_lambdas_dev
+          env_lower_name: dev
+          env_capital_name: Dev
+          deploy: true
+
+      # Build & Deploy Production Lambdas
+      - lambdas:
+          <<: *only_main
+          context: pocket
+          name: deploy_lambdas_prod
+          env_lower_name: prod
+          env_capital_name: Prod
+          deploy: true
 
       # Try building the ECS docker image on each branch
       - docker_build:

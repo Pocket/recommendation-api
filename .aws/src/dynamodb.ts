@@ -70,7 +70,7 @@ export class DynamoDB extends TerraformStack {
      * @private
      */
     private setupTopicsMetadataTable() {
-        return  new ApplicationDynamoDBTable(this, `topic_metadata`, {
+        return new ApplicationDynamoDBTable(this, `topic_metadata`, {
             tags: config.tags,
             prefix: `${config.prefix}-TopicMetadata`,
             tableConfig: {

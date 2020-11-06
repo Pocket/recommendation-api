@@ -10,6 +10,7 @@ import {
 import {config} from './config';
 import {DynamoDB} from "./dynamodb";
 import {PocketALBApplication} from "@pocket/terraform-modules";
+import {EventBridgeLambda} from "./eventBridgeLambda";
 
 class ExploreTopics extends TerraformStack {
     constructor(scope: Construct, name: string) {
@@ -119,7 +120,9 @@ class ExploreTopics extends TerraformStack {
                 ],
                 taskExecutionDefaultAttachmentArn: 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy',
             }
-        })
+        });
+
+        new EventBridgeLambda(this, 'event-bridge-lambda');
     }
 }
 
