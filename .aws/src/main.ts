@@ -75,7 +75,8 @@ class ExploreTopics extends TerraformStack {
             ],
             codeDeploy: {
                 useCodeDeploy: true,
-                snsNotificationTopicArn: snsTopic.arn,
+                // Disabling because of module bug atm.. and unique names..
+                //snsNotificationTopicArn: snsTopic.arn,
             },
             exposedContainer: {
                 name: 'app',
