@@ -212,7 +212,7 @@ workflows:
           cluster-name: 'ExploreTopics-Dev'
           deployment-controller: 'CODE_DEPLOY'
           codedeploy-application-name: 'ExploreTopics-Dev'
-          codedeploy-deployment-group-name: 'ExploreTopics-Dev'
+          codedeploy-deployment-group-name: 'ExploreTopics-Dev-ECS'
           codedeploy-load-balanced-container-name: app
           codedeploy-load-balanced-container-port: 8000
           container-image-name-updates: 'container=app,image-and-tag=410318598490.dkr.ecr.us-east-1.amazonaws.com/exploretopics-dev-app:$CIRCLE_SHA1'
@@ -240,7 +240,7 @@ workflows:
           cluster-name: 'ExploreTopics-Prod'
           deployment-controller: 'CODE_DEPLOY'
           codedeploy-application-name: 'ExploreTopics-Prod'
-          codedeploy-deployment-group-name: 'ExploreTopics-Prod'
+          codedeploy-deployment-group-name: 'ExploreTopics-Prod-ECS'
           codedeploy-load-balanced-container-name: app
           codedeploy-load-balanced-container-port: 8000
           container-image-name-updates: 'container=app,image-and-tag=996905175585.dkr.ecr.us-east-1.amazonaws.com/exploretopics-prod-app:$CIRCLE_SHA1'
