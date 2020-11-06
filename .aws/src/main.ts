@@ -54,7 +54,7 @@ class ExploreTopics extends TerraformStack {
             ],
             exposedContainer: {
                 name: 'app',
-                port: 8080,
+                port: 8000,
                 healthCheckPath: '/health-check'
             },
             ecsIamConfig: {
