@@ -182,9 +182,9 @@ jobs:
                 aws-access-key-id: << parameters.env_capital_name >>_AWS_ACCESS_KEY
                 aws-secret-access-key: << parameters.env_capital_name >>_AWS_SECRET_ACCESS_KEY
                 aws-region: << parameters.env_capital_name >>_AWS_DEFAULT_REGION
-                codedeploy-application-name: ExploreTopics-<< parameters.env_capital_name >>-Translation-CodeDeploy
-                codedeploy-deployment-group-name: ExploreTopics-<< parameters.env_capital_name >>-Translation-CodeDeployGroup
-                function-name: ExploreTopics-<< parameters.env_capital_name >>-Translation
+                codedeploy-application-name: ExploreTopics-<< parameters.env_capital_name >>-Translation-Lambda
+                codedeploy-deployment-group-name: ExploreTopics-<< parameters.env_capital_name >>-Translation-Lambda
+                function-name: ExploreTopics-<< parameters.env_capital_name >>-Translation-Function
 
       - store_artifacts:
           path: /tmp/build.zip
