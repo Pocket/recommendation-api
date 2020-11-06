@@ -111,7 +111,9 @@ class ExploreTopics extends TerraformStack {
                         ],
                         resources: [
                             dynamodb.candidatesTable.dynamodb.arn,
-                            dynamodb.metadataTable.dynamodb.arn
+                            dynamodb.metadataTable.dynamodb.arn,
+                            `${dynamodb.candidatesTable.dynamodb.arn}/*`,
+                            `${dynamodb.metadataTable.dynamodb.arn}/*`,
                         ],
                         effect: 'Allow'
                     }
