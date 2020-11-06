@@ -204,6 +204,23 @@ workflows:
           ecr_url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
           push: true
 
+      - aws-ecs/deploy-service-update:
+          context: pocket
+          name: deploy_ecs_dev
+          family: 'ExploreTopics-Dev'
+          cluster-name: 'ExploreTopics-Dev'
+          deployment-controller: 'CODE_DEPLOY'
+          codedeploy-application-name: 'ExploreTopics-Dev'
+          codedeploy-deployment-group-name: 'ExploreTopics-Dev'
+          codedeploy-load-balanced-container-name: app
+          codedeploy-load-balanced-container-port: 8000
+          container-image-name-updates: 'container=node,image-and-tag=410318598490.dkr.ecr.us-east-1.amazonaws.com/exploretopics-dev-app:$CIRCLE_SHA1'
+          aws-access-key-id: $Dev_AWS_ACCESS_KEY
+          aws-secret-access-key: $Dev_AWS_SECRET_ACCESS_KEY
+          aws-region: $Dev_AWS_DEFAULT_REGION
+          requires:
+            - build_docker_dev
+
       # Bu›ild & Deploy the Prod Docker Image
       - docker_build:
           <<: *only_main
@@ -214,6 +231,23 @@ workflows:
           repo_name: exploretopics-prod-app
           ecr_url: 996905175585.dkr.ecr.us-east-1.amazonaws.com
           push: true
+
+      - aws-ecs/deploy-service-update:
+          name: deploy_ecs_prod
+          context: pocket
+          family: 'ExploreTopics-Prod'
+          cluster-name: 'ExploreTopics-Prod'
+          deployment-controller: 'CODE_DEPLOY'
+          codedeploy-application-name: 'ExploreTopics-Prod'
+          codedeploy-deployment-group-name: 'ExploreTopics-Prod'
+          codedeploy-load-balanced-container-name: app
+          codedeploy-load-balanced-container-port: 8000
+          container-image-name-updates: 'container=node,image-and-tag=996905175585.dkr.ecr.us-east-1.amazonaws.com/exploretopics-prod-app:$CIRCLE_SHA1'
+          aws-access-key-id: $Prod_AWS_ACCESS_KEY
+          aws-secret-access-key: $Prod_AWS_SECRET_ACCESS_KEY
+          aws-region: $Prod_AWS_DEFAULT_REGION
+          requires:
+            - build_docker_prod
 
       # Notify sentry of main deployment
       - pocket/sentry_release_notification:
