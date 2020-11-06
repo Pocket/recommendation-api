@@ -50,12 +50,25 @@ class ExploreTopics extends TerraformStack {
                             name: 'ENVIRONMENT',
                             value: process.env.NODE_ENV, // this gives us a nice lowercase production and development
                         },
+                        {
+                            name: 'AWS_DYNAMODB_ENDPOINT_URL',
+                            value: `https://dynamodb.${region.name}.amazonaws.com`
+                        },
+                        {
+                            name: 'EXPLORE_TOPICS_METADATA_TABLE',
+                            value: dynamodb.metadataTable.dynamodb.name
+                        },
+                        {
+                            name: 'EXPLORE_TOPICS_CANDIDATES_TABLE',
+                            value: dynamodb.candidatesTable.dynamodb.name
+                        }
                     ]
                 }
             ],
             exposedContainer: {
                 name: 'app',
-                port: 8080,
+                port: 8000,
+                healthCheckPath: '/health-check'
             },
             ecsIamConfig: {
                 prefix: config.prefix,
