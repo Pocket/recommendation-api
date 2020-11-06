@@ -1,1 +1,1 @@
-def lambda_handler(event, context):    print(event)
+def handler(event, context):    print(event)
