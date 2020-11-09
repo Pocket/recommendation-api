@@ -1,77 +1,90 @@
 
 from elasticsearch_dsl.query import Bool, MultiMatch
 from elasticsearch_dsl.query import Exists, Range, Term, Match
-from typing import Dict, NamedTuple, Optional, List
+from typing import Dict, Optional, List
+from dataclasses import dataclass
 
-from jobs.utils import get_feed_item_ids, convert_to_days, publisher_spread_reranking
+from jobs.utils import convert_to_days, publisher_spread_reranking
 
 
-class ItemRec(NamedTuple):
-    feed_item_id: str  # Set to “{rec_src}/{item_id}”. Used by clients and analytics.
+@dataclass
+class ItemRec:
     item_id: int  # Identifier for the item being recommended
     feed_id: Optional[int]  # Optionally specify feed to show curated metadata in UI
-    rec_src: str  # Identifier of recommendation source: “ExploreTopicRecs”
+
+def order_curated_by_approval_time(raw_results: Dict, feed_id: int = None) -> List:
+    """
+    This orders curated recommendations by time approved accounting for multiple runs
+    in different curated feeds
+    :param raw_results:
+    :param feed_id:
+    :return:
+    """
+
+    recs = [x for x in raw_results["hits"]["hits"]]
+    rec_approval_times = list()
+    for r in recs:
+        source = r["_source"]
+        time_live = None
+        feed_id_used = None
+        for i in range(len(source["approved_feeds"])):
+            # if feed_id is set, pay attention to that feed only for approval time
+            if feed_id and source["approved_feeds"][i]["approved_feed_id"] == feed_id:
+                time_live = source["approved_feeds"][i]["approved_feed_time_live"]
+                feed_id_used = feed_id
+                break
+            else:  # get most recent approval time
+                if not time_live or time_live > source["approved_feeds"][i]["approved_feed_time_live"]:
+                    time_live = source["approved_feeds"][i]["approved_feed_time_live"]
+                    feed_id_used = source["approved_feeds"][i]["approved_feed_id"]
+
+        rec_approval_times.append((r, time_live, feed_id_used))
+
+    return sorted(rec_approval_times, key=lambda x: x[1], reverse=True)
 
 
-def transform_results(raw_results: Dict, curated: bool = False) -> Dict:
+def transform_curated_results(raw_results: Dict, feed_id: int = 1) -> List:
     """
     This routine takes the raw elastic search output and converts to a List of ItemRecs
+    ordered by time_approved
     :param raw_results: elastic search results output
     :param curated: boolean flag indicating if results are curated recs
     :return: dict with specified algorithmic and curated fields, only one will be populated
     """
 
-    rec_src = "ExploreTopicAlgorithmic"
-    approved_feed_id = None
-    if curated:
-        source = raw_results["hits"]["hits"][0]["_source"]
-        if "approved_feeds" in source:
-            approved_feed_id = source["approved_feeds"][0]["approved_feed_id"]
-            rec_src = "ExploreTopicCurated"
-
+    sorted_recs = order_curated_by_approval_time(raw_results, feed_id)
     out = list()
-    for hit in raw_results["hits"]["hits"]:
-        source = hit["_source"]
-        rec = ItemRec(item_id=source["resolved_id"],
-                      rec_src=rec_src,
-                      feed_id=approved_feed_id,
-                      feed_item_id="/".join([rec_src, str(source["resolved_id"])]))
+    for hit in sorted_recs:
+        source = hit[0]["_source"]
+        out.append({"item_id": source["resolved_id"], "feed_id": feed_id})
 
-        out.append(rec._asdict())
-
-    if curated:
-        return {"algorithmic_recommendations": [], "curated_recommendations": out}
-    else:
-        return {"algorithmic_recommendations": out, "curated_recommendations": []}
+    return out
 
 
-def merge_collection_results(results1: Dict, results2: Dict) -> Dict:
+def merge_collection_results(results1: Dict, feed_id1: int, results2: Dict, feed_id2) -> List:
     """
     This routine takes the raw elastic search output and converts to a List of ItemRecs
     sorted by time approved by curator
     :param results1: elastic search results from curator label query
-    :param raw_results: elastic search results from feed_id query
+    :param feed_id1: feed_id for curation of results 1
+    :param results2: elastic search results from feed_id query
+    :param feed_id2: feed_id for curation of results 2
     :return: dict with specified algorithmic and curated fields, only one will be populated
     """
 
+    sorted_items_times1 = order_curated_by_approval_time(results1, feed_id1)
+    sorted_items_times2 = order_curated_by_approval_time(results2, feed_id2)
+
+    # tuples here are (rec, approval_time, feed_id)
+    all_items_times = sorted_items_times1 + sorted_items_times2
+    all_items_times = sorted(all_items_times, key=lambda x: x[1], reverse=True)
 
     out = list()
+    for hit in all_items_times:
+        source = hit[0]["_source"]
+        out.append({"item_id": source["resolved_id"], "feed_id": hit[2]})
 
-    recs = [x for x in results1["hits"]["hits"]] + [x for x in results2["hits"]["hits"]]
-    all_results = sorted(recs, key=lambda x: x["_source"]["approved_feeds"][0]["approved_feed_time_approved"],
-                         reverse=True)
-
-    rec_src = "ExploreCollectionCurated"
-    for hit in all_results:
-        source = hit["_source"]
-        approved_feed_id = source["approved_feeds"][0]["approved_feed_id"]
-        rec = ItemRec(item_id=source["resolved_id"],
-                      rec_src=rec_src,
-                      feed_id=approved_feed_id,
-                      feed_item_id="/".join([rec_src, str(source["resolved_id"])]))
-        out.append(rec._asdict())
-
-    return {"algorithmic_recommendations": [], "curated_recommendations": out}
+    return out
 
 
 def organic_by_topic(curator_topic: str, topic_map: Dict,
@@ -114,4 +127,3 @@ def collection_by_feed(feed: int, scale: str = "90d") -> Bool:
     bool_query.must.append(Match(approved_feeds__approved_feed_id={"query": str(feed)}))
 
     return bool_query
-

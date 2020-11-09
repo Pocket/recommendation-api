@@ -3,24 +3,23 @@ import logging
 import time
 import boto3
 import os
-from metaflow import FlowSpec, step, Parameter, IncludeFile, conda_base
+from metaflow import FlowSpec, step, Parameter, IncludeFile, conda_base, schedule
 
-from jobs.query import organic_by_topic, collection_by_feed, merge_collection_results, transform_results
+from jobs.query import organic_by_topic, collection_by_feed, merge_collection_results, transform_curated_results
 from jobs.utils import setup_logger
 
-#  @schedule(hourly=True)
+@schedule(hourly=True)
 @conda_base(libraries={'elasticsearch': '7.1.0', 'elasticsearch-dsl': '7.1.0',
                        'requests-aws4auth': '1.0.1', "numpy":"1.19.1"})
 class CollectionCandidatesFlow(FlowSpec):
-    ENV = {"prod": {"s3_bucket": "s3://pocket-data-models",
-                    "s3_item": "curated_test.json",
-                    "es_path": "item-rec-data_v3",
-                    "es_endpoint": "search-item-recs-wslncyus6txlpavliekv7bvrty.us-east-1.es.amazonaws.com"}
-          }
 
-    env = Parameter("env",
-                    help="The deployment environment",
-                    required=True)
+    es_endpoint = Parameter("es_endpoint",
+                            help="elasticsearch endpoint",
+                            default="search-item-recs-wslncyus6txlpavliekv7bvrty.us-east-1.es.amazonaws.com")
+
+    es_path = Parameter("es_path",
+                        help="elasticsearch index",
+                        default="item-rec-data_v3")
 
     limit = Parameter("limit",
                       help="The number of items to recommend in the topic.",
@@ -32,13 +31,12 @@ class CollectionCandidatesFlow(FlowSpec):
                                  default="./app/resources/topics_weights.json")
 
     """
-    A flow where Metaflow retrieves curated items from elastic search.
+    A flow where Metaflow retrieves curated items for dedicated collections (i.e. COVID) from elastic search.
     """
     @step
     def start(self):
         """
-        This is the 'start' step. All flows must have a step named 'start' that
-        is the first step in the flow.
+        This step sets up elasticsearch connection
         """
 
         from elasticsearch import Elasticsearch, RequestsHttpConnection
@@ -47,9 +45,7 @@ class CollectionCandidatesFlow(FlowSpec):
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
 
-        logger.info("CuratedCandidatesFlow is starting.")
-        self.es_endpoint = self.ENV[self.env]['es_endpoint']
-        self.es_path = self.ENV[self.env]['es_path']
+        logger.info("CollectionCandidatesFlow is starting.")
         self.topic_map = json.loads(self.topic_map_file)
         self.topics = [k for k, x in self.topic_map.items() if x["page_type"] == "editorial_collection" and x["is_displayed"]]
         logger.info(f"flow will process {len(self.topics)} topics.")
@@ -72,7 +68,7 @@ class CollectionCandidatesFlow(FlowSpec):
     @step
     def get_results(self):
         """
-        A step for metaflow to get the topic query and issue per topic
+        A step for metaflow to issue a single topic query and get the results
         """
 
         from elasticsearch_dsl import Search
@@ -81,11 +77,10 @@ class CollectionCandidatesFlow(FlowSpec):
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
 
-        logger.info(f"Metaflow says its time to get the query for: {self.input}")
-        topic_query = organic_by_topic(self.input, self.topic_map)
+        logger.info(f"Metaflow says its time to get the topic label-based query for: {self.input}")
+        topic_query = organic_by_topic(self.input, self.topic_map, feed=1)
         self.topic_key = self.input
 
-        print("Metaflow says its time to get some elasticsearch results for: ", self.input)
         start_time = time.time()
         version = 3
         results1, results2 = {}, {}
@@ -97,12 +92,15 @@ class CollectionCandidatesFlow(FlowSpec):
             s = s[:self.limit]
             results1 = s.execute().to_dict()
 
+            print(f"by curator label returns {len(results1['hits']['hits'])} items")
+
         except (NotFoundError, RequestError, AuthorizationException) as err:
             logger.error("ElasticSearch " + str(err))
 
-        feed_id = self.topic_map[self.input].get("custom_feed_id")
-        if feed_id:
-            topic_query = collection_by_feed(feed_id)
+        colln_feed_id = self.topic_map[self.input].get("custom_feed_id")
+        if colln_feed_id:
+            logger.info(f"Metaflow says its time to get the custom feed-based query for: {self.input}")
+            topic_query = collection_by_feed(colln_feed_id)
             try:
                 s = Search(using=self.es, index=self.es_path).query(
                            topic_query).sort("-approved_feeds.approved_feed_time_live")
@@ -111,30 +109,30 @@ class CollectionCandidatesFlow(FlowSpec):
                 s = s[:self.limit]
                 results2 = s.execute().to_dict()
 
+                print(f"by feed_id returns {len(results2['hits']['hits'])} hits")
+
             except (NotFoundError, RequestError, AuthorizationException) as err:
                 logger.error("ElasticSearch " + str(err))
 
-            self.results = merge_collection_results(results1, results2)
+            self.results = merge_collection_results(results1, 1, results2, feed_id2=colln_feed_id)
         else:
-            self.results = transform_results(results1, curated=True)
+            self.results = transform_curated_results(results1, feed_id=1)
 
         elapsed_time = round((time.time() - start_time) * 1000, 2)
-        logger.info(f"organic_by_topic: version={version}, elapsed time={elapsed_time}")
+        logger.info(f"organic by collection: version={version}, elapsed time={elapsed_time}")
 
         self.next(self.join)
 
     @step
     def join(self, inputs):
+        """
+        a step in which single topic results are combined together in a single output dict
+        """
         logger = logging.getLogger()
         logger.setLevel(logging.DEBUG)
 
         logger.info("Metaflow says its time to join the results")
-        self.final_results = {input.topic_key: input.results for input in inputs}
-        for t, r in self.final_results.items():
-            c = r["curated_recommendations"]
-            logger.info(f"{t} returned {len(c)} curated results.")
-
-        self.output = json.dumps(self.final_results)
+        self.final_results = [{"topic_id": input.topic_key, "items": input.results} for input in inputs]
         self.next(self.end)
 
     @step
