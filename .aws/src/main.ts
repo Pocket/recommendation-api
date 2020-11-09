@@ -1,9 +1,16 @@
 import {Construct} from 'constructs';
 import {App, RemoteBackend, TerraformStack} from 'cdktf';
-import {AwsProvider, DataAwsCallerIdentity, DataAwsKmsAlias, DataAwsRegion} from '../.gen/providers/aws';
+import {
+    AwsProvider,
+    DataAwsCallerIdentity,
+    DataAwsKmsAlias,
+    DataAwsRegion,
+    DataAwsSnsTopic
+} from '../.gen/providers/aws';
 import {config} from './config';
 import {DynamoDB} from "./dynamodb";
 import {PocketALBApplication} from "@pocket/terraform-modules";
+import {EventBridgeLambda} from "./eventBridgeLambda";
 
 class ExploreTopics extends TerraformStack {
     constructor(scope: Construct, name: string) {
@@ -29,8 +36,11 @@ class ExploreTopics extends TerraformStack {
             name: 'alias/aws/secretsmanager'
         });
 
+        const snsTopic = new DataAwsSnsTopic(this, 'backend_notifications', {
+            name: `Backend-${config.environment}-ChatBot`
+        })
 
-        new DynamoDB(this, 'dynamodb');
+        const dynamodb = new DynamoDB(this, 'dynamodb');
 
         new PocketALBApplication(this, 'application', {
             internal: true,
@@ -49,12 +59,29 @@ class ExploreTopics extends TerraformStack {
                             name: 'ENVIRONMENT',
                             value: process.env.NODE_ENV, // this gives us a nice lowercase production and development
                         },
+                        {
+                            name: 'AWS_DYNAMODB_ENDPOINT_URL',
+                            value: `https://dynamodb.${region.name}.amazonaws.com`
+                        },
+                        {
+                            name: 'EXPLORE_TOPICS_METADATA_TABLE',
+                            value: dynamodb.metadataTable.dynamodb.name
+                        },
+                        {
+                            name: 'EXPLORE_TOPICS_CANDIDATES_TABLE',
+                            value: dynamodb.candidatesTable.dynamodb.name
+                        }
                     ]
                 }
             ],
+            codeDeploy: {
+                useCodeDeploy: true,
+                snsNotificationTopicArn: snsTopic.arn,
+            },
             exposedContainer: {
                 name: 'app',
-                port: 8080,
+                port: 8000,
+                healthCheckPath: '/health-check'
             },
             ecsIamConfig: {
                 prefix: config.prefix,
@@ -73,10 +100,29 @@ class ExploreTopics extends TerraformStack {
                         effect: 'Allow'
                     }
                 ],
-                taskRolePolicyStatements: [],
+                taskRolePolicyStatements: [
+                    {
+                        actions: [
+                            'dynamodb:BatchGet*',
+                            'dynamodb:DescribeTable',
+                            'dynamodb:Get*',
+                            'dynamodb:Query',
+                            'dynamodb:Scan',
+                        ],
+                        resources: [
+                            dynamodb.candidatesTable.dynamodb.arn,
+                            dynamodb.metadataTable.dynamodb.arn,
+                            `${dynamodb.candidatesTable.dynamodb.arn}/*`,
+                            `${dynamodb.metadataTable.dynamodb.arn}/*`,
+                        ],
+                        effect: 'Allow'
+                    }
+                ],
                 taskExecutionDefaultAttachmentArn: 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy',
             }
-        })
+        });
+
+        new EventBridgeLambda(this, 'event-bridge-lambda');
     }
 }
 
