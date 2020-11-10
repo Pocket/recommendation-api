@@ -4,14 +4,14 @@ import time
 import boto3
 import os
 from metaflow import FlowSpec, step, Parameter, IncludeFile, conda_base, schedule
+from query import organic_by_topic, transform_curated_results
+from utils import setup_logger
 
-from jobs.query import organic_by_topic, collection_by_feed, merge_collection_results, transform_curated_results
-from jobs.utils import setup_logger
 
 @schedule(hourly=True)
 @conda_base(libraries={'elasticsearch': '7.1.0', 'elasticsearch-dsl': '7.1.0',
-                       'requests-aws4auth': '1.0.1', "numpy":"1.19.1"})
-class CollectionCandidatesFlow(FlowSpec):
+                       'requests-aws4auth': '1.0.1', "numpy": "1.19.1"})
+class CuratedCandidatesFlow(FlowSpec):
 
     es_endpoint = Parameter("es_endpoint",
                             help="elasticsearch endpoint",
@@ -25,13 +25,17 @@ class CollectionCandidatesFlow(FlowSpec):
                       help="The number of items to recommend in the topic.",
                       default=15)
 
+    feed_id = Parameter("feed_id",
+                        help="The curated feed_id, default is en-US.",
+                        default=1)
+
     topic_map_file = IncludeFile("topic_map_file",
                                  is_text=True,
                                  help="Pocket topic info file",
                                  default="./app/resources/topics_weights.json")
 
     """
-    A flow where Metaflow retrieves curated items for dedicated collections (i.e. COVID) from elastic search.
+    A flow where Metaflow retrieves curated items from elastic search.
     """
     @step
     def start(self):
@@ -45,9 +49,9 @@ class CollectionCandidatesFlow(FlowSpec):
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
 
-        logger.info("CollectionCandidatesFlow is starting.")
+        logger.info("CuratedCandidatesFlow is starting.")
         self.topic_map = json.loads(self.topic_map_file)
-        self.topics = [k for k, x in self.topic_map.items() if x["page_type"] == "editorial_collection" and x["is_displayed"]]
+        self.topics = [k for k, x in self.topic_map.items() if x["page_type"] == "topic_page" and x["is_displayed"]]
         logger.info(f"flow will process {len(self.topics)} topics.")
 
         session = boto3.Session()
@@ -77,49 +81,26 @@ class CollectionCandidatesFlow(FlowSpec):
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
 
-        logger.info(f"Metaflow says its time to get the topic label-based query for: {self.input}")
-        topic_query = organic_by_topic(self.input, self.topic_map, feed=1)
-        self.topic_key = self.input
+        logger.info(f"Metaflow says its time to get the query for: {self.input}")
+        topic_query = organic_by_topic(self.input, self.topic_map, feed=self.feed_id)
+        self.topic_id = self.input
 
+        print("Metaflow says its time to get some elasticsearch results for: ", self.input)
         start_time = time.time()
         version = 3
-        results1, results2 = {}, {}
         try:
             s = Search(using=self.es, index=self.es_path).query(
                        topic_query).sort("-approved_feeds.approved_feed_time_live")
 
             # get 3x results in case some are duplicates or filtered downstream
-            s = s[:self.limit]
-            results1 = s.execute().to_dict()
-
-            print(f"by curator label returns {len(results1['hits']['hits'])} items")
+            s = s[:(self.limit * 3)]
+            self.results = transform_curated_results(s.execute().to_dict(), feed_id=self.feed_id)
 
         except (NotFoundError, RequestError, AuthorizationException) as err:
             logger.error("ElasticSearch " + str(err))
 
-        colln_feed_id = self.topic_map[self.input].get("custom_feed_id")
-        if colln_feed_id:
-            logger.info(f"Metaflow says its time to get the custom feed-based query for: {self.input}")
-            topic_query = collection_by_feed(colln_feed_id)
-            try:
-                s = Search(using=self.es, index=self.es_path).query(
-                           topic_query).sort("-approved_feeds.approved_feed_time_live")
-
-                # get 3x results in case some are duplicates or filtered downstream
-                s = s[:self.limit]
-                results2 = s.execute().to_dict()
-
-                print(f"by feed_id returns {len(results2['hits']['hits'])} hits")
-
-            except (NotFoundError, RequestError, AuthorizationException) as err:
-                logger.error("ElasticSearch " + str(err))
-
-            self.results = merge_collection_results(results1, 1, results2, feed_id2=colln_feed_id)
-        else:
-            self.results = transform_curated_results(results1, feed_id=1)
-
         elapsed_time = round((time.time() - start_time) * 1000, 2)
-        logger.info(f"organic by collection: version={version}, elapsed time={elapsed_time}")
+        logger.info(f"organic by topic: version={version}, elapsed time={elapsed_time}")
 
         self.next(self.join)
 
@@ -132,7 +113,7 @@ class CollectionCandidatesFlow(FlowSpec):
         logger.setLevel(logging.DEBUG)
 
         logger.info("Metaflow says its time to join the results")
-        self.final_results = [{"topic_id": input.topic_key, "items": input.results} for input in inputs]
+        self.final_results = [{"topic_id": input.topic_id, "items": input.results} for input in inputs]
         self.next(self.end)
 
     @step
@@ -146,4 +127,4 @@ class CollectionCandidatesFlow(FlowSpec):
 
 if __name__ == '__main__':
     setup_logger()
-    CollectionCandidatesFlow()
+    CuratedCandidatesFlow()

@@ -4,7 +4,7 @@ from elasticsearch_dsl.query import Exists, Range, Term, Match
 from typing import Dict, Optional, List
 from dataclasses import dataclass
 
-from jobs.utils import convert_to_days, publisher_spread_reranking
+from utils import convert_to_days, publisher_spread_reranking
 
 
 @dataclass
