@@ -1,8 +1,53 @@
 {
   "TableName": "explore_topics_candidates",
-  "KeySchema": [{ "AttributeName": "item_id", "KeyType": "HASH" }],
-  "AttributeDefinitions": [
-    { "AttributeName": "item_id", "AttributeType": "S" }
+  "KeySchema": [
+    {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "created_at",
+      "KeyType": "RANGE"
+    }
   ],
-  "ProvisionedThroughput": { "ReadCapacityUnits": 5, "WriteCapacityUnits": 5 }
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "created_at",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "topic_id-type",
+      "AttributeType": "S"
+    }
+  ],
+  "GlobalSecondaryIndexes": [
+    {
+      "IndexName": "topic_id-type",
+      "KeySchema": [
+        {
+          "AttributeName": "topic_id-type",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "created_at",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      },
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      }
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5
+  }
 }
