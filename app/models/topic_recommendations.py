@@ -21,7 +21,6 @@ class TopicRecommendationsModel(BaseModel):
 
         # TODO: Dedupe the items between result sets
         # TODO: Publisher spread module
-
         return topic_recommendations
 
 
