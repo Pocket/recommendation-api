@@ -88,6 +88,7 @@ class TestRecommendationsModel(TestDynamoDBBase):
             "slug": 'tech',
             "query": 'query',
             "curator_label": 'technology',
+            "page_type": 'topic_page',
             "is_displayed": True,
             "is_promoted": False
         })
@@ -97,6 +98,7 @@ class TestRecommendationsModel(TestDynamoDBBase):
             "display_name": 'Business',
             "slug": 'business',
             "query": 'money stonks',
+            "page_type": 'editorial_collection',
             "curator_label": 'business',
             "is_displayed": True,
             "is_promoted": True

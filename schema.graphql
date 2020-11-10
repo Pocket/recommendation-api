@@ -3,9 +3,15 @@ type Query {
   listTopics: [Topic!]!
 }
 
+enum PageType {
+  editorial_collection
+  topic_page
+}
+
 type Topic {
  id: ID!
  displayName: String!
+ displayNote: String
  slug: String!
  query: [String!]!
  curatorLabel: String!
@@ -14,6 +20,7 @@ type Topic {
  socialTitle: String
  socialDescription: String
  socialImage: String
+ pageType: PageType!
 }
 
 type TopicRecommendations {

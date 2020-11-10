@@ -2,7 +2,7 @@ from moto import mock_dynamodb2
 
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 from app.config import dynamodb as dynamodb_config
-from app.models.topic import TopicModel
+from app.models.topic import TopicModel, PageType
 
 
 @mock_dynamodb2
@@ -26,7 +26,8 @@ class TestTopicMetadata(TestDynamoDBBase):
                        query='query',
                        curator_label='technology',
                        is_displayed=True,
-                       is_promoted=False
+                       is_promoted=False,
+                       page_type=PageType.topic_page
                        ),
             TopicModel(id='a187ffb4-5c6f-4079-bad9-asd23234234',
                        display_name='Business',
@@ -34,7 +35,8 @@ class TestTopicMetadata(TestDynamoDBBase):
                        query='money stonks',
                        curator_label='business',
                        is_displayed=True,
-                       is_promoted=True
+                       is_promoted=True,
+                       page_type=PageType.editorial_collection
                        )
         ]
 
@@ -46,12 +48,12 @@ class TestTopicMetadata(TestDynamoDBBase):
                                       query='money stonks',
                                       curator_label='business',
                                       is_displayed=True,
-                                      is_promoted=True
+                                      is_promoted=True,
+                                      page_type=PageType.editorial_collection
                                       )
 
     def test_main_get_nonexistent_topic(self):
         self.assertRaises(ValueError, TopicModel.get_topic, 'stonks')
-
 
     def populate_explore_topics_metadata_table(self):
         self.table.put_item(Item={
@@ -60,6 +62,7 @@ class TestTopicMetadata(TestDynamoDBBase):
             "slug": 'tech',
             "query": 'query',
             "curator_label": 'technology',
+            "page_type": 'topic_page',
             "is_displayed": True,
             "is_promoted": False
         })
@@ -70,6 +73,7 @@ class TestTopicMetadata(TestDynamoDBBase):
             "slug": 'business',
             "query": 'money stonks',
             "curator_label": 'business',
+            "page_type": 'editorial_collection',
             "is_displayed": True,
             "is_promoted": True
         })

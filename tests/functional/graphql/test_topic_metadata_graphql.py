@@ -36,6 +36,7 @@ class TestGraphQLMetadata(TestDynamoDBBase):
         self.table.put_item(Item={
             'id': 'a187ffb4-5c6f-4079-bad9-92442e97bdd1',
             "display_name": 'tech',
+            "page_type": 'topic_page',
             "slug": 'tech',
             "query": 'query',
             "curator_label": 'technology',
