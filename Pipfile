@@ -16,12 +16,15 @@ metaflow = "*"
 graphene = "*"
 graphene-federation = "*"
 starlette = "*"
-boto3 = "==1.16.11"
+boto3 = "==1.16.14"
 # We define the essential stubs
-boto3-stubs = {extras = ["essential"], version = "==1.16.11"}
+boto3-stubs = {extras = ["essential"], version = "==1.16.14"}
+sentry-sdk = "*"
+## On Nov 8th graphene-pydantic released 0.2.0 which is causing us problems in dependency resolution
+## This will likely be fixed in the coming days
+graphene-pydantic = "==0.1.0"
 elasticsearch = "==7.1.0"
 elasticsearch-dsl = "==7.1.0"
-sentry-sdk = "*"
 # we need to install gunicorn, uvicorn, uvloop, httptools, and fastapi
 # so it starts in the virtualenv instead of the one in the docker image
 gunicorn = "*"
