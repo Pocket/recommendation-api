@@ -19,8 +19,25 @@ class TopicRecommendationsModel(BaseModel):
             recommendation_type=RecommendationType.CURATED
         )
 
-        # TODO: Dedupe the items between result sets
+        # dedupe items in the algorithmic recommendations
+        topic_recommendations = TopicRecommendationsModelUtils.dedupe(topic_recommendations)
+
         # TODO: Publisher spread module
         return topic_recommendations
 
 
+class TopicRecommendationsModelUtils:
+    @staticmethod
+    def dedupe(topic_recs_model: TopicRecommendationsModel) -> ['TopicRecommendationsModel']:
+        # are there dupes?
+        curated_item_ids = {x.item_id for x in topic_recs_model.curated_recommendations}
+        algorithmic_item_ids = {x.item_id for x in topic_recs_model.algorithmic_recommendations}
+
+        dupes = set(curated_item_ids) & set(algorithmic_item_ids)
+
+        if dupes:
+            # if there are dupes, remove the duplicates from the algorithmic recs
+            topic_recs_model.algorithmic_recommendations = filter(lambda rec: rec.item_id not in curated_item_ids,
+                                                                  topic_recs_model.algorithmic_recommendations)
+
+        return topic_recs_model
