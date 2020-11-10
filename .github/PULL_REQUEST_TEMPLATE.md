@@ -1,15 +1,25 @@
-## Goal
+# Goal
+
 Insert purpose of pull request
 
+## Todos
+- [ ] Outstanding todo
+- [x] Completed todo
+
+## Review
+- [ ] Security @ReviewerA
+- [ ] Test coverage @ReviewerC
+- [ ] ...
+
+
+Have you followed the guidelines in our Contributing document?
+
 ## Deployment
-- [ ] Secrets / pfm.conf changes?
+- [ ] Secrets?
 
 ## Reference
 
-Documentation here:
-* Link to docs
-
 Tickets:
 * Link to JIRA tickets
- 
+
 ## Implementation Decisions
