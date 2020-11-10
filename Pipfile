@@ -17,7 +17,7 @@ graphene-federation = "*"
 starlette = "*"
 boto3 = "==1.16.11"
 # We define the essential stubs
-boto3-stubs = {extras = ["essential"], version = "==1.16.11"}
+boto3-stubs = {extras = ["essential"], version = "==1.16.14.0"}
 sentry-sdk = "*"
 graphene-pydantic = "*"
 # we need to install gunicorn, uvicorn, uvloop, httptools, and fastapi
