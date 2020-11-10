@@ -1,12 +1,11 @@
 from metaflow import FlowSpec, step, Parameter, schedule
 
-# @schedule(hourly=True)
-@conda_base(libraries={'elasticsearch': '7.1.0', 'elasticsearch-dsl': '7.1.0',
-                       'requests-aws4auth': '1.0.1', "numpy": "1.19.1"})
+@schedule(hourly=True)
 class AlgorithmicCandidatesFlow(FlowSpec):
-    limit = Parameter('limit',
-                      help="The number of items to recommend in the topic.",
-                      default=5)
+    recommendations = Parameter('recommendations',
+                                help="The number of items to recommend in "
+                                     "the topic.",
+                                default=5)
 
     """
     A flow where Metaflow generates algorithmic candidates.
@@ -14,7 +13,8 @@ class AlgorithmicCandidatesFlow(FlowSpec):
     @step
     def start(self):
         """
-        This step establishes the elasticsearch connection and also loads the domain allowlist
+        This is the 'start' step. All flows must have a step named 'start' that
+        is the first step in the flow.
         """
         print("AlgorithmicCandidatesFlow is starting.")
         # TODO: Grab topics from the api

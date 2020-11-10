@@ -83,7 +83,6 @@ jobs:
           command: |
             pipenv run python jobs/AlgorithmicCandidatesFlow.py check
             pipenv run python jobs/CuratedCandidatesFlow.py check
-            pipenv run python jobs/CollectionCandidatesFlow.py check
 
   docker_build:
     parameters:
