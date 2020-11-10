@@ -1,13 +1,15 @@
 import unittest
+from pathlib import Path
 
 import boto3
 import json
-from app.config import dynamodb as dynamodb_config
+from app.config import dynamodb as dynamodb_config, ROOT_DIR
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 
 
 class TestDynamoDBBase(unittest.TestCase):
     dynamodb: DynamoDBServiceResource
+    jsonRoot = ROOT_DIR + '.docker/localstack/dynamodb/'
 
     def setup_method(self, method):
         self.dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
@@ -26,7 +28,7 @@ class TestDynamoDBBase(unittest.TestCase):
         return table
 
     def create_explore_topics_metadata_table(self) -> DynamoDBServiceResource.Table:
-        return self.create_table('.docker/localstack/dynamodb/explore_topics_metadata.json')
+        return self.create_table(self.jsonRoot + 'explore_topics_metadata.json')
 
     def create_explore_topics_candidates_table(self) -> DynamoDBServiceResource.Table:
-        return self.create_table('.docker/localstack/dynamodb/explore_topics_candidates.json')
+        return self.create_table(self.jsonRoot + 'explore_topics_candidates.json')
