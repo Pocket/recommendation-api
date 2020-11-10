@@ -8,19 +8,20 @@ pytest = "*"
 pytest-cov = "*"
 coverage = "*"
 requests = "*"
-ipython = "*"
 moto = "==1.3.16"
+ipython = "*"
 
 [packages]
 metaflow = "*"
 graphene = "*"
 graphene-federation = "*"
 starlette = "*"
+boto3 = "==1.16.11"
+# We define the essential stubs
+boto3-stubs = {extras = ["essential"], version = "==1.16.11"}
 elasticsearch = "==7.1.0"
 elasticsearch-dsl = "==7.1.0"
-boto3 = "==1.16.6"
 sentry-sdk = "*"
-graphene-pydantic = "*"
 # we need to install gunicorn, uvicorn, uvloop, httptools, and fastapi
 # so it starts in the virtualenv instead of the one in the docker image
 gunicorn = "*"
