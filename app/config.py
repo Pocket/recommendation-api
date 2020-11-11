@@ -4,7 +4,7 @@ import os
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) + '/../'
 
 aws = {
-    'endpoint_url': os.getenv('AWS_ENDPOINT_URL', 'http://localstack:4566')
+    'endpoint_url': os.getenv('AWS_DYNAMODB_ENDPOINT_URL', 'http://localstack:4566')
 }
 
 dynamodb = {
