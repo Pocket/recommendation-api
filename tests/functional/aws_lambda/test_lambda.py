@@ -56,15 +56,21 @@ metaflow_data = [
 class TestLambda(TestDynamoDBBase):
     table: DynamoDBServiceResource.Table
 
-    def setup_method(self, method):
+    @classmethod
+    def setup_class(cls):
         aws_lambda.config.aws['endpoint_url'] = None
-        self.dynamodb = boto3.resource('dynamodb')
-        self.secrets_manager = boto3.client('secretsmanager')
+        cls.dynamodb = boto3.resource('dynamodb')
+        cls.secrets_manager = boto3.client('secretsmanager')
+
+    @classmethod
+    def teardown_class(cls):
+        cls.dynamodb = None
+
+    def setup_method(self, method):
         self.table = self.create_explore_topics_candidates_table()
         self.create_test_secret()
 
     def teardown_method(self, method):
-        super().teardown_method(self)
         self.table.delete()
         self.delete_test_secret()
 

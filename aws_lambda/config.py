@@ -1,5 +1,10 @@
 import os
 
+topic_types = {
+    'CuratedCandidatesFlow': 'curated',
+    'AlgorithmicCandidatesFlow': 'algorithmic'
+}
+
 aws = {
     'endpoint_url': os.getenv('AWS_ENDPOINT_URL', 'http://localstack:4566'),
 }

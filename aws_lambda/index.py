@@ -1,17 +1,14 @@
 from typing import Any, Dict, Union, List
 from uuid import UUID
 from metaflow import Flow, namespace, metadata
-from aws_secretsmanager_caching import SecretCache
-from aws_secretsmanager_caching import InjectKeywordedSecretString
+from aws_secretsmanager_caching import SecretCache, InjectKeywordedSecretString
 import json
-from aws_lambda.config import secrets
 import boto3
-from aws_lambda.config import dynamodb as dynamodb_config, aws as aws_config
 import uuid
 from datetime import datetime
 import sentry_sdk
 from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
-from aws_lambda.config import sentry
+from aws_lambda.config import sentry, secrets, dynamodb as dynamodb_config, aws as aws_config, topic_types
 
 sentry_sdk.init(
     dsn=sentry.get('dsn'),
@@ -57,12 +54,7 @@ def get_dynamodb_item(data: Dict, flow_name: str) -> Dict[str, Union[Union[UUID,
 
 
 def get_candidate_type(flow_name: str) -> str:
-    types = {
-        'CuratedCandidatesFlow': 'curated',
-        'AlgorithmicCandidatesFlow': 'algorithmic'
-    }
-
-    return types.get(flow_name, 'collection')
+    return topic_types.get(flow_name, 'collection')
 
 
 def get_current_date_formatted() -> str:

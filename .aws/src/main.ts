@@ -122,7 +122,7 @@ class ExploreTopics extends TerraformStack {
             }
         });
 
-        new EventBridgeLambda(this, 'event-bridge-lambda', {candidatesTable: dynamodb.candidatesTable});
+        new EventBridgeLambda(this, 'event-bridge-lambda', dynamodb.candidatesTable);
     }
 }
 
