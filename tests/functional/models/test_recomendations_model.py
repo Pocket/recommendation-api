@@ -2,7 +2,7 @@ from moto import mock_dynamodb2
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
-from app.config import aws as aws_config
+from app.config import dynamodb as dynamodb_config
 from app.models.recommendation import RecommendationModel, RecommendationType
 
 
@@ -12,7 +12,7 @@ class TestRecommendationsModel(TestDynamoDBBase):
     candidateTable: DynamoDBServiceResource.Table
 
     def setup_method(self, method):
-        aws_config['endpoint_url'] = None
+        dynamodb_config['endpoint_url'] = None
         super().setup_method(self)
         self.metadataTable = self.create_explore_topics_metadata_table()
         self.candidateTable = self.create_explore_topics_candidates_table()

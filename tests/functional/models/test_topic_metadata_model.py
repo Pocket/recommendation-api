@@ -1,14 +1,14 @@
 from moto import mock_dynamodb2
 
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
-from app.config import aws as aws_config
+from app.config import dynamodb as dynamodb_config
 from app.models.topic import TopicModel, PageType
 
 
 @mock_dynamodb2
 class TestTopicMetadata(TestDynamoDBBase):
     def setup_method(self, method):
-        aws_config['endpoint_url'] = None
+        dynamodb_config['endpoint_url'] = None
         super().setup_method(self)
         self.table = self.create_explore_topics_metadata_table()
         self.populate_explore_topics_metadata_table()
