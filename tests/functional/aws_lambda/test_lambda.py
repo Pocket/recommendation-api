@@ -85,6 +85,10 @@ class TestLambda(TestDynamoDBBase):
     def test_get_flow_name(self, mocker):
         assert aws_lambda.index.get_flow_name(event) == 'CuratedCandidatesFlow'
 
+    def test_get_run_id(self, mocker):
+        assert aws_lambda.index.get_run_id(
+            event) == 'd3f71c11-26d3-bbbc-6a7f-4efafc51f9d2_283eaaf0-5b60-f4fb-8cf7-9e629d1f9de1'
+
     def create_test_secret(self):
         self.secrets_manager.create_secret(
             Name=secrets['metaflow'],
