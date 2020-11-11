@@ -118,7 +118,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         topic_query, score_fuctions = algorithmic_by_topic(self.input, self.topic_map)
         self.topic_id = self.input
 
-        logger.info("Metaflow says its time to get some elasticsearch results for: ", self.input)
+        logger.info(f"Metaflow says its time to get some elasticsearch results for: {self.input}")
         try:
             s = Search(using=self.es, index=self.es_path).query("function_score",
                                                                 query=topic_query,
@@ -135,7 +135,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         except (NotFoundError, RequestError, AuthorizationException) as err:
             logger.error("ElasticSearch " + str(err))
 
-        logger.info("Metaflow says its time to get apply ranking models to elasticsearch results for: ", self.input)
+        logger.info(f"Metaflow says its time to get apply ranking models to elasticsearch results for: {self.input}")
         # model files are dicts keyed on curator labels
         curator_label = self.topic_map[self.topic_id]["curator_label"]
         self.ranked_results = apply_rankers(self.search_results,
