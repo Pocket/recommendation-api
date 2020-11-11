@@ -1,11 +1,44 @@
-from metaflow import FlowSpec, step, Parameter, schedule
+import json
+import logging
+import boto3
+import os
+from metaflow import FlowSpec, step, Parameter, IncludeFile, conda, conda_base, schedule, Flow
 
-@schedule(hourly=True)
+from jobs.utils import setup_logger
+from jobs.query import algorithmic_by_topic, postprocess_search_results
+from jobs.ranking import apply_rankers
+
+
+# @schedule(hourly=True)
+@conda_base(libraries={'elasticsearch': '7.1.0', 'elasticsearch-dsl': '7.1.0',
+                       'requests-aws4auth': '1.0.1', "scikit-learn": "0.23.2"})
 class AlgorithmicCandidatesFlow(FlowSpec):
-    recommendations = Parameter('recommendations',
-                                help="The number of items to recommend in "
-                                     "the topic.",
-                                default=5)
+
+    es_endpoint = Parameter("es_endpoint",
+                            help="elasticsearch endpoint",
+                            default="search-item-recs-wslncyus6txlpavliekv7bvrty.us-east-1.es.amazonaws.com")
+
+    es_path = Parameter("es_path",
+                        help="elasticsearch index",
+                        default="item-rec-data_v3")
+
+    limit = Parameter("limit",
+                      help="The number of items to recommend in the topic.",
+                      default=45)
+
+    feed_id = Parameter("feed_id",
+                        help="The curated feed_id, default is en-US.",
+                        default=1)
+
+    topic_map_file = IncludeFile("topic_map_file",
+                                 is_text=True,
+                                 help="Pocket topic info file",
+                                 default="./app/resources/topics_weights.json")
+
+    domain_allowlist_file = IncludeFile("domain_allowlist_file",
+                                        is_text=True,
+                                        help="Pocket domain allowlist",
+                                        default="./app/resources/domain_allowlist_20200630.json")
 
     """
     A flow where Metaflow generates algorithmic candidates.
@@ -16,54 +49,109 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         This is the 'start' step. All flows must have a step named 'start' that
         is the first step in the flow.
         """
-        print("AlgorithmicCandidatesFlow is starting.")
-        # TODO: Grab topics from the api
-        self.topics = ['Business',
-                       'Finance',
-                       'Health']
-        self.next(self.get_query, foreach='topics')
+        from elasticsearch import Elasticsearch, RequestsHttpConnection
+        from requests_aws4auth import AWS4Auth
+
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
+
+        logger.info("AlgorithmicCandidatesFlow is starting.")
+        self.topic_map = json.loads(self.topic_map_file)
+        self.domain_allowlist = json.loads(self.domain_allowlist_file)
+        self.topics = [k for k, x in self.topic_map.items() if x["page_type"] == "topic_page" and x["is_displayed"]]
+        logger.info(f"flow will process {len(self.topics)} topics.")
+
+        session = boto3.Session()
+        credentials = session.get_credentials()
+        region = os.environ.get('AWS_REGION', 'us-east-1')
+        awsauth = AWS4Auth(credentials.access_key, credentials.secret_key, region, "es",
+                           session_token=credentials.token)
+        self.es = Elasticsearch(
+            hosts=[{'host': self.es_endpoint, 'port': 443}],
+            http_auth=awsauth,
+            use_ssl=True,
+            verify_certs=True,
+            connection_class=RequestsHttpConnection
+        )
+
+        self.next(self.get_ranking_models)
 
     @step
-    def get_query(self):
+    def get_ranking_models(self):
         """
-        A step for metaflow to get the topic query
+        step to load models trained in ExploreTopicTrainingFlow
         """
-        self.topic = self.input
+        training_run = Flow("ExploreTopicTrainingFlow").latest_successful_run
+        self.model_run_id = training_run.id
+        # get vectorizer, one hot mappings for google categories and domains
+        self.featurizer = training_run.data.featurizer
 
-        # TODO: Get the query for each topic from the api to use
-        # TODO: Hit Elasticsearch?
-        print("Metaflow says its time to get the query for: ", self.topic)
+        # get generic approval model
+        self.generic_ranking_model = training_run.data.generic_classifier
 
-        self.next(self.hit_elasticsearch)
+        # get per-topic approval models
+        self.topic_approval_models = training_run.data.approval_classifiers
+
+        # get per-topic categorization models
+        self.topic_predictors = training_run.data.topic_predictors
+
+        self.next(self.get_results, foreach='topics')
 
     @step
-    def hit_elasticsearch(self):
+    def get_results(self):
         """
-        A step for metaflow to hit elasticsearch
-        """
-
-        # TODO: Hit Elasticsearch?
-        print("Metaflow says its time to get some elasticsearch results for: ", self.topic)
-
-        self.next(self.generate_candidates)
-
-    @step
-    def generate_candidates(self):
-        """
-        A step for metaflow to generate candidates from a model
+        A step for metaflow to issue a single topic query and get the results
+        from elastic search and apply model-based ranking
         """
 
-        # TODO: Pull the model from the metaflow_client
-        # TODO: use the model!
-        print("Metaflow says its time to generate candidates for", self.topic, "with", self.recommendations, "recs")
+        import numpy as np
+
+        from elasticsearch_dsl import Search
+        from elasticsearch.exceptions import NotFoundError, RequestError, AuthorizationException
+
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
+
+        logger.info(f"Metaflow says its time to get the query for: {self.input}")
+        topic_query, score_fuctions = algorithmic_by_topic(self.input, self.topic_map)
+        self.topic_id = self.input
+
+        print("Metaflow says its time to get some elasticsearch results for: ", self.input)
+        try:
+            s = Search(using=self.es, index=self.es_path).query("function_score",
+                                                                query=topic_query,
+                                                                min_score=0.01,
+                                                                functions=score_fuctions)
+
+            # get 3x results in case some are duplicates or filtered downstream
+            total = min(9000, self.limit*9)
+            s = s[:total]
+            self.search_results = postprocess_search_results(s.execute().to_dict(),
+                                                             self.domain_allowlist,
+                                                             self.limit*6)
+
+        except (NotFoundError, RequestError, AuthorizationException) as err:
+            logger.error("ElasticSearch " + str(err))
+
+        curator_label = self.topic_map[self.topic_id]["curator_label"]
+        self.ranked_results = apply_rankers(self.search_results,
+                                            self.topic_predictors[curator_label],
+                                            self.topic_approval_models[curator_label],
+                                            self.limit,
+                                            self.featurizer)
 
         self.next(self.join)
 
     @step
     def join(self, inputs):
-        self.results = [input.topic for input in inputs]
-        print("Metaflow says its time to join the results for: ", self.results)
-        # TODO: Dump these results
+        """
+        a step in which single topic results are combined together in a single output dict
+        """
+        logger = logging.getLogger()
+        logger.setLevel(logging.DEBUG)
+
+        logger.info("Metaflow says its time to join the results")
+        self.final_results = [{"topic_id": job.topic_id, "items": job.ranked_results} for job in inputs]
         self.next(self.end)
 
     @step
@@ -72,8 +160,11 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         This is the 'end' step. All flows must have an 'end' step, which is the
         last step in the flow.
         """
-        print("AlgorithmicCanidatesFlow is all done.")
+        for t in self.final_results:
+            logging.info(f"Returned {len(t['items'])} for {t['topic_id']}")
+        print("AlgorithmicCandidatesFlow is done.")
 
 
 if __name__ == '__main__':
+    setup_logger()
     AlgorithmicCandidatesFlow()

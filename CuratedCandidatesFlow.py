@@ -23,7 +23,7 @@ class CuratedCandidatesFlow(FlowSpec):
 
     limit = Parameter("limit",
                       help="The number of items to recommend in the topic.",
-                      default=15)
+                      default=30)
 
     feed_id = Parameter("feed_id",
                         help="The curated feed_id, default is en-US.",
