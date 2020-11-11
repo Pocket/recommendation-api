@@ -119,7 +119,13 @@ class ExploreTopics extends TerraformStack {
                     }
                 ],
                 taskExecutionDefaultAttachmentArn: 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy',
+            },
+            
+            autoscalingConfig: {
+                targetMinCapacity: 1,
+                targetMaxCapacity: 2
             }
+
         });
 
         new EventBridgeLambda(this, 'event-bridge-lambda', dynamodb.candidatesTable);
