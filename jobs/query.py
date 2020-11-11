@@ -1,17 +1,9 @@
 from elasticsearch_dsl.query import Bool, MultiMatch
 from elasticsearch_dsl.query import Exists, Range, Term, Match
 from elasticsearch_dsl.function import Gauss, FieldValueFactor
-from typing import Dict, Optional, List
-from dataclasses import dataclass
+from typing import Dict, List
 
 from jobs.utils import convert_to_days
-
-
-@dataclass
-class ItemRec:
-    item_id: int  # Identifier for the item being recommended
-    publisher: str
-    feed_id: Optional[int]  # Optionally specify feed to show curated metadata in UI
 
 
 def order_curated_by_approval_time(raw_results: Dict, feed_id: int = None) -> List:
@@ -35,7 +27,7 @@ def order_curated_by_approval_time(raw_results: Dict, feed_id: int = None) -> Li
                 time_live = source["approved_feeds"][i]["approved_feed_time_live"]
                 feed_id_used = feed_id
                 break
-            else:  # get most recent approval time
+            else:  # otherwise get most recent approval time
                 if not time_live or time_live > source["approved_feeds"][i]["approved_feed_time_live"]:
                     time_live = source["approved_feeds"][i]["approved_feed_time_live"]
                     feed_id_used = source["approved_feeds"][i]["approved_feed_id"]
@@ -47,7 +39,7 @@ def order_curated_by_approval_time(raw_results: Dict, feed_id: int = None) -> Li
 
 def transform_curated_results(raw_results: Dict, feed_id: int = 1) -> List:
     """
-    This routine takes the raw elastic search output and converts to a List of ItemRecs
+    This routine takes the raw elastic search output and converts to a List of items
     ordered by time_approved
     :param raw_results: elastic search results output
     :param feed_id: curated feed_id
@@ -66,7 +58,7 @@ def transform_curated_results(raw_results: Dict, feed_id: int = 1) -> List:
 
 def merge_collection_results(results1: Dict, feed_id1: int, results2: Dict, feed_id2) -> List:
     """
-    This routine takes the raw elastic search output and converts to a List of ItemRecs
+    This routine takes the raw elastic search output and converts to a List of items
     sorted by time approved by curator
     :param results1: elastic search results from curator label query
     :param feed_id1: feed_id for curation of results 1
@@ -89,30 +81,6 @@ def merge_collection_results(results1: Dict, feed_id1: int, results2: Dict, feed
                     "feed_id": hit[2]})
 
     return out
-
-
-def organic_by_topic(curator_topic: str, topic_map: Dict,
-                     scale: str = "90d", feed: int = 1) -> Bool:
-    """
-    routine for item search by topic from organic curated recs
-        - default ordering by publication date
-    :param curator_topic: topic string must be a curator topic
-    :param topic_map: topic map with additional info
-    :param scale: optional time scale for maximum item age
-    :param feed: optional feed_id for item filtering by curator feed
-    :return: boolean query object
-    """
-
-    scale2 = "now-%s" % convert_to_days(scale)
-    bool_query = Bool(must=[Range(approved_feeds__approved_feed_time_live={"gte": scale2})])
-
-    # there is something tricky about a term query on a nested field.
-    # need to use a match query and treat it like text
-    q_topic = topic_map[curator_topic]["curator_label"]
-    bool_query.must.append(Match(curated_topics__curated_topic_name={"query": q_topic}))
-    bool_query.must.append(Match(approved_feeds__approved_feed_id={"query": str(feed)}))
-
-    return bool_query
 
 
 def postprocess_search_results(raw_results, allowlist, limit):
@@ -154,6 +122,48 @@ def postprocess_search_results(raw_results, allowlist, limit):
                          "es_score": r["_score"]})
 
     return filtered[:limit]
+
+
+def organic_by_topic(curator_topic: str, topic_map: Dict,
+                     scale: str = "90d", feed: int = 1) -> Bool:
+    """
+    routine for item search by topic from organic curated recs
+        - default ordering by publication date
+    :param curator_topic: topic string must be a curator topic
+    :param topic_map: topic map with additional info
+    :param scale: optional time scale for maximum item age
+    :param feed: optional feed_id for item filtering by curator feed
+    :return: boolean query object
+    """
+
+    scale2 = "now-%s" % convert_to_days(scale)
+    bool_query = Bool(must=[Range(approved_feeds__approved_feed_time_live={"gte": scale2})])
+
+    # there is something tricky about a term query on a nested field.
+    # need to use a match query and treat it like text
+    q_topic = topic_map[curator_topic]["curator_label"]
+    bool_query.must.append(Match(curated_topics__curated_topic_name={"query": q_topic}))
+    bool_query.must.append(Match(approved_feeds__approved_feed_id={"query": str(feed)}))
+
+    return bool_query
+
+
+def collection_by_feed(feed: int, scale: str = "90d") -> Bool:
+    """
+    routine for item search of organic curated recs for editorial collection based on
+    either or both
+        - a custom feed_id to grab items
+    :param feed: optional feed_id for item filtering by curator feed
+    :param scale: optional time scale for maximum item age
+    :return: boolean query object
+    """
+
+    # get results with specified feed_id
+    scale2 = "now-%s" % convert_to_days(scale)
+    bool_query = Bool(must=[Range(approved_feeds__approved_feed_time_live={"gte": scale2})])
+    bool_query.must.append(Match(approved_feeds__approved_feed_id={"query": str(feed)}))
+
+    return bool_query
 
 
 def algorithmic_by_topic(curator_topic: str, topic_map: Dict, min_saves: int = 45,
@@ -212,22 +222,3 @@ def algorithmic_by_topic(curator_topic: str, topic_map: Dict, min_saves: int = 4
                                 }, weight=3)]
 
     return Bool(filter=bool_query, should=kw_query), score_functions
-
-
-def collection_by_feed(feed: int, scale: str = "90d") -> Bool:
-    """
-    routine for item search of organic curated recs for editorial collection based on
-    either or both
-        - a custom feed_id to grab items
-        - a custom curator label and feed_id = 1 (global-en-US)
-    :param feed: optional feed_id for item filtering by curator feed
-    :param scale: optional time scale for maximum item age
-    :return: boolean query object
-    """
-
-    # get results with specified feed_id
-    scale2 = "now-%s" % convert_to_days(scale)
-    bool_query = Bool(must=[Range(approved_feeds__approved_feed_time_live={"gte": scale2})])
-    bool_query.must.append(Match(approved_feeds__approved_feed_id={"query": str(feed)}))
-
-    return bool_query

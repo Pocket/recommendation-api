@@ -104,8 +104,6 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         from elastic search and apply model-based ranking
         """
 
-        import numpy as np
-
         from elasticsearch_dsl import Search
         from elasticsearch.exceptions import NotFoundError, RequestError, AuthorizationException
 
@@ -116,7 +114,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         topic_query, score_fuctions = algorithmic_by_topic(self.input, self.topic_map)
         self.topic_id = self.input
 
-        print("Metaflow says its time to get some elasticsearch results for: ", self.input)
+        logger.info("Metaflow says its time to get some elasticsearch results for: ", self.input)
         try:
             s = Search(using=self.es, index=self.es_path).query("function_score",
                                                                 query=topic_query,
@@ -133,6 +131,8 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         except (NotFoundError, RequestError, AuthorizationException) as err:
             logger.error("ElasticSearch " + str(err))
 
+        logger.info("Metaflow says its time to get apply ranking models to elasticsearch results for: ", self.input)
+        # model files are dicts keyed on curator labels
         curator_label = self.topic_map[self.topic_id]["curator_label"]
         self.ranked_results = apply_rankers(self.search_results,
                                             self.topic_predictors[curator_label],
@@ -160,9 +160,12 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         This is the 'end' step. All flows must have an 'end' step, which is the
         last step in the flow.
         """
+        logger = logging.getLogger()
+        logger.setLevel(logging.DEBUG)
+
         for t in self.final_results:
-            logging.info(f"Returned {len(t['items'])} for {t['topic_id']}")
-        print("AlgorithmicCandidatesFlow is done.")
+            logger.info(f"Returned {len(t['items'])} for {t['topic_id']}")
+        logger.info("AlgorithmicCandidatesFlow is done.")
 
 
 if __name__ == '__main__':

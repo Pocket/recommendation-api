@@ -10,21 +10,22 @@ coverage = "*"
 requests = "*"
 moto = "==1.3.16"
 ipython = "*"
+mypy_boto3_dynamodb = "*"
+pytest-mock = "*"
+aws_secretsmanager_caching = "*"
 
 [packages]
 metaflow = "*"
 graphene = "*"
 graphene-federation = "*"
 starlette = "*"
-boto3 = "==1.16.14"
-# We define the essential stubs
-boto3-stubs = {extras = ["essential"], version = "==1.16.14"}
-sentry-sdk = "*"
-## On Nov 8th graphene-pydantic released 0.2.0 which is causing us problems in dependency resolution
-## This will likely be fixed in the coming days
-graphene-pydantic = "==0.1.0"
 elasticsearch = "==7.1.0"
 elasticsearch-dsl = "==7.1.0"
+boto3 = "==1.16.15"
+# We define the essential stubs
+boto3-stubs = {extras = ["essential"], version = "==1.16.15.0"}
+sentry-sdk = "*"
+graphene-pydantic = "==0.1.0"
 # we need to install gunicorn, uvicorn, uvloop, httptools, and fastapi
 # so it starts in the virtualenv instead of the one in the docker image
 gunicorn = "*"
@@ -33,6 +34,7 @@ fastapi = "*"
 uvloop = "*"
 httptools = "*"
 scikit-learn = "*"
+
 
 [requires]
 python_version = "3.8"

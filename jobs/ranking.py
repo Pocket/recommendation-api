@@ -5,7 +5,7 @@ from scipy.sparse import csr_matrix, hstack
 
 def apply_NB_model(candidates, clf_model, featurizer):
     """
-    this routine applies a generic binary NB model that uses the title text, google categories,
+    this routine applies a generic binary naive Bayes model that uses the title text, google categories,
     and publisher domain information as features.  it is used for both topic prediction
     and approval prediction
     :param candidates: initial candidate list of dicts with item info in nested dict with key "rec"

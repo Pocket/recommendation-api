@@ -13,15 +13,16 @@ if (process.env.NODE_ENV === 'development') {
 export const config = {
   name,
   prefix: `${name}-${environment}`,
+  circleCIPrefix: `/${name}/CircleCI/${environment}`,
   shortName: 'EXTOP',
   environment,
   domain,
   stateMachines: [
-      'CuratedCandidatesFlow',
-      'AlgorithmicCandidatesFlow'
+    'CuratedCandidatesFlow',
+    'AlgorithmicCandidatesFlow'
   ],
   tags: {
-      service: name,
-      environment
+    service: name,
+    environment
   }
 };

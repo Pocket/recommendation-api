@@ -3,16 +3,11 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
-[dev-packages]
-pytest = "*"
-pytest-cov = "*"
-coverage = "*"
-requests = "*"
-moto = "==1.3.16"
-
 [packages]
 metaflow = "*"
 boto3 = "==1.16.6"
+aws_secretsmanager_caching = "*"
+sentry-sdk = "*"
 
 [requires]
 python_version = "3.8"
