@@ -9,6 +9,9 @@ pytest-cov = "*"
 coverage = "*"
 requests = "*"
 moto = "==1.3.16"
+mypy_boto3_dynamodb = "*"
+pytest-mock = "*"
+aws_secretsmanager_caching = "*"
 
 [packages]
 metaflow = "*"
@@ -19,7 +22,7 @@ boto3 = "==1.16.15"
 # We define the essential stubs
 boto3-stubs = {extras = ["essential"], version = "==1.16.15.0"}
 sentry-sdk = "*"
-graphene-pydantic = "*"
+graphene-pydantic = "==0.1.0"
 # we need to install gunicorn, uvicorn, uvloop, httptools, and fastapi
 # so it starts in the virtualenv instead of the one in the docker image
 gunicorn = "*"
@@ -27,6 +30,7 @@ uvicorn = "*"
 fastapi = "*"
 uvloop = "*"
 httptools = "*"
+
 
 [requires]
 python_version = "3.8"

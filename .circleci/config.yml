@@ -169,7 +169,7 @@ jobs:
                 command: |
                   apt-get update && apt-get install zip
                   pip install pipenv
-                  cd lambda
+                  cd aws_lambda
                   pipenv lock -r > requirements.txt
                   pip install -r requirements.txt --no-deps -t package
                   mkdir -p /tmp && zip -r9 "/tmp/$CIRCLE_SHA1.zip" . -x Pipfile* requirements.txt bin/\*
@@ -315,6 +315,22 @@ workflows:
           aws-region: $Prod_AWS_DEFAULT_REGION
           requires:
             - build_docker_prod
+
+      - pocket/setup_deploy_params:
+          <<: *only_main
+          aws_access_key_id: Prod_AWS_ACCESS_KEY
+          aws_secret_access_key: Prod_AWS_SECRET_ACCESS_KEY
+          context: pocket
+          env: Prod
+          service_name: ExploreTopics
+
+      - pocket/setup_deploy_params:
+          <<: *only_dev
+          aws_access_key_id: Dev_AWS_ACCESS_KEY
+          aws_secret_access_key: Dev_AWS_SECRET_ACCESS_KEY
+          context: pocket
+          env: Dev
+          service_name: ExploreTopics
 
       # Notify sentry of main deployment
       - pocket/sentry_release_notification:

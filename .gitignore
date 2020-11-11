@@ -141,7 +141,7 @@ dmypy.json
 /.aws/.gen/
 /.aws/.terraform
 
-# lambda artifacts
-lambda/*.zip
-lambda/package
-lambda/requirements.txt
+# aws_lambda artifacts
+aws_lambda/*.zip
+aws_lambda/package
+aws_lambda/requirements.txt
