@@ -7,6 +7,7 @@ verify_ssl = true
 metaflow = "*"
 boto3 = "==1.16.6"
 aws_secretsmanager_caching = "*"
+sentry-sdk = "*"
 
 [requires]
 python_version = "3.8"

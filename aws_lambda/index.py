@@ -6,9 +6,19 @@ from aws_secretsmanager_caching import InjectKeywordedSecretString
 import json
 from aws_lambda.config import secrets
 import boto3
-from aws_lambda.config import dynamodb as dynamodb_config
+from aws_lambda.config import dynamodb as dynamodb_config, aws as aws_config
 import uuid
 from datetime import datetime
+import sentry_sdk
+from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
+from aws_lambda.config import sentry
+
+sentry_sdk.init(
+    dsn=sentry.get('dsn'),
+    integrations=[AwsLambdaIntegration()],
+    release=sentry.get('release'),
+    environment=sentry.get('environment')
+)
 
 cache = SecretCache()
 
@@ -26,10 +36,11 @@ def handler(event: Dict[str, Any]):
             'exception': e
         }
         print(f'Insert failed. Details: {details}')
+        raise
 
 
 def dynamodb_batch_write(data, flow_name):
-    dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config.get('endpoint_url'))
+    dynamodb = boto3.resource('dynamodb', endpoint_url=aws_config.get('endpoint_url'))
     table = dynamodb.Table(dynamodb_config.get('explore_topics_candidates_table'))
     with table.batch_writer() as batch:
         for value in data:
@@ -83,4 +94,3 @@ def get_metaflow_data(flow_name) -> List[Dict[str, Union[int, List[Dict[str, int
 @InjectKeywordedSecretString(secrets['metaflow'], cache, service_url='METAFLOW_SERVICE_INTERNAL_URL')
 def get_service_url(service_url) -> str:
     return service_url
-

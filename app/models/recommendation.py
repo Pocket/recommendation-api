@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 import boto3
 from boto3.dynamodb.conditions import Key
-from app.config import dynamodb as dynamodb_config
+from app.config import dynamodb as dynamodb_config, aws as aws_config
 from app.models.topic import TopicModel
 from enum import Enum
 
@@ -26,7 +26,7 @@ class RecommendationModel(BaseModel):
     @staticmethod
     def get_recommendations(slug: str, recommendation_type: RecommendationType) -> ['RecommendationModel']:
         topic = TopicModel.get_topic(slug=slug)
-        dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
+        dynamodb = boto3.resource('dynamodb', endpoint_url=aws_config['endpoint_url'])
         table = dynamodb.Table(dynamodb_config['explore_topics_candidates_table'])
         response = table.query(IndexName='topic_id-type', Limit=1,
                                KeyConditionExpression=Key('topic_id-type').eq(

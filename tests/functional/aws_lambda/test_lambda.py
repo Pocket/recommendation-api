@@ -57,7 +57,7 @@ class TestLambda(TestDynamoDBBase):
     table: DynamoDBServiceResource.Table
 
     def setup_method(self, method):
-        aws_lambda.config.dynamodb['endpoint_url'] = None
+        aws_lambda.config.aws['endpoint_url'] = None
         self.dynamodb = boto3.resource('dynamodb')
         self.secrets_manager = boto3.client('secretsmanager')
         self.table = self.create_explore_topics_candidates_table()

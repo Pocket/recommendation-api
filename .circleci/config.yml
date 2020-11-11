@@ -316,6 +316,18 @@ workflows:
           requires:
             - build_docker_prod
 
+      - pocket/setup_deploy_params:
+          <<: *only_main
+          context: pocket
+          env: Prod
+          service_name: ExploreTopics
+
+      - pocket/setup_deploy_params:
+          <<: *only_dev
+          context: pocket
+          env: Dev
+          service_name: ExploreTopics
+
       # Notify sentry of main deployment
       - pocket/sentry_release_notification:
           <<: *only_main
