@@ -122,7 +122,7 @@ class ExploreTopics extends TerraformStack {
             },
 
             autoscalingConfig: {
-                targetMinCapacity: 1,
+                targetMinCapacity: 2,
                 targetMaxCapacity: 10
             }
 
