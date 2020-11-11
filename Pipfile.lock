@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ddaa960197fc7e494f8411f8a6b66b105e1ad6a8946af32b42be9c100e022945"
+            "sha256": "a90bd06b04c29920818b17538928d3d26aea183144a60ac4fdd0b606c4841a6a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -33,11 +33,11 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:07c61751a31a3f79fc6871648aaf9c62a7242c1e5f0777a71a4c36bdb4ff2642",
-                "sha256:fe5fbcf988e6f5b87a31ddd6ba92a6485d35f666d26b9c9750263aa8b0d33b60"
+                "sha256:60cc37e027d8911f4890275bcd8d1e3f9f5bdb18b3506641a343ae7e60a1d41a",
+                "sha256:904d2f1935241c4437781769f9c0d90826470c59eef0d62ea7df4aaf63295d7c"
             ],
             "index": "pypi",
-            "version": "==1.16.11"
+            "version": "==1.16.15"
         },
         "boto3-stubs": {
             "extras": [
@@ -217,11 +217,11 @@
         },
         "metaflow": {
             "hashes": [
-                "sha256:0cb148872ecc835e2e4735a377b5f1ef2fa1f0c07d62974fdd546c3e23c05c37",
-                "sha256:df4cf7f4220d0809c9401c69562c0d7afbe45e1600bfed12bc91032efaef5ecc"
+                "sha256:da5f59d8ceddb5054c19b8f1f39b36ddb8ab55ec9e824e769a5c9a3eb9d42ec1",
+                "sha256:f3965d22b86d2cbe431e3420024c21e37fa4106bc8b00f8b703266990768baf7"
             ],
             "index": "pypi",
-            "version": "==2.2.4"
+            "version": "==2.2.5"
         },
         "mypy-boto3-cloudformation": {
             "hashes": [
@@ -443,11 +443,11 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:07c61751a31a3f79fc6871648aaf9c62a7242c1e5f0777a71a4c36bdb4ff2642",
-                "sha256:fe5fbcf988e6f5b87a31ddd6ba92a6485d35f666d26b9c9750263aa8b0d33b60"
+                "sha256:60cc37e027d8911f4890275bcd8d1e3f9f5bdb18b3506641a343ae7e60a1d41a",
+                "sha256:904d2f1935241c4437781769f9c0d90826470c59eef0d62ea7df4aaf63295d7c"
             ],
             "index": "pypi",
-            "version": "==1.16.11"
+            "version": "==1.16.15"
         },
         "botocore": {
             "hashes": [
