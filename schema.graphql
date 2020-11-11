@@ -1,35 +1,35 @@
 type Query {
-  getTopicRecommendations(slug: String!): TopicRecommendations
-  listTopics: [Topic!]!
+    getTopicRecommendations(slug: String!, algorithmicCount: Int = 30, curatedCount: Int = 30): TopicRecommendations
+    listTopics: [Topic!]!
 }
 
 enum PageType {
-  editorial_collection
-  topic_page
+    editorial_collection
+    topic_page
 }
 
 type Topic {
- id: ID!
- displayName: String!
- displayNote: String
- slug: String!
- query: [String!]!
- curatorLabel: String!
- isDisplayed: Boolean!
- isPromoted: Boolean!
- socialTitle: String
- socialDescription: String
- socialImage: String
- pageType: PageType!
+    id: ID!
+    displayName: String!
+    displayNote: String
+    slug: String!
+    query: [String!]!
+    curatorLabel: String!
+    isDisplayed: Boolean!
+    isPromoted: Boolean!
+    socialTitle: String
+    socialDescription: String
+    socialImage: String
+    pageType: PageType!
 }
 
 type TopicRecommendations {
-  curatedRecommendations: [Recommendation!]!
-  algorithmicRecommendations: [Recommendation!]!
+    curatedRecommendations: [Recommendation!]!
+    algorithmicRecommendations: [Recommendation!]!
 }
 
 type Recommendation {
-  feedItemId: ID!
-  itemId: ID!
-  feedId: Int
+    feedItemId: ID!
+    itemId: ID!
+    feedId: Int
 }
