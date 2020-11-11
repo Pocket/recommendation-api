@@ -8,7 +8,7 @@ import uuid
 from datetime import datetime
 import sentry_sdk
 from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
-from aws_lambda.config import sentry, secrets, dynamodb as dynamodb_config, topic_types
+from .config import sentry, secrets, dynamodb as dynamodb_config, topic_types
 
 sentry_sdk.init(
     dsn=sentry.get('dsn'),
