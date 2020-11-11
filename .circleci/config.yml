@@ -169,7 +169,7 @@ jobs:
                 command: |
                   apt-get update && apt-get install zip
                   pip install pipenv
-                  cd lambda
+                  cd aws_lambda
                   pipenv lock -r > requirements.txt
                   pip install -r requirements.txt --no-deps -t package
                   mkdir -p /tmp && zip -r9 "/tmp/$CIRCLE_SHA1.zip" . -x Pipfile* requirements.txt bin/\*
