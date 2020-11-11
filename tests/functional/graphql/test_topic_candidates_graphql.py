@@ -32,6 +32,7 @@ class TestGraphQLCandidates(TestDynamoDBBase):
             "slug": 'tech',
             "query": 'query',
             "curator_label": 'technology',
+            "page_type": 'topic_page',
             "is_displayed": True,
             "is_promoted": False
         })
