@@ -33,7 +33,6 @@ fastapi = "*"
 uvloop = "*"
 httptools = "*"
 scikit-learn = "*"
-ipython = "*"
 
 [requires]
 python_version = "3.8"
