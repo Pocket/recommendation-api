@@ -17,7 +17,7 @@ def setup_logger():
 
 def convert_to_days(scale: str) -> str:
     """
-    convert time window string from weeks to days
+    convert time window string from weeks to days as needed for ES queries
     :param scale: input time window string in days or weeks
     :return: time window string in days
     """
@@ -30,6 +30,12 @@ def convert_to_days(scale: str) -> str:
     return scale2
 
 
-def _check_timescale(qstr: str, splitter: str):
+def _check_timescale(qstr: str, splitter: str = "w"):
+    """
+    this routine checks to see if timescale is in weeks
+    :param qstr: the timescale string
+    :param splitter: "w" splits on weeks
+    :return: boolean indicating if timescale is in units determined by qstr
+    """
     return qstr.partition(splitter)[0].isdigit() and qstr.partition(splitter)[1] == splitter
 

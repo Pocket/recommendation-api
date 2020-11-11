@@ -9,25 +9,29 @@ from jobs.query import algorithmic_by_topic, postprocess_search_results
 from jobs.ranking import apply_rankers
 
 
-# @schedule(hourly=True)
+@schedule(hourly=True)
 @conda_base(libraries={'elasticsearch': '7.1.0', 'elasticsearch-dsl': '7.1.0',
                        'requests-aws4auth': '1.0.1', "scikit-learn": "0.23.2"})
 class AlgorithmicCandidatesFlow(FlowSpec):
 
     es_endpoint = Parameter("es_endpoint",
                             help="elasticsearch endpoint",
+                            type=str,
                             default="search-item-recs-wslncyus6txlpavliekv7bvrty.us-east-1.es.amazonaws.com")
 
     es_path = Parameter("es_path",
                         help="elasticsearch index",
+                        type=str,
                         default="item-rec-data_v3")
 
     limit = Parameter("limit",
                       help="The number of items to recommend in the topic.",
+                      type=int,
                       default=45)
 
     feed_id = Parameter("feed_id",
                         help="The curated feed_id, default is en-US.",
+                        type=int,
                         default=1)
 
     topic_map_file = IncludeFile("topic_map_file",

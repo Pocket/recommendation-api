@@ -1,6 +1,5 @@
 import json
 import logging
-import time
 import boto3
 import os
 from metaflow import FlowSpec, step, Parameter, IncludeFile, conda_base, schedule
@@ -15,14 +14,17 @@ class CollectionCandidatesFlow(FlowSpec):
 
     es_endpoint = Parameter("es_endpoint",
                             help="elasticsearch endpoint",
+                            type=str,
                             default="search-item-recs-wslncyus6txlpavliekv7bvrty.us-east-1.es.amazonaws.com")
 
     es_path = Parameter("es_path",
                         help="elasticsearch index",
+                        type=str,
                         default="item-rec-data_v3")
 
     limit = Parameter("limit",
                       help="The number of items to recommend in the topic.",
+                      type=int,
                       default=15)
 
     topic_map_file = IncludeFile("topic_map_file",
@@ -81,14 +83,13 @@ class CollectionCandidatesFlow(FlowSpec):
         topic_query = organic_by_topic(self.input, self.topic_map, feed=1)
         self.topic_key = self.input
 
-        start_time = time.time()
-        version = 3
         results1, results2 = {}, {}
         try:
             s = Search(using=self.es, index=self.es_path).query(
                        topic_query).sort("-approved_feeds.approved_feed_time_live")
 
-            # get 3x results in case some are duplicates or filtered downstream
+            # get full set of results in both queries
+            # in case some are duplicates or filtered downstream
             s = s[:self.limit]
             results1 = s.execute().to_dict()
 
@@ -105,7 +106,8 @@ class CollectionCandidatesFlow(FlowSpec):
                 s = Search(using=self.es, index=self.es_path).query(
                            topic_query).sort("-approved_feeds.approved_feed_time_live")
 
-                # get 3x results in case some are duplicates or filtered downstream
+                # get full set of results in both queries
+                # in case some are duplicates or filtered downstream
                 s = s[:self.limit]
                 results2 = s.execute().to_dict()
 
@@ -117,9 +119,6 @@ class CollectionCandidatesFlow(FlowSpec):
             self.results = merge_collection_results(results1, 1, results2, feed_id2=colln_feed_id)
         else:
             self.results = transform_curated_results(results1, feed_id=1)
-
-        elapsed_time = round((time.time() - start_time) * 1000, 2)
-        logger.info(f"organic by collection: version={version}, elapsed time={elapsed_time}")
 
         self.next(self.join)
 

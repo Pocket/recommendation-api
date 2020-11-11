@@ -1,6 +1,5 @@
 import json
 import logging
-import time
 import boto3
 import os
 from metaflow import FlowSpec, step, Parameter, IncludeFile, conda_base, schedule
@@ -15,18 +14,22 @@ class CuratedCandidatesFlow(FlowSpec):
 
     es_endpoint = Parameter("es_endpoint",
                             help="elasticsearch endpoint",
+                            type=str,
                             default="search-item-recs-wslncyus6txlpavliekv7bvrty.us-east-1.es.amazonaws.com")
 
     es_path = Parameter("es_path",
                         help="elasticsearch index",
+                        type=str,
                         default="item-rec-data_v3")
 
     limit = Parameter("limit",
                       help="The number of items to recommend in the topic.",
+                      type=int,
                       default=30)
 
     feed_id = Parameter("feed_id",
                         help="The curated feed_id, default is en-US.",
+                        type=int,
                         default=1)
 
     topic_map_file = IncludeFile("topic_map_file",
@@ -86,8 +89,6 @@ class CuratedCandidatesFlow(FlowSpec):
         self.topic_id = self.input
 
         print("Metaflow says its time to get some elasticsearch results for: ", self.input)
-        start_time = time.time()
-        version = 3
         try:
             s = Search(using=self.es, index=self.es_path).query(
                        topic_query).sort("-approved_feeds.approved_feed_time_live")
@@ -98,9 +99,6 @@ class CuratedCandidatesFlow(FlowSpec):
 
         except (NotFoundError, RequestError, AuthorizationException) as err:
             logger.error("ElasticSearch " + str(err))
-
-        elapsed_time = round((time.time() - start_time) * 1000, 2)
-        logger.info(f"organic by topic: version={version}, elapsed time={elapsed_time}")
 
         self.next(self.join)
 

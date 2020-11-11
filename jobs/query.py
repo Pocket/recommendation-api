@@ -5,6 +5,7 @@ from typing import Dict, List
 
 from jobs.utils import convert_to_days
 
+FEED_ID_EN_US = 1
 
 def order_curated_by_approval_time(raw_results: Dict, feed_id: int = None) -> List:
     """
@@ -21,23 +22,23 @@ def order_curated_by_approval_time(raw_results: Dict, feed_id: int = None) -> Li
         source = r["_source"]
         time_live = None
         feed_id_used = None
-        for i in range(len(source["approved_feeds"])):
+        for feed in source["approved_feeds"]:
             # if feed_id is set, pay attention to that feed only for approval time
-            if feed_id and source["approved_feeds"][i]["approved_feed_id"] == feed_id:
-                time_live = source["approved_feeds"][i]["approved_feed_time_live"]
+            if feed_id and feed["approved_feed_id"] == feed_id:
+                time_live = feed["approved_feed_time_live"]
                 feed_id_used = feed_id
                 break
             else:  # otherwise get most recent approval time
-                if not time_live or time_live > source["approved_feeds"][i]["approved_feed_time_live"]:
-                    time_live = source["approved_feeds"][i]["approved_feed_time_live"]
-                    feed_id_used = source["approved_feeds"][i]["approved_feed_id"]
+                if not time_live or time_live > feed["approved_feed_time_live"]:
+                    time_live = feed["approved_feed_time_live"]
+                    feed_id_used = feed["approved_feed_id"]
 
         rec_approval_times.append((r, time_live, feed_id_used))
 
     return sorted(rec_approval_times, key=lambda x: x[1], reverse=True)
 
 
-def transform_curated_results(raw_results: Dict, feed_id: int = 1) -> List:
+def transform_curated_results(raw_results: Dict, feed_id: int = FEED_ID_EN_US) -> List:
     """
     This routine takes the raw elastic search output and converts to a List of items
     ordered by time_approved
@@ -111,8 +112,8 @@ def postprocess_search_results(raw_results, allowlist, limit):
 
         approved_feed_id = None
         if "approved_feeds" in source:
-            if 1 in [x["approved_feed_id"] for x in source["approved_feeds"]]:
-                approved_feed_id = 1  # assuming en-US is what matters for explore
+            if FEED_ID_EN_US in [x["approved_feed_id"] for x in source["approved_feeds"]]:
+                approved_feed_id = FEED_ID_EN_US  # assuming en-US is what matters for explore
 
         filtered.append({"rec": {"item_id": source["resolved_id"],
                                  "top_domain_name": source["domain"]["top_domain_name"],
@@ -125,7 +126,7 @@ def postprocess_search_results(raw_results, allowlist, limit):
 
 
 def organic_by_topic(curator_topic: str, topic_map: Dict,
-                     scale: str = "90d", feed: int = 1) -> Bool:
+                     scale: str = "90d", feed: int = FEED_ID_EN_US) -> Bool:
     """
     routine for item search by topic from organic curated recs
         - default ordering by publication date
