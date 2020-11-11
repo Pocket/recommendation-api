@@ -64,7 +64,10 @@ class TestGraphQLCandidates(TestDynamoDBBase):
             'data': {
                 'getTopicRecommendations': {
                     'algorithmicRecommendations': [],
-                    'curatedRecommendations': [{'feedItemId': 'ExploreTopics/123', 'feedId': 5, 'itemId': '123'},{'feedItemId': 'ExploreTopics/1253', 'feedId': None, 'itemId': '1253'}],
+                    'curatedRecommendations': [
+                        {'feedItemId': 'ExploreTopics/123', 'feedId': 5, 'itemId': '123'},
+                        {'feedItemId': 'ExploreTopics/1253', 'feedId': None, 'itemId': '1253'}
+                    ],
                 }
             }
         }

@@ -61,3 +61,23 @@ class TestRecommendationsModelUtils:
         curated_result_ids = [res.item_id for res in result.curated_recommendations]
 
         assert curated_result_ids == [x.item_id for x in self.curated]
+
+    def test_limits_array(self):
+        algorithmic = TestRecommendationsModelUtils.generate_recommendations([1, 6, 7, 8, 9])
+        topic_recs = TopicRecommendationsModel()
+        topic_recs.curated_recommendations = self.curated
+        topic_recs.algorithmic_recommendations = algorithmic
+        result = TopicRecommendationsModelUtils.limit_results(topic_recs, curated_count=2, algorithmic_count=3)
+
+        assert len(result.algorithmic_recommendations) == 3
+        assert len(result.curated_recommendations) == 2
+
+    def test_limits_array_when_less(self):
+        algorithmic = TestRecommendationsModelUtils.generate_recommendations([1, 6, 7, 8, 9])
+        topic_recs = TopicRecommendationsModel()
+        topic_recs.curated_recommendations = self.curated
+        topic_recs.algorithmic_recommendations = algorithmic
+        result = TopicRecommendationsModelUtils.limit_results(topic_recs, curated_count=20, algorithmic_count=30)
+
+        assert len(result.algorithmic_recommendations) == 5
+        assert len(result.curated_recommendations) == 5

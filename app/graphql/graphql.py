@@ -1,4 +1,4 @@
-from graphene import ObjectType, String, Field, List, Schema
+from graphene import ObjectType, String, Field, List, Schema, Int
 
 from app.models.topic import TopicModel
 from app.models.topic_recommendations import TopicRecommendationsModel
@@ -7,13 +7,20 @@ from app.graphql.topic import Topic
 from app.graphql.topic_recommendations import TopicRecommendations
 
 
-
 class Query(ObjectType):
-    get_topic_recommendations = Field(TopicRecommendations, slug=String(required=True))
+    get_topic_recommendations = Field(TopicRecommendations, slug=String(required=True, description="Topic slug to get "
+                                                                                                   "recommendations "
+                                                                                                   "for"),
+                                      algorithmic_count=Int(default_value=30, description="Number of algorithmic "
+                                                                                          "results to return"),
+                                      curated_count=Int(default_value=30, description="Number of curated "
+                                                                                      "results to return"))
     list_topics = List(Topic)
 
-    def resolve_get_topic_recommendations(self, info, slug) -> TopicRecommendations:
-        return TopicRecommendationsModel.get_recommendations(slug=slug)
+    def resolve_get_topic_recommendations(self, info, slug: str, algorithmic_count: int,
+                                          curated_count: int) -> TopicRecommendations:
+        return TopicRecommendationsModel.get_recommendations(slug=slug, algorithmic_count=algorithmic_count,
+                                                             curated_count=curated_count)
 
     def resolve_list_topics(self, info) -> [TopicModel]:
         return TopicModel.get_all()
