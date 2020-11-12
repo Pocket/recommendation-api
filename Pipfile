@@ -33,7 +33,6 @@ uvicorn = "*"
 fastapi = "*"
 uvloop = "*"
 httptools = "*"
-scikit-learn = "*"
 gql = "*"
 
 [requires]

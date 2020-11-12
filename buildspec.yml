@@ -104,7 +104,7 @@ phases:
       # so we can remove gcc and python3-dev
       - pipenv install --deploy
 
-      - pipenv run python jobs/AlgorithmicCandidatesFlow.py --environment=conda check
+      - pipenv run python AlgorithmicCandidatesFlow.py --environment=conda check
 
       #### If the branch is main lets generate our metaflow functions
       - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then pipenv run python AlgorithmicCandidatesFlow.py --with retry step-functions create; fi'
