@@ -4,14 +4,14 @@ import boto3
 import os
 from metaflow import FlowSpec, step, Parameter, IncludeFile, conda, conda_base, schedule, Flow
 
-from jobs.utils import setup_logger, get_topic_map
-from jobs.query import algorithmic_by_topic, postprocess_search_results, FEED_ID_EN_US
-from jobs.ranking import apply_rankers
+from jobs.utils import setup_logger
+from jobs.query import FEED_ID_EN_US
 
 
 @schedule(hourly=True)
-@conda_base(libraries={'elasticsearch': '7.1.0', 'elasticsearch-dsl': '7.1.0',
-                       'requests-aws4auth': '1.0.1', "scikit-learn": "0.23.2"})
+@conda_base(libraries={"elasticsearch": "7.1.0", "elasticsearch-dsl": "7.1.0",
+                       "requests-aws4auth": "1.0.1", "scikit-learn": "0.23.2",
+                       "scipy":"1.5.3", "gql":"2.0.0"})
 class AlgorithmicCandidatesFlow(FlowSpec):
 
     es_endpoint = Parameter("es_endpoint",
@@ -50,6 +50,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         """
         from elasticsearch import Elasticsearch, RequestsHttpConnection
         from requests_aws4auth import AWS4Auth
+        from jobs.utils import get_topic_map
 
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
@@ -105,6 +106,8 @@ class AlgorithmicCandidatesFlow(FlowSpec):
 
         from elasticsearch_dsl import Search
         from elasticsearch.exceptions import NotFoundError, RequestError, AuthorizationException
+        from jobs.query import algorithmic_by_topic, postprocess_search_results
+        from jobs.ranking import apply_rankers
 
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)

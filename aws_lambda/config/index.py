@@ -2,7 +2,8 @@ import os
 
 topic_types = {
     'CuratedCandidatesFlow': 'curated',
-    'AlgorithmicCandidatesFlow': 'algorithmic'
+    'AlgorithmicCandidatesFlow': 'algorithmic',
+    'CollectionCandidatesFlow': 'collection',
 }
 
 secrets = {

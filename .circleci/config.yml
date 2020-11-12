@@ -76,11 +76,16 @@ jobs:
       - run:
           name: Build environment and install requirements
           command: |
+            apt-get -qq update && apt-get -qq install wget > /dev/null
+            wget -nv https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && bash Miniconda3-latest-Linux-x86_64.sh -b  -p $HOME/miniconda
             pip install pipenv
             pipenv install --deploy
       - run:
           name: Run flow validation
           command: |
+            source "$HOME/miniconda/etc/profile.d/conda.sh"
+            hash -r
+            conda config --append channels conda-forge
             pipenv run python AlgorithmicCandidatesFlow.py --environment=conda check
             pipenv run python CuratedCandidatesFlow.py --environment=conda check
             pipenv run python CollectionCandidatesFlow.py --environment=conda check
