@@ -8,7 +8,7 @@ import uuid
 from datetime import datetime
 import sentry_sdk
 from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
-from aws_lambda.config import sentry, secrets, dynamodb as dynamodb_config, aws as aws_config, topic_types
+from .config import sentry, secrets, dynamodb as dynamodb_config, topic_types
 
 sentry_sdk.init(
     dsn=sentry.get('dsn'),
@@ -37,7 +37,7 @@ def handler(event: Dict[str, Any]):
 
 
 def dynamodb_batch_write(data, flow_name):
-    dynamodb = boto3.resource('dynamodb', endpoint_url=aws_config.get('endpoint_url'))
+    dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config.get('endpoint_url'))
     table = dynamodb.Table(dynamodb_config.get('explore_topics_candidates_table'))
     with table.batch_writer() as batch:
         for value in data:

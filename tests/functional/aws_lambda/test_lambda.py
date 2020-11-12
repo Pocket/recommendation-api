@@ -16,7 +16,7 @@ class TestLambda(TestDynamoDBBase):
 
     @classmethod
     def setup_class(cls):
-        aws_lambda.config.aws['endpoint_url'] = None
+        aws_lambda.config.dynamodb['endpoint_url'] = None
         cls.dynamodb = boto3.resource('dynamodb')
         cls.secrets_manager = boto3.client('secretsmanager')
 

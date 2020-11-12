@@ -1,9 +1,7 @@
 import unittest
-from pathlib import Path
-
 import boto3
 import json
-from app.config import aws as aws_config, ROOT_DIR
+from app.config import dynamodb as dynamodb_config, ROOT_DIR
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 
 
@@ -12,7 +10,7 @@ class TestDynamoDBBase(unittest.TestCase):
     jsonRoot = ROOT_DIR + '.docker/localstack/dynamodb/'
 
     def setup_method(self, method):
-        self.dynamodb = boto3.resource('dynamodb', endpoint_url=aws_config['endpoint_url'])
+        self.dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
 
     def teardown_method(self, method):
         self.dynamodb = None
