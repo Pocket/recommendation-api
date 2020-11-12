@@ -8,7 +8,7 @@ import uuid
 from datetime import datetime
 import sentry_sdk
 from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
-from .config import sentry, secrets, dynamodb as dynamodb_config, topic_types
+from aws_lambda.config.index import sentry, secrets, dynamodb as dynamodb_config, topic_types
 
 sentry_sdk.init(
     dsn=sentry.get('dsn'),
@@ -20,7 +20,7 @@ sentry_sdk.init(
 cache = SecretCache()
 
 
-def handler(event: Dict[str, Any]):
+def handler(event: Dict[str, Any], context):
     flow_name = get_flow_name(event)
     data = get_metaflow_data(flow_name)
     try:
@@ -47,6 +47,7 @@ def dynamodb_batch_write(data, flow_name):
 def get_dynamodb_item(data: Dict, flow_name: str) -> Dict[str, Union[Union[UUID, str], Any]]:
     return {
         'id': str(uuid.uuid4()),
+        'topic_id': data['topic_id'],
         'topic_id-type': str(data['topic_id']) + '|' + get_candidate_type(flow_name),
         'created_at': get_current_date_formatted(),
         'candidates': data['items']
@@ -75,9 +76,8 @@ def get_output_params(event: Dict[str, Any]):
 
 
 def get_metaflow_data(flow_name) -> List[Dict[str, Union[int, List[Dict[str, int]]]]]:
-    service_url = get_service_url()
-    metadata(service_url)
-    namespace(None)
+    metadata(get_service_url())
+    namespace(get_tag())
     flow = Flow(flow_name)
     data = flow.latest_successful_run.data
     return data.results
@@ -86,3 +86,8 @@ def get_metaflow_data(flow_name) -> List[Dict[str, Union[int, List[Dict[str, int
 @InjectKeywordedSecretString(secrets['metaflow'], cache, service_url='METAFLOW_SERVICE_INTERNAL_URL')
 def get_service_url(service_url) -> str:
     return service_url
+
+
+@InjectKeywordedSecretString(secrets['metaflow'], cache, tag='METAFLOW_DEPLOY_TAG')
+def get_tag(tag) -> str:
+    return tag

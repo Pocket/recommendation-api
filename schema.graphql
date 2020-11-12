@@ -21,6 +21,7 @@ type Topic {
     socialDescription: String
     socialImage: String
     pageType: PageType!
+    customFeedId: ID
 }
 
 type TopicRecommendations {
@@ -32,4 +33,5 @@ type Recommendation {
     feedItemId: ID!
     itemId: ID!
     feedId: Int
+    publisher: String!
 }

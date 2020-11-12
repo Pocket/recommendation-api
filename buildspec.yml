@@ -37,6 +37,7 @@ env:
     METAFLOW_SERVICE_URL: 'CodeBuild/Metaflow:METAFLOW_SERVICE_URL'
     METAFLOW_SFN_DYNAMO_DB_TABLE: 'CodeBuild/Metaflow:METAFLOW_SFN_DYNAMO_DB_TABLE'
     METAFLOW_SFN_IAM_ROLE: 'CodeBuild/Metaflow:METAFLOW_SFN_IAM_ROLE'
+    METAFLOW_DEPLOY_TAG: 'CodeBuild/Metaflow:METAFLOW_DEPLOY_TAG'
 
 #All phases are ran within the hashicorp/terraform:light docker image
 phases:
