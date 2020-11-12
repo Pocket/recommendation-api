@@ -21,6 +21,7 @@ type Topic {
     socialDescription: String
     socialImage: String
     pageType: PageType!
+    customFeedId: ID
 }
 
 type TopicRecommendations {
