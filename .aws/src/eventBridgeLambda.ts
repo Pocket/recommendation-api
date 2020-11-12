@@ -35,7 +35,7 @@ export class EventBridgeLambda extends TerraformStack {
       },
       ruleDescription: 'Capture Metaflow Step Functions SUCCEEDED status',
       runtime: LAMBDA_RUNTIMES.PYTHON38,
-      handler: 'index.handler',
+      handler: 'aws_lambda.index.handler',
       executionPolicyStatements: [
         {
           effect: 'Allow',
@@ -48,6 +48,16 @@ export class EventBridgeLambda extends TerraformStack {
           resources: [
             candidatesTable.dynamodb.arn,
             `${candidatesTable.dynamodb.arn}/*`
+          ]
+        },
+        {
+          effect: 'Allow',
+          actions: [
+            'secretsmanager:DescribeSecret',
+            'secretsmanager:GetSecretValue'
+          ],
+          resources: [
+            'arn:aws:secretsmanager:*:*:secret:CodeBuild/Metaflow*'
           ]
         }
       ],

@@ -137,7 +137,7 @@ jobs:
                 repo: << parameters.repo_name >>
                 tag: << parameters.tag >>
                 extra-build-args: --build-arg GIT_SHA=${CIRCLE_SHA1}
-  lambdas:
+  lambda:
     description: Builds and Optionaly deploys all the associated lambdas
     parameters:
       env_lower_name:
@@ -166,6 +166,13 @@ jobs:
                 aws-region: << parameters.env_capital_name >>_AWS_DEFAULT_REGION
             - run:
                 name: Package Lambda
+                # We bundle our code in a way that lambda can understand and execute
+                # - pipenv lock -r > requirements.txt - output a requirements.txt file from Pipfile
+                # - pip install -r requirements.txt --no-deps -t package | installs the requirements into a "package" directory
+                # - change dir into the "package" dir and add all the packages to a zip file as /tmp
+                # - change dir into the "aws_lambda" dir and remove all files and folder we want to exclude from the build
+                # - change dir into the root of the application and add the "aws_lambda" dir to the zip file excluding the Pipfile and Pipfile.lock
+                # - copy the zip file to /tmp/build.zip and store as a CI artifact for quick inspection of the build
                 command: |
                   apt-get update && apt-get install zip
                   pip install pipenv
@@ -175,8 +182,8 @@ jobs:
                   cd package
                   mkdir -p /tmp
                   zip -r9 "/tmp/$CIRCLE_SHA1.zip" . -x \*__pycache__\* \.git\*
-                  cd ..
-                  zip -r9 "/tmp/$CIRCLE_SHA1.zip" . -x Pipfile* requirements.txt package/\*
+                  cd .. && rm -rf package __pycache__ requirements.txt && cd ..
+                  zip -gr "/tmp/$CIRCLE_SHA1.zip" aws_lambda -x aws_lambda/Pipfile*
                   cp "/tmp/$CIRCLE_SHA1.zip" /tmp/build.zip
             - run:
                 name: Upload Package
@@ -236,22 +243,26 @@ workflows:
           context: pocket
 
       # Build & Deploy Development Lambdas
-      - lambdas:
+      - lambda:
           <<: *only_dev
           context: pocket
           name: deploy_lambdas_dev
           env_lower_name: dev
           env_capital_name: Dev
           deploy: true
+          requires:
+            - setup-deploy-params-dev
 
       # Build & Deploy Production Lambdas
-      - lambdas:
+      - lambda:
           <<: *only_main
           context: pocket
           name: deploy_lambdas_prod
           env_lower_name: prod
           env_capital_name: Prod
           deploy: true
+          requires:
+            - setup-deploy-params-prod
 
       # Try building the ECS docker image on each branch
       - docker_build:
@@ -322,6 +333,7 @@ workflows:
 
       - pocket/setup_deploy_params:
           <<: *only_main
+          name: setup-deploy-params-prod
           aws_access_key_id: Prod_AWS_ACCESS_KEY
           aws_secret_access_key: Prod_AWS_SECRET_ACCESS_KEY
           context: pocket
@@ -330,6 +342,7 @@ workflows:
 
       - pocket/setup_deploy_params:
           <<: *only_dev
+          name: setup-deploy-params-dev
           aws_access_key_id: Dev_AWS_ACCESS_KEY
           aws_secret_access_key: Dev_AWS_SECRET_ACCESS_KEY
           context: pocket

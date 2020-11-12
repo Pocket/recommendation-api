@@ -37,6 +37,7 @@ env:
     METAFLOW_SERVICE_URL: 'CodeBuild/Metaflow:METAFLOW_SERVICE_URL'
     METAFLOW_SFN_DYNAMO_DB_TABLE: 'CodeBuild/Metaflow:METAFLOW_SFN_DYNAMO_DB_TABLE'
     METAFLOW_SFN_IAM_ROLE: 'CodeBuild/Metaflow:METAFLOW_SFN_IAM_ROLE'
+    METAFLOW_DEPLOY_TAG: 'CodeBuild/Metaflow:METAFLOW_DEPLOY_TAG'
 
 #All phases are ran within the hashicorp/terraform:light docker image
 phases:
@@ -97,8 +98,8 @@ phases:
       - pipenv install --deploy
 
       #### If the branch is main lets generate our metaflow functions
-      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then pipenv run python jobs/AlgorithmicCandidatesFlow.py --with retry step-functions create; fi'
-      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then pipenv run python jobs/CuratedCandidatesFlow.py --with retry step-functions create; fi'
-  post_build:
+      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then pipenv run python jobs/AlgorithmicCandidatesFlow.py --with retry step-functions create --tag $METAFLOW_DEPLOY_TAG; fi'
+      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then pipenv run python jobs/CuratedCandidatesFlow.py --with retry step-functions create --tag $METAFLOW_DEPLOY_TAG; fi'
+post_build:
     commands:
       - echo Build completed on `date`

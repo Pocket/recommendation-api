@@ -16,6 +16,7 @@ class RecommendationModel(BaseModel):
     item_id: str = None
     feed_id: int = None
     rec_src: str = 'ExploreTopics'
+    publisher: str = None
 
     @staticmethod
     def dynamodb_candidate_to_recommendation(candidate: dict):

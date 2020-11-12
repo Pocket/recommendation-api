@@ -47,17 +47,19 @@ class TestGraphQLCandidates(TestDynamoDBBase):
                 {
                     'item_id': 123,
                     'feed_id': 5,
+                    'publisher': 'test.yes'
                 },
                 {
                     'item_id': 1253,
+                    'publisher': 'test.yes'
                 }
             ]
         })
 
         executed = self.client.execute('''{
             getTopicRecommendations(slug: "tech") {
-                algorithmicRecommendations {feedItemId itemId feedId}
-                curatedRecommendations {feedItemId itemId feedId}
+                algorithmicRecommendations {feedItemId itemId feedId publisher}
+                curatedRecommendations {feedItemId itemId feedId publisher}
             }
         }''')
         assert executed == {
@@ -65,8 +67,8 @@ class TestGraphQLCandidates(TestDynamoDBBase):
                 'getTopicRecommendations': {
                     'algorithmicRecommendations': [],
                     'curatedRecommendations': [
-                        {'feedItemId': 'ExploreTopics/123', 'feedId': 5, 'itemId': '123'},
-                        {'feedItemId': 'ExploreTopics/1253', 'feedId': None, 'itemId': '1253'}
+                        {'feedItemId': 'ExploreTopics/123', 'feedId': 5, 'itemId': '123', 'publisher': 'test.yes'},
+                        {'feedItemId': 'ExploreTopics/1253', 'feedId': None, 'itemId': '1253', 'publisher': 'test.yes'}
                     ],
                 }
             }

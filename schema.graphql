@@ -33,4 +33,5 @@ type Recommendation {
     feedItemId: ID!
     itemId: ID!
     feedId: Int
+    publisher: String!
 }
