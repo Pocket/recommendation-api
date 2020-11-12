@@ -65,7 +65,7 @@ jobs:
 
   check_metaflow:
     docker:
-      - image: python:3.8
+      - image: continuumio/conda-ci-linux-64-python3.8
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
@@ -81,8 +81,8 @@ jobs:
       - run:
           name: Run flow validation
           command: |
-            pipenv run python jobs/AlgorithmicCandidatesFlow.py check
-            pipenv run python jobs/CuratedCandidatesFlow.py check
+            pipenv run python jobs/AlgorithmicCandidatesFlow.py --environment=conda check
+            pipenv run python jobs/CuratedCandidatesFlow.py --environment=conda check
 
   docker_build:
     parameters:
