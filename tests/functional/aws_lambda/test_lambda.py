@@ -33,7 +33,7 @@ class TestLambda(TestDynamoDBBase):
         self.delete_test_secret()
 
     def test_handler(self, mocker):
-        aws_lambda.index.handler(event)
+        aws_lambda.index.handler(event, None)
         response = self.table.scan()
         test_1 = {
                      'topic_id-type': '1|curated',

@@ -20,7 +20,7 @@ sentry_sdk.init(
 cache = SecretCache()
 
 
-def handler(event: Dict[str, Any]):
+def handler(event: Dict[str, Any], context):
     flow_name = get_flow_name(event)
     data = get_metaflow_data(flow_name)
     try:
