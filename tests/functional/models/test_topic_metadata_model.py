@@ -36,6 +36,7 @@ class TestTopicMetadata(TestDynamoDBBase):
                        curator_label='business',
                        is_displayed=True,
                        is_promoted=True,
+                       custom_feed_id='7',
                        page_type=PageType.editorial_collection
                        )
         ]
@@ -49,6 +50,7 @@ class TestTopicMetadata(TestDynamoDBBase):
                                       curator_label='business',
                                       is_displayed=True,
                                       is_promoted=True,
+                                      custom_feed_id='7',
                                       page_type=PageType.editorial_collection
                                       )
 
@@ -74,6 +76,7 @@ class TestTopicMetadata(TestDynamoDBBase):
             "query": 'money stonks',
             "curator_label": 'business',
             "page_type": 'editorial_collection',
+            'custom_feed_id': '7',
             "is_displayed": True,
             "is_promoted": True
         })

@@ -25,6 +25,7 @@ class TopicModel(BaseModel):
     social_title: str = None
     social_description: str = None
     social_image: str = None
+    custom_feed_id: str = None
 
     @staticmethod
     def get_all() -> ['TopicModel']:
