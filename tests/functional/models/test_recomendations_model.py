@@ -34,9 +34,11 @@ class TestRecommendationsModel(TestDynamoDBBase):
                 {
                     'item_id': 123,
                     'feed_id': 5,
+                    'publisher': 'test.yes'
                 },
                 {
                     'item_id': 1253,
+                    'publisher': 'test.yes'
                 }
             ]
         })
@@ -51,9 +53,11 @@ class TestRecommendationsModel(TestDynamoDBBase):
                 {
                     'item_id': 986,
                     'feed_id': 6,
+                    'publisher': 'test.yes'
                 },
                 {
                     'item_id': 93,
+                    'publisher': 'test.yes'
                 }
             ]
         })
@@ -68,17 +72,19 @@ class TestRecommendationsModel(TestDynamoDBBase):
                 {
                     'item_id': 652,
                     'feed_id': 6,
+                    'publisher': 'test.yes'
                 },
                 {
                     'item_id': 9845,
+                    'publisher': 'test.yes'
                 }
             ]
         })
 
         executed = RecommendationModel.get_recommendations(slug='tech', recommendation_type=RecommendationType.CURATED)
         assert executed == [
-            RecommendationModel(item_id=986, feed_id=6, feed_item_id='ExploreTopics/986'),
-            RecommendationModel(item_id=93, feed_item_id='ExploreTopics/93'),
+            RecommendationModel(item_id=986, feed_id=6, feed_item_id='ExploreTopics/986', publisher='test.yes'),
+            RecommendationModel(item_id=93, feed_item_id='ExploreTopics/93', publisher='test.yes'),
         ]
 
     def populate_explore_topics_metadata_table(self):

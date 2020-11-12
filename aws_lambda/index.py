@@ -47,6 +47,7 @@ def dynamodb_batch_write(data, flow_name):
 def get_dynamodb_item(data: Dict, flow_name: str) -> Dict[str, Union[Union[UUID, str], Any]]:
     return {
         'id': str(uuid.uuid4()),
+        'topic_id': data['topic_id'],
         'topic_id-type': str(data['topic_id']) + '|' + get_candidate_type(flow_name),
         'created_at': get_current_date_formatted(),
         'candidates': data['items']
