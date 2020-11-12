@@ -76,7 +76,7 @@ jobs:
       - run:
           name: Build environment and install requirements
           command: |
-            pip install pipenv
+            sudo pip install pipenv
             pipenv install --deploy
       - run:
           name: Run flow validation
