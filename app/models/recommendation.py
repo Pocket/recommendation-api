@@ -35,4 +35,5 @@ class RecommendationModel(BaseModel):
                                ScanIndexForward=False)
         if not response['Items']:
             return []
+        # assume 'candidates' below contains domain
         return list(map(RecommendationModel.dynamodb_candidate_to_recommendation, response['Items'][0]['candidates']))
