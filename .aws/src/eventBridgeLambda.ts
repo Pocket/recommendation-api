@@ -49,6 +49,16 @@ export class EventBridgeLambda extends TerraformStack {
             candidatesTable.dynamodb.arn,
             `${candidatesTable.dynamodb.arn}/*`
           ]
+        },
+        {
+          effect: 'Allow',
+          actions: [
+            'secretsmanager:DescribeSecret',
+            'secretsmanager:GetSecretValue'
+          ],
+          resources: [
+            'arn:aws:secretsmanager:*:*:secret:CodeBuild/Metaflow*'
+          ]
         }
       ],
       environment: {
