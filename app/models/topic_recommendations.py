@@ -112,14 +112,14 @@ class TopicRecommendationsModelUtils:
             # get a list of domains that are currently invalid in the sequence
             if len(reordered) > spread:
                 # if we have enough items in the reordered list, the invalid domains are the last spread number
-                domains_to_check = [x.domain for x in reordered[-spread:]]
+                domains_to_check = [x.publisher for x in reordered[-spread:]]
             else:
                 # if we don't have more than spread items reordered, just get all the domains in reordered
-                domains_to_check = [x.domain for x in reordered]
+                domains_to_check = [x.publisher for x in reordered]
 
             # we can add the rec at iterator position to the re-ordered list if.the rec at iterator has a different
             # domain than the invalid list retrieved above
-            if recs[iterator].domain not in domains_to_check:
+            if recs[iterator].publisher not in domains_to_check:
                 reordered.append(recs.pop(iterator))
                 iterator = 0
             else:
