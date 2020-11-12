@@ -7,6 +7,7 @@ version: 0.2
 #####
 
 env:
+  shell: /bin/bash
   variables:
     #Terraform workspace that we operate in
     TF_DEV_WORKSPACE: Dev
@@ -45,11 +46,12 @@ phases:
     commands:
       - echo Installing JQ, AWS CLI, Perl Utils, Node, NPM
       # Within our terraform files we execute jq, and aws-cli and python
-      # httptools in our pipenv requires gcc, python3-dev and build-base
-      - apk add jq aws-cli perl-utils nodejs npm bash curl py-pip python3-dev build-base
+      - apt-get -qq update && apt-get -qq install jq nodejs npm curl wget > /dev/null
+      # Install conda.
+      - wget -nv https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && bash Miniconda3-latest-Linux-x86_64.sh -b  -p $HOME/miniconda
       # Install pipenv and we need to ignore what exists because distutils does not uninstall
       # https://github.com/pypa/virtualenv/issues/1907
-      - pip install pipenv --ignore-installed
+      - pip install pipenv
 
   pre_build:
     commands:
@@ -92,14 +94,21 @@ phases:
       # CD back to the project directory root
       - cd ../../
 
+      # Install conda
+      - source "$HOME/miniconda/etc/profile.d/conda.sh"
+      - hash -r
+      - conda config --append channels conda-forge
+
       # Install our deployment packages so we can run metaflow
       # TODO: see if theres a way in pipenv to just have a --metaflow that will install only metaflow packages
       # so we can remove gcc and python3-dev
       - pipenv install --deploy
 
+      - pipenv run python jobs/AlgorithmicCandidatesFlow.py --environment=conda check
+
       #### If the branch is main lets generate our metaflow functions
-      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then pipenv run python jobs/AlgorithmicCandidatesFlow.py --with retry step-functions create --tag $METAFLOW_DEPLOY_TAG; fi'
-      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then pipenv run python jobs/CuratedCandidatesFlow.py --with retry step-functions create --tag $METAFLOW_DEPLOY_TAG; fi'
-post_build:
+      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then pipenv run python jobs/AlgorithmicCandidatesFlow.py --environment=conda --with retry step-functions create --tag $METAFLOW_DEPLOY_TAG; fi'
+      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then pipenv run python jobs/CuratedCandidatesFlow.py --environment=conda --with retry step-functions create --tag $METAFLOW_DEPLOY_TAG; fi'
+  post_build:
     commands:
       - echo Build completed on `date`
