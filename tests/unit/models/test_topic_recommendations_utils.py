@@ -149,3 +149,20 @@ class TestRecommendationsModelUtils:
         # if the number of elements at the end of the list cannot satisfy the spread, we give up and just append
         # the remainder
         assert [x.item_id for x in reordered] == [1, 2, 3, 4, 6, 5, 7, 8]
+
+    def test_spread_publishers_cannot_spread(self):
+        """if we don't have enough variance in publishers, spread can't happen"""
+        recs = TestRecommendationsModelUtils.generate_recommendations([1, 2, 3, 4, 5, 6, 7, 8])
+        recs[0].domain = 'thedude.com'
+        recs[1].domain = 'abides.com'
+        recs[2].domain = 'donnie.com'
+        recs[3].domain = 'donnie.com'
+        recs[4].domain = 'thedude.com'
+        recs[5].domain = 'thedude.com'
+        recs[6].domain = 'abides.com'
+        recs[7].domain = 'donnie.com'
+
+        reordered = TopicRecommendationsModelUtils.spread_publishers(recs, 3)
+
+        # ensure the elements aren't reordered at all (as we don't have enough publisher variance)
+        assert [x.item_id for x in reordered] == [1, 2, 3, 4, 5, 6, 7, 8]

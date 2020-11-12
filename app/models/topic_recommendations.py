@@ -100,8 +100,12 @@ class TopicRecommendationsModelUtils:
         # iterate over remaining items in recs
         while len(recs):
             # if there aren't enough items left in recs to satisfy the desired domain spread,
-            # just add the rest of the recs as-is to the end of the re-ordered list
-            if len(recs) <= spread:
+            # or if the iterator reaches the end of recs, then we cannot spread any further.
+            # just add the rest of the recs as-is to the end of the re-ordered list.
+
+            # note that this is a simplistic take - we could write more logic here to decrease the spread value by
+            # one each time if iterator reaches or exceeds the length of recs
+            if (len(recs) <= spread) or (iterator >= len(recs)):
                 reordered.extend(recs)
                 break
 
@@ -113,10 +117,9 @@ class TopicRecommendationsModelUtils:
                 # if we don't have more than spread items reordered, just get all the domains in reordered
                 domains_to_check = [x.domain for x in reordered]
 
-            # we can add the rec at iterator position to the re-ordered list under two conditions:
-            # 1. the desired spread between domains has been satisfied
-            # 2. the rec at iterator has a different domain than the invalid list retrieved above
-            if (iterator >= spread) or (recs[iterator].domain not in domains_to_check):
+            # we can add the rec at iterator position to the re-ordered list if.the rec at iterator has a different
+            # domain than the invalid list retrieved above
+            if recs[iterator].domain not in domains_to_check:
                 reordered.append(recs.pop(iterator))
                 iterator = 0
             else:
