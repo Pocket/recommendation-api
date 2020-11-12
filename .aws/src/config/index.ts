@@ -19,7 +19,8 @@ export const config = {
   domain,
   stateMachines: [
     'CuratedCandidatesFlow',
-    'AlgorithmicCandidatesFlow'
+    'AlgorithmicCandidatesFlow',
+    'CollectionCandidatesFlow'
   ],
   tags: {
     service: name,
