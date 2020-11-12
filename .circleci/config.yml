@@ -137,7 +137,7 @@ jobs:
                 repo: << parameters.repo_name >>
                 tag: << parameters.tag >>
                 extra-build-args: --build-arg GIT_SHA=${CIRCLE_SHA1}
-  lambdas:
+  lambda:
     description: Builds and Optionaly deploys all the associated lambdas
     parameters:
       env_lower_name:
@@ -235,22 +235,26 @@ workflows:
           context: pocket
 
       # Build & Deploy Development Lambdas
-      - lambdas:
+      - lambda:
           <<: *only_dev
           context: pocket
           name: deploy_lambdas_dev
           env_lower_name: dev
           env_capital_name: Dev
           deploy: true
+          requires:
+            - pocket/setup_deploy_params
 
       # Build & Deploy Production Lambdas
-      - lambdas:
+      - lambda:
           <<: *only_main
           context: pocket
           name: deploy_lambdas_prod
           env_lower_name: prod
           env_capital_name: Prod
           deploy: true
+          requires:
+            - pocket/setup_deploy_params
 
       # Try building the ECS docker image on each branch
       - docker_build:
