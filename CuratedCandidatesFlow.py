@@ -1,11 +1,10 @@
-import json
 import logging
 import boto3
 import os
 from metaflow import FlowSpec, step, Parameter, IncludeFile, conda_base, schedule
 
-from jobs.query import organic_by_topic, transform_curated_results
-from jobs.utils import setup_logger
+from jobs.query import organic_by_topic, transform_curated_results, FEED_ID_EN_US
+from jobs.utils import setup_logger, get_topic_map
 
 @schedule(hourly=True)
 @conda_base(libraries={'elasticsearch': '7.1.0', 'elasticsearch-dsl': '7.1.0',
@@ -30,12 +29,7 @@ class CuratedCandidatesFlow(FlowSpec):
     feed_id = Parameter("feed_id",
                         help="The curated feed_id, default is en-US.",
                         type=int,
-                        default=1)
-
-    topic_map_file = IncludeFile("topic_map_file",
-                                 is_text=True,
-                                 help="Pocket topic info file",
-                                 default="./app/resources/topics_weights.json")
+                        default=FEED_ID_EN_US)
 
     """
     A flow where Metaflow retrieves curated items from elastic search.
@@ -53,8 +47,8 @@ class CuratedCandidatesFlow(FlowSpec):
         logger.setLevel(logging.INFO)
 
         logger.info("CuratedCandidatesFlow is starting.")
-        self.topic_map = json.loads(self.topic_map_file)
-        self.topics = [k for k, x in self.topic_map.items() if x["page_type"] == "topic_page" and x["is_displayed"]]
+        self.topic_map = get_topic_map()
+        self.topics = [k for k, x in self.topic_map.items() if x["pageType"] == "topic_page" and x["isDisplayed"]]
         logger.info(f"flow will process {len(self.topics)} topics.")
 
         session = boto3.Session()

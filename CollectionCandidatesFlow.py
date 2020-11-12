@@ -1,11 +1,10 @@
-import json
 import logging
 import boto3
 import os
 from metaflow import FlowSpec, step, Parameter, IncludeFile, conda_base, schedule
 
 from jobs.query import organic_by_topic, collection_by_feed, merge_collection_results, transform_curated_results
-from jobs.utils import setup_logger
+from jobs.utils import setup_logger, get_topic_map
 
 @schedule(hourly=True)
 @conda_base(libraries={'elasticsearch': '7.1.0', 'elasticsearch-dsl': '7.1.0',
@@ -27,11 +26,6 @@ class CollectionCandidatesFlow(FlowSpec):
                       type=int,
                       default=15)
 
-    topic_map_file = IncludeFile("topic_map_file",
-                                 is_text=True,
-                                 help="Pocket topic info file",
-                                 default="./app/resources/topics_weights.json")
-
     """
     A flow where Metaflow retrieves curated items for dedicated collections (i.e. COVID) from elastic search.
     """
@@ -48,8 +42,8 @@ class CollectionCandidatesFlow(FlowSpec):
         logger.setLevel(logging.INFO)
 
         logger.info("CollectionCandidatesFlow is starting.")
-        self.topic_map = json.loads(self.topic_map_file)
-        self.topics = [k for k, x in self.topic_map.items() if x["page_type"] == "editorial_collection" and x["is_displayed"]]
+        self.topic_map = get_topic_map()
+        self.topics = [k for k, x in self.topic_map.items() if x["pageType"] == "editorial_collection" and x["isDisplayed"]]
         logger.info(f"flow will process {len(self.topics)} topics.")
 
         session = boto3.Session()
@@ -98,7 +92,7 @@ class CollectionCandidatesFlow(FlowSpec):
         except (NotFoundError, RequestError, AuthorizationException) as err:
             logger.error("ElasticSearch " + str(err))
 
-        colln_feed_id = self.topic_map[self.input].get("custom_feed_id")
+        colln_feed_id = self.topic_map[self.input].get("customFeedId")
         if colln_feed_id:
             logger.info(f"Metaflow says its time to get the custom feed-based query for: {self.input}")
             topic_query = collection_by_feed(colln_feed_id)

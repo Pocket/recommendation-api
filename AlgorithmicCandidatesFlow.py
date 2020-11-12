@@ -4,8 +4,8 @@ import boto3
 import os
 from metaflow import FlowSpec, step, Parameter, IncludeFile, conda, conda_base, schedule, Flow
 
-from jobs.utils import setup_logger
-from jobs.query import algorithmic_by_topic, postprocess_search_results
+from jobs.utils import setup_logger, get_topic_map
+from jobs.query import algorithmic_by_topic, postprocess_search_results, FEED_ID_EN_US
 from jobs.ranking import apply_rankers
 
 
@@ -32,12 +32,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
     feed_id = Parameter("feed_id",
                         help="The curated feed_id, default is en-US.",
                         type=int,
-                        default=1)
-
-    topic_map_file = IncludeFile("topic_map_file",
-                                 is_text=True,
-                                 help="Pocket topic info file",
-                                 default="./app/resources/topics_weights.json")
+                        default=FEED_ID_EN_US)
 
     domain_allowlist_file = IncludeFile("domain_allowlist_file",
                                         is_text=True,
@@ -60,9 +55,9 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         logger.setLevel(logging.INFO)
 
         logger.info("AlgorithmicCandidatesFlow is starting.")
-        self.topic_map = json.loads(self.topic_map_file)
+        self.topic_map = get_topic_map()
         self.domain_allowlist = json.loads(self.domain_allowlist_file)
-        self.topics = [k for k, x in self.topic_map.items() if x["page_type"] == "topic_page" and x["is_displayed"]]
+        self.topics = [k for k, x in self.topic_map.items() if x["pageType"] == "topic_page" and x["isDisplayed"]]
         logger.info(f"flow will process {len(self.topics)} topics.")
 
         session = boto3.Session()
@@ -137,7 +132,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
 
         logger.info(f"Metaflow says its time to get apply ranking models to elasticsearch results for: {self.input}")
         # model files are dicts keyed on curator labels
-        curator_label = self.topic_map[self.topic_id]["curator_label"]
+        curator_label = self.topic_map[self.topic_id]["curatorLabel"]
         self.ranked_results = apply_rankers(self.search_results,
                                             self.topic_predictors[curator_label],
                                             self.topic_approval_models[curator_label],

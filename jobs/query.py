@@ -142,7 +142,7 @@ def organic_by_topic(curator_topic: str, topic_map: Dict,
 
     # there is something tricky about a term query on a nested field.
     # need to use a match query and treat it like text
-    q_topic = topic_map[curator_topic]["curator_label"]
+    q_topic = topic_map[curator_topic]["curatorLabel"]
     bool_query.must.append(Match(curated_topics__curated_topic_name={"query": q_topic}))
     bool_query.must.append(Match(approved_feeds__approved_feed_id={"query": str(feed)}))
 
