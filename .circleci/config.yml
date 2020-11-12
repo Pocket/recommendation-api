@@ -243,7 +243,7 @@ workflows:
           env_capital_name: Dev
           deploy: true
           requires:
-            - pocket/setup_deploy_params
+            - setup-deploy-params-dev
 
       # Build & Deploy Production Lambdas
       - lambda:
@@ -254,7 +254,7 @@ workflows:
           env_capital_name: Prod
           deploy: true
           requires:
-            - pocket/setup_deploy_params
+            - setup-deploy-params-prod
 
       # Try building the ECS docker image on each branch
       - docker_build:
@@ -325,6 +325,7 @@ workflows:
 
       - pocket/setup_deploy_params:
           <<: *only_main
+          name: setup-deploy-params-prod
           aws_access_key_id: Prod_AWS_ACCESS_KEY
           aws_secret_access_key: Prod_AWS_SECRET_ACCESS_KEY
           context: pocket
@@ -333,6 +334,7 @@ workflows:
 
       - pocket/setup_deploy_params:
           <<: *only_dev
+          name: setup-deploy-params-dev
           aws_access_key_id: Dev_AWS_ACCESS_KEY
           aws_secret_access_key: Dev_AWS_SECRET_ACCESS_KEY
           context: pocket
