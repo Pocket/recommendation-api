@@ -173,9 +173,10 @@ jobs:
                   pipenv lock -r > requirements.txt
                   pip install -r requirements.txt --no-deps -t package
                   cd package
-                  mkdir -p /tmp && zip -r9 "/tmp/$CIRCLE_SHA1.zip" . -x \*__pycache__\* \.git\*
+                  mkdir -p /tmp
+                  zip -r9 "/tmp/$CIRCLE_SHA1.zip" . -x \*__pycache__\* \.git\*
                   cd .. && rm -rf package __pycache__ requirements.txt && cd ..
-                  zip -r9 "/tmp/$CIRCLE_SHA1.zip" aws_lambda -x aws_lambda/Pipfile*
+                  zip -gr "/tmp/$CIRCLE_SHA1.zip" aws_lambda -x aws_lambda/Pipfile*
                   cp "/tmp/$CIRCLE_SHA1.zip" /tmp/build.zip
             - run:
                 name: Upload Package

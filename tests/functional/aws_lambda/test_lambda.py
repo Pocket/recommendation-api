@@ -3,7 +3,7 @@ import boto3
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 import aws_lambda
-from aws_lambda.config import secrets
+from aws_lambda.config.index import secrets
 from pytest_mock import mock
 from tests.functional.aws_lambda.lambda_test_data import event, metaflow_data
 
@@ -16,7 +16,7 @@ class TestLambda(TestDynamoDBBase):
 
     @classmethod
     def setup_class(cls):
-        aws_lambda.config.dynamodb['endpoint_url'] = None
+        aws_lambda.config.index.dynamodb['endpoint_url'] = None
         cls.dynamodb = boto3.resource('dynamodb')
         cls.secrets_manager = boto3.client('secretsmanager')
 
