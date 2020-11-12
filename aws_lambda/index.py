@@ -75,9 +75,8 @@ def get_output_params(event: Dict[str, Any]):
 
 
 def get_metaflow_data(flow_name) -> List[Dict[str, Union[int, List[Dict[str, int]]]]]:
-    service_url = get_service_url()
-    metadata(service_url)
-    namespace(None)
+    metadata(get_service_url())
+    namespace(get_tag())
     flow = Flow(flow_name)
     data = flow.latest_successful_run.data
     return data.results
@@ -86,3 +85,8 @@ def get_metaflow_data(flow_name) -> List[Dict[str, Union[int, List[Dict[str, int
 @InjectKeywordedSecretString(secrets['metaflow'], cache, service_url='METAFLOW_SERVICE_INTERNAL_URL')
 def get_service_url(service_url) -> str:
     return service_url
+
+
+@InjectKeywordedSecretString(secrets['metaflow'], cache, token='METAFLOW_DEPLOY_TAG')
+def get_tag(token) -> str:
+    return token

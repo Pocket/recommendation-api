@@ -56,7 +56,7 @@ class TestLambda(TestDynamoDBBase):
     def create_test_secret(self):
         self.secrets_manager.create_secret(
             Name=secrets['metaflow'],
-            SecretString='{"METAFLOW_SERVICE_INTERNAL_URL": "http://test"}'
+            SecretString='{"METAFLOW_SERVICE_INTERNAL_URL": "http://test", "METAFLOW_DEPLOY_TAG": "test"}'
         )
 
     def delete_test_secret(self):
