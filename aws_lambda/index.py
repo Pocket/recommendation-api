@@ -87,6 +87,6 @@ def get_service_url(service_url) -> str:
     return service_url
 
 
-@InjectKeywordedSecretString(secrets['metaflow'], cache, token='METAFLOW_DEPLOY_TAG')
-def get_tag(token) -> str:
-    return token
+@InjectKeywordedSecretString(secrets['metaflow'], cache, tag='METAFLOW_DEPLOY_TAG')
+def get_tag(tag) -> str:
+    return tag
