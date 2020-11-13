@@ -17,7 +17,7 @@ export class EventBridgeLambda extends TerraformStack {
 
     const vpc = new PocketVPC(this, 'pocket-shared-vpc');
 
-    const {sentryDsn, gitSha, metaflowSecret} = this.getEnvVariableValues();
+    const {sentryDsn, gitSha, metaflowSecretFqn} = this.getEnvVariableValues();
 
     new PocketEventBridgeWithLambdaTarget(this, 'translation-event-bridge-lambda', {
       name: `${config.prefix}-Translation`,
@@ -82,8 +82,8 @@ export class EventBridgeLambda extends TerraformStack {
         SENTRY_DSN: sentryDsn,
         GIT_SHA: gitSha,
         ENVIRONMENT: config.environment === 'Prod' ? 'production' : 'development',
-        METAFLOW_DATASTORE_SYSROOT_S3: `\${jsondecode(${metaflowSecret}).METAFLOW_DATASTORE_SYSROOT_S3}`,
-        METAFLOW_SERVICE_INTERNAL_URL: `\${jsondecode(${metaflowSecret}).METAFLOW_SERVICE_INTERNAL_URL}`
+        METAFLOW_DATASTORE_SYSROOT_S3: `\${jsondecode(${metaflowSecretFqn}.secret_string).METAFLOW_DATASTORE_SYSROOT_S3}`,
+        METAFLOW_SERVICE_INTERNAL_URL: `\${jsondecode(${metaflowSecretFqn}.secret_string).METAFLOW_SERVICE_INTERNAL_URL}`
       },
       vpcConfig: {
         securityGroupIds: vpc.defaultSecurityGroups.ids,
@@ -111,6 +111,6 @@ export class EventBridgeLambda extends TerraformStack {
       secretId: 'CodeBuild/Metaflow'
     });
 
-    return {sentryDsn: sentryDsn.value, gitSha: serviceHash.value, metaflowSecret: metaflowSecret.secretString};
+    return {sentryDsn: sentryDsn.value, gitSha: serviceHash.value, metaflowSecretFqn: metaflowSecret.fqn};
   }
 }
