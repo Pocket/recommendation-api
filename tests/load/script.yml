@@ -1,0 +1,60 @@
+# Thank you for trying serverless-artillery!
+# This default script is intended to get you started quickly.
+# There is a lot more that Artillery can do.
+# You can find great documentation of the possibilities at:
+# https://artillery.io/docs/
+config:
+  # this hostname will be used as a prefix for each URI in the flow unless a complete URI is specified
+  target: "https://explore-topics.readitlater.com"
+  plugins:
+    expect: {}
+  phases:
+    - duration: 30
+      arrivalRate: 2
+      rampTo: 30
+      name: "Warm up explore-topics"
+
+    - duration: 60
+      arrivalRate: 5
+      rampTo: 50
+      name: "Sustained 100% of max load"
+
+      #  plugins:
+      #cloudwatch:
+      #namespace: "serverless-artillery-myperftestservice-loadtest"
+
+scenarios:
+
+  - name: "listTopics"
+    flow:
+      - post:
+          url: "/"
+          headers:
+             Content-type: "application/json"
+          body: '{"query":"query {\n listTopics {\nid\npageType\ndisplayName\nslug\ncuratorLabel\nisDisplayed} \n}","variables":null}'
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - hasProperty: data.listTopics[0].id
+            - hasProperty: data.listTopics[0].slug
+            - hasProperty: data.listTopics[0].pageType
+            - hasProperty: data.listTopics[0].curatorLabel
+            - hasProperty: data.listTopics[0].isDisplayed
+            - hasProperty: data.listTopics[0].displayName
+
+  - name: "getTopicRecommendations"
+    flow:
+      - post:
+          url: "/"
+          headers:
+             Content-type: "application/json"
+          body: '{"query":"query {\n  getTopicRecommendations(slug: \"politics\", algorithmicCount:30, curatedCount: 30) {\n    algorithmicRecommendations{\n      recSrc\n      feedId\n      feedItemId\n    }\n   curatedRecommendations{\n      recSrc\n      feedId\n      feedItemId\n    }\n  }\n}","variables":null}'
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - hasProperty: data.getTopicRecommendations
+            - hasProperty: data.getTopicRecommendations.algorithmicRecommendations
+            - hasProperty: data.getTopicRecommendations.curatedRecommendations
+            # TODO add properties for curated and algorithmic recommendations
+
+
