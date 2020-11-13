@@ -82,8 +82,8 @@ export class EventBridgeLambda extends TerraformStack {
         SENTRY_DSN: sentryDsn,
         GIT_SHA: gitSha,
         ENVIRONMENT: config.environment === 'Prod' ? 'production' : 'development',
-        METAFLOW_DATASTORE_SYSROOT_S3: `jsondecode(${metaflowSecret}).METAFLOW_DATASTORE_SYSROOT_S3`,
-        METAFLOW_SERVICE_INTERNAL_URL: `jsondecode(${metaflowSecret}).METAFLOW_SERVICE_INTERNAL_URL`
+        METAFLOW_DATASTORE_SYSROOT_S3: `\${jsondecode(${metaflowSecret}).METAFLOW_DATASTORE_SYSROOT_S3}`,
+        METAFLOW_SERVICE_INTERNAL_URL: `\${jsondecode(${metaflowSecret}).METAFLOW_SERVICE_INTERNAL_URL}`
       },
       vpcConfig: {
         securityGroupIds: vpc.defaultSecurityGroups.ids,
@@ -106,6 +106,7 @@ export class EventBridgeLambda extends TerraformStack {
       name: `${config.circleCIPrefix}/SERVICE_HASH`
     });
 
+    // IT'S OK, don't panic!!! There's nothing SENSITIVE in this secret
     const metaflowSecret = new DataAwsSecretsmanagerSecretVersion(this, 'metaflow-secret', {
       secretId: 'CodeBuild/Metaflow'
     });
