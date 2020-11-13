@@ -68,8 +68,8 @@ export class EventBridgeLambda extends TerraformStack {
             's3:Get*',
           ],
           resources: [
-            'arn:aws:s3:*:*:metaflow*',
-            'arn:aws:s3:*:*:metaflow*/*'
+            'arn:aws:s3:::metaflow*',
+            'arn:aws:s3:::metaflow*/*'
           ]
         }
       ],
