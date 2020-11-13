@@ -84,7 +84,7 @@ class CuratedCandidatesFlow(FlowSpec):
         topic_query = organic_by_topic(self.input, self.topic_map, feed=self.feed_id)
         self.topic_id = self.input
 
-        logger.info("Metaflow says its time to get some elasticsearch results for: {self.input}")
+        logger.info(f"Metaflow says its time to get some elasticsearch results for: {self.input}")
         try:
             s = Search(using=self.es, index=self.es_path).query(
                        topic_query).sort("-approved_feeds.approved_feed_time_live")
@@ -107,7 +107,7 @@ class CuratedCandidatesFlow(FlowSpec):
         logger.setLevel(logging.DEBUG)
 
         logger.info("Metaflow says its time to join the results")
-        self.final_results = [{"topic_id": input.topic_id, "items": input.results} for input in inputs]
+        self.final_results = [{"topic_id": input.topic_map[input.topic_id].get("id"), "items": input.results} for input in inputs]
         self.next(self.end)
 
     @step
@@ -116,7 +116,12 @@ class CuratedCandidatesFlow(FlowSpec):
         This is the 'end' step. All flows must have an 'end' step, which is the
         last step in the flow.
         """
-        print("CuratedCandidatesFlow is done.")
+        logger = logging.getLogger()
+        logger.setLevel(logging.DEBUG)
+
+        for t in self.final_results:
+            logger.info(f"Returned {len(t['items'])} for {t['topic_id']}")
+        logger.info("CuratedCandidatesFlow is done.")
 
 
 if __name__ == '__main__':

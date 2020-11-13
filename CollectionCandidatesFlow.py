@@ -126,7 +126,7 @@ class CollectionCandidatesFlow(FlowSpec):
         logger.setLevel(logging.DEBUG)
 
         logger.info("Metaflow says its time to join the results")
-        self.final_results = [{"topic_id": input.topic_key, "items": input.results} for input in inputs]
+        self.final_results = [{"topic_id": input.topic_map[input.topic_key].get("id"), "items": input.results} for input in inputs]
         self.next(self.end)
 
     @step
@@ -135,7 +135,12 @@ class CollectionCandidatesFlow(FlowSpec):
         This is the 'end' step. All flows must have an 'end' step, which is the
         last step in the flow.
         """
-        print("CuratedCandidatesFlow is done.")
+        logger = logging.getLogger()
+        logger.setLevel(logging.DEBUG)
+
+        for t in self.final_results:
+            logger.info(f"Returned {len(t['items'])} for {t['topic_id']}")
+        logger.info("CollectionCandidatesFlow is done.")
 
 
 if __name__ == '__main__':
