@@ -93,6 +93,8 @@ def get_tag() -> str:
 
 # Because of https://github.com/aws/aws-secretsmanager-caching-python/pull/17 we can not use function decorators
 def get_json_key_secret_value(secret_id: str, json_key: str):
+    # Copied from
+    # https://github.com/aws/aws-secretsmanager-caching-python/blob/master/src/aws_secretsmanager_caching/decorators.py#L76
     try:
         secret = json.loads(cache.get_secret_string(secret_id=secret_id))
         return secret[json_key]
