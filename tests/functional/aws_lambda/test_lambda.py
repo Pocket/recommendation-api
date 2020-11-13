@@ -33,7 +33,7 @@ class TestLambda(TestDynamoDBBase):
         self.delete_test_secret()
 
     def test_handler(self, mocker):
-        aws_lambda.index.handler(event, None)
+        aws_lambda.index.handler(event)
         response = self.table.scan()
         test_1 = {
                      'topic_id-type': '1|curated',
@@ -52,6 +52,12 @@ class TestLambda(TestDynamoDBBase):
     def test_get_run_id(self, mocker):
         assert aws_lambda.index.get_run_id(
             event) == 'd3f71c11-26d3-bbbc-6a7f-4efafc51f9d2_283eaaf0-5b60-f4fb-8cf7-9e629d1f9de1'
+
+    def test_get_service_url(self, mocker):
+        assert aws_lambda.index.get_service_url() == 'http://test'
+
+    def test_get_tag(self, mocker):
+        assert aws_lambda.index.get_tag() == 'test'
 
     def create_test_secret(self):
         self.secrets_manager.create_secret(

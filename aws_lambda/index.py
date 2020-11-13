@@ -1,7 +1,7 @@
 from typing import Any, Dict, Union, List
 from uuid import UUID
 from metaflow import Flow, namespace, metadata
-from aws_secretsmanager_caching import SecretCache, InjectKeywordedSecretString
+from aws_secretsmanager_caching import SecretCache
 import json
 import boto3
 import uuid
@@ -20,7 +20,7 @@ sentry_sdk.init(
 cache = SecretCache()
 
 
-def handler(event: Dict[str, Any], context):
+def handler(event: Dict[str, Any], context=None):
     flow_name = get_flow_name(event)
     data = get_metaflow_data(flow_name)
     try:
