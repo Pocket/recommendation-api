@@ -9,10 +9,14 @@ config:
   plugins:
     expect: {}
   phases:
-    - duration: 3
-      arrivalRate: 2
-      rampTo: 4
+    - duration: 30
+      arrivalRate: 3
+      rampTo: 30
       name: "Warm up explore-topics"
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 100
+      name: "Sustained 100% of max load"
 
   variables:
     topicIds:
@@ -21,14 +25,10 @@ config:
       # the following slugs are still problematic
       # education, coronavirus, personal-finance, sports
 
-#    - duration: 60
-#      arrivalRate: 2
-#      rampTo: 20
-#      name: "Sustained 100% of max load"
-
       #  plugins:
       #cloudwatch:
       #namespace: "serverless-artillery-myperftestservice-loadtest"
+      -
 scenarios:
 
   - name: "listTopics"
@@ -48,19 +48,34 @@ scenarios:
             - hasProperty: data.listTopics[0].isDisplayed
             - hasProperty: data.listTopics[0].displayName
 
-  - name: "getTopicRecommendations"
+  - name: "getTopicRecommendations.curatedRecommendations"
     flow:
       - loop:
         - post:
             url: "/"
             headers:
                Content-type: "application/json"
-            body: '{"query":"query {\n  getTopicRecommendations(slug: \"{{ $loopElement }}\", algorithmicCount:30, curatedCount: 30) {\n    algorithmicRecommendations{\n      recSrc\n      feedId\n      feedItemId\n    }\n   curatedRecommendations{\n      recSrc\n      feedId\n      feedItemId\n    }\n  }\n}","variables":null}'
+            body: '{"query":"query {\n  getTopicRecommendations(slug: \"{{ $loopElement }}\", algorithmicCount:30, curatedCount: 30) {\n  curatedRecommendations{\n recSrc\n feedId\n feedItemId\n }\n  }\n}","variables":null}'
             expect:
               - statusCode: 200
               - contentType: json
-            #- hasProperty: data.getTopicRecommendations.algorithmicRecommendations
               - hasProperty: data.getTopicRecommendations.curatedRecommendations[0].recSrc
               - hasProperty: data.getTopicRecommendations.curatedRecommendations[0].feedId
               - hasProperty: data.getTopicRecommendations.curatedRecommendations[0].feedItemId
+        over: topicIds
+
+  - name: "getTopicRecommendations.algorithmicRecommendations"
+    flow:
+      - loop:
+        - post:
+            url: "/"
+            headers:
+              Content-type: "application/json"
+              body: '{"query":"query {\n  getTopicRecommendations(slug: \"{{ $loopElement }}\", algorithmicCount:30, curatedCount: 30) {\n algorithmicRecommendations{\n recSrc\n feedId\n feedItemId\n }\n }\n}","variables":null}'
+              expect:
+                - statusCode: 200
+                - contentType: json
+                - hasProperty: data.getTopicRecommendations.algorithmicRecommendations[0].recSrc
+                - hasProperty: data.getTopicRecommendations.algorithmicRecommendations[0].feedId
+                - hasProperty: data.getTopicRecommendations.algorithmicRecommendations[0].feedItemId
         over: topicIds
