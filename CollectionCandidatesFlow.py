@@ -140,7 +140,7 @@ class CollectionCandidatesFlow(FlowSpec):
 
         for t in self.final_results:
             logger.info(f"Returned {len(t['items'])} for {t['topic_id']}")
-        logger.info("CuratedCandidatesFlow is done.")
+        logger.info("CollectionCandidatesFlow is done.")
 
 
 if __name__ == '__main__':
