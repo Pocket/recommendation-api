@@ -59,6 +59,17 @@ export class EventBridgeLambda extends TerraformStack {
           resources: [
             'arn:aws:secretsmanager:*:*:secret:CodeBuild/Metaflow*'
           ]
+        },
+        {
+          effect: 'Allow',
+          actions: [
+            's3:List*',
+            's3:Get*',
+          ],
+          resources: [
+            'arn:aws:s3:*:*:metaflow*',
+            'arn:aws:s3:*:*:metaflow*/*'
+          ]
         }
       ],
       environment: {
