@@ -3,10 +3,9 @@ import boto3
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 import aws_lambda
-from aws_lambda.config.index import secrets
+from aws_lambda.config.index import secrets, metaflow
 from pytest_mock import mock
 from tests.functional.aws_lambda.lambda_test_data import event, metaflow_data
-import os
 
 
 @mock_dynamodb2
@@ -19,7 +18,6 @@ class TestLambda(TestDynamoDBBase):
     def setup_class(cls):
         aws_lambda.config.index.dynamodb['endpoint_url'] = None
         cls.dynamodb = boto3.resource('dynamodb')
-        cls.secrets_manager = boto3.client('secretsmanager')
 
     @classmethod
     def teardown_class(cls):
@@ -27,11 +25,13 @@ class TestLambda(TestDynamoDBBase):
 
     def setup_method(self, method):
         self.table = self.create_explore_topics_candidates_table()
-        self.create_test_secret()
+        self.metaflow_service_url = metaflow.get('service_url')
+        self.metaflow_tag = metaflow.get('tag')
 
     def teardown_method(self, method):
         self.table.delete()
-        self.delete_test_secret()
+        metaflow['service_url'] = self.metaflow_service_url
+        metaflow['tag'] = self.metaflow_tag
 
     def test_handler(self, mocker):
         aws_lambda.index.handler(event)
@@ -55,20 +55,9 @@ class TestLambda(TestDynamoDBBase):
             event) == 'd3f71c11-26d3-bbbc-6a7f-4efafc51f9d2_283eaaf0-5b60-f4fb-8cf7-9e629d1f9de1'
 
     def test_get_service_url(self, mocker):
+        metaflow['service_url'] = 'http://test'
         assert aws_lambda.index.get_service_url() == 'http://test'
 
     def test_get_tag(self, mocker):
-        assert aws_lambda.index.get_tag() == 'runtime:step-functions'
-
-    def test_set_metaflow_datastore(self, mocker):
-        aws_lambda.index.set_metaflow_datastore()
-        assert os.environ.get('METAFLOW_DATASTORE_SYSROOT_S3') == 'datastore_location'
-
-    def create_test_secret(self):
-        self.secrets_manager.create_secret(
-            Name=secrets['metaflow'],
-            SecretString='{"METAFLOW_SERVICE_INTERNAL_URL": "http://test", "METAFLOW_DEPLOY_TAG": "test", "METAFLOW_DATASTORE_SYSROOT_S3": "datastore_location"}'
-        )
-
-    def delete_test_secret(self):
-        self.secrets_manager.delete_secret(SecretId=secrets['metaflow'], ForceDeleteWithoutRecovery=True)
+        metaflow['tag'] = 'test'
+        assert aws_lambda.index.get_tag() == 'test'

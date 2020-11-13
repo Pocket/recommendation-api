@@ -4,7 +4,11 @@ import {config} from "./config";
 import {ApplicationDynamoDBTable, PocketVPC} from "@pocket/terraform-modules";
 import {PocketEventBridgeWithLambdaTarget} from "@pocket/terraform-modules/dist/src/pocket/PocketEventBridgeWithLambdaTarget";
 import {LAMBDA_RUNTIMES} from "@pocket/terraform-modules/dist/src/base/ApplicationVersionedLambda";
-import {DataAwsSsmParameter} from "../.gen/providers/aws";
+import {
+  DataAwsSecretsmanagerSecret,
+  DataAwsSecretsmanagerSecretVersion,
+  DataAwsSsmParameter
+} from "../.gen/providers/aws";
 
 
 export class EventBridgeLambda extends TerraformStack {
@@ -13,7 +17,7 @@ export class EventBridgeLambda extends TerraformStack {
 
     const vpc = new PocketVPC(this, 'pocket-shared-vpc');
 
-    const {sentryDsn, gitSha} = this.getEnvVariableValues();
+    const {sentryDsn, gitSha, metaflowSecret} = this.getEnvVariableValues();
 
     new PocketEventBridgeWithLambdaTarget(this, 'translation-event-bridge-lambda', {
       name: `${config.prefix}-Translation`,
@@ -77,7 +81,9 @@ export class EventBridgeLambda extends TerraformStack {
         EXPLORE_TOPICS_CANDIDATES_TABLE: candidatesTable.dynamodb.name,
         SENTRY_DSN: sentryDsn,
         GIT_SHA: gitSha,
-        ENVIRONMENT: config.environment === 'Prod' ? 'production' : 'development'
+        ENVIRONMENT: config.environment === 'Prod' ? 'production' : 'development',
+        METAFLOW_DATASTORE_SYSROOT_S3: `jsondecode(${metaflowSecret}).METAFLOW_DATASTORE_SYSROOT_S3`,
+        METAFLOW_SERVICE_INTERNAL_URL: `jsondecode(${metaflowSecret}).METAFLOW_SERVICE_INTERNAL_URL`
       },
       vpcConfig: {
         securityGroupIds: vpc.defaultSecurityGroups.ids,
@@ -100,6 +106,10 @@ export class EventBridgeLambda extends TerraformStack {
       name: `${config.circleCIPrefix}/SERVICE_HASH`
     });
 
-    return {sentryDsn: sentryDsn.value, gitSha: serviceHash.value};
+    const metaflowSecret = new DataAwsSecretsmanagerSecretVersion(this, 'metaflow-secret', {
+      secretId: 'CodeBuild/Metaflow'
+    });
+
+    return {sentryDsn: sentryDsn.value, gitSha: serviceHash.value, metaflowSecret: metaflowSecret.secretString};
   }
 }
