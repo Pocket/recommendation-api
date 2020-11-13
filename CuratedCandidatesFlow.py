@@ -84,7 +84,7 @@ class CuratedCandidatesFlow(FlowSpec):
         topic_query = organic_by_topic(self.input, self.topic_map, feed=self.feed_id)
         self.topic_id = self.input
 
-        logger.info("Metaflow says its time to get some elasticsearch results for: {self.input}")
+        logger.info(f"Metaflow says its time to get some elasticsearch results for: {self.input}")
         try:
             s = Search(using=self.es, index=self.es_path).query(
                        topic_query).sort("-approved_feeds.approved_feed_time_live")
