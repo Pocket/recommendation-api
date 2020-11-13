@@ -1,14 +1,10 @@
-import {TerraformStack} from "cdktf";
-import {Construct} from "constructs";
-import {config} from "./config";
-import {ApplicationDynamoDBTable, PocketVPC} from "@pocket/terraform-modules";
-import {PocketEventBridgeWithLambdaTarget} from "@pocket/terraform-modules/dist/src/pocket/PocketEventBridgeWithLambdaTarget";
-import {LAMBDA_RUNTIMES} from "@pocket/terraform-modules/dist/src/base/ApplicationVersionedLambda";
-import {
-  DataAwsSecretsmanagerSecret,
-  DataAwsSecretsmanagerSecretVersion,
-  DataAwsSsmParameter
-} from "../.gen/providers/aws";
+import { TerraformStack } from "cdktf";
+import { Construct } from "constructs";
+import { config } from "./config";
+import { ApplicationDynamoDBTable, PocketVPC } from "@pocket/terraform-modules";
+import { PocketEventBridgeWithLambdaTarget } from "@pocket/terraform-modules/dist/src/pocket/PocketEventBridgeWithLambdaTarget";
+import { LAMBDA_RUNTIMES } from "@pocket/terraform-modules/dist/src/base/ApplicationVersionedLambda";
+import { DataAwsSecretsmanagerSecretVersion, DataAwsSsmParameter } from "../.gen/providers/aws";
 
 
 export class EventBridgeLambda extends TerraformStack {
