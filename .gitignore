@@ -145,3 +145,6 @@ dmypy.json
 aws_lambda/*.zip
 aws_lambda/package
 aws_lambda/requirements.txt
+
+# misc
+/testing.py
