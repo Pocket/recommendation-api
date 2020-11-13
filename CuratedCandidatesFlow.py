@@ -107,7 +107,7 @@ class CuratedCandidatesFlow(FlowSpec):
         logger.setLevel(logging.DEBUG)
 
         logger.info("Metaflow says its time to join the results")
-        self.final_results = [{"topic_id": input.topic_id, "items": input.results} for input in inputs]
+        self.final_results = [{"topic_id": self.topic_map[input.topic_key].get("id"), "items": input.results} for input in inputs]
         self.next(self.end)
 
     @step

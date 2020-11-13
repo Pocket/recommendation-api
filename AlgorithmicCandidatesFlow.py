@@ -153,7 +153,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         logger.setLevel(logging.DEBUG)
 
         logger.info("Metaflow says its time to join the results")
-        self.final_results = [{"topic_id": job.topic_id, "items": job.ranked_results} for job in inputs]
+        self.final_results = [{"topic_id": self.topic_map[job.topic_id].get("id"), "items": job.ranked_results} for job in inputs]
         self.next(self.end)
 
     @step
