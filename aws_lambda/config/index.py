@@ -25,5 +25,6 @@ sentry = {
 # We are going with this option because attempts to add a tag when the step function is created during code build
 # failed. An issue has been filed with metaflow's git repo: https://github.com/Netflix/metaflow/issues/384
 metaflow = {
-    'tag': os.getenv('METAFLOW_DEPLOY_TAG', 'runtime:step-functions')
+    'tag': os.getenv('METAFLOW_DEPLOY_TAG', 'runtime:step-functions'),
+    'service_url': os.getenv('METAFLOW_SERVICE_INTERNAL_URL', 'http://local')
 }
