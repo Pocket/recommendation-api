@@ -9,20 +9,26 @@ config:
   plugins:
     expect: {}
   phases:
-    - duration: 30
+    - duration: 3
       arrivalRate: 2
-      rampTo: 30
+      rampTo: 4
       name: "Warm up explore-topics"
 
-    - duration: 60
-      arrivalRate: 5
-      rampTo: 50
-      name: "Sustained 100% of max load"
+  variables:
+    topicIds:
+      - ["politics", "business", "health", "science", "parenting", "technology", "food", "career", "travel"]
+
+      # the following slugs are still problematic
+      # education, coronavirus, personal-finance, sports
+
+#    - duration: 60
+#      arrivalRate: 2
+#      rampTo: 20
+#      name: "Sustained 100% of max load"
 
       #  plugins:
       #cloudwatch:
       #namespace: "serverless-artillery-myperftestservice-loadtest"
-
 scenarios:
 
   - name: "listTopics"
@@ -44,17 +50,17 @@ scenarios:
 
   - name: "getTopicRecommendations"
     flow:
-      - post:
-          url: "/"
-          headers:
-             Content-type: "application/json"
-          body: '{"query":"query {\n  getTopicRecommendations(slug: \"politics\", algorithmicCount:30, curatedCount: 30) {\n    algorithmicRecommendations{\n      recSrc\n      feedId\n      feedItemId\n    }\n   curatedRecommendations{\n      recSrc\n      feedId\n      feedItemId\n    }\n  }\n}","variables":null}'
-          expect:
-            - statusCode: 200
-            - contentType: json
-            - hasProperty: data.getTopicRecommendations
-            - hasProperty: data.getTopicRecommendations.algorithmicRecommendations
-            - hasProperty: data.getTopicRecommendations.curatedRecommendations
-            # TODO add properties for curated and algorithmic recommendations
-
-
+      - loop:
+        - post:
+            url: "/"
+            headers:
+               Content-type: "application/json"
+            body: '{"query":"query {\n  getTopicRecommendations(slug: \"{{ $loopElement }}\", algorithmicCount:30, curatedCount: 30) {\n    algorithmicRecommendations{\n      recSrc\n      feedId\n      feedItemId\n    }\n   curatedRecommendations{\n      recSrc\n      feedId\n      feedItemId\n    }\n  }\n}","variables":null}'
+            expect:
+              - statusCode: 200
+              - contentType: json
+            #- hasProperty: data.getTopicRecommendations.algorithmicRecommendations
+              - hasProperty: data.getTopicRecommendations.curatedRecommendations[0].recSrc
+              - hasProperty: data.getTopicRecommendations.curatedRecommendations[0].feedId
+              - hasProperty: data.getTopicRecommendations.curatedRecommendations[0].feedItemId
+        over: topicIds
