@@ -13,9 +13,10 @@ config:
       arrivalRate: 3
       rampTo: 30
       name: "Warm up explore-topics"
+
     - duration: 60
       arrivalRate: 10
-      rampTo: 100
+      rampTo: 50
       name: "Sustained 100% of max load"
 
   variables:
@@ -59,9 +60,8 @@ scenarios:
             expect:
               - statusCode: 200
               - contentType: json
-              - hasProperty: data.getTopicRecommendations.curatedRecommendations[0].recSrc
-              - hasProperty: data.getTopicRecommendations.curatedRecommendations[0].feedId
-              - hasProperty: data.getTopicRecommendations.curatedRecommendations[0].feedItemId
+              - hasProperty: data.getTopicRecommendations.curatedRecommendations[0].itemId
+              - hasProperty: data.getTopicRecommendations.curatedRecommendations[0].publisher
         over: topicIds
 
   - name: "getTopicRecommendations.algorithmicRecommendations"
@@ -75,7 +75,6 @@ scenarios:
               expect:
                 - statusCode: 200
                 - contentType: json
-                - hasProperty: data.getTopicRecommendations.algorithmicRecommendations[0].recSrc
-                - hasProperty: data.getTopicRecommendations.algorithmicRecommendations[0].feedId
-                - hasProperty: data.getTopicRecommendations.algorithmicRecommendations[0].feedItemId
+                - hasProperty: data.getTopicRecommendations.algorithmicRecommendations[0].itemId
+                - hasProperty: data.getTopicRecommendations.algorithmicRecommendations[0].publisher
         over: topicIds
