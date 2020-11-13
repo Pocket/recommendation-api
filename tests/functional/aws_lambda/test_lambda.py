@@ -6,6 +6,7 @@ import aws_lambda
 from aws_lambda.config.index import secrets
 from pytest_mock import mock
 from tests.functional.aws_lambda.lambda_test_data import event, metaflow_data
+import os
 
 
 @mock_dynamodb2
@@ -59,10 +60,14 @@ class TestLambda(TestDynamoDBBase):
     def test_get_tag(self, mocker):
         assert aws_lambda.index.get_tag() == 'runtime:step-functions'
 
+    def test_set_metaflow_datastore(self, mocker):
+        aws_lambda.index.set_metaflow_datastore()
+        assert os.environ.get('METAFLOW_DATASTORE_SYSROOT_S3') == 'datastore_location'
+
     def create_test_secret(self):
         self.secrets_manager.create_secret(
             Name=secrets['metaflow'],
-            SecretString='{"METAFLOW_SERVICE_INTERNAL_URL": "http://test", "METAFLOW_DEPLOY_TAG": "test"}'
+            SecretString='{"METAFLOW_SERVICE_INTERNAL_URL": "http://test", "METAFLOW_DEPLOY_TAG": "test", "METAFLOW_DATASTORE_SYSROOT_S3": "datastore_location"}'
         )
 
     def delete_test_secret(self):

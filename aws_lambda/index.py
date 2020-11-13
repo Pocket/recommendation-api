@@ -9,6 +9,7 @@ from datetime import datetime
 import sentry_sdk
 from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
 from aws_lambda.config.index import sentry, secrets, dynamodb as dynamodb_config, topic_types, metaflow
+import os
 
 sentry_sdk.init(
     dsn=sentry.get('dsn'),
@@ -76,6 +77,7 @@ def get_output_params(event: Dict[str, Any]):
 
 
 def get_metaflow_data(flow_name) -> List[Dict[str, Union[int, List[Dict[str, int]]]]]:
+    set_metaflow_datastore()
     metadata(get_service_url())
     namespace(get_tag())
     flow = Flow(flow_name)
@@ -100,3 +102,8 @@ def get_json_key_secret_value(secret_id: str, json_key: str):
         return secret[json_key]
     except json.decoder.JSONDecodeError:
         raise RuntimeError('Cached secret is not valid JSON')
+
+
+def set_metaflow_datastore():
+    datastore = get_json_key_secret_value(secret_id=secrets['metaflow'], json_key='METAFLOW_DATASTORE_SYSROOT_S3')
+    os.environ['METAFLOW_DATASTORE_SYSROOT_S3'] = datastore
