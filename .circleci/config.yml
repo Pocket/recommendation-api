@@ -86,8 +86,9 @@ jobs:
             source "$HOME/miniconda/etc/profile.d/conda.sh"
             hash -r
             conda config --append channels conda-forge
-            pipenv run python jobs/AlgorithmicCandidatesFlow.py --environment=conda check
-            pipenv run python jobs/CuratedCandidatesFlow.py --environment=conda check
+            pipenv run python AlgorithmicCandidatesFlow.py --environment=conda check
+            pipenv run python CuratedCandidatesFlow.py --environment=conda check
+            pipenv run python CollectionCandidatesFlow.py --environment=conda check
 
   docker_build:
     parameters:
