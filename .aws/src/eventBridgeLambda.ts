@@ -36,6 +36,7 @@ export class EventBridgeLambda extends TerraformStack {
       ruleDescription: 'Capture Metaflow Step Functions SUCCEEDED status',
       runtime: LAMBDA_RUNTIMES.PYTHON38,
       handler: 'aws_lambda.index.handler',
+      timeout: 30,
       executionPolicyStatements: [
         {
           effect: 'Allow',
@@ -58,6 +59,17 @@ export class EventBridgeLambda extends TerraformStack {
           ],
           resources: [
             'arn:aws:secretsmanager:*:*:secret:CodeBuild/Metaflow*'
+          ]
+        },
+        {
+          effect: 'Allow',
+          actions: [
+            's3:List*',
+            's3:Get*',
+          ],
+          resources: [
+            'arn:aws:s3:*:*:metaflow*',
+            'arn:aws:s3:*:*:metaflow*/*'
           ]
         }
       ],
