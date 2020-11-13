@@ -57,7 +57,7 @@ class TestLambda(TestDynamoDBBase):
         assert aws_lambda.index.get_service_url() == 'http://test'
 
     def test_get_tag(self, mocker):
-        assert aws_lambda.index.get_tag() == 'test'
+        assert aws_lambda.index.get_tag() == 'runtime:step-functions'
 
     def create_test_secret(self):
         self.secrets_manager.create_secret(

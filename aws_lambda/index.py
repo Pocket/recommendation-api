@@ -8,7 +8,7 @@ import uuid
 from datetime import datetime
 import sentry_sdk
 from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
-from aws_lambda.config.index import sentry, secrets, dynamodb as dynamodb_config, topic_types
+from aws_lambda.config.index import sentry, secrets, dynamodb as dynamodb_config, topic_types, metaflow
 
 sentry_sdk.init(
     dsn=sentry.get('dsn'),
@@ -80,7 +80,7 @@ def get_metaflow_data(flow_name) -> List[Dict[str, Union[int, List[Dict[str, int
     namespace(get_tag())
     flow = Flow(flow_name)
     data = flow.latest_successful_run.data
-    return data.results
+    return data.final_results
 
 
 def get_service_url() -> str:
@@ -88,7 +88,7 @@ def get_service_url() -> str:
 
 
 def get_tag() -> str:
-    return get_json_key_secret_value(secret_id=secrets['metaflow'], json_key='METAFLOW_DEPLOY_TAG')
+    return metaflow.get('tag')
 
 
 # Because of https://github.com/aws/aws-secretsmanager-caching-python/pull/17 we can not use function decorators
