@@ -77,7 +77,6 @@ def get_output_params(event: Dict[str, Any]):
 
 
 def get_metaflow_data(flow_name) -> List[Dict[str, Union[int, List[Dict[str, int]]]]]:
-    set_metaflow_datastore()
     metadata(get_service_url())
     namespace(get_tag())
     flow = Flow(flow_name)
@@ -86,24 +85,9 @@ def get_metaflow_data(flow_name) -> List[Dict[str, Union[int, List[Dict[str, int
 
 
 def get_service_url() -> str:
-    return get_json_key_secret_value(secret_id=secrets['metaflow'], json_key='METAFLOW_SERVICE_INTERNAL_URL')
+    return metaflow.get('service_url')
 
 
 def get_tag() -> str:
     return metaflow.get('tag')
 
-
-# Because of https://github.com/aws/aws-secretsmanager-caching-python/pull/17 we can not use function decorators
-def get_json_key_secret_value(secret_id: str, json_key: str):
-    # Copied from
-    # https://github.com/aws/aws-secretsmanager-caching-python/blob/master/src/aws_secretsmanager_caching/decorators.py#L76
-    try:
-        secret = json.loads(cache.get_secret_string(secret_id=secret_id))
-        return secret[json_key]
-    except json.decoder.JSONDecodeError:
-        raise RuntimeError('Cached secret is not valid JSON')
-
-
-def set_metaflow_datastore():
-    datastore = get_json_key_secret_value(secret_id=secrets['metaflow'], json_key='METAFLOW_DATASTORE_SYSROOT_S3')
-    os.environ['METAFLOW_DATASTORE_SYSROOT_S3'] = datastore
