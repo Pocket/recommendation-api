@@ -43,7 +43,7 @@ class CollectionCandidatesFlow(FlowSpec):
 
         logger.info("CollectionCandidatesFlow is starting.")
         self.topic_map = get_topic_map()
-        self.topics = [k for k, x in self.topic_map.items() if x["pageType"] == "editorial_collection" and x["isDisplayed"]]
+        self.topics = [k for k, x in self.topic_map.items() if x["pageType"] == "editorial_collection"]
         logger.info(f"flow will process {len(self.topics)} topics.")
 
         session = boto3.Session()

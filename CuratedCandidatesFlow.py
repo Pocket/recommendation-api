@@ -49,7 +49,7 @@ class CuratedCandidatesFlow(FlowSpec):
 
         logger.info("CuratedCandidatesFlow is starting.")
         self.topic_map = get_topic_map()
-        self.topics = [k for k, x in self.topic_map.items() if x["pageType"] == "topic_page" and x["isDisplayed"]]
+        self.topics = [k for k, x in self.topic_map.items() if x["pageType"] == "topic_page"]
         logger.info(f"flow will process {len(self.topics)} topics.")
 
         session = boto3.Session()
