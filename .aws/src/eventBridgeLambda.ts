@@ -82,6 +82,8 @@ export class EventBridgeLambda extends TerraformStack {
         SENTRY_DSN: sentryDsn,
         GIT_SHA: gitSha,
         ENVIRONMENT: config.environment === 'Prod' ? 'production' : 'development',
+        // We are adding these metaflow required env variables here because metaflow client will not let us set these as
+        // configuration/options at runtime and lambd will not let is set env vars at runtime either. So here we are...
         METAFLOW_DATASTORE_SYSROOT_S3: `\${jsondecode(${metaflowSecretFqn}.secret_string).METAFLOW_DATASTORE_SYSROOT_S3}`,
         METAFLOW_SERVICE_INTERNAL_URL: `\${jsondecode(${metaflowSecretFqn}.secret_string).METAFLOW_SERVICE_INTERNAL_URL}`
       },
