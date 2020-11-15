@@ -167,7 +167,7 @@ def collection_by_feed(feed: int, scale: str = "90d") -> Bool:
     return bool_query
 
 
-def algorithmic_by_topic(curator_topic: str, topic_map: Dict, min_saves: int = 45,
+def algorithmic_by_topic(curator_topic: str, topic_map: Dict, min_saves: int = 300,
                          scale: str = "90d", save_origin: int = 6000, save_scale: int = 3000):
     """
     routine to generate algorithmic elasticsearch query

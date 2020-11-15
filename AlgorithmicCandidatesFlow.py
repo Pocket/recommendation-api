@@ -11,7 +11,7 @@ from jobs.query import FEED_ID_EN_US
 @schedule(hourly=True)
 @conda_base(libraries={"elasticsearch": "7.1.0", "elasticsearch-dsl": "7.1.0",
                        "requests-aws4auth": "1.0.1", "scikit-learn": "0.23.2",
-                       "scipy":"1.5.3", "gql":"2.0.0"})
+                       "scipy": "1.5.3", "gql": "2.0.0"})
 class AlgorithmicCandidatesFlow(FlowSpec):
 
     es_endpoint = Parameter("es_endpoint",
@@ -33,6 +33,31 @@ class AlgorithmicCandidatesFlow(FlowSpec):
                         help="The curated feed_id, default is en-US.",
                         type=int,
                         default=FEED_ID_EN_US)
+
+    min_saves = Parameter("min_saves",
+                          help="minimum required saves for recommendation filtering, default is 300",
+                          type=int,
+                          default=300)
+
+    time_scale = Parameter("time_scale",
+                           help="The time scale for the decay in elastic search, default is 90 days",
+                           type=str,
+                           default="90d")
+
+    save_origin = Parameter("save_origin",
+                            help="The origin for the save decay in elastic search, default is 6000",
+                            type=int,
+                            default=6000)
+
+    save_scale = Parameter("save_scale",
+                           help="The 0.5 scale for save decay for elastic search, default is 3000",
+                           type=int,
+                           default=3000)
+
+    approval_threshold = Parameter("approval_threshold",
+                                   help="The minimum percentile for approval probability, default is 20",
+                                   type=int,
+                                   default=20)
 
     domain_allowlist_file = IncludeFile("domain_allowlist_file",
                                         is_text=True,
@@ -121,7 +146,12 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         logger.setLevel(logging.INFO)
 
         logger.info(f"Metaflow says its time to get the query for: {self.input}")
-        topic_query, score_fuctions = algorithmic_by_topic(self.input, self.topic_map)
+        topic_query, score_fuctions = algorithmic_by_topic(self.input,
+                                                           self.topic_map,
+                                                           min_saves=self.min_saves,
+                                                           scale=self.time_scale,
+                                                           save_origin=self.save_origin,
+                                                           save_scale=self.save_scale)
         self.topic_id = self.input
 
         logger.info(f"Metaflow says its time to get some elasticsearch results for: {self.input}")
@@ -148,7 +178,8 @@ class AlgorithmicCandidatesFlow(FlowSpec):
                                             self.topic_predictors[curator_label],
                                             self.topic_approval_models[curator_label],
                                             self.limit,
-                                            self.featurizer)
+                                            self.featurizer,
+                                            approval_percentile=self.approval_threshold)
 
         self.next(self.join)
 
@@ -161,7 +192,8 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         logger.setLevel(logging.DEBUG)
 
         logger.info("Metaflow says its time to join the results")
-        self.final_results = [{"topic_id": job.topic_map[job.topic_id].get("id"), "items": job.ranked_results} for job in inputs]
+        self.final_results = [{"topic_id": job.topic_map[job.topic_id].get("id"),
+                               "items": job.ranked_results} for job in inputs]
         self.next(self.end)
 
     @step

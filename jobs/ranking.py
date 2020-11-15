@@ -52,7 +52,7 @@ def apply_NB_model(candidates, clf_model, featurizer):
     return approval_preds
 
 
-def apply_rankers(search_results, topic_predictor, approval_model, count, featurizer):
+def apply_rankers(search_results, topic_predictor, approval_model, count, featurizer, approval_percentile=20):
     """
     This routine applies the topic prediction model and curator approval model
     to search results for a single topic
@@ -61,6 +61,7 @@ def apply_rankers(search_results, topic_predictor, approval_model, count, featur
     :param approval_model: the NB classifier to predict curator approval
     :param count: the desired number of items
     :param featurizer: contains information for generating features per item
+    :param approval_percentile: minimum percentile for approval probability
     :return:
     """
     topic_probs = apply_NB_model(search_results, topic_predictor, featurizer)
@@ -75,7 +76,7 @@ def apply_rankers(search_results, topic_predictor, approval_model, count, featur
     approval_preds = apply_NB_model(ordered_hits, approval_model, featurizer)
 
     # add approval scores to search results
-    approval_th = np.percentile(approval_preds, 20)
+    approval_th = np.percentile(approval_preds, approval_percentile)
     for approval_prob, hit in zip(approval_preds, ordered_hits):
         hit["approval_score"] = approval_prob
         hit["final_score"] = int(approval_prob > approval_th) * hit["es_score"]
