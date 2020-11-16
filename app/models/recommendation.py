@@ -7,6 +7,7 @@ from enum import Enum
 
 
 class RecommendationType(Enum):
+    COLLECTION = 'collection'
     CURATED = 'curated'
     ALGORITHMIC = 'algorithmic'
 
