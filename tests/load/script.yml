@@ -16,12 +16,12 @@ config:
     cloudwatch:
       namespace: serverless-artillery-explore-topics-loadtest
   phases:
-    - duration: 900
+    - duration: 120
       arrivalRate: 1
       rampTo: 2
       name: "Warm up explore-topics 2req/sec"
 
-    - duration: 900
+    - duration: 120
       arrivalRate: 2
       rampTo: 4
       name: "Sustain load 4req/sec"
