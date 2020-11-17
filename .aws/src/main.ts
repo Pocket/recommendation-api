@@ -42,6 +42,8 @@ class ExploreTopics extends TerraformStack {
 
         const dynamodb = new DynamoDB(this, 'dynamodb');
 
+        c
+
         new PocketALBApplication(this, 'application', {
             internal: true,
             prefix: config.prefix,
@@ -75,6 +77,12 @@ class ExploreTopics extends TerraformStack {
                             name: 'EXPLORE_TOPICS_CANDIDATES_TABLE',
                             value: dynamodb.candidatesTable.dynamodb.name
                         }
+                    ],
+                    secretEnvVars: [
+                        {
+                            name: 'SENTRY_DSN',
+                            valueFrom: `arn:aws:ssm:${region.name}:${caller.accountId}:parameter:${config.name}/${config.environment}/SENTRY_DSN`
+                        },
                     ]
                 }
             ],
@@ -102,6 +110,15 @@ class ExploreTopics extends TerraformStack {
                             secretsManager.targetKeyArn
                         ],
                         effect: 'Allow'
+                    },
+                    {
+                        actions: [
+                            "ssm:Get*",
+                        ],
+                        resources: [
+                            `arn:aws:ssm:${region.name}:${caller.accountId}:parameter:${config.name}/${config.environment}/*`,
+                        ],
+                        effect: 'Allow'
                     }
                 ],
                 taskRolePolicyStatements: [
@@ -124,7 +141,6 @@ class ExploreTopics extends TerraformStack {
                 ],
                 taskExecutionDefaultAttachmentArn: 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy',
             },
-
             autoscalingConfig: {
                 targetMinCapacity: 2,
                 targetMaxCapacity: 10
