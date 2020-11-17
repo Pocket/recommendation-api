@@ -25,6 +25,7 @@ RUN useradd --create-home appuser
 USER appuser
 
 # FastAPI config
+ENV WEB_CONCURRENCY=50
 ENV PORT=8000
 EXPOSE $PORT
 
