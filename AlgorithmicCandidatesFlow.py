@@ -2,7 +2,7 @@ import json
 import logging
 import boto3
 import os
-from metaflow import FlowSpec, step, Parameter, IncludeFile, conda, conda_base, schedule, Flow
+from metaflow import FlowSpec, step, Parameter, IncludeFile, conda, conda_base, schedule, Flow, namespace
 
 from jobs.utils import setup_logger
 from jobs.query import FEED_ID_EN_US
@@ -58,7 +58,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         logger.info("AlgorithmicCandidatesFlow is starting.")
         self.topic_map = get_topic_map()
         self.domain_allowlist = json.loads(self.domain_allowlist_file)
-        self.topics = [k for k, x in self.topic_map.items() if x["pageType"] == "topic_page" and x["isDisplayed"]]
+        self.topics = [k for k, x in self.topic_map.items() if x["pageType"] == "topic_page"]
         logger.info(f"flow will process {len(self.topics)} topics.")
 
         session = boto3.Session()
@@ -81,6 +81,14 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         """
         step to load models trained in ExploreTopicTrainingFlow
         """
+
+        """
+        Here we need to change the namespace to the production one of the corresponding model we are looking to pull
+        Once https://github.com/Netflix/metaflow/issues/384 is merged and the topic model training has the right tags 
+        added we will be able to change this to just "production" and pull it from AWS Secrets Manager
+        """
+        namespace("production:exploretopictrainingflow-0-eins")
+
         training_run = Flow("ExploreTopicTrainingFlow").latest_successful_run
         self.model_run_id = training_run.id
         # get vectorizer, one hot mappings for google categories and domains

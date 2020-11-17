@@ -52,7 +52,8 @@ class TestRecommendationsModelUtils:
         topic_recs.algorithmic_recommendations = algorithmic
         result = TopicRecommendationsModelUtils.dedupe(topic_recs)
         algorithmic_result_ids = [res.item_id for res in result.algorithmic_recommendations]
-
+        # Ensures that filter in dedupe does not break the list type of algorithmic_recommendations
+        assert len(result.algorithmic_recommendations) == 3
         assert algorithmic_result_ids == [6, 7, 8]
 
     def test_curated_recs_untouched(self):
