@@ -49,6 +49,10 @@ class ExploreTopics extends TerraformStack {
             tags: config.tags,
             cdn: false,
             domain: config.domain,
+            taskSize: {
+                cpu: 1024,
+                memory: 2048
+            },
             containerConfigs: [
                 {
                     name: 'app',
