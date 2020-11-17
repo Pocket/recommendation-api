@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import List
 from app.models.recommendation import RecommendationModel, RecommendationType
+from app.models.topic import TopicModel, PageType
 
 
 class TopicRecommendationsModel(BaseModel):
@@ -13,15 +14,28 @@ class TopicRecommendationsModel(BaseModel):
             algorithmic_count: int,
             curated_count: int,
             publisher_spread: int = 3) -> ['TopicRecommendationsModel']:
+
+        # Pull in the topic so we can split what we do based on the page type.
+        topic = TopicModel.get_topic(slug=slug)
+
         topic_recommendations = TopicRecommendationsModel()
-        topic_recommendations.algorithmic_recommendations = RecommendationModel.get_recommendations(
-            slug=slug,
-            recommendation_type=RecommendationType.ALGORITHMIC,
-        )
-        topic_recommendations.curated_recommendations = RecommendationModel.get_recommendations(
-            slug=slug,
-            recommendation_type=RecommendationType.CURATED
-        )
+
+        if topic.page_type == PageType.editorial_collection:
+            # Editorial collections just use the curated_recommendation responses but are saved in dynamodb as a
+            # "collection"
+            topic_recommendations.curated_recommendations = RecommendationModel.get_recommendations(
+                slug=slug,
+                recommendation_type=RecommendationType.COLLECTION
+            )
+        else:
+            topic_recommendations.algorithmic_recommendations = RecommendationModel.get_recommendations(
+                slug=slug,
+                recommendation_type=RecommendationType.ALGORITHMIC,
+            )
+            topic_recommendations.curated_recommendations = RecommendationModel.get_recommendations(
+                slug=slug,
+                recommendation_type=RecommendationType.CURATED
+            )
 
         # dedupe items in the algorithmic recommendations
         topic_recommendations = TopicRecommendationsModelUtils.dedupe(topic_recommendations)
@@ -59,7 +73,7 @@ class TopicRecommendationsModelUtils:
         if dupes:
             # if there are dupes, remove the duplicates from the algorithmic recs
             topic_recs_model.algorithmic_recommendations = list(filter(lambda rec: rec.item_id not in curated_item_ids,
-                                                                  topic_recs_model.algorithmic_recommendations))
+                                                                       topic_recs_model.algorithmic_recommendations))
 
         return topic_recs_model
 
