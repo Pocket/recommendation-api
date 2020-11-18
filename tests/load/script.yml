@@ -74,11 +74,11 @@ scenarios:
             url: "/"
             headers:
               Content-type: "application/json"
-              body: '{"query":"query {\n  getTopicRecommendations(slug: \"{{ $loopElement }}\", algorithmicCount:30, curatedCount: 30) {\n algorithmicRecommendations{\n itemId\n publisher\n }\n }\n}","variables":null}'
-              expect:
-                - statusCode: 200
-                - contentType: json
-                - hasProperty: data.getTopicRecommendations.algorithmicRecommendations[0].itemId
-                - hasProperty: data.getTopicRecommendations.algorithmicRecommendations[0].publisher
+            body: '{"query":"query {\n  getTopicRecommendations(slug: \"{{ $loopElement }}\", algorithmicCount:30, curatedCount: 30) {\n algorithmicRecommendations{\n itemId\n publisher\n }\n }\n}","variables":null}'
+            expect:
+              - statusCode: 200
+              - contentType: json
+              - hasProperty: data.getTopicRecommendations.algorithmicRecommendations[0].itemId
+              - hasProperty: data.getTopicRecommendations.algorithmicRecommendations[0].publisher
         over: topicIds
 
