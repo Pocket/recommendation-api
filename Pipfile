@@ -34,6 +34,8 @@ fastapi = "*"
 uvloop = "*"
 httptools = "*"
 gql = "*"
+aws-xray-sdk = "*"
+xraysink = "*"
 
 [requires]
 python_version = "3.8"
