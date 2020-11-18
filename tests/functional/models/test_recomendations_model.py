@@ -14,7 +14,6 @@ class TestRecommendationsModel(TestDynamoDBBase):
         dynamodb_config['endpoint_url'] = None
         super().setup_method(self)
         self.candidateTable = self.create_explore_topics_candidates_table()
-        self.populate_explore_topics_metadata_table()
 
     def teardown_method(self, method):
         super().teardown_method(self)
