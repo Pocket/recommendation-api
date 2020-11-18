@@ -59,7 +59,7 @@ class TopicRecommendationsModel(BaseModel):
 
 class TopicRecommendationsModelUtils:
     @staticmethod
-    @xray_recorder.capture_async('models_topic_dedupe')
+    @xray_recorder.capture('models_topic_dedupe')
     def dedupe(topic_recs_model: TopicRecommendationsModel) -> TopicRecommendationsModel:
         """
         If a recommendation exists in both the curated and algorithmic lists, removes that recommendation from the
@@ -96,7 +96,7 @@ class TopicRecommendationsModelUtils:
         return topic_recommendations
 
     @staticmethod
-    @xray_recorder.capture_async('models_topic_spread_publishers')
+    @xray_recorder.capture('models_topic_spread_publishers')
     def spread_publishers(recs: List[RecommendationModel], spread: int = 3) -> List[RecommendationModel]:
         """
         Makes sure stories from the same publisher/domain are not listed sequentially, and have a configurable number
