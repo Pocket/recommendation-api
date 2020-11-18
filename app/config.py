@@ -10,7 +10,6 @@ dynamodb = {
 }
 
 sentry = {
-    # TODO add this as a SSM or secrets manager param and inject it as an ENV variable
     'dsn': os.getenv('SENTRY_DSN', 'https://examplePublicKey@o0.ingest.sentry.io/0'),
     'release': os.getenv('GIT_SHA', '1234'),
     'environment': os.getenv('ENVIRONMENT', 'local')
