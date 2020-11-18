@@ -24,16 +24,16 @@ class TopicRecommendationsModel(BaseModel):
             # Editorial collections just use the curated_recommendation responses but are saved in dynamodb as a
             # "collection"
             topic_recommendations.curated_recommendations = RecommendationModel.get_recommendations(
-                slug=slug,
+                topic_id=topic.id,
                 recommendation_type=RecommendationType.COLLECTION
             )
         else:
             topic_recommendations.algorithmic_recommendations = RecommendationModel.get_recommendations(
-                slug=slug,
+                topic_id=topic.id,
                 recommendation_type=RecommendationType.ALGORITHMIC,
             )
             topic_recommendations.curated_recommendations = RecommendationModel.get_recommendations(
-                slug=slug,
+                topic_id=topic.id,
                 recommendation_type=RecommendationType.CURATED
             )
 
