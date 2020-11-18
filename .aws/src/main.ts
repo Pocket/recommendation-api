@@ -79,7 +79,7 @@ class ExploreTopics extends TerraformStack {
                     secretEnvVars: [
                         {
                             name: 'SENTRY_DSN',
-                            valueFrom: `arn:aws:ssm:${region.name}:${caller.accountId}:parameter:${config.name}/${config.environment}/SENTRY_DSN`
+                            valueFrom: `arn:aws:ssm:${region.name}:${caller.accountId}:parameter/${config.name}/${config.environment}/SENTRY_DSN`
                         },
                     ]
                 }
@@ -114,7 +114,7 @@ class ExploreTopics extends TerraformStack {
                             "ssm:Get*",
                         ],
                         resources: [
-                            `arn:aws:ssm:${region.name}:${caller.accountId}:parameter:${config.name}/${config.environment}/*`,
+                            `arn:aws:ssm:${region.name}:${caller.accountId}:parameter/${config.name}/${config.environment}/*`,
                         ],
                         effect: 'Allow'
                     }
