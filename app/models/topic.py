@@ -28,14 +28,14 @@ class TopicModel(BaseModel):
     custom_feed_id: str = None
 
     @staticmethod
-    def get_all() -> ['TopicModel']:
+    async def get_all() -> ['TopicModel']:
         dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
         table = dynamodb.Table(dynamodb_config['explore_topics_metadata_table'])
         response = table.scan()
         return list(map(TopicModel.parse_obj, response['Items']))
 
     @staticmethod
-    def get_topic(slug: str) -> Optional['TopicModel']:
+    async def get_topic(slug: str) -> Optional['TopicModel']:
         dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
         table = dynamodb.Table(dynamodb_config['explore_topics_metadata_table'])
         response = table.query(IndexName='slug', Limit=1, KeyConditionExpression=Key('slug').eq(slug))

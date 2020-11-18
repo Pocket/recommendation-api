@@ -5,6 +5,7 @@ from app.config import sentry as sentry_config
 from fastapi import FastAPI, Request
 from starlette.graphql import GraphQLApp
 from app.graphql.graphql import schema
+from graphql.execution.executors.asyncio import AsyncioExecutor
 
 sentry_sdk.init(
     dsn=sentry_config['dsn'],
@@ -16,11 +17,14 @@ sentry_sdk.init(
 app = FastAPI()
 
 # Add our GraphQL route to the main url
-app.add_route("/", GraphQLApp(schema=schema))
+app.add_route("/", GraphQLApp(schema=schema,
+                              executor_class=AsyncioExecutor))
+
 
 @app.get("/health-check")
-def read_root():
+async def read_root():
     return {"Hello": "World"}
+
 
 # Middleware for FastAPI to grab http exceptions
 # https://medium.com/@PhilippeGirard5/integrate-sentry-to-fastapi-7250603c070f

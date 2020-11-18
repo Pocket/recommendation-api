@@ -1,3 +1,4 @@
+import pytest
 from moto import mock_dynamodb2
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 
@@ -19,7 +20,7 @@ class TestRecommendationsModel(TestDynamoDBBase):
         super().teardown_method(self)
         self.candidateTable.delete()
 
-    def test_get_latest_curated_candidates_for_topic(self):
+    async def test_get_latest_curated_candidates_for_topic(self):
         self.candidateTable.put_item(Item={
             "id": "asdasd-12sd1asd3-5512",
             "topic_id": 'a187ffb4-5c6f-4079-bad9-92442e97bdd1',
@@ -76,8 +77,7 @@ class TestRecommendationsModel(TestDynamoDBBase):
                 }
             ]
         })
-
-        executed = RecommendationModel.get_recommendations(topic_id='a187ffb4-5c6f-4079-bad9-92442e97bdd1',
+        executed = await RecommendationModel.get_recommendations(topic_id='a187ffb4-5c6f-4079-bad9-92442e97bdd1',
                                                            recommendation_type=RecommendationType.CURATED)
         assert executed == [
             RecommendationModel(item_id=986, feed_id=6, feed_item_id='ExploreTopics/986', publisher='test.yes'),

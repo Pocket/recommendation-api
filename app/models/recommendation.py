@@ -26,7 +26,7 @@ class RecommendationModel(BaseModel):
         return recommendation
 
     @staticmethod
-    def get_recommendations(topic_id: str, recommendation_type: RecommendationType) -> ['RecommendationModel']:
+    async def get_recommendations(topic_id: str, recommendation_type: RecommendationType) -> ['RecommendationModel']:
         dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
         table = dynamodb.Table(dynamodb_config['explore_topics_candidates_table'])
         response = table.query(IndexName='topic_id-type', Limit=1,
@@ -36,4 +36,5 @@ class RecommendationModel(BaseModel):
         if not response['Items']:
             return []
         # assume 'candidates' below contains publisher
+        # TODO: could probably map async this
         return list(map(RecommendationModel.dynamodb_candidate_to_recommendation, response['Items'][0]['candidates']))

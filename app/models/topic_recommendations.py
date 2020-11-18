@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import List
 from app.models.recommendation import RecommendationModel, RecommendationType
 from app.models.topic import TopicModel, PageType
+import asyncio
 
 
 class TopicRecommendationsModel(BaseModel):
@@ -9,33 +10,34 @@ class TopicRecommendationsModel(BaseModel):
     algorithmic_recommendations: List[RecommendationModel] = []
 
     @staticmethod
-    def get_recommendations(
+    async def get_recommendations(
             slug: str,
             algorithmic_count: int,
             curated_count: int,
             publisher_spread: int = 3) -> ['TopicRecommendationsModel']:
 
         # Pull in the topic so we can split what we do based on the page type.
-        topic = TopicModel.get_topic(slug=slug)
+        topic = await TopicModel.get_topic(slug=slug)
 
         topic_recommendations = TopicRecommendationsModel()
 
         if topic.page_type == PageType.editorial_collection:
             # Editorial collections just use the curated_recommendation responses but are saved in dynamodb as a
             # "collection"
-            topic_recommendations.curated_recommendations = RecommendationModel.get_recommendations(
+            topic_recommendations.curated_recommendations = await RecommendationModel.get_recommendations(
                 topic_id=topic.id,
                 recommendation_type=RecommendationType.COLLECTION
             )
         else:
-            topic_recommendations.algorithmic_recommendations = RecommendationModel.get_recommendations(
+            algorithmic_results, curated_results = await asyncio.gather(RecommendationModel.get_recommendations(
                 topic_id=topic.id,
                 recommendation_type=RecommendationType.ALGORITHMIC,
-            )
-            topic_recommendations.curated_recommendations = RecommendationModel.get_recommendations(
+            ), RecommendationModel.get_recommendations(
                 topic_id=topic.id,
                 recommendation_type=RecommendationType.CURATED
-            )
+            ))
+            topic_recommendations.algorithmic_recommendations = algorithmic_results
+            topic_recommendations.curated_recommendations = curated_results
 
         # dedupe items in the algorithmic recommendations
         topic_recommendations = TopicRecommendationsModelUtils.dedupe(topic_recommendations)
