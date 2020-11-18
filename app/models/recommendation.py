@@ -26,13 +26,12 @@ class RecommendationModel(BaseModel):
         return recommendation
 
     @staticmethod
-    async def get_recommendations(slug: str, recommendation_type: RecommendationType) -> ['RecommendationModel']:
-        topic = await TopicModel.get_topic(slug=slug)
+    async def get_recommendations(topic_id: str, recommendation_type: RecommendationType) -> ['RecommendationModel']:
         dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
         table = dynamodb.Table(dynamodb_config['explore_topics_candidates_table'])
         response = table.query(IndexName='topic_id-type', Limit=1,
                                KeyConditionExpression=Key('topic_id-type').eq(
-                                   topic.id + '|' + recommendation_type.value),
+                                   topic_id + '|' + recommendation_type.value),
                                ScanIndexForward=False)
         if not response['Items']:
             return []

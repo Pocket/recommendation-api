@@ -25,15 +25,15 @@ class TopicRecommendationsModel(BaseModel):
             # Editorial collections just use the curated_recommendation responses but are saved in dynamodb as a
             # "collection"
             topic_recommendations.curated_recommendations = await RecommendationModel.get_recommendations(
-                slug=slug,
+                topic_id=topic.id,
                 recommendation_type=RecommendationType.COLLECTION
             )
         else:
             algorithmic_results, curated_results = await asyncio.gather(RecommendationModel.get_recommendations(
-                slug=slug,
+                topic_id=topic.id,
                 recommendation_type=RecommendationType.ALGORITHMIC,
             ), RecommendationModel.get_recommendations(
-                slug=slug,
+                topic_id=topic.id,
                 recommendation_type=RecommendationType.CURATED
             ))
             topic_recommendations.algorithmic_recommendations = algorithmic_results
