@@ -1,3 +1,4 @@
+from graphql.execution.executors.asyncio import AsyncioExecutor
 from moto import mock_dynamodb2
 from graphene.test import Client
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
@@ -60,7 +61,7 @@ class TestGraphQLCandidates(TestDynamoDBBase):
                 algorithmicRecommendations {feedItemId itemId feedId publisher}
                 curatedRecommendations {feedItemId itemId feedId publisher}
             }
-        }''')
+        }''', executor=AsyncioExecutor())
         assert executed == {
             'data': {
                 'getTopicRecommendations': {
@@ -148,7 +149,7 @@ class TestGraphQLCandidates(TestDynamoDBBase):
                 algorithmicRecommendations {feedItemId itemId feedId publisher}
                 curatedRecommendations {feedItemId itemId feedId publisher}
             }
-        }''')
+        }''', executor=AsyncioExecutor())
         assert executed == {
             'data': {
                 'getTopicRecommendations': {

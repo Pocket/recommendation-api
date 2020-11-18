@@ -17,14 +17,14 @@ class TopicRecommendationsModel(BaseModel):
             publisher_spread: int = 3) -> ['TopicRecommendationsModel']:
 
         # Pull in the topic so we can split what we do based on the page type.
-        topic = TopicModel.get_topic(slug=slug)
+        topic = await TopicModel.get_topic(slug=slug)
 
         topic_recommendations = TopicRecommendationsModel()
 
         if topic.page_type == PageType.editorial_collection:
             # Editorial collections just use the curated_recommendation responses but are saved in dynamodb as a
             # "collection"
-            topic_recommendations.curated_recommendations = RecommendationModel.get_recommendations(
+            topic_recommendations.curated_recommendations = await RecommendationModel.get_recommendations(
                 slug=slug,
                 recommendation_type=RecommendationType.COLLECTION
             )

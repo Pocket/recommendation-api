@@ -5,7 +5,7 @@ from app.config import dynamodb as dynamodb_config, ROOT_DIR
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 
 
-class TestDynamoDBBase(unittest.TestCase):
+class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
     dynamodb: DynamoDBServiceResource
     jsonRoot = ROOT_DIR + '.docker/localstack/dynamodb/'
 
