@@ -11,9 +11,9 @@ class Query(ObjectType):
     get_topic_recommendations = Field(TopicRecommendations, slug=String(required=True, description="Topic slug to get "
                                                                                                    "recommendations "
                                                                                                    "for"),
-                                      algorithmic_count=Int(default_value=30, description="Number of algorithmic "
+                                      algorithmic_count=Int(default_value=20, description="Number of algorithmic "
                                                                                           "results to return"),
-                                      curated_count=Int(default_value=30, description="Number of curated "
+                                      curated_count=Int(default_value=5, description="Number of curated "
                                                                                       "results to return"))
     list_topics = List(Topic)
 
