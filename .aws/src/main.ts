@@ -42,8 +42,6 @@ class ExploreTopics extends TerraformStack {
 
         const dynamodb = new DynamoDB(this, 'dynamodb');
 
-        c
-
         new PocketALBApplication(this, 'application', {
             internal: true,
             prefix: config.prefix,
