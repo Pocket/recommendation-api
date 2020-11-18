@@ -76,7 +76,7 @@ class ExploreTopics extends TerraformStack {
         {
           name: 'xray-daemon',
           containerImage: 'amazon/aws-xray-daemon',
-          hostPort: 0,
+          hostPort: 2000,
           containerPort: 2000,
           protocol: 'udp',
           command: ['--region', 'us-east-1', '--local-mode'],
