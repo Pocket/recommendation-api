@@ -3,6 +3,7 @@ from typing import List
 from app.models.recommendation import RecommendationModel, RecommendationType
 from app.models.topic import TopicModel, PageType
 import asyncio
+from aws_xray_sdk.core import xray_recorder
 
 
 class TopicRecommendationsModel(BaseModel):
@@ -10,6 +11,7 @@ class TopicRecommendationsModel(BaseModel):
     algorithmic_recommendations: List[RecommendationModel] = []
 
     @staticmethod
+    @xray_recorder.capture_async('models_topic_get_recommendations')
     async def get_recommendations(
             slug: str,
             algorithmic_count: int,
@@ -57,6 +59,7 @@ class TopicRecommendationsModel(BaseModel):
 
 class TopicRecommendationsModelUtils:
     @staticmethod
+    @xray_recorder.capture_async('models_topic_dedupe')
     def dedupe(topic_recs_model: TopicRecommendationsModel) -> TopicRecommendationsModel:
         """
         If a recommendation exists in both the curated and algorithmic lists, removes that recommendation from the
@@ -93,6 +96,7 @@ class TopicRecommendationsModelUtils:
         return topic_recommendations
 
     @staticmethod
+    @xray_recorder.capture_async('models_topic_spread_publishers')
     def spread_publishers(recs: List[RecommendationModel], spread: int = 3) -> List[RecommendationModel]:
         """
         Makes sure stories from the same publisher/domain are not listed sequentially, and have a configurable number
