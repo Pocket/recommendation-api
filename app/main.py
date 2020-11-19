@@ -20,7 +20,7 @@ sentry_sdk.init(
 )
 
 # Standard asyncio X-Ray configuration, customise as you choose
-xray_recorder.configure(context=AsyncContext(), service=service.get('name', 'ExploreTopics'))
+xray_recorder.configure(context=AsyncContext(), service=service.get('domain'))
 
 app = FastAPI()
 app.add_middleware(BaseHTTPMiddleware, dispatch=xray_middleware)

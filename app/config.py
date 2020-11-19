@@ -4,7 +4,8 @@ import os
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) + '/../'
 
 service = {
-    'name': 'ExploreTopics'
+    'domain': 'explore-topics.readitlater.com' if os.getenv(
+        'ENVIRONMENT') == 'production' else 'explore-topics.getpocket.dev'
 }
 
 dynamodb = {
