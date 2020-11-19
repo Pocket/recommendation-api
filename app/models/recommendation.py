@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-import boto3
+import aioboto3
 from boto3.dynamodb.conditions import Key
 from app.config import dynamodb as dynamodb_config
 from app.models.topic import TopicModel
@@ -27,14 +27,12 @@ class RecommendationModel(BaseModel):
 
     @staticmethod
     async def get_recommendations(topic_id: str, recommendation_type: RecommendationType) -> ['RecommendationModel']:
-        dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
-        table = dynamodb.Table(dynamodb_config['explore_topics_candidates_table'])
-        response = table.query(IndexName='topic_id-type', Limit=1,
-                               KeyConditionExpression=Key('topic_id-type').eq(
-                                   topic_id + '|' + recommendation_type.value),
-                               ScanIndexForward=False)
+        async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
+            table = await dynamodb.Table(dynamodb_config['explore_topics_candidates_table'])
+            key_condition = Key('topic_id-type').eq(topic_id + '|' + recommendation_type.value)
+            response = await table.query(IndexName='topic_id-type', Limit=1, KeyConditionExpression=key_condition,
+                                         ScanIndexForward=False)
         if not response['Items']:
             return []
         # assume 'candidates' below contains publisher
-        # TODO: could probably map async this
         return list(map(RecommendationModel.dynamodb_candidate_to_recommendation, response['Items'][0]['candidates']))

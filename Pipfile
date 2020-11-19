@@ -1,3 +1,5 @@
+# TODO: Separate dependencies for the server, lambda, and jobs. Separate pipenv files in /jobs, /aws_lambda? Or separate repos?
+
 [[source]]
 name = "pypi"
 url = "https://pypi.org/simple"
@@ -9,19 +11,18 @@ pytest-cov = "*"
 coverage = "*"
 requests = "*"
 moto = "==1.3.16"
-ipython = "*"
+# ipython = "*"
 mypy_boto3_dynamodb = "*"
 pytest-mock = "*"
 aws_secretsmanager_caching = "*"
 
 [packages]
-metaflow = "*"
+# metaflow = "*"
 graphene = "*"
 graphene-federation = "*"
 starlette = "*"
-elasticsearch = "==7.1.0"
-elasticsearch-dsl = "==7.1.0"
-boto3 = "==1.16.15"
+# elasticsearch = "==7.1.0"
+# elasticsearch-dsl = "==7.1.0"
 # We define the essential stubs
 boto3-stubs = {extras = ["essential"], version = "==1.16.15.0"}
 sentry-sdk = "*"
@@ -34,6 +35,7 @@ fastapi = "*"
 uvloop = "*"
 httptools = "*"
 gql = "*"
+aioboto3 = "*"
 
 [requires]
 python_version = "3.8"

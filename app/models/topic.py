@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel
-import boto3
+import aioboto3
 from app.config import dynamodb as dynamodb_config
 from boto3.dynamodb.conditions import Key
 
@@ -29,16 +29,16 @@ class TopicModel(BaseModel):
 
     @staticmethod
     async def get_all() -> ['TopicModel']:
-        dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
-        table = dynamodb.Table(dynamodb_config['explore_topics_metadata_table'])
-        response = table.scan()
+        async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
+            table = await dynamodb.Table(dynamodb_config['explore_topics_metadata_table'])
+            response = await table.scan()
         return list(map(TopicModel.parse_obj, response['Items']))
 
     @staticmethod
     async def get_topic(slug: str) -> Optional['TopicModel']:
-        dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
-        table = dynamodb.Table(dynamodb_config['explore_topics_metadata_table'])
-        response = table.query(IndexName='slug', Limit=1, KeyConditionExpression=Key('slug').eq(slug))
+        async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
+            table = await dynamodb.Table(dynamodb_config['explore_topics_metadata_table'])
+            response = await table.query(IndexName='slug', Limit=1, KeyConditionExpression=Key('slug').eq(slug))
         if response['Items']:
             return TopicModel.parse_obj(response['Items'][0])
         raise ValueError('Topic not found')
