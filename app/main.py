@@ -6,6 +6,11 @@ from fastapi import FastAPI, Request
 from starlette.graphql import GraphQLApp
 from app.graphql.graphql import schema
 from graphql.execution.executors.asyncio import AsyncioExecutor
+from starlette.middleware.base import BaseHTTPMiddleware
+from aws_xray_sdk.core import xray_recorder
+from xraysink.context import AsyncContext
+from xraysink.asgi.middleware import xray_middleware
+from app.config import service
 
 sentry_sdk.init(
     dsn=sentry_config['dsn'],
@@ -14,7 +19,11 @@ sentry_sdk.init(
     traces_sample_rate=0.1
 )
 
+# Standard asyncio X-Ray configuration, customise as you choose
+xray_recorder.configure(context=AsyncContext(), service=service.get('domain'))
+
 app = FastAPI()
+app.add_middleware(BaseHTTPMiddleware, dispatch=xray_middleware)
 
 # Add our GraphQL route to the main url
 app.add_route("/", GraphQLApp(schema=schema,

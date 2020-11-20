@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "0c7109de923e7aeda9e2df5f4e8ad55cd0f778aba7962f5e6b72bbbc07a294ca"
+            "sha256": "e7e8e9a9821d2eb2b27d86c1c9e39dff42db66500e07e99b61e4717740157de2"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -30,6 +30,14 @@
             ],
             "markers": "python_version >= '3.5'",
             "version": "==2.3.3"
+        },
+        "aws-xray-sdk": {
+            "hashes": [
+                "sha256:076f7c610cd3564bbba3507d43e328fb6ff4a2e841d3590f39b2c3ce99d41e1d",
+                "sha256:abf5b90f740e1f402e23414c9670e59cb9772e235e271fef2bce62b9100cbc77"
+            ],
+            "index": "pypi",
+            "version": "==2.6.0"
         },
         "boto3": {
             "hashes": [
@@ -102,6 +110,13 @@
             ],
             "index": "pypi",
             "version": "==0.61.2"
+        },
+        "future": {
+            "hashes": [
+                "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"
+            ],
+            "markers": "python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "version": "==0.18.2"
         },
         "gql": {
             "hashes": [
@@ -189,6 +204,14 @@
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==2.10"
         },
+        "importlib-metadata": {
+            "hashes": [
+                "sha256:77a540690e24b0305878c37ffd421785a6f7e53c8b5720d211b211de8d0e95da",
+                "sha256:cefa1a2f919b866c5beb7c9f7b0ebb4061f30a8a9bf16d609b000e2dfaceb9c3"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
+            "version": "==2.0.0"
+        },
         "isort": {
             "hashes": [
                 "sha256:54da7e92468955c4fceacd0c86bd0ec997b0e1ee80d97f67c35a78b719dccab1",
@@ -204,6 +227,14 @@
             ],
             "markers": "python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==0.10.0"
+        },
+        "jsonpickle": {
+            "hashes": [
+                "sha256:8919c166bac0574e3d74425c7559434062002d9dfc0ac2afa6dc746ba4a19439",
+                "sha256:e8d4b7cd0bd6826001a74377df1079a76ad8bae0f909282de2554164c837c8ba"
+            ],
+            "markers": "python_version >= '2.7'",
+            "version": "==1.4.1"
         },
         "lazy-object-proxy": {
             "hashes": [
@@ -423,6 +454,22 @@
                 "sha256:565a021fd19419476b9362b05eeaa094178de64f8361e44468f9e9d7843901e1"
             ],
             "version": "==1.11.2"
+        },
+        "xraysink": {
+            "hashes": [
+                "sha256:60bb9ac43e085f6a98a9ade37185868a03154b58a66d07971a711df582ec6b72",
+                "sha256:ac132d370a332a028fe891feedfedcbeb7b851d79b91770d906baab343b9b420"
+            ],
+            "index": "pypi",
+            "version": "==1.3.1"
+        },
+        "zipp": {
+            "hashes": [
+                "sha256:102c24ef8f171fd729d46599845e95c7ab894a4cf45f5de11a44cc7444fb1108",
+                "sha256:ed5eee1974372595f9e416cc7bbeeb12335201d8081ca8a0743c954d4446e5cb"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==3.4.0"
         }
     },
     "develop": {
@@ -444,11 +491,11 @@
         },
         "aws-sam-translator": {
             "hashes": [
-                "sha256:0e7aee471d35a4f700d24bca3f351287ff6ba72ab4718d475fb7a5eb96697551",
-                "sha256:5f7e122738537acd6aa42605a166cf08c45a91f52e22a705c67d5c0e5d692f13",
-                "sha256:bb557e08b39f9bce6a5a0ec87e086b420846e285295e39ce86842f4e371bbb77"
+                "sha256:7383422b3bb546dc09e2695cca6a7fc67a1eb0f575a97ebf8284275a409150eb",
+                "sha256:e2b3213f449fe98e529c2f209d4ba7e0a2baeabdbd59b4d6c3c651bd277316fc",
+                "sha256:fcd7d1464000562a189ff3339ce5ce5559386cbc7923edd7f9e75f1cf379aafb"
             ],
-            "version": "==1.29.0"
+            "version": "==1.30.0"
         },
         "aws-secretsmanager-caching": {
             "hashes": [
@@ -464,6 +511,7 @@
                 "sha256:076f7c610cd3564bbba3507d43e328fb6ff4a2e841d3590f39b2c3ce99d41e1d",
                 "sha256:abf5b90f740e1f402e23414c9670e59cb9772e235e271fef2bce62b9100cbc77"
             ],
+            "index": "pypi",
             "version": "==2.6.0"
         },
         "backcall": {

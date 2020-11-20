@@ -3,6 +3,7 @@ import boto3
 import json
 from app.config import dynamodb as dynamodb_config, ROOT_DIR
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
+from aws_xray_sdk import global_sdk_config
 
 
 class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
@@ -11,6 +12,7 @@ class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
 
     def setup_method(self, method):
         self.dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
+        global_sdk_config.set_sdk_enabled(False)
 
     def teardown_method(self, method):
         self.dynamodb = None
