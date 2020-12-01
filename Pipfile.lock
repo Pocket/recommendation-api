@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c586ccd0645fd1f668a86b5d9b8b27154897dc51c441666d84c70c2919b6107d"
+            "sha256": "84c13786a1dd87484e0ca3401afbc4df10c94f77794312d4818ae45f7c4aa0bb"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -59,10 +59,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:034dadecf19293a15da40272073093049519575df2b438954e2da0ffb7b8279f",
-                "sha256:88334b0a80416d3b662bba2067cc48afe9fd1515c3b8413d592a1933e41ce55a"
+                "sha256:4b3877d0285c02ad86f9de016f24d305cd129f81e8fd9383ef84495212944476",
+                "sha256:d409ac185cc1f55ae0614b30c98ab9c01ac710989ab28b4763704b727435546c"
             ],
-            "version": "==1.19.26"
+            "version": "==1.19.27"
         },
         "certifi": {
             "hashes": [
@@ -87,11 +87,11 @@
         },
         "elasticsearch": {
             "hashes": [
-                "sha256:0140787216646e1eb7eb001f8146aff7071d7ca438854249787b6cc221ddd266",
-                "sha256:283a6afa5dc08c21016c295b5237fbd9c74895b0b297ceb97c879ec7d67a5f47"
+                "sha256:9053ca99bc9db84f5d80e124a79a32dfa0f7079b2112b546a03241c0dbeda36d",
+                "sha256:9a21bfa7dc6a0b0dc142088bd653d8ce5ab284b4f7a3ded716185adf5276a7fe"
             ],
             "index": "pypi",
-            "version": "==7.1.0"
+            "version": "==7.10.0"
         },
         "elasticsearch-dsl": {
             "hashes": [
@@ -499,10 +499,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:034dadecf19293a15da40272073093049519575df2b438954e2da0ffb7b8279f",
-                "sha256:88334b0a80416d3b662bba2067cc48afe9fd1515c3b8413d592a1933e41ce55a"
+                "sha256:4b3877d0285c02ad86f9de016f24d305cd129f81e8fd9383ef84495212944476",
+                "sha256:d409ac185cc1f55ae0614b30c98ab9c01ac710989ab28b4763704b727435546c"
             ],
-            "version": "==1.19.26"
+            "version": "==1.19.27"
         },
         "certifi": {
             "hashes": [
