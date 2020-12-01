@@ -19,11 +19,11 @@ metaflow = "*"
 graphene = "*"
 graphene-federation = "*"
 starlette = "*"
-elasticsearch = "==7.1.0"
-elasticsearch-dsl = "==7.1.0"
-boto3 = "==1.16.15"
+elasticsearch = "==7.10.0"
+elasticsearch-dsl = "==7.3.0"
+boto3 = "==1.16.26"
 # We define the essential stubs
-boto3-stubs = {extras = ["essential"], version = "==1.16.15.0"}
+boto3-stubs = {extras = ["essential"], version = "==1.16.26.1"}
 sentry-sdk = "*"
 graphene-pydantic = "==0.1.0"
 # we need to install gunicorn, uvicorn, uvloop, httptools, and fastapi
@@ -35,6 +35,8 @@ uvloop = "*"
 httptools = "*"
 gql = "*"
 pynamodb = "*"
+xraysink = "*"
+aws-xray-sdk = "*"
 
 [requires]
 python_version = "3.8"

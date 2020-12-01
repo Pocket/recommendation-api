@@ -1,0 +1,84 @@
+# Thank you for trying serverless-artillery!
+# This default script is intended to get you started quickly.
+# There is a lot more that Artillery can do.
+# You can find great documentation of the possibilities at:
+# https://artillery.io/docs/
+config:
+  # this hostname will be used as a prefix for each URI in the flow unless a complete URI is specified
+  # dev
+  # target: "https://explore-topics.getpocket.dev"
+
+  # prod
+  target: "https://explore-topics.readitlater.com"
+
+  plugins:
+    expect: {}
+    cloudwatch:
+      namespace: serverless-artillery-explore-topics-loadtest
+  phases:
+    - duration: 900
+      arrivalRate: 1
+      rampTo: 2
+      name: "Warm up explore-topics 2req/sec"
+
+    - duration: 900
+      arrivalRate: 2
+      rampTo: 4
+      name: "Sustain load 4req/sec"
+
+  variables:
+    topicIds:
+      - ["politics", "business", "health", "science", "parenting", "technology", "food", "career", "travel"]
+
+      # the following slugs are still problematic
+      # education, coronavirus, personal-finance, sports
+
+scenarios:
+
+  - name: "listTopics"
+    flow:
+      - post:
+          url: "/"
+          headers:
+             Content-type: "application/json"
+          body: '{"query":"query {\n listTopics {\nid\npageType\ndisplayName\nslug\ncuratorLabel\nisDisplayed} \n}","variables":null}'
+          expect:
+            - statusCode: 200
+            - contentType: json
+            - hasProperty: data.listTopics[0].id
+              #- hasProperty: data.listTopics[0].slug
+              #- hasProperty: data.listTopics[0].pageType
+              #- hasProperty: data.listTopics[0].curatorLabel
+              #- hasProperty: data.listTopics[0].isDisplayed
+              #- hasProperty: data.listTopics[0].displayName
+
+  - name: "getTopicRecommendations.curatedRecommendations"
+    flow:
+      - loop:
+        - post:
+            url: "/"
+            headers:
+               Content-type: "application/json"
+            body: '{"query":"query {\n  getTopicRecommendations(slug: \"{{ $loopElement }}\", algorithmicCount:30, curatedCount: 30) {\n  curatedRecommendations{\n itemId\n publisher\n }\n  }\n}","variables":null}'
+            expect:
+              - statusCode: 200
+              - contentType: json
+              - hasProperty: data.getTopicRecommendations.curatedRecommendations[0].itemId
+              - hasProperty: data.getTopicRecommendations.curatedRecommendations[0].publisher
+        over: topicIds
+
+  - name: "getTopicRecommendations.algorithmicRecommendations"
+    flow:
+      - loop:
+        - post:
+            url: "/"
+            headers:
+              Content-type: "application/json"
+            body: '{"query":"query {\n  getTopicRecommendations(slug: \"{{ $loopElement }}\", algorithmicCount:30, curatedCount: 30) {\n algorithmicRecommendations{\n itemId\n publisher\n }\n }\n}","variables":null}'
+            expect:
+              - statusCode: 200
+              - contentType: json
+              - hasProperty: data.getTopicRecommendations.algorithmicRecommendations[0].itemId
+              - hasProperty: data.getTopicRecommendations.algorithmicRecommendations[0].publisher
+        over: topicIds
+

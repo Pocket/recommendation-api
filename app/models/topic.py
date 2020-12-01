@@ -5,6 +5,7 @@ from pydantic import BaseModel
 import boto3
 from app.config import dynamodb as dynamodb_config
 from boto3.dynamodb.conditions import Key
+from aws_xray_sdk.core import xray_recorder
 
 
 class PageType(str, Enum):
@@ -28,14 +29,16 @@ class TopicModel(BaseModel):
     custom_feed_id: str = None
 
     @staticmethod
-    def get_all() -> ['TopicModel']:
+    @xray_recorder.capture_async('models_topic_get_all')
+    async def get_all() -> ['TopicModel']:
         dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
         table = dynamodb.Table(dynamodb_config['explore_topics_metadata_table'])
         response = table.scan()
         return list(map(TopicModel.parse_obj, response['Items']))
 
     @staticmethod
-    def get_topic(slug: str) -> Optional['TopicModel']:
+    @xray_recorder.capture_async('models_topic_get_topic')
+    async def get_topic(slug: str) -> Optional['TopicModel']:
         dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
         table = dynamodb.Table(dynamodb_config['explore_topics_metadata_table'])
         response = table.query(IndexName='slug', Limit=1, KeyConditionExpression=Key('slug').eq(slug))

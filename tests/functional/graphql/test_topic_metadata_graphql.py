@@ -1,3 +1,4 @@
+from graphql.execution.executors.asyncio import AsyncioExecutor
 from moto import mock_dynamodb2
 from graphene.test import Client
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
@@ -23,7 +24,7 @@ class TestGraphQLMetadata(TestDynamoDBBase):
         self.table.delete()
 
     def test_main_list_topics(self):
-        executed = self.client.execute('''{ listTopics { displayName} }''')
+        executed = self.client.execute('''{ listTopics { displayName} }''', executor=AsyncioExecutor())
         assert executed == {
             'data': {
                 'listTopics': [{
