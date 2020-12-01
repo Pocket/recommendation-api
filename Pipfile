@@ -21,7 +21,7 @@ graphene-federation = "*"
 starlette = "*"
 elasticsearch = "==7.1.0"
 elasticsearch-dsl = "==7.1.0"
-boto3 = "==1.16.15"
+boto3 = "==1.16.26"
 # We define the essential stubs
 boto3-stubs = {extras = ["essential"], version = "==1.16.15.0"}
 sentry-sdk = "*"
