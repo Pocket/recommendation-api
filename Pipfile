@@ -34,6 +34,7 @@ fastapi = "*"
 uvloop = "*"
 httptools = "*"
 gql = "*"
+pynamodb = "*"
 
 [requires]
 python_version = "3.8"

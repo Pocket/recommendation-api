@@ -1,6 +1,5 @@
 import json
 import logging
-import boto3
 import os
 from metaflow import FlowSpec, step, Parameter, IncludeFile, conda, conda_base, schedule, Flow, namespace
 
@@ -73,6 +72,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         This is the 'start' step. All flows must have a step named 'start' that
         is the first step in the flow.
         """
+        import boto3
         from elasticsearch import Elasticsearch, RequestsHttpConnection
         from requests_aws4auth import AWS4Auth
         from jobs.utils import get_topic_map
@@ -82,7 +82,6 @@ class AlgorithmicCandidatesFlow(FlowSpec):
 
         logger.info("AlgorithmicCandidatesFlow is starting.")
         self.topic_map = get_topic_map()
-        self.domain_allowlist = json.loads(self.domain_allowlist_file)
         self.topics = [k for k, x in self.topic_map.items() if x["pageType"] == "topic_page"]
         logger.info(f"flow will process {len(self.topics)} topics.")
 
@@ -119,9 +118,6 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         # get vectorizer, one hot mappings for google categories and domains
         self.featurizer = training_run.data.featurizer
 
-        # get generic approval model
-        self.generic_ranking_model = training_run.data.generic_classifier
-
         # get per-topic approval models
         self.topic_approval_models = training_run.data.approval_classifiers
 
@@ -153,8 +149,9 @@ class AlgorithmicCandidatesFlow(FlowSpec):
                                                            save_origin=self.save_origin,
                                                            save_scale=self.save_scale)
         self.topic_id = self.input
-
+        domain_allowlist = json.loads(self.domain_allowlist_file)
         logger.info(f"Metaflow says its time to get some elasticsearch results for: {self.input}")
+        logger.info(f"min_saves: {self.min_saves} scale: {self.time_scale}")
         try:
             s = Search(using=self.es, index=self.es_path).query("function_score",
                                                                 query=topic_query,
@@ -162,10 +159,10 @@ class AlgorithmicCandidatesFlow(FlowSpec):
                                                                 functions=score_fuctions)
 
             # get 3x results in case some are duplicates or filtered downstream
-            total = min(9000, self.limit*9)
+            total = min(900, self.limit*9)
             s = s[:total]
             self.search_results = postprocess_search_results(s.execute().to_dict(),
-                                                             self.domain_allowlist,
+                                                             domain_allowlist,
                                                              self.limit*6)
 
         except (NotFoundError, RequestError, AuthorizationException) as err:

@@ -29,7 +29,7 @@ def order_curated_by_approval_time(raw_results: Dict, feed_id: int = None) -> Li
                 feed_id_used = feed_id
                 break
             else:  # otherwise get most recent approval time
-                if not time_live or time_live > feed["approved_feed_time_live"]:
+                if not time_live or time_live < feed["approved_feed_time_live"]:
                     time_live = feed["approved_feed_time_live"]
                     feed_id_used = feed["approved_feed_id"]
 
