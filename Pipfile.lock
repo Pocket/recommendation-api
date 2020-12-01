@@ -103,11 +103,11 @@
         },
         "fastapi": {
             "hashes": [
-                "sha256:8c8517680a221e69eb34073adf46c503092db2f24845b7bdc7f85b54f24ff0df",
-                "sha256:9e0494fcbba98f85b8cc9b2606bb6b625246e1b12f79ca61f508b0b00843eca6"
+                "sha256:62074dd38541d9d7245f3aacbbd0d44340c53d56186c9b249d261a18dad4874b",
+                "sha256:8f4c64cd9cea67fb7dd175ca5015961efa572b9f43a8731014dac8929d86225f"
             ],
             "index": "pypi",
-            "version": "==0.61.2"
+            "version": "==0.62.0"
         },
         "future": {
             "hashes": [
@@ -453,11 +453,11 @@
         },
         "aws-sam-translator": {
             "hashes": [
-                "sha256:3a1d73d098161e60966b0d53bb310c98e4f66101688cce3d1697903643782d79",
-                "sha256:65749571042e704027bbcaabe6dddd5d13ab54959c46e60c347918d6b85551fd",
-                "sha256:b87a61cffba8f29e4f1b5eb43a4abafdfb14b76aedc716517d48dbdf0b1f989a"
+                "sha256:321eb7d4ef09efe0ad4586ac8b355fd6e386fcd70cdd1852de83e3a704fc09f9",
+                "sha256:4e10d53b5cd1e3ff76eb6741785f219fe5451a40b28dfb990a28cb36d1c98f6f",
+                "sha256:8cbfac02529b79703541e25541b01c80868f11b0ff2a8f9032b235130d9d56ae"
             ],
-            "version": "==1.31.0"
+            "version": "==1.32.0"
         },
         "aws-secretsmanager-caching": {
             "hashes": [
