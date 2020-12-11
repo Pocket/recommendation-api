@@ -11,7 +11,8 @@ service = {
 dynamodb = {
     'endpoint_url': os.getenv('AWS_DYNAMODB_ENDPOINT_URL', None),
     'explore_topics_metadata_table': os.getenv('EXPLORE_TOPICS_METADATA_TABLE', 'explore_topics_metadata'),
-    'explore_topics_candidates_table': os.getenv('EXPLORE_TOPICS_CANDIDATES_TABLE', 'explore_topics_candidates')
+    'explore_topics_candidates_table': os.getenv('EXPLORE_TOPICS_CANDIDATES_TABLE', 'explore_topics_candidates'),
+    'explore_topics_clickdata_table': os.getenv('EXPLORE_TOPICS_CLICKDATA_TABLE', 'explore_topics_clickdata')
 }
 
 sentry = {
