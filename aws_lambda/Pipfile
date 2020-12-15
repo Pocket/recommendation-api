@@ -3,18 +3,39 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
+[dev-packages]
+pytest = "*"
+pytest-cov = "*"
+coverage = "*"
+requests = "*"
+moto = "==1.3.16"
+ipython = "*"
+mypy_boto3_dynamodb = "*"
+pytest-mock = "*"
+aws_secretsmanager_caching = "*"
+
 [packages]
 metaflow = "*"
-boto3 = "==1.16.6"
-aws_secretsmanager_caching = "*"
+graphene = "*"
+graphene-federation = "*"
+starlette = "*"
+elasticsearch = "==7.10.0"
+elasticsearch-dsl = "==7.3.0"
+boto3 = "==1.16.26"
+# We define the essential stubs
+boto3-stubs = {extras = ["essential"], version = "==1.16.26.1"}
 sentry-sdk = "*"
+graphene-pydantic = "==0.1.0"
+# we need to install gunicorn, uvicorn, uvloop, httptools, and fastapi
+# so it starts in the virtualenv instead of the one in the docker image
+gunicorn = "*"
+uvicorn = "*"
+fastapi = "*"
+uvloop = "*"
+httptools = "*"
+gql = "*"
+xraysink = "*"
+aws-xray-sdk = "*"
 
 [requires]
 python_version = "3.8"
-
-[dev-packages]
-moto = "==1.3.16"
-mypy-boto3-dynamodb = "*"
-pytest-mock = "*"
-pytest = "*"
-boto3-stubs = {extras = ["essential"], version = "==1.16.15.0"}
