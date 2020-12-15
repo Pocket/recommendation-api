@@ -1,9 +1,9 @@
-import {TerraformStack} from "cdktf";
+import {Resource} from "cdktf";
 import {Construct} from "constructs";
 import {config} from "./config";
 import {ApplicationDynamoDBTable} from "@pocket/terraform-modules";
 
-export class DynamoDB extends TerraformStack {
+export class DynamoDB extends Resource {
 
     public readonly candidatesTable: ApplicationDynamoDBTable
     public readonly metadataTable: ApplicationDynamoDBTable

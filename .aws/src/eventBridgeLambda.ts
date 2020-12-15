@@ -1,4 +1,4 @@
-import { TerraformStack } from "cdktf";
+import { Resource } from "cdktf";
 import { Construct } from "constructs";
 import { config } from "./config";
 import { ApplicationDynamoDBTable, PocketVPC } from "@pocket/terraform-modules";
@@ -7,8 +7,8 @@ import { LAMBDA_RUNTIMES } from "@pocket/terraform-modules/dist/src/base/Applica
 import { DataAwsSecretsmanagerSecretVersion, DataAwsSsmParameter } from "../.gen/providers/aws";
 
 
-export class EventBridgeLambda extends TerraformStack {
-  constructor(private scope: Construct, private name: string, candidatesTable: ApplicationDynamoDBTable) {
+export class EventBridgeLambda extends Resource {
+  constructor(scope: Construct, private name: string, candidatesTable: ApplicationDynamoDBTable) {
     super(scope, name);
 
     const vpc = new PocketVPC(this, 'pocket-shared-vpc');
