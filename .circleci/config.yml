@@ -30,6 +30,7 @@ jobs:
     parameters:
       project_path:
         default: "./"
+        type: string
     docker:
       - image: python:3.8
         auth:
@@ -247,13 +248,13 @@ workflows:
     jobs:
       - test:
           <<: *not_main
-          name: test_app
           context: pocket
+          name: test_app
       - test:
           <<: *not_main
+          context: pocket
           name: test_lambda
           project_path: 'aws_lambda/'
-          context: pocket
       - check_metaflow:
           <<: *not_main
           context: pocket
