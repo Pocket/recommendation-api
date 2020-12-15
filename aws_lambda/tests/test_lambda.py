@@ -5,8 +5,7 @@ from aws_lambda.config.index import secrets, metaflow
 from pytest_mock import mock
 from aws_lambda.tests.lambda_test_data import event, metaflow_data
 from moto import mock_dynamodb2, mock_secretsmanager
-
-import aws_lambda
+import pytest
 
 
 @mock_dynamodb2
@@ -17,6 +16,7 @@ class TestLambda(TestDynamoDBBase):
 
     @classmethod
     def setup_class(cls):
+        import aws_lambda
         aws_lambda.config.index.dynamodb['endpoint_url'] = None
         cls.dynamodb = boto3.resource('dynamodb')
 
@@ -35,6 +35,7 @@ class TestLambda(TestDynamoDBBase):
         metaflow['tag'] = self.metaflow_tag
 
     def test_handler(self, mocker):
+        import aws_lambda
         aws_lambda.index.handler(event)
         response = self.table.scan()
         test_1 = {
@@ -49,16 +50,20 @@ class TestLambda(TestDynamoDBBase):
         assert test_1 and test_2
 
     def test_get_flow_name(self, mocker):
+        import aws_lambda
         assert aws_lambda.index.get_flow_name(event) == 'CuratedCandidatesFlow'
 
     def test_get_run_id(self, mocker):
+        import aws_lambda
         assert aws_lambda.index.get_run_id(
             event) == 'd3f71c11-26d3-bbbc-6a7f-4efafc51f9d2_283eaaf0-5b60-f4fb-8cf7-9e629d1f9de1'
 
     def test_get_service_url(self, mocker):
         metaflow['service_url'] = 'http://test'
+        import aws_lambda
         assert aws_lambda.index.get_service_url() == 'http://test'
 
     def test_get_tag(self, mocker):
         metaflow['tag'] = 'test'
+        import aws_lambda
         assert aws_lambda.index.get_tag() == 'test'
