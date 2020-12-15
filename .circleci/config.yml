@@ -27,6 +27,9 @@ jobs:
             apollo service:push --graph=pocket-client-api --localSchemaFile=schema.graphql --key=$APOLLO_KEY --serviceURL=https://explore-topics.readitatler.com/ --serviceName=explore-topics
 
   test:
+    parameters:
+      project_path:
+        default: "./"
     docker:
       - image: python:3.8
         auth:
@@ -49,6 +52,7 @@ jobs:
       - run:
           name: Build environment and install requirements
           command: |
+            cd <<parameters.project_path>>
             pip install pipenv
             pipenv install --dev
       - run:
@@ -59,7 +63,7 @@ jobs:
           command: |
             mkdir test-reports
             export $(egrep -v '^#' .docker/local.env | xargs -0)
-            pipenv run pytest tests/ --junitxml=test-reports/junit.xml
+            pipenv run pytest <<parameters.project_path>>tests/ --junitxml=test-reports/junit.xml
       - store_test_results:
           path: test-reports
 
@@ -243,6 +247,12 @@ workflows:
     jobs:
       - test:
           <<: *not_main
+          name: test_app
+          context: pocket
+      - test:
+          <<: *not_main
+          name: test_lambda
+          project_path: 'aws_lambda/'
           context: pocket
       - check_metaflow:
           <<: *not_main
