@@ -14,7 +14,7 @@ export const config = {
   name,
   prefix: `${name}-${environment}`,
   circleCIPrefix: `/${name}/CircleCI/${environment}`,
-  shortName: 'EXTOP',
+  shortName: 'RECAPI',
   environment,
   domain,
   stateMachines: [
