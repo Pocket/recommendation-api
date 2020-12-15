@@ -11,3 +11,10 @@ sentry-sdk = "*"
 
 [requires]
 python_version = "3.8"
+
+[dev-packages]
+moto = "==1.3.16"
+mypy-boto3-dynamodb = "*"
+pytest-mock = "*"
+pytest = "*"
+boto3-stubs = {extras = ["essential"], version = "==1.16.15.0"}

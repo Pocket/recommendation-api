@@ -1,11 +1,12 @@
-from moto import mock_dynamodb2, mock_secretsmanager
 import boto3
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
-import aws_lambda
 from aws_lambda.config.index import secrets, metaflow
 from pytest_mock import mock
-from tests.functional.aws_lambda.lambda_test_data import event, metaflow_data
+from aws_lambda.tests.lambda_test_data import event, metaflow_data
+from moto import mock_dynamodb2, mock_secretsmanager
+
+import aws_lambda
 
 
 @mock_dynamodb2

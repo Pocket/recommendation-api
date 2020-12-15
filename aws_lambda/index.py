@@ -8,8 +8,7 @@ import uuid
 from datetime import datetime
 import sentry_sdk
 from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
-from aws_lambda.config.index import sentry, secrets, dynamodb as dynamodb_config, topic_types, metaflow
-import os
+from aws_lambda.config.index import sentry, dynamodb as dynamodb_config, topic_types, metaflow
 
 sentry_sdk.init(
     dsn=sentry.get('dsn'),
@@ -90,4 +89,3 @@ def get_service_url() -> str:
 
 def get_tag() -> str:
     return metaflow.get('tag')
-

@@ -1,4 +1,3 @@
-import pytest
 from moto import mock_dynamodb2
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 

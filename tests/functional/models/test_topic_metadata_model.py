@@ -1,4 +1,3 @@
-import pytest
 from moto import mock_dynamodb2
 
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
