@@ -17,7 +17,7 @@ class RecommendationModel(BaseModel):
     feed_item_id: str = None
     item_id: str = None
     feed_id: int = None
-    rec_src: str = 'ExploreTopics'
+    rec_src: str = 'RecommendationAPI'
     publisher: str = None
 
     @staticmethod
@@ -30,7 +30,7 @@ class RecommendationModel(BaseModel):
     @xray_recorder.capture_async('model_recommendations_get_recommendations')
     async def get_recommendations(topic_id: str, recommendation_type: RecommendationType) -> ['RecommendationModel']:
         dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
-        table = dynamodb.Table(dynamodb_config['explore_topics_candidates_table'])
+        table = dynamodb.Table(dynamodb_config['recommendation_api_candidates_table'])
         response = table.query(IndexName='topic_id-type', Limit=1,
                                KeyConditionExpression=Key('topic_id-type').eq(
                                    topic_id + '|' + recommendation_type.value),

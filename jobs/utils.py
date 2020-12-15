@@ -7,7 +7,7 @@ from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
 
 
-def get_topic_map(endpoint: str = "explore-topics.readitlater.com"):
+def get_topic_map(endpoint: str = "recommendation-api.readitlater.com"):
     query = gql("""
                      query {listTopics {
                                  id

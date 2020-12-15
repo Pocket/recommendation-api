@@ -27,8 +27,8 @@ class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
 
         return table
 
-    def create_explore_topics_metadata_table(self) -> DynamoDBServiceResource.Table:
-        return self.create_table(self.jsonRoot + 'explore_topics_metadata.json')
+    def create_recommendation_api_metadata_table(self) -> DynamoDBServiceResource.Table:
+        return self.create_table(self.jsonRoot + 'recommendation_api_metadata.json')
 
-    def create_explore_topics_candidates_table(self) -> DynamoDBServiceResource.Table:
-        return self.create_table(self.jsonRoot + 'explore_topics_candidates.json')
+    def create_recommendation_api_candidates_table(self) -> DynamoDBServiceResource.Table:
+        return self.create_table(self.jsonRoot + 'recommendation_api_candidates.json')

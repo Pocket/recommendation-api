@@ -6,20 +6,20 @@
 config:
   # this hostname will be used as a prefix for each URI in the flow unless a complete URI is specified
   # dev
-  # target: "https://explore-topics.getpocket.dev"
+  # target: "https://recommendation-api.getpocket.dev"
 
   # prod
-  target: "https://explore-topics.readitlater.com"
+  target: "https://recommendation-api.readitlater.com"
 
   plugins:
     expect: {}
     cloudwatch:
-      namespace: serverless-artillery-explore-topics-loadtest
+      namespace: serverless-artillery-recommendation-api-loadtest
   phases:
     - duration: 900
       arrivalRate: 1
       rampTo: 2
-      name: "Warm up explore-topics 2req/sec"
+      name: "Warm up recommendation-api 2req/sec"
 
     - duration: 900
       arrivalRate: 2

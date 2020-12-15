@@ -11,8 +11,8 @@ class TestTopicMetadata(TestDynamoDBBase):
     def setup_method(self, method):
         dynamodb_config['endpoint_url'] = None
         super().setup_method(self)
-        self.table = self.create_explore_topics_metadata_table()
-        self.populate_explore_topics_metadata_table()
+        self.table = self.create_recommendation_api_metadata_table()
+        self.populate_recommendation_api_metadata_table()
 
     def teardown_method(self, method):
         super().teardown_method(self)
@@ -59,7 +59,7 @@ class TestTopicMetadata(TestDynamoDBBase):
         with self.assertRaises(ValueError):
             await TopicModel.get_topic(slug='stonks')
 
-    def populate_explore_topics_metadata_table(self):
+    def populate_recommendation_api_metadata_table(self):
         self.table.put_item(Item={
             'id': 'a187ffb4-5c6f-4079-bad9-92442e97bdd1',
             "display_name": 'tech',

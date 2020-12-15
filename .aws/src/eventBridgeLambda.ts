@@ -74,7 +74,7 @@ export class EventBridgeLambda extends TerraformStack {
         }
       ],
       environment: {
-        EXPLORE_TOPICS_CANDIDATES_TABLE: candidatesTable.dynamodb.name,
+        RECOMMENDATION_API_CANDIDATES_TABLE: candidatesTable.dynamodb.name,
         SENTRY_DSN: sentryDsn,
         GIT_SHA: gitSha,
         ENVIRONMENT: config.environment === 'Prod' ? 'production' : 'development',
