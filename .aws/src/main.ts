@@ -1,5 +1,5 @@
 import {Construct} from 'constructs';
-import {App, RemoteBackend, TerraformStack} from 'cdktf';
+import {App, DataTerraformRemoteState, RemoteBackend, TerraformStack} from 'cdktf';
 import {
   AwsProvider,
   DataAwsCallerIdentity,
@@ -11,6 +11,8 @@ import {config} from './config';
 import {DynamoDB} from "./dynamodb";
 import {PocketALBApplication} from "@pocket/terraform-modules";
 import {EventBridgeLambda} from "./eventBridgeLambda";
+import {PocketPagerDuty} from "@pocket/terraform-modules/dist/src/pocket/PocketPagerDuty";
+import {PagerdutyProvider} from "../.gen/providers/pagerduty";
 
 class RecommendationAPI extends TerraformStack {
   constructor(scope: Construct, name: string) {
@@ -18,6 +20,10 @@ class RecommendationAPI extends TerraformStack {
 
     new AwsProvider(this, 'aws', {
       region: 'us-east-1',
+    });
+
+    new PagerdutyProvider(this, 'pagerduty_provider', {
+      token: undefined
     });
 
     new RemoteBackend(this, {
@@ -29,6 +35,21 @@ class RecommendationAPI extends TerraformStack {
         },
       ],
     });
+
+    const incidentManagement = new DataTerraformRemoteState(this, 'incident_management', {
+      organization: 'Pocket',
+      workspaces: {
+        name: 'incident-management'
+      }
+    });
+
+    const pagerDuty = new PocketPagerDuty(this, 'pagerduty', {
+      prefix: config.prefix,
+      service: {
+        criticalEscalationPolicyId: incidentManagement.get('policy_backend_critical_id'),
+        nonCriticalEscalationPolicyId: incidentManagement.get('policy_backend_non_critical_id')
+      }
+    })
 
     const region = new DataAwsRegion(this, 'region');
     const caller = new DataAwsCallerIdentity(this, 'caller');
@@ -145,11 +166,28 @@ class RecommendationAPI extends TerraformStack {
       autoscalingConfig: {
         targetMinCapacity: 2,
         targetMaxCapacity: 10
+      },
+      alarms: {
+        http5xxError: {
+          threshold: 10,
+          evaluationPeriods: 2,
+          period: 600,
+          actions: [pagerDuty.snsCriticalAlarmTopic.arn]
+        },
+        httpLatency: {
+          evaluationPeriods: 2,
+          threshold: 500,
+          actions: [pagerDuty.snsCriticalAlarmTopic.arn]
+        },
+        httpRequestCount: {
+          threshold: 5000,
+          evaluationPeriods: 2,
+          actions: [pagerDuty.snsCriticalAlarmTopic.arn]
+        }
       }
-
     });
 
-    new EventBridgeLambda(this, 'event-bridge-lambda', dynamodb.candidatesTable);
+    new EventBridgeLambda(this, 'event-bridge-lambda', dynamodb.candidatesTable, pagerDuty);
   }
 }
 
