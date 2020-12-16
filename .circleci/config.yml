@@ -50,7 +50,7 @@ jobs:
             mkdir test-reports
             export $(egrep -v '^#' .docker/local.env | xargs -0)
             cd <<parameters.pipenv_path>>
-            pytest tests/ --junitxml=test-reports/junit.xml
+            pipenv run pytest tests/ --junitxml=test-reports/junit.xml
       - store_test_results:
           path: test-reports
 
