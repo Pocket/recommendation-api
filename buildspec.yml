@@ -102,13 +102,15 @@ phases:
       # Install deployment packages from jobs/Pipfile.lock so we can run metaflow
       - cd jobs/
       - pipenv install --deploy
+      - pipenv shell
+      - cd ../
 
-      - pipenv run python ../AlgorithmicCandidatesFlow.py --environment=conda check
+      - python AlgorithmicCandidatesFlow.py --environment=conda check
 
       #### If the branch is main lets generate our metaflow functions
-      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then pipenv run python ../AlgorithmicCandidatesFlow.py --environment=conda --with retry step-functions create --tag $METAFLOW_DEPLOY_TAG; fi'
-      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then pipenv run python ../CuratedCandidatesFlow.py --environment=conda --with retry step-functions create --tag $METAFLOW_DEPLOY_TAG; fi'
-      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then pipenv run python ../CollectionCandidatesFlow.py --environment=conda --with retry step-functions create --tag $METAFLOW_DEPLOY_TAG; fi'
+      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then python AlgorithmicCandidatesFlow.py --environment=conda --with retry step-functions create --tag $METAFLOW_DEPLOY_TAG; fi'
+      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then python CuratedCandidatesFlow.py --environment=conda --with retry step-functions create --tag $METAFLOW_DEPLOY_TAG; fi'
+      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ] || [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then python CollectionCandidatesFlow.py --environment=conda --with retry step-functions create --tag $METAFLOW_DEPLOY_TAG; fi'
   post_build:
     commands:
       - echo Build completed on `date`
