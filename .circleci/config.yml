@@ -38,12 +38,20 @@ jobs:
           password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
+      - restore_cache:
+          key: deps-test-{{ checksum "Pipfile.lock" }}
       - run:
           name: Build environment and install requirements
+          environment:
+            WORKON_HOME: '/.venv'
           command: |
             cd <<parameters.pipenv_path>>
             pip install pipenv
             pipenv install --dev
+      - save_cache:
+          key: deps-test-{{ checksum "Pipfile.lock" }}
+          paths:
+            - "/.venv"
       - run:
           name: Run tests
           command: |
