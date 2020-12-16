@@ -41,7 +41,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: deps-test-{{ checksum "Pipfile.lock" }}
+          key: deps-test-{{ checksum "<<parameters.pipenv_path>>Pipfile.lock" }}
       - run:
           name: Build environment and install requirements
           command: |
@@ -49,7 +49,7 @@ jobs:
             pip install pipenv
             pipenv install --dev
       - save_cache:
-          key: deps-test-{{ checksum "Pipfile.lock" }}
+          key: deps-test-{{ checksum "<<parameters.pipenv_path>>Pipfile.lock" }}
           paths:
             - "~/.venv"
       - run:
