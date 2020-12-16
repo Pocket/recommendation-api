@@ -31,9 +31,6 @@ jobs:
       pipenv_path:
         default: "./"
         type: string
-      tests_path:
-        default: "tests/"
-        type: string
     docker:
       - image: python:3.8
         auth:
@@ -53,7 +50,7 @@ jobs:
             mkdir test-reports
             export $(egrep -v '^#' .docker/local.env | xargs -0)
             cd <<parameters.pipenv_path>>
-            pipenv run pytest <<parameters.tests_path>> --junitxml=test-reports/junit.xml
+            pytest tests/ --junitxml=test-reports/junit.xml
       - store_test_results:
           path: test-reports
 
@@ -244,7 +241,6 @@ workflows:
           context: pocket
           name: test_lambda
           pipenv_path: 'aws_lambda/'
-          tests_path: 'aws_lambda/tests/'
       - check_metaflow:
           <<: *not_main
           context: pocket
