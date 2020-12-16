@@ -86,12 +86,12 @@ export class EventBridgeLambda extends Resource {
             period: 10800, // 3 hours
             threshold: 1,
             comparisonOperator: 'LessThanThreshold',
-            actions: [pagerDuty.snsCriticalAlarmTopic.arn]
+            actions: [pagerDuty.snsNonCriticalAlarmTopic.arn]
           },
           errors: {
             period: 10800, // 3 hours
             threshold: 2,
-            actions: [pagerDuty.snsCriticalAlarmTopic.arn]
+            actions: [pagerDuty.snsNonCriticalAlarmTopic.arn]
           }
         }
       },
