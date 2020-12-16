@@ -1,52 +1,42 @@
-from moto import mock_dynamodb2
-import os
+from typing import Tuple
+
 import unittest
 import boto3
 import json
 from app.config import dynamodb as dynamodb_config, ROOT_DIR
-import pytest
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 
 
-DYNAMODB_LOCALSTACK_DIR = os.path.join(ROOT_DIR, '.docker/localstack/dynamodb/')
-
-
-@pytest.fixture(scope='function')
-def mock_dynamodb_resource():
-    with mock_dynamodb2():
-        yield boto3.resource('dynamodb')
-
-
-def create_table(dynamodb, table_schema_path) -> DynamoDBServiceResource.Table:
-    with open(table_schema_path) as f:
-        table_schema_json = json.load(f)
-
-    table = dynamodb.create_table(**table_schema_json)
-    table.meta.client.get_waiter('table_exists').wait(TableName=table.name)
-    assert table.table_status == 'ACTIVE'
-
-    return table
-
-
-def create_explore_topics_metadata_table(dynamodb) -> DynamoDBServiceResource.Table:
-    json_path = os.path.join(DYNAMODB_LOCALSTACK_DIR, 'explore_topics_metadata.json')
-    return create_table(dynamodb, json_path)
-
-
-def create_explore_topics_candidates_table(dynamodb) -> DynamoDBServiceResource.Table:
-    json_path = os.path.join(DYNAMODB_LOCALSTACK_DIR, 'explore_topics_candidates.json')
-    return create_table(dynamodb, json_path)
-
-
 class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
+    TABLE_NAMES: Tuple[str] = ('explore_topics_metadata', 'explore_topics_candidates')
     dynamodb: DynamoDBServiceResource
     jsonRoot = ROOT_DIR + '.docker/localstack/dynamodb/'
+    metadataTable: DynamoDBServiceResource.Table
+    candidateTable: DynamoDBServiceResource.Table
 
     def setup_method(self, method):
         self.dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
+        self.delete_tables()
+        self.create_tables()
 
     def teardown_method(self, method):
-        self.dynamodb = None
+        self.delete_tables()
+
+    def delete_tables(self):
+        for table_name in TestDynamoDBBase.TABLE_NAMES:
+            self.delete_table(table_name)
+
+    def delete_table(self, table_name):
+        try:
+            table = self.dynamodb.Table(table_name)
+            table.delete()
+            table.meta.client.get_waiter('table_not_exists').wait(TableName=table.name)
+        except self.dynamodb.meta.client.exceptions.ResourceNotFoundException:
+            pass
+
+    def create_tables(self):
+        self.metadataTable = self.create_explore_topics_metadata_table()
+        self.candidateTable = self.create_explore_topics_candidates_table()
 
     def create_table(self, table_schema) -> DynamoDBServiceResource.Table:
         with open(table_schema) as f:

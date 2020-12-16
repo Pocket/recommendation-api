@@ -32,7 +32,7 @@ class TopicModel(BaseModel):
         async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
             table = await dynamodb.Table(dynamodb_config['explore_topics_metadata_table'])
             response = await table.scan()
-        return list(map(TopicModel.parse_obj, response['Items']))
+        return sorted(list(map(TopicModel.parse_obj, response['Items'])), key=lambda topic: topic.slug)
 
     @staticmethod
     async def get_topic(slug: str) -> Optional['TopicModel']:

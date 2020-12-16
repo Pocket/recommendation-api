@@ -1,4 +1,3 @@
-from moto import mock_dynamodb2
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
@@ -6,18 +5,7 @@ from app.config import dynamodb as dynamodb_config
 from app.models.recommendation import RecommendationModel, RecommendationType
 
 
-@mock_dynamodb2
 class TestRecommendationsModel(TestDynamoDBBase):
-    candidateTable: DynamoDBServiceResource.Table
-
-    def setup_method(self, method):
-        dynamodb_config['endpoint_url'] = None
-        super().setup_method(self)
-        self.candidateTable = self.create_explore_topics_candidates_table()
-
-    def teardown_method(self, method):
-        super().teardown_method(self)
-        self.candidateTable.delete()
 
     async def test_get_latest_curated_candidates_for_topic(self):
         self.candidateTable.put_item(Item={
