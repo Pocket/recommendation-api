@@ -24,7 +24,7 @@ class TestLambda(TestDynamoDBBase):
         cls.dynamodb = None
 
     def setup_method(self, method):
-        self.table = self.create_explore_topics_candidates_table()
+        self.table = self.create_recommendation_api_candidates_table()
         self.metaflow_service_url = metaflow.get('service_url')
         self.metaflow_tag = metaflow.get('tag')
 

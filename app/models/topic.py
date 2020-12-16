@@ -32,7 +32,7 @@ class TopicModel(BaseModel):
     @xray_recorder.capture_async('models_topic_get_all')
     async def get_all() -> ['TopicModel']:
         dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
-        table = dynamodb.Table(dynamodb_config['explore_topics_metadata_table'])
+        table = dynamodb.Table(dynamodb_config['recommendation_api_metadata_table'])
         response = table.scan()
         return list(map(TopicModel.parse_obj, response['Items']))
 
@@ -40,7 +40,7 @@ class TopicModel(BaseModel):
     @xray_recorder.capture_async('models_topic_get_topic')
     async def get_topic(slug: str) -> Optional['TopicModel']:
         dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
-        table = dynamodb.Table(dynamodb_config['explore_topics_metadata_table'])
+        table = dynamodb.Table(dynamodb_config['recommendation_api_metadata_table'])
         response = table.query(IndexName='slug', Limit=1, KeyConditionExpression=Key('slug').eq(slug))
         if response['Items']:
             return TopicModel.parse_obj(response['Items'][0])

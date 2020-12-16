@@ -1,9 +1,13 @@
 {
-  "TableName": "explore_topics_metadata",
+  "TableName": "recommendation_api_candidates",
   "KeySchema": [
     {
       "AttributeName": "id",
       "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "created_at",
+      "KeyType": "RANGE"
     }
   ],
   "AttributeDefinitions": [
@@ -12,17 +16,25 @@
       "AttributeType": "S"
     },
     {
-      "AttributeName": "slug",
+      "AttributeName": "created_at",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "topic_id-type",
       "AttributeType": "S"
     }
   ],
   "GlobalSecondaryIndexes": [
     {
-      "IndexName": "slug",
+      "IndexName": "topic_id-type",
       "KeySchema": [
         {
-          "AttributeName": "slug",
+          "AttributeName": "topic_id-type",
           "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "created_at",
+          "KeyType": "RANGE"
         }
       ],
       "Projection": {
