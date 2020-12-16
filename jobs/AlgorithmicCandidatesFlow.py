@@ -4,8 +4,8 @@ import boto3
 import os
 from metaflow import FlowSpec, step, Parameter, IncludeFile, conda, conda_base, schedule, Flow, namespace
 
-from jobs.utils import setup_logger
-from jobs.query import FEED_ID_EN_US
+from utils import setup_logger
+from query import FEED_ID_EN_US
 
 
 @schedule(hourly=True)
@@ -37,7 +37,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
     domain_allowlist_file = IncludeFile("domain_allowlist_file",
                                         is_text=True,
                                         help="Pocket domain allowlist",
-                                        default="./app/resources/domain_allowlist_20200630.json")
+                                        default="./resources/domain_allowlist_20200630.json")
 
     """
     A flow where Metaflow generates algorithmic candidates.

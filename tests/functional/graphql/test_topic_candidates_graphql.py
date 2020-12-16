@@ -1,29 +1,15 @@
 from graphql.execution.executors.asyncio import AsyncioExecutor
-from moto import mock_dynamodb2
 from graphene.test import Client
-from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 from app.graphql.graphql import schema
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
-from app.config import dynamodb as dynamodb_config
 
 
-@mock_dynamodb2
 class TestGraphQLCandidates(TestDynamoDBBase):
-    metadataTable: DynamoDBServiceResource.Table
-    candidateTable: DynamoDBServiceResource.Table
     client: Client
 
     def setup_method(self, method):
-        dynamodb_config['endpoint_url'] = None
         super().setup_method(self)
-        self.metadataTable = self.create_recommendation_api_metadata_table()
-        self.candidateTable = self.create_recommendation_api_candidates_table()
         self.client = Client(schema)
-
-    def teardown_method(self, method):
-        super().teardown_method(self)
-        self.metadataTable.delete()
-        self.candidateTable.delete()
 
     def test_get_topic_recommendations(self):
         self.metadataTable.put_item(Item={

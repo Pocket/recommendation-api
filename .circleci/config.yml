@@ -26,7 +26,7 @@ jobs:
           command: |
             apollo service:push --graph=pocket-client-api --localSchemaFile=schema.graphql --key=$APOLLO_KEY --serviceURL=https://explore-topics.readitatler.com/ --serviceName=explore-topics
 
-  test:
+  test_app:
     docker:
       - image: python:3.8
         auth:
@@ -44,13 +44,25 @@ jobs:
           EXTRA_CORS_EXPOSE_HEADERS: ETag
           HOSTNAME_EXTERNAL: localstack
           PORT_WEB_UI: 8080
+    parameters:
+      pipenv_path:
+        default: "./"
+        type: string
+    environment:
+      WORKON_HOME: '~/.venv'
     steps:
       - checkout
+      - restore_cache:
+          key: deps-test-{{ checksum "<<parameters.pipenv_path>>Pipfile.lock" }}
       - run:
           name: Build environment and install requirements
           command: |
             pip install pipenv
             pipenv install --dev
+      - save_cache:
+          key: deps-test-{{ checksum "<<parameters.pipenv_path>>Pipfile.lock" }}
+          paths:
+            - "~/.venv"
       - run:
           name: run setup.sh
           command: export $(egrep -v '^#' .docker/local.env | xargs -0) && ./.circleci/scripts/setup.sh --hosts --aws
@@ -63,6 +75,41 @@ jobs:
       - store_test_results:
           path: test-reports
 
+  test_lambda:
+    parameters:
+      pipenv_path:
+        default: "aws_lambda/"
+        type: string
+    docker:
+      - image: python:3.8
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    environment:
+      WORKON_HOME: '~/.venv'
+    steps:
+      - checkout
+      - restore_cache:
+          key: deps-test-{{ checksum "<<parameters.pipenv_path>>Pipfile.lock" }}
+      - run:
+          name: Build environment and install requirements
+          command: |
+            cd <<parameters.pipenv_path>>
+            pip install pipenv
+            pipenv install --dev
+      - save_cache:
+          key: deps-test-{{ checksum "<<parameters.pipenv_path>>Pipfile.lock" }}
+          paths:
+            - "~/.venv"
+      - run:
+          name: Run tests
+          command: |
+            mkdir test-reports
+            cd <<parameters.pipenv_path>>
+            pipenv run pytest tests/ --junitxml=test-reports/junit.xml
+      - store_test_results:
+          path: test-reports
+
   check_metaflow:
     docker:
       - image: python:3.8
@@ -71,6 +118,10 @@ jobs:
           password: $DOCKERHUB_PASSWORD
         environment:
           USERNAME: 'test'
+    parameters:
+      pipenv_path:
+        default: "jobs/"
+        type: string
     steps:
       - checkout
       - run:
@@ -79,6 +130,7 @@ jobs:
             apt-get -qq update && apt-get -qq install wget > /dev/null
             wget -nv https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && bash Miniconda3-latest-Linux-x86_64.sh -b  -p $HOME/miniconda
             pip install pipenv
+            cd <<parameters.pipenv_path>>
             pipenv install --deploy
       - run:
           name: Run flow validation
@@ -86,6 +138,7 @@ jobs:
             source "$HOME/miniconda/etc/profile.d/conda.sh"
             hash -r
             conda config --append channels conda-forge
+            cd <<parameters.pipenv_path>>
             pipenv run python AlgorithmicCandidatesFlow.py --environment=conda check
             pipenv run python CuratedCandidatesFlow.py --environment=conda check
             pipenv run python CollectionCandidatesFlow.py --environment=conda check
@@ -241,7 +294,10 @@ only_dev: &only_dev
 workflows:
   all:
     jobs:
-      - test:
+      - test_app:
+          <<: *not_main
+          context: pocket
+      - test_lambda:
           <<: *not_main
           context: pocket
       - check_metaflow:

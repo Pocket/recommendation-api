@@ -99,9 +99,8 @@ phases:
       - hash -r
       - conda config --append channels conda-forge
 
-      # Install our deployment packages so we can run metaflow
-      # TODO: see if theres a way in pipenv to just have a --metaflow that will install only metaflow packages
-      # so we can remove gcc and python3-dev
+      # Install deployment packages from jobs/Pipfile.lock so we can run metaflow
+      - cd jobs/
       - pipenv install --deploy
 
       - pipenv run python AlgorithmicCandidatesFlow.py --environment=conda check
