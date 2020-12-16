@@ -28,43 +28,31 @@ jobs:
 
   test:
     parameters:
-      project_path:
+      pipenv_path:
         default: "./"
+        type: string
+      tests_path:
+        default: "tests/"
         type: string
     docker:
       - image: python:3.8
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
-      - image: localstack/localstack:0.12.1
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-        environment:
-          DEBUG: 1
-          SERVICES: 'dynamodb'
-          DATA_DIR: /tmp/localstack/data
-          EXTRA_CORS_ALLOWED_HEADERS: Content-Disposition, Content-Type, x-amz-acl
-          EXTRA_CORS_EXPOSE_HEADERS: ETag
-          HOSTNAME_EXTERNAL: localstack
-          PORT_WEB_UI: 8080
     steps:
       - checkout
       - run:
           name: Build environment and install requirements
           command: |
-            cd <<parameters.project_path>>
+            cd <<parameters.pipenv_path>>
             pip install pipenv
             pipenv install --dev
-      - run:
-          name: run setup.sh
-          command: export $(egrep -v '^#' .docker/local.env | xargs -0) && ./.circleci/scripts/setup.sh --hosts --aws
       - run:
           name: Run tests
           command: |
             mkdir test-reports
             export $(egrep -v '^#' .docker/local.env | xargs -0)
-            pipenv run pytest <<parameters.project_path>>tests/ --junitxml=test-reports/junit.xml
+            pipenv run pytest <<parameters.tests_path>> --junitxml=test-reports/junit.xml
       - store_test_results:
           path: test-reports
 
@@ -254,7 +242,8 @@ workflows:
           <<: *not_main
           context: pocket
           name: test_lambda
-          project_path: 'aws_lambda/'
+          pipenv_path: 'aws_lambda/'
+          tests_path: 'aws_lambda/tests/'
       - check_metaflow:
           <<: *not_main
           context: pocket
