@@ -1,20 +1,19 @@
 import asyncio
 
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List
 from scipy.stats import beta
 from operator import itemgetter
 from app.models.recommendation import RecommendationModel, RecommendationType
 from app.models.topic import TopicModel, PageType
 from app.config import dynamodb as dynamodb_config
 from aws_xray_sdk.core import xray_recorder
-from app.models.clickdata import ClickdataModel, DynamoDBClickData, RecommendationModules
+from app.models.clickdata import ClickdataModel, RecommendationModules
 
 
 class TopicRecommendationsModel(BaseModel):
     curated_recommendations: List[RecommendationModel] = []
     algorithmic_recommendations: List[RecommendationModel] = []
-    click_data: Dict[str, ClickdataModel]
 
     @staticmethod
     @xray_recorder.capture_async('models_topic_get_recommendations')
@@ -23,7 +22,7 @@ class TopicRecommendationsModel(BaseModel):
             algorithmic_count: int,
             curated_count: int,
             publisher_spread: int = 3,
-            thompson_sampling: bool = True) -> ['TopicRecommendationsModel']:
+            thompson_sampling: bool = False) -> ['TopicRecommendationsModel']:
 
         # Pull in the topic so we can split what we do based on the page type.
         topic = await TopicModel.get_topic(slug=slug)
@@ -181,9 +180,8 @@ class TopicRecommendationsModelUtils:
         if not len(recs):
             return recs
 
-        dynamo = DynamoDBClickData(dynamodb_config["explore_clickdata_table"])
         all_recs = [item.item_id for item in recs]
-        clk_data = dynamo.batch_get(module, all_recs)
+        clk_data = ClickdataModel.get_clickdata(module, all_recs)
         # 'default' is a special key we can use for anything that is missing. The values here aren't actually clicks or
         # impressions, but instead direct alpha and beta parameters
         default = beta(clk_data['default'].clicks, clk_data['default'].impressions)
