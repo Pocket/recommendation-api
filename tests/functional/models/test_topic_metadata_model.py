@@ -1,12 +1,11 @@
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
-from app.config import dynamodb as dynamodb_config
 from app.models.topic import TopicModel, PageType
 
 
 class TestTopicMetadata(TestDynamoDBBase):
     def setup_method(self, method):
         super().setup_method(self)
-        self.populate_explore_topics_metadata_table()
+        self.populate_metadata_table()
 
     async def test_main_list_topics(self):
         executed = await TopicModel.get_all()
@@ -49,7 +48,7 @@ class TestTopicMetadata(TestDynamoDBBase):
         with self.assertRaises(ValueError):
             await TopicModel.get_topic(slug='stonks')
 
-    def populate_explore_topics_metadata_table(self):
+    def populate_metadata_table(self):
         self.metadataTable.put_item(Item={
             'id': 'a187ffb4-5c6f-4079-bad9-92442e97bdd1',
             "display_name": 'tech',

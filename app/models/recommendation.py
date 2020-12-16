@@ -4,6 +4,7 @@ from boto3.dynamodb.conditions import Key
 from app.config import dynamodb as dynamodb_config
 from app.models.topic import TopicModel
 from enum import Enum
+from aws_xray_sdk.core import xray_recorder
 
 
 class RecommendationType(Enum):
@@ -16,7 +17,7 @@ class RecommendationModel(BaseModel):
     feed_item_id: str = None
     item_id: str = None
     feed_id: int = None
-    rec_src: str = 'ExploreTopics'
+    rec_src: str = 'RecommendationAPI'
     publisher: str = None
 
     @staticmethod
@@ -26,9 +27,10 @@ class RecommendationModel(BaseModel):
         return recommendation
 
     @staticmethod
+    @xray_recorder.capture_async('model_recommendations_get_recommendations')
     async def get_recommendations(topic_id: str, recommendation_type: RecommendationType) -> ['RecommendationModel']:
         async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
-            table = await dynamodb.Table(dynamodb_config['explore_topics_candidates_table'])
+            table = await dynamodb.Table(dynamodb_config['recommendation_api_candidates_table'])
             key_condition = Key('topic_id-type').eq(topic_id + '|' + recommendation_type.value)
             response = await table.query(IndexName='topic_id-type', Limit=1, KeyConditionExpression=key_condition,
                                          ScanIndexForward=False)

@@ -1,7 +1,4 @@
-from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
-
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
-from app.config import dynamodb as dynamodb_config
 from app.models.recommendation import RecommendationModel, RecommendationType
 
 
@@ -67,6 +64,6 @@ class TestRecommendationsModel(TestDynamoDBBase):
         executed = await RecommendationModel.get_recommendations(topic_id='a187ffb4-5c6f-4079-bad9-92442e97bdd1',
                                                            recommendation_type=RecommendationType.CURATED)
         assert executed == [
-            RecommendationModel(item_id=986, feed_id=6, feed_item_id='ExploreTopics/986', publisher='test.yes'),
-            RecommendationModel(item_id=93, feed_item_id='ExploreTopics/93', publisher='test.yes'),
+            RecommendationModel(item_id=986, feed_id=6, feed_item_id='RecommendationAPI/986', publisher='test.yes'),
+            RecommendationModel(item_id=93, feed_item_id='RecommendationAPI/93', publisher='test.yes'),
         ]

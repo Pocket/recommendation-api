@@ -6,20 +6,20 @@
 config:
   # this hostname will be used as a prefix for each URI in the flow unless a complete URI is specified
   # dev
-  target: "https://explore-topics.getpocket.dev"
+  # target: "https://recommendation-api.getpocket.dev"
 
   # prod
-  #target: "https://explore-topics.readitlater.com"
+  target: "https://recommendation-api.readitlater.com"
 
   plugins:
     expect: {}
     cloudwatch:
-      namespace: serverless-artillery-explore-topics-loadtest
+      namespace: serverless-artillery-recommendation-api-loadtest
   phases:
     - duration: 120
       arrivalRate: 1
       rampTo: 15
-      name: "Warm up explore-topics 15req/sec"
+      name: "Warm up recommendation-api 15req/sec"
 
     - duration: 900
       arrivalRate: 15
@@ -52,7 +52,7 @@ scenarios:
               #- hasProperty: data.listTopics[0].isDisplayed
               #- hasProperty: data.listTopics[0].displayName
 
-  - name: "getTopicRecommendations.curatedRecommendations"
+  - name: "getTopicRecommendations"
     flow:
       - loop:
         - post:
@@ -66,19 +66,3 @@ scenarios:
               - hasProperty: data.getTopicRecommendations.curatedRecommendations[0].itemId
               - hasProperty: data.getTopicRecommendations.curatedRecommendations[0].publisher
         over: topicIds
-#
-#  - name: "getTopicRecommendations.algorithmicRecommendations"
-#    flow:
-#      - loop:
-#        - post:
-#            url: "/"
-#            headers:
-#              Content-type: "application/json"
-#            body: '{"query":"query {\n  getTopicRecommendations(slug: \"{{ $loopElement }}\", algorithmicCount:30, curatedCount: 30) {\n algorithmicRecommendations{\n itemId\n publisher\n }\n }\n}","variables":null}'
-#            expect:
-#              - statusCode: 200
-#              - contentType: json
-#              - hasProperty: data.getTopicRecommendations.algorithmicRecommendations[0].itemId
-#              - hasProperty: data.getTopicRecommendations.algorithmicRecommendations[0].publisher
-#        over: topicIds
-

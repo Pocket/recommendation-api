@@ -53,8 +53,8 @@ class TestGraphQLCandidates(TestDynamoDBBase):
                 'getTopicRecommendations': {
                     'algorithmicRecommendations': [],
                     'curatedRecommendations': [
-                        {'feedItemId': 'ExploreTopics/123', 'feedId': 5, 'itemId': '123', 'publisher': 'test.yes'},
-                        {'feedItemId': 'ExploreTopics/1253', 'feedId': None, 'itemId': '1253', 'publisher': 'test.yes'}
+                        {'feedItemId': 'RecommendationAPI/123', 'feedId': 5, 'itemId': '123', 'publisher': 'test.yes'},
+                        {'feedItemId': 'RecommendationAPI/1253', 'feedId': None, 'itemId': '1253', 'publisher': 'test.yes'}
                     ],
                 }
             }
@@ -141,8 +141,8 @@ class TestGraphQLCandidates(TestDynamoDBBase):
                 'getTopicRecommendations': {
                     'algorithmicRecommendations': [],
                     'curatedRecommendations': [
-                        {'feedItemId': 'ExploreTopics/123', 'feedId': 5, 'itemId': '123', 'publisher': 'special.yes'},
-                        {'feedItemId': 'ExploreTopics/1253', 'feedId': None, 'itemId': '1253',
+                        {'feedItemId': 'RecommendationAPI/123', 'feedId': 5, 'itemId': '123', 'publisher': 'special.yes'},
+                        {'feedItemId': 'RecommendationAPI/1253', 'feedId': None, 'itemId': '1253',
                          'publisher': 'test.yes'}
                     ],
                 }

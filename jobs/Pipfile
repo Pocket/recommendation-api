@@ -13,8 +13,8 @@ pytest-mock = "*"
 
 [packages]
 metaflow = "*"
-elasticsearch = "==7.1.0"
-elasticsearch-dsl = "==7.1.0"
+elasticsearch = "==7.10.0"
+elasticsearch-dsl = "==7.3.0"
 sentry-sdk = "*"
 graphene-pydantic = "==0.1.0"
 gql = "*"
