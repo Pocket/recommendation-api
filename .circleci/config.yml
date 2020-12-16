@@ -52,7 +52,10 @@ jobs:
           command: |
             mkdir test-reports
             export $(egrep -v '^#' .docker/local.env | xargs -0)
-            pipenv run pytest <<parameters.tests_path>> --junitxml=test-reports/junit.xml
+            cd <<parameters.pipenv_path>>
+            pipenv shell
+            cd "${CIRCLE_WORKING_DIRECTORY}"
+            pytest <<parameters.tests_path>> --junitxml=test-reports/junit.xml
       - store_test_results:
           path: test-reports
 
