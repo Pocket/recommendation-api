@@ -3,7 +3,7 @@ from elasticsearch_dsl.query import Exists, Range, Term, Match
 from elasticsearch_dsl.function import Gauss, FieldValueFactor
 from typing import Dict, List
 
-from jobs.utils import convert_to_days
+from utils import convert_to_days
 
 FEED_ID_EN_US = 1
 
