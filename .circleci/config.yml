@@ -139,9 +139,9 @@ jobs:
             hash -r
             conda config --append channels conda-forge
             cd <<parameters.pipenv_path>>
-            pipenv run python ../AlgorithmicCandidatesFlow.py --environment=conda check
-            pipenv run python ../CuratedCandidatesFlow.py --environment=conda check
-            pipenv run python ../CollectionCandidatesFlow.py --environment=conda check
+            pipenv run python AlgorithmicCandidatesFlow.py --environment=conda check
+            pipenv run python CuratedCandidatesFlow.py --environment=conda check
+            pipenv run python CollectionCandidatesFlow.py --environment=conda check
 
   docker_build:
     parameters:
