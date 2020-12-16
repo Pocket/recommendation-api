@@ -39,7 +39,7 @@ def handler(event: Dict[str, Any], context=None):
 
 def dynamodb_batch_write(data, flow_name):
     dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config.get('endpoint_url'))
-    table = dynamodb.Table(dynamodb_config.get('explore_topics_candidates_table'))
+    table = dynamodb.Table(dynamodb_config.get('recommendation_api_candidates_table'))
     with table.batch_writer() as batch:
         for value in data:
             batch.put_item(Item=get_dynamodb_item(value, flow_name))

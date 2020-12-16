@@ -87,6 +87,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         Once https://github.com/Netflix/metaflow/issues/384 is merged and the topic model training has the right tags 
         added we will be able to change this to just "production" and pull it from AWS Secrets Manager
         """
+        # TODO: can we change the below to match the new service name - Recommendation API?
         namespace("production:exploretopictrainingflow-0-eins")
 
         training_run = Flow("ExploreTopicTrainingFlow").latest_successful_run

@@ -16,8 +16,8 @@ class TestGraphQLCandidates(TestDynamoDBBase):
     def setup_method(self, method):
         dynamodb_config['endpoint_url'] = None
         super().setup_method(self)
-        self.metadataTable = self.create_explore_topics_metadata_table()
-        self.candidateTable = self.create_explore_topics_candidates_table()
+        self.metadataTable = self.create_recommendation_api_metadata_table()
+        self.candidateTable = self.create_recommendation_api_candidates_table()
         self.client = Client(schema)
 
     def teardown_method(self, method):
@@ -67,8 +67,8 @@ class TestGraphQLCandidates(TestDynamoDBBase):
                 'getTopicRecommendations': {
                     'algorithmicRecommendations': [],
                     'curatedRecommendations': [
-                        {'feedItemId': 'ExploreTopics/123', 'feedId': 5, 'itemId': '123', 'publisher': 'test.yes'},
-                        {'feedItemId': 'ExploreTopics/1253', 'feedId': None, 'itemId': '1253', 'publisher': 'test.yes'}
+                        {'feedItemId': 'RecommendationAPI/123', 'feedId': 5, 'itemId': '123', 'publisher': 'test.yes'},
+                        {'feedItemId': 'RecommendationAPI/1253', 'feedId': None, 'itemId': '1253', 'publisher': 'test.yes'}
                     ],
                 }
             }
@@ -155,8 +155,8 @@ class TestGraphQLCandidates(TestDynamoDBBase):
                 'getTopicRecommendations': {
                     'algorithmicRecommendations': [],
                     'curatedRecommendations': [
-                        {'feedItemId': 'ExploreTopics/123', 'feedId': 5, 'itemId': '123', 'publisher': 'special.yes'},
-                        {'feedItemId': 'ExploreTopics/1253', 'feedId': None, 'itemId': '1253',
+                        {'feedItemId': 'RecommendationAPI/123', 'feedId': 5, 'itemId': '123', 'publisher': 'special.yes'},
+                        {'feedItemId': 'RecommendationAPI/1253', 'feedId': None, 'itemId': '1253',
                          'publisher': 'test.yes'}
                     ],
                 }

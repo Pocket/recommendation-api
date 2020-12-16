@@ -14,7 +14,7 @@ import {EventBridgeLambda} from "./eventBridgeLambda";
 import {PocketPagerDuty} from "@pocket/terraform-modules/dist/src/pocket/PocketPagerDuty";
 import {PagerdutyProvider} from "../.gen/providers/pagerduty";
 
-class ExploreTopics extends TerraformStack {
+class RecommendationAPI extends TerraformStack {
   constructor(scope: Construct, name: string) {
     super(scope, name);
 
@@ -85,11 +85,11 @@ class ExploreTopics extends TerraformStack {
               value: `https://dynamodb.${region.name}.amazonaws.com`
             },
             {
-              name: 'EXPLORE_TOPICS_METADATA_TABLE',
+              name: 'RECOMMENDATION_API_METADATA_TABLE',
               value: dynamodb.metadataTable.dynamodb.name
             },
             {
-              name: 'EXPLORE_TOPICS_CANDIDATES_TABLE',
+              name: 'RECOMMENDATION_API_CANDIDATES_TABLE',
               value: dynamodb.candidatesTable.dynamodb.name
             }
           ]
@@ -192,5 +192,5 @@ class ExploreTopics extends TerraformStack {
 }
 
 const app = new App();
-new ExploreTopics(app, 'explore-topics');
+new RecommendationAPI(app, 'recommendation-api');
 app.synth();

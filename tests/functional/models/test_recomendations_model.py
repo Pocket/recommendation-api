@@ -14,7 +14,7 @@ class TestRecommendationsModel(TestDynamoDBBase):
     def setup_method(self, method):
         dynamodb_config['endpoint_url'] = None
         super().setup_method(self)
-        self.candidateTable = self.create_explore_topics_candidates_table()
+        self.candidateTable = self.create_recommendation_api_candidates_table()
 
     def teardown_method(self, method):
         super().teardown_method(self)
@@ -80,6 +80,6 @@ class TestRecommendationsModel(TestDynamoDBBase):
         executed = await RecommendationModel.get_recommendations(topic_id='a187ffb4-5c6f-4079-bad9-92442e97bdd1',
                                                            recommendation_type=RecommendationType.CURATED)
         assert executed == [
-            RecommendationModel(item_id=986, feed_id=6, feed_item_id='ExploreTopics/986', publisher='test.yes'),
-            RecommendationModel(item_id=93, feed_item_id='ExploreTopics/93', publisher='test.yes'),
+            RecommendationModel(item_id=986, feed_id=6, feed_item_id='RecommendationAPI/986', publisher='test.yes'),
+            RecommendationModel(item_id=93, feed_item_id='RecommendationAPI/93', publisher='test.yes'),
         ]
