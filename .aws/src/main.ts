@@ -187,7 +187,7 @@ class RecommendationAPI extends TerraformStack {
       }
     });
 
-    new EventBridgeLambda(this, 'event-bridge-lambda', dynamodb.candidatesTable);
+    new EventBridgeLambda(this, 'event-bridge-lambda', dynamodb.candidatesTable, pagerDuty);
   }
 }
 
