@@ -26,10 +26,59 @@ jobs:
           command: |
             apollo service:push --graph=pocket-client-api --localSchemaFile=schema.graphql --key=$APOLLO_KEY --serviceURL=https://explore-topics.readitatler.com/ --serviceName=explore-topics
 
-  test:
+  test_app:
+    docker:
+      - image: python:3.8
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+      - image: localstack/localstack:0.12.1
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          DEBUG: 1
+          SERVICES: 'dynamodb'
+          DATA_DIR: /tmp/localstack/data
+          EXTRA_CORS_ALLOWED_HEADERS: Content-Disposition, Content-Type, x-amz-acl
+          EXTRA_CORS_EXPOSE_HEADERS: ETag
+          HOSTNAME_EXTERNAL: localstack
+          PORT_WEB_UI: 8080
     parameters:
       pipenv_path:
         default: "./"
+        type: string
+    environment:
+      WORKON_HOME: '~/.venv'
+    steps:
+      - checkout
+      - restore_cache:
+          key: deps-test-{{ checksum "<<parameters.pipenv_path>>Pipfile.lock" }}
+      - run:
+          name: Build environment and install requirements
+          command: |
+            pip install pipenv
+            pipenv install --dev
+      - save_cache:
+          key: deps-test-{{ checksum "<<parameters.pipenv_path>>Pipfile.lock" }}
+          paths:
+            - "~/.venv"
+      - run:
+          name: run setup.sh
+          command: export $(egrep -v '^#' .docker/local.env | xargs -0) && ./.circleci/scripts/setup.sh --hosts --aws
+      - run:
+          name: Run tests
+          command: |
+            mkdir test-reports
+            export $(egrep -v '^#' .docker/local.env | xargs -0)
+            pipenv run pytest tests/ --junitxml=test-reports/junit.xml
+      - store_test_results:
+          path: test-reports
+
+  test_lambda:
+    parameters:
+      pipenv_path:
+        default: "aws_lambda/"
         type: string
     docker:
       - image: python:3.8
@@ -239,15 +288,12 @@ only_dev: &only_dev
 workflows:
   all:
     jobs:
-      - test:
+      - test_app:
           <<: *not_main
           context: pocket
-          name: test_app
-      - test:
+      - test_lambda:
           <<: *not_main
           context: pocket
-          name: test_lambda
-          pipenv_path: 'aws_lambda/'
       - check_metaflow:
           <<: *not_main
           context: pocket
