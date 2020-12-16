@@ -5,14 +5,15 @@ from pytest_mock import MockerFixture
 import pytest
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 import boto3
+from moto import mock_dynamodb2
 
 from aws_lambda.tests.lambda_test_data import event, metaflow_data
 from aws_lambda import index
 from app.config import ROOT_DIR
 
+
 DYNAMODB_LOCALSTACK_DIR = os.path.join(ROOT_DIR, '.docker/localstack/dynamodb/')
 
-from moto import mock_dynamodb2
 
 @pytest.fixture(scope='function')
 def mock_dynamodb_resource():
@@ -31,13 +32,13 @@ def create_table(dynamodb, table_schema_path) -> DynamoDBServiceResource.Table:
     return table
 
 
-def create_explore_topics_metadata_table(dynamodb) -> DynamoDBServiceResource.Table:
-    json_path = os.path.join(DYNAMODB_LOCALSTACK_DIR, 'explore_topics_metadata.json')
+def create_metadata_table(dynamodb) -> DynamoDBServiceResource.Table:
+    json_path = os.path.join(DYNAMODB_LOCALSTACK_DIR, 'recommendation_api_metadata.json')
     return create_table(dynamodb, json_path)
 
 
-def create_explore_topics_candidates_table(dynamodb) -> DynamoDBServiceResource.Table:
-    json_path = os.path.join(DYNAMODB_LOCALSTACK_DIR, 'explore_topics_candidates.json')
+def create_candidates_table(dynamodb) -> DynamoDBServiceResource.Table:
+    json_path = os.path.join(DYNAMODB_LOCALSTACK_DIR, 'recommendation_api_candidates.json')
     return create_table(dynamodb, json_path)
 
 
@@ -47,7 +48,7 @@ def mock_get_metaflow_data(mocker: MockerFixture):
 
 def test_handler(mocker: MockerFixture, mock_dynamodb_resource):
     mock_get_metaflow_data(mocker)
-    table = create_explore_topics_candidates_table(mock_dynamodb_resource)
+    table = create_candidates_table(mock_dynamodb_resource)
 
     index.handler(event)
     response = table.scan()
