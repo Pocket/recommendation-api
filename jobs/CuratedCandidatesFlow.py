@@ -42,7 +42,7 @@ class CuratedCandidatesFlow(FlowSpec):
 
         from elasticsearch import Elasticsearch, RequestsHttpConnection
         from requests_aws4auth import AWS4Auth
-        from jobs.utils import get_topic_map
+        from utils import get_topic_map
 
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
@@ -75,7 +75,7 @@ class CuratedCandidatesFlow(FlowSpec):
 
         from elasticsearch_dsl import Search
         from elasticsearch.exceptions import NotFoundError, RequestError, AuthorizationException
-        from jobs.query import organic_by_topic, transform_curated_results
+        from query import organic_by_topic, transform_curated_results
 
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
