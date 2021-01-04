@@ -6,7 +6,6 @@ import json
 import boto3
 import uuid
 from datetime import datetime
-import time
 import sentry_sdk
 from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
 from aws_lambda.config.index import sentry, dynamodb as dynamodb_config, topic_types, metaflow
