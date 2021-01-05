@@ -8,8 +8,7 @@ import uuid
 from datetime import datetime
 import sentry_sdk
 from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
-from aws_lambda.config.index import sentry, secrets, dynamodb as dynamodb_config, topic_types, metaflow
-import os
+from aws_lambda.config.index import sentry, dynamodb as dynamodb_config, topic_types, metaflow
 
 sentry_sdk.init(
     dsn=sentry.get('dsn'),
@@ -39,7 +38,7 @@ def handler(event: Dict[str, Any], context=None):
 
 def dynamodb_batch_write(data, flow_name):
     dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config.get('endpoint_url'))
-    table = dynamodb.Table(dynamodb_config.get('explore_topics_candidates_table'))
+    table = dynamodb.Table(dynamodb_config.get('recommendation_api_candidates_table'))
     with table.batch_writer() as batch:
         for value in data:
             batch.put_item(Item=get_dynamodb_item(value, flow_name))
@@ -50,18 +49,13 @@ def get_dynamodb_item(data: Dict, flow_name: str) -> Dict[str, Union[Union[UUID,
         'id': str(uuid.uuid4()),
         'topic_id': data['topic_id'],
         'topic_id-type': str(data['topic_id']) + '|' + get_candidate_type(flow_name),
-        'created_at': get_current_date_formatted(),
+        'created_at': datetime.utcnow().isoformat()[:-3] + 'Z',
         'candidates': data['items']
     }
 
 
 def get_candidate_type(flow_name: str) -> str:
     return topic_types.get(flow_name, 'collection')
-
-
-def get_current_date_formatted() -> str:
-    now = datetime.now()
-    return now.strftime("%d-%m-%Y %H:%M:%S")
 
 
 def get_run_id(event: Dict[str, Any]):
@@ -90,4 +84,3 @@ def get_service_url() -> str:
 
 def get_tag() -> str:
     return metaflow.get('tag')
-

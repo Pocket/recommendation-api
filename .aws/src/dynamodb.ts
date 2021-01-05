@@ -1,9 +1,9 @@
-import {TerraformStack} from "cdktf";
+import {Resource} from "cdktf";
 import {Construct} from "constructs";
 import {config} from "./config";
 import {ApplicationDynamoDBTable} from "@pocket/terraform-modules";
 
-export class DynamoDB extends TerraformStack {
+export class DynamoDB extends Resource {
 
     public readonly candidatesTable: ApplicationDynamoDBTable
     public readonly metadataTable: ApplicationDynamoDBTable
@@ -21,7 +21,7 @@ export class DynamoDB extends TerraformStack {
     private setupCandidatesTable() {
         return new ApplicationDynamoDBTable(this, `candidates`, {
             tags: config.tags,
-            prefix: `${config.prefix}-Candidates`,
+            prefix: `${config.shortName}-${config.environment}-Candidates`,
             tableConfig: {
                 hashKey: 'id',
                 writeCapacity: 5,
@@ -72,7 +72,7 @@ export class DynamoDB extends TerraformStack {
     private setupTopicsMetadataTable() {
         return new ApplicationDynamoDBTable(this, `topic_metadata`, {
             tags: config.tags,
-            prefix: `${config.prefix}-TopicMetadata`,
+            prefix: `${config.shortName}-${config.environment}-TopicMetadata`,
             tableConfig: {
                 hashKey: 'id',
                 writeCapacity: 5,
