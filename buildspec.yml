@@ -103,6 +103,7 @@ phases:
       - cd jobs/
       - pipenv install --deploy
 
+
       - pipenv run python AlgorithmicCandidatesFlow.py --environment=conda check
 
       #### If the branch is main lets generate our metaflow functions
