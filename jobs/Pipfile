@@ -20,4 +20,6 @@ graphene-pydantic = "==0.1.0"
 gql = "*"
 
 [requires]
-python_version = "3.8"
+# we have to lock at a dot release because packages in conda are not updated immediately
+# (this resulted in an error as our pipenv went to 3.8.7 but conda had not yet received this version)
+python_version = "3.8.6"
