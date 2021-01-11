@@ -112,7 +112,7 @@ jobs:
 
   check_metaflow:
     docker:
-      - image: python:3.8.5
+      - image: python:3.8
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
