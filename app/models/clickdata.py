@@ -36,8 +36,7 @@ class ClickdataModel(BaseModel):
         return clickdata
 
     @staticmethod
-    @xray_recorder.capture_async('model_clickdata_get_clickdata')
-    async def get_clickdata(module: RecommendationModules, item_list: List[str]) -> Dict[str, 'ClickdataModel']:
+    def get_clickdata(module: RecommendationModules, item_list: List[str]) -> Dict[str, 'ClickdataModel']:
 
         dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
         table = dynamodb_config['explore_clickdata_table']
@@ -49,6 +48,7 @@ class ClickdataModel(BaseModel):
         keys.add(make_key(module, "default"))
 
         clickdata = dict()
+        found_keys = set()
         for c in chunks(keys):
             request = {
                 table: {
@@ -58,6 +58,10 @@ class ClickdataModel(BaseModel):
             responses = dynamodb.batch_get_item(RequestItems=request)
 
             for item in map(ClickdataModel.dynamodb_row_to_clickdata, responses["Responses"][table][0]['candidates']):
+                found_keys.add(item.mod_item)
                 clickdata[item.mod_item.split("/")[1]] = item
+
+        if not clickdata:
+            raise ValueError(f"No results from DynamoDB: module {module}")
 
         return clickdata

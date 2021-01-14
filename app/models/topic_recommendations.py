@@ -6,7 +6,6 @@ from scipy.stats import beta
 from operator import itemgetter
 from app.models.recommendation import RecommendationModel, RecommendationType
 from app.models.topic import TopicModel, PageType
-from app.config import dynamodb as dynamodb_config
 from aws_xray_sdk.core import xray_recorder
 from app.models.clickdata import ClickdataModel, RecommendationModules
 
@@ -53,8 +52,8 @@ class TopicRecommendationsModel(BaseModel):
         # apply thompson sampling to the recommendations
         if thompson_sampling:
 
-            topic_recommendations.curated_recommendations = TopicRecommendationsModelUtils.thompson_sampling(
-                topic_recommendations.curated_recommendations, RecommendationModules.TOPIC)
+            # topic_recommendations.curated_recommendations = TopicRecommendationsModelUtils.thompson_sampling(
+            #     topic_recommendations.curated_recommendations, RecommendationModules.TOPIC)
 
             topic_recommendations.algorithmic_recommendations = TopicRecommendationsModelUtils.thompson_sampling(
                 topic_recommendations.algorithmic_recommendations, RecommendationModules.TOPIC)
@@ -165,11 +164,14 @@ class TopicRecommendationsModelUtils:
         return reordered
 
     @staticmethod
+    def get_clickdata
+
+    @staticmethod
     @xray_recorder.capture('models_topic_thompson_sample')
     def thompson_sampling(recs: List[RecommendationModel], module: RecommendationModules):
         """
-        Re-rank items to implement Thompson sampling which combines exploitation of known item CTR
-        with exploration of new items
+        Re-rank items using Thompson sampling which combines exploitation of known item CTR
+        with exploration of new items with unknown CTR modeled by a prior
 
         :param recs: a list of recommendations in the desired order (pre-publisher spread)
         :param module: the name of the module (rec surface) for which we are re-ranking
@@ -180,24 +182,35 @@ class TopicRecommendationsModelUtils:
         if not len(recs):
             return recs
 
-        all_recs = [item.item_id for item in recs]
-        clk_data = ClickdataModel.get_clickdata(module, all_recs)
-        # 'default' is a special key we can use for anything that is missing. The values here aren't actually clicks or
-        # impressions, but instead direct alpha and beta parameters
-        default = beta(clk_data['default'].clicks, clk_data['default'].impressions)
+        item_list = [item.item_id for item in recs]
+        try:
+            # returns a dict with item_id as key and dynamodb row modeled as ClickDataModel
+            clk_data = ClickdataModel.get_clickdata(module, item_list)
+            # 'default' is a special key we can use for anything that is missing.
+            # The values here aren't actually clicks or impressions,
+            # but instead direct alpha and beta parameters for the module CTR prior
+            alpha_prior, beta_prior = clk_data['default'].clicks, clk_data['default'].impressions
+        except ValueError:
+            # indicates no results were returned
+            clk_data = {}
+            alpha_prior, beta_prior = 0.02, 1.0
+        except KeyError:
+            # indicates no default was found indicating MLE for module prior failed to converge
+            alpha_prior, beta_prior = 0.02, 1.0
 
         scores = []
+        prior = beta(alpha_prior, beta_prior)
         for rec in recs:
             resolved_id = rec.item_id
             d = clk_data.get(resolved_id)
             if d:
-                # Our beta function is defined on (0,1), so for the boundaries use super small values instead of 0
-                clicks = max(d.clicks, 1e-18)
-                no_clicks = max(d.impressions - d.clicks, 1e-18)
+                clicks = max(d.clicks + alpha_prior, 1e-18)
+                no_clicks = max(d.impressions - d.clicks + beta_prior, 1e-18)
+                # sample from posterior for CTR given click data
                 score = beta.rvs(clicks, no_clicks)
                 scores.append((rec, score))
-            else:
-                scores.append((rec, default.rvs()))
+            else:  # no click data, sample from module prior
+                scores.append((rec, prior.rvs()))
 
         scores.sort(key=itemgetter(1), reverse=True)
         return [x[0] for x in scores]
