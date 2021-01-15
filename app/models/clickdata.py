@@ -57,7 +57,6 @@ class ClickdataModel(BaseModel):
                     }
                 }
             responses = dynamodb.batch_get_item(RequestItems=request)
-            print(responses["Responses"])
 
             for item in map(ClickdataModel.dynamodb_row_to_clickdata, responses["Responses"][table]):
                 found_keys.add(item.mod_item)
