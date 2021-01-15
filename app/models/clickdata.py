@@ -20,7 +20,7 @@ class RecommendationModules(Enum):
 
 
 def make_key(module: RecommendationModules, key: str):
-    return "%s/%s" % (module, key)
+    return "%s/%s" % (module.value, key)
 
 
 class ClickdataModel(BaseModel):
@@ -39,29 +39,31 @@ class ClickdataModel(BaseModel):
     def get_clickdata(module: RecommendationModules, item_list: List[str]) -> Dict[str, 'ClickdataModel']:
 
         dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
-        table = dynamodb_config['explore_clickdata_table']
+        table = dynamodb_config['recommendation_api_clickdata_table']
 
         # Key are namespaced by the module we are getting data from
         keys = {make_key(module, item) for item in item_list}
 
         # Always get the default key, it is used for items that don't have any clickstream data
         keys.add(make_key(module, "default"))
+        keys = list(keys)
 
         clickdata = dict()
         found_keys = set()
-        for c in chunks(keys):
+        for keychunk in chunks(keys):
             request = {
                 table: {
-                    "Keys": [{"mod_item": "/".join([module, str(c_id)])} for c_id in c]
+                    "Keys": [{"mod_item": c} for c in keychunk]
                     }
                 }
             responses = dynamodb.batch_get_item(RequestItems=request)
+            print(responses["Responses"])
 
-            for item in map(ClickdataModel.dynamodb_row_to_clickdata, responses["Responses"][table][0]['candidates']):
+            for item in map(ClickdataModel.dynamodb_row_to_clickdata, responses["Responses"][table]):
                 found_keys.add(item.mod_item)
                 clickdata[item.mod_item.split("/")[1]] = item
 
         if not clickdata:
-            raise ValueError(f"No results from DynamoDB: module {module}")
+            raise ValueError(f"No results from DynamoDB: module {module.value}")
 
         return clickdata

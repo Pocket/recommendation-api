@@ -164,9 +164,6 @@ class TopicRecommendationsModelUtils:
         return reordered
 
     @staticmethod
-    def get_clickdata
-
-    @staticmethod
     @xray_recorder.capture('models_topic_thompson_sample')
     def thompson_sampling(recs: List[RecommendationModel], module: RecommendationModules):
         """
