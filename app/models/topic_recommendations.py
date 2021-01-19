@@ -165,7 +165,8 @@ class TopicRecommendationsModelUtils:
 
     @staticmethod
     @xray_recorder.capture('models_topic_thompson_sample')
-    def thompson_sampling(recs: List[RecommendationModel], module: RecommendationModules):
+    def thompson_sampling(recs: List[RecommendationModel],
+                          module: RecommendationModules) -> List[RecommendationModel]:
         """
         Re-rank items using Thompson sampling which combines exploitation of known item CTR
         with exploration of new items with unknown CTR modeled by a prior
@@ -176,7 +177,7 @@ class TopicRecommendationsModelUtils:
         """
 
         # if there are no recommendations, we done
-        if not len(recs):
+        if not recs:
             return recs
 
         item_list = [item.item_id for item in recs]

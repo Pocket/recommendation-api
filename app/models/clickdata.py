@@ -58,8 +58,7 @@ class ClickdataModel(BaseModel):
                 }
             responses = dynamodb.batch_get_item(RequestItems=request)
 
-            for item in map(ClickdataModel.dynamodb_row_to_clickdata, responses["Responses"][table]):
-                found_keys.add(item.mod_item)
+            for item in (ClickdataModel.dynamodb_row_to_clickdata(row) for row in responses["Responses"][table]):
                 clickdata[item.mod_item.split("/")[1]] = item
 
         if not clickdata:
