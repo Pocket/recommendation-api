@@ -3,7 +3,7 @@ import boto3
 import os
 from metaflow import FlowSpec, step, Parameter, conda_base, schedule
 
-from jobs.utils import setup_logger
+from utils import setup_logger
 
 @schedule(hourly=True)
 @conda_base(libraries={"elasticsearch": "7.1.0", "elasticsearch-dsl": "7.1.0",
@@ -36,7 +36,7 @@ class CollectionCandidatesFlow(FlowSpec):
 
         from elasticsearch import Elasticsearch, RequestsHttpConnection
         from requests_aws4auth import AWS4Auth
-        from jobs.utils import get_topic_map
+        from utils import get_topic_map
 
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
@@ -69,7 +69,7 @@ class CollectionCandidatesFlow(FlowSpec):
 
         from elasticsearch_dsl import Search
         from elasticsearch.exceptions import NotFoundError, RequestError, AuthorizationException
-        from jobs.query import organic_by_topic, collection_by_feed, merge_collection_results, transform_curated_results
+        from query import organic_by_topic, collection_by_feed, merge_collection_results, transform_curated_results
 
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)

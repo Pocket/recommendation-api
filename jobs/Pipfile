@@ -8,17 +8,16 @@ pytest = "*"
 pytest-cov = "*"
 coverage = "*"
 requests = "*"
-moto = "*"
-mypy_boto3_dynamodb = "*"
+ipython = "*"
 pytest-mock = "*"
 
 [packages]
 metaflow = "*"
-boto3 = "*"
-# We define the essential stubs
-boto3-stubs = {extras = ["essential"], version = "*"}
+elasticsearch = "==7.10.0"
+elasticsearch-dsl = "==7.3.0"
 sentry-sdk = "*"
-aws_secretsmanager_caching = "*"
+graphene-pydantic = "==0.1.0"
+gql = "*"
 
 [requires]
 python_version = "3.8"

@@ -1,5 +1,5 @@
 {
-  "explore_topics_candidates": [
+  "recommendation_api_candidates": [
     {
       "PutRequest": {
         "Item": {

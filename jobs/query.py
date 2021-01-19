@@ -3,7 +3,7 @@ from elasticsearch_dsl.query import Exists, Range, Term, Match
 from elasticsearch_dsl.function import Gauss, FieldValueFactor
 from typing import Dict, List
 
-from jobs.utils import convert_to_days
+from utils import convert_to_days
 
 FEED_ID_EN_US = 1
 
@@ -113,7 +113,7 @@ def postprocess_search_results(raw_results, allowlist, limit):
         approved_feed_id = None
         if "approved_feeds" in source:
             if FEED_ID_EN_US in [x["approved_feed_id"] for x in source["approved_feeds"]]:
-                approved_feed_id = FEED_ID_EN_US  # assuming en-US is what matters for explore
+                approved_feed_id = FEED_ID_EN_US  # assuming en-US is what matters for the API
 
         filtered.append({"rec": {"item_id": source["resolved_id"],
                                  "top_domain_name": source["domain"]["top_domain_name"],
