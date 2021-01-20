@@ -4,7 +4,7 @@ import os
 
 from metaflow import FlowSpec, step, Parameter, IncludeFile, conda, conda_base, schedule, Flow, namespace
 
-from jobs.utils import setup_logger
+from utils import setup_logger
 
 
 @schedule(hourly=True)
@@ -71,7 +71,7 @@ class LongReadsCandidatesFlow(FlowSpec):
     domain_allowlist_file = IncludeFile("domain_allowlist_file",
                                         is_text=True,
                                         help="Pocket domain allowlist",
-                                        default="./jobs/resources/domain_allowlist_20200630.json")
+                                        default="./resources/domain_allowlist_20200630.json")
 
     """
     A flow where Metaflow generates long reads candidates.
@@ -85,7 +85,7 @@ class LongReadsCandidatesFlow(FlowSpec):
         import boto3
         from elasticsearch import Elasticsearch, RequestsHttpConnection
         from requests_aws4auth import AWS4Auth
-        from jobs.utils import get_topic_map
+        from utils import get_topic_map
 
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
