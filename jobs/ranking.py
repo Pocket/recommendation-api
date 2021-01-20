@@ -1,5 +1,6 @@
 import numpy as np
 
+from typing import List, Dict
 from scipy.sparse import csr_matrix, hstack
 
 
@@ -64,14 +65,19 @@ def apply_rankers(search_results, topic_predictor, approval_model, count, featur
     :param approval_percentile: minimum percentile for approval probability
     :return:
     """
-    topic_probs = apply_NB_model(search_results, topic_predictor, featurizer)
 
-    # add topic scores to search results
-    rlist = [dict(hit, **{"topic_score": topic_probs[i]}) for i, hit in enumerate(search_results)]
+    # if topic_predictor == None then we are only applying (generic) approval model
+    if topic_predictor:
+        topic_probs = apply_NB_model(search_results, topic_predictor, featurizer)
 
-    ordered_hits = sorted(rlist, key=lambda x: x["topic_score"], reverse=True)
-    # remove low ranked items
-    ordered_hits = ordered_hits[:(count * 2)]
+        # add topic scores to search results
+        rlist = [dict(hit, **{"topic_score": topic_probs[i]}) for i, hit in enumerate(search_results)]
+
+        ordered_hits = sorted(rlist, key=lambda x: x["topic_score"], reverse=True)
+        # remove low ranked items, there should be many more than count items available
+        ordered_hits = ordered_hits[:(count * 2)]
+    else:
+        ordered_hits = search_results[:(count * 2)]
 
     approval_preds = apply_NB_model(ordered_hits, approval_model, featurizer)
 

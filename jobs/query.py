@@ -1,11 +1,12 @@
 from elasticsearch_dsl.query import Bool, MultiMatch
-from elasticsearch_dsl.query import Exists, Range, Term, Match
+from elasticsearch_dsl.query import Exists, Range, Term, Match, MatchAll
 from elasticsearch_dsl.function import Gauss, FieldValueFactor
 from typing import Dict, List
 
-from utils import convert_to_days
+from jobs.utils import convert_to_days
 
 FEED_ID_EN_US = 1
+
 
 def order_curated_by_approval_time(raw_results: Dict, feed_id: int = None) -> List:
     """
@@ -57,7 +58,7 @@ def transform_curated_results(raw_results: Dict, feed_id: int = FEED_ID_EN_US) -
     return out
 
 
-def merge_collection_results(results1: Dict, feed_id1: int, results2: Dict, feed_id2) -> List:
+def merge_collection_results(results1: Dict, feed_id1: int, results2: Dict, feed_id2: int) -> List:
     """
     This routine takes the raw elastic search output and converts to a List of items
     sorted by time approved by curator
@@ -84,7 +85,7 @@ def merge_collection_results(results1: Dict, feed_id1: int, results2: Dict, feed
     return out
 
 
-def postprocess_search_results(raw_results, allowlist, limit):
+def postprocess_search_results(raw_results: Dict, allowlist: Dict[str, int], limit: int) -> List[Dict]:
     """
     * filter results that are not from publishers included in allowlist
     * retain fields required for ranking
@@ -223,3 +224,49 @@ def algorithmic_by_topic(curator_topic: str, topic_map: Dict, min_saves: int = 3
                                 }, weight=3)]
 
     return Bool(filter=bool_query, should=kw_query), score_functions
+
+
+def algorithmic_by_length(min_saves: int = 300, scale: str = "9d", min_words: int = 1200,
+                          save_origin: int = 6000, save_scale: int = 3000):
+    """
+    routine to generate algorithmic elasticsearch query
+    :param min_saves: minimum required number of saves
+    :param scale: optional time scale for maximum item age
+    :param min_words: minimum required number of words
+    :param save_origin: origin in gaussian decay term in fcn score query
+    :param save_scale: scale in gaussian decay term in fcn score query
+    :return: Bool query
+    """
+
+    bool_query = Bool(must=[Exists(field="date_published.date_published_parsed"),
+                            Exists(field="date_published.time_first_parsed"),
+                            Exists(field="domain.domain_id"),
+                            Exists(field="word_count"),
+                            Exists(field="action_counts.save_count"),
+                            Exists(field="impact_scores.total_score"),
+                            Term(lang="en"),
+                            Range(word_count={"gte": min_words}),
+                            Range(action_counts__save_count={"gte": min_saves})],
+                      must_not=[Exists(field="flags")])  # flags are adult or sensitive subjects
+
+    scale2 = convert_to_days(scale) if scale else "180d"
+    date_range = "now-%s" % scale2
+    bool_query.must.append(Range(date_published__time_first_parsed={"gte": date_range}))
+
+    score_functions = [Gauss(date_published__time_first_parsed={
+                                "origin": "now",
+                                "scale": scale2
+                                },
+                             ),
+                       Gauss(date_published__date_published_parsed={
+                                "origin": "now",
+                                "scale": scale2
+                                },
+                             ),
+                       FieldValueFactor(field="impact_scores.total_score"),
+                       Gauss(action_counts__save_count={
+                                "origin": save_origin,
+                                "scale": save_scale
+                                }, weight=3)]
+
+    return Bool(filter=bool_query, should=MatchAll()), score_functions
