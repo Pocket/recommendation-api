@@ -38,7 +38,7 @@ def order_curated_by_approval_time(raw_results: Dict, feed_id: int = None) -> Li
     return sorted(rec_approval_times, key=lambda x: x[1], reverse=True)
 
 
-def transform_curated_results(raw_results: Dict, feed_id: int = FEED_ID_EN_US) -> List:
+def transform_curated_results(raw_results: Dict, blocklists: Dict, feed_id: int = FEED_ID_EN_US) -> List:
     """
     This routine takes the raw elastic search output and converts to a List of items
     ordered by time_approved
@@ -51,6 +51,9 @@ def transform_curated_results(raw_results: Dict, feed_id: int = FEED_ID_EN_US) -
     out = list()
     for hit in sorted_recs:
         source = hit[0]["_source"]
+        # this handles case where curated item gets taken down by resolved_id
+        if str(source["resolved_id"]) in blocklists["items"]:
+            continue
         out.append({"item_id": source["resolved_id"], "publisher": source["domain"]["top_domain_name"],
                     "feed_id": feed_id})
 
