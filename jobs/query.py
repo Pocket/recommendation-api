@@ -1,3 +1,4 @@
+import logging
 from elasticsearch_dsl.query import Bool, MultiMatch
 from elasticsearch_dsl.query import Exists, Range, Term, Match
 from elasticsearch_dsl.function import Gauss, FieldValueFactor
@@ -96,25 +97,37 @@ def postprocess_search_results(raw_results, allowlist, blocklists, limit):
     :param limit: desired number of returned results
     :return: list of recs with reduced fields
     """
+
+    logger = logging.getLogger()
     recs = [x for x in raw_results["hits"]["hits"]]
     filtered = list()
     for r in recs:
         source = r["_source"]
         if source["domain"]["top_domain_name"] not in allowlist:
+            logger.info(f"removing rec with top-level domain that is not in allowlist: \
+                        {source['resolved_id']}, {source['resolved_url']}")
             continue
 
         if source["domain"]["domain_name"] in blocklists["domains"]:
+            logger.info(f"removing rec with domain that is in sub-domain blocklist: \
+                        {source['resolved_id']}, {source['resolved_url']}")
             continue
 
         if str(source["resolved_id"]) in blocklists["items"]:
+            logger.info(f"removing rec that is in item blocklist: \
+                        {source['resolved_id']}, {source['resolved_url']}")
             continue
 
         # this exists if a curator rejected the item
         if "rejected_feeds" in source:
+            logger.info(f"removing rec that was rejected by curators: \
+                        {source['resolved_id']}, {source['resolved_url']} ")
             continue
 
         # recommendations need titles
         if "title" not in source:
+            logger.info(f"removing rec that has no title in elastic search: \
+                        {source['resolved_id']}, {source['resolved_url']}")
             continue
 
         # collect google category information
