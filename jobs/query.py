@@ -84,7 +84,7 @@ def merge_collection_results(results1: Dict, feed_id1: int, results2: Dict, feed
     return out
 
 
-def postprocess_search_results(raw_results, allowlist, limit):
+def postprocess_search_results(raw_results, allowlist, blocklists, limit):
     """
     * filter results that are not from publishers included in allowlist
     * retain fields required for ranking
@@ -98,6 +98,16 @@ def postprocess_search_results(raw_results, allowlist, limit):
     for r in recs:
         source = r["_source"]
         if source["domain"]["top_domain_name"] not in allowlist:
+            continue
+
+        if source["domain"]["domain_name"] in blocklists["domains"]:
+            continue
+
+        if str(source["resolved_id"]) in blocklists["items"]:
+            continue
+
+        # this exists if a curator rejected the item
+        if "rejected_feeds" in source:
             continue
 
         # recommendations need titles
