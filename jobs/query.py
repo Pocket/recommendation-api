@@ -150,6 +150,20 @@ def organic_by_topic(curator_topic: str, topic_map: Dict,
     return bool_query
 
 
+def curated_older_than(feed: int, scale: str = "7d") -> Bool:
+    """
+    Fetch curated items older than some number of days for a specific feed. Used for getting items
+    that likely aren't on the new tab anymore.
+    :param feed: Integer representing the curator feed to use
+    :param scale: String of number of days an item must be older than
+    :return:
+    """
+    scale = convert_to_days(scale)
+    bool_query = Bool(must=[Range(approved_feeds__approved_feed_time_live={"lte": f"now-{scale}"})])
+    bool_query.must.append(Match(approved_feeds__approved_feed_id={"query": str(feed)}))
+    return bool_query
+
+
 def collection_by_feed(feed: int, scale: str = "90d") -> Bool:
     """
     routine for item search of organic curated recs for editorial collection based on

@@ -42,7 +42,7 @@ class CuratedCandidatesFlow(FlowSpec):
 
         from elasticsearch import Elasticsearch, RequestsHttpConnection
         from requests_aws4auth import AWS4Auth
-        from utils import get_topic_map
+        from recs_api import get_topic_map
 
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
