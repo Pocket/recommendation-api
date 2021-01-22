@@ -1,28 +1,15 @@
-from moto import mock_dynamodb2
+from graphql.execution.executors.asyncio import AsyncioExecutor
 from graphene.test import Client
-from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 from app.graphql.graphql import schema
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
-from app.config import dynamodb as dynamodb_config
 
 
-@mock_dynamodb2
 class TestGraphQLCandidates(TestDynamoDBBase):
-    metadataTable: DynamoDBServiceResource.Table
-    candidateTable: DynamoDBServiceResource.Table
     client: Client
 
     def setup_method(self, method):
-        dynamodb_config['endpoint_url'] = None
         super().setup_method(self)
-        self.metadataTable = self.create_explore_topics_metadata_table()
-        self.candidateTable = self.create_explore_topics_candidates_table()
         self.client = Client(schema)
-
-    def teardown_method(self, method):
-        super().teardown_method(self)
-        self.metadataTable.delete()
-        self.candidateTable.delete()
 
     def test_get_topic_recommendations(self):
         self.metadataTable.put_item(Item={
@@ -60,14 +47,14 @@ class TestGraphQLCandidates(TestDynamoDBBase):
                 algorithmicRecommendations {feedItemId itemId feedId publisher}
                 curatedRecommendations {feedItemId itemId feedId publisher}
             }
-        }''')
+        }''', executor=AsyncioExecutor())
         assert executed == {
             'data': {
                 'getTopicRecommendations': {
                     'algorithmicRecommendations': [],
                     'curatedRecommendations': [
-                        {'feedItemId': 'ExploreTopics/123', 'feedId': 5, 'itemId': '123', 'publisher': 'test.yes'},
-                        {'feedItemId': 'ExploreTopics/1253', 'feedId': None, 'itemId': '1253', 'publisher': 'test.yes'}
+                        {'feedItemId': 'RecommendationAPI/123', 'feedId': 5, 'itemId': '123', 'publisher': 'test.yes'},
+                        {'feedItemId': 'RecommendationAPI/1253', 'feedId': None, 'itemId': '1253', 'publisher': 'test.yes'}
                     ],
                 }
             }
@@ -148,14 +135,14 @@ class TestGraphQLCandidates(TestDynamoDBBase):
                 algorithmicRecommendations {feedItemId itemId feedId publisher}
                 curatedRecommendations {feedItemId itemId feedId publisher}
             }
-        }''')
+        }''', executor=AsyncioExecutor())
         assert executed == {
             'data': {
                 'getTopicRecommendations': {
                     'algorithmicRecommendations': [],
                     'curatedRecommendations': [
-                        {'feedItemId': 'ExploreTopics/123', 'feedId': 5, 'itemId': '123', 'publisher': 'special.yes'},
-                        {'feedItemId': 'ExploreTopics/1253', 'feedId': None, 'itemId': '1253',
+                        {'feedItemId': 'RecommendationAPI/123', 'feedId': 5, 'itemId': '123', 'publisher': 'special.yes'},
+                        {'feedItemId': 'RecommendationAPI/1253', 'feedId': None, 'itemId': '1253',
                          'publisher': 'test.yes'}
                     ],
                 }

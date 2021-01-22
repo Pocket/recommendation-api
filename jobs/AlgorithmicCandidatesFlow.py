@@ -4,8 +4,8 @@ import boto3
 import os
 from metaflow import FlowSpec, step, Parameter, IncludeFile, conda, conda_base, schedule, Flow, namespace
 
-from jobs.utils import setup_logger
-from jobs.query import FEED_ID_EN_US
+from utils import setup_logger
+from query import FEED_ID_EN_US
 
 
 @schedule(hourly=True)
@@ -37,7 +37,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
     domain_allowlist_file = IncludeFile("domain_allowlist_file",
                                         is_text=True,
                                         help="Pocket domain allowlist",
-                                        default="./app/resources/domain_allowlist_20200630.json")
+                                        default="./resources/domain_allowlist_20200630.json")
 
     """
     A flow where Metaflow generates algorithmic candidates.
@@ -50,7 +50,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         """
         from elasticsearch import Elasticsearch, RequestsHttpConnection
         from requests_aws4auth import AWS4Auth
-        from jobs.utils import get_topic_map
+        from utils import get_topic_map
 
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
@@ -87,6 +87,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         Once https://github.com/Netflix/metaflow/issues/384 is merged and the topic model training has the right tags 
         added we will be able to change this to just "production" and pull it from AWS Secrets Manager
         """
+        # TODO: can we change the below to match the new service name - Recommendation API?
         namespace("production:exploretopictrainingflow-0-eins")
 
         training_run = Flow("ExploreTopicTrainingFlow").latest_successful_run
@@ -114,8 +115,8 @@ class AlgorithmicCandidatesFlow(FlowSpec):
 
         from elasticsearch_dsl import Search
         from elasticsearch.exceptions import NotFoundError, RequestError, AuthorizationException
-        from jobs.query import algorithmic_by_topic, postprocess_search_results
-        from jobs.ranking import apply_rankers
+        from query import algorithmic_by_topic, postprocess_search_results
+        from ranking import apply_rankers
 
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)

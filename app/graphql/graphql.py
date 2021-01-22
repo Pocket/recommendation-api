@@ -11,19 +11,19 @@ class Query(ObjectType):
     get_topic_recommendations = Field(TopicRecommendations, slug=String(required=True, description="Topic slug to get "
                                                                                                    "recommendations "
                                                                                                    "for"),
-                                      algorithmic_count=Int(default_value=30, description="Number of algorithmic "
+                                      algorithmic_count=Int(default_value=20, description="Number of algorithmic "
                                                                                           "results to return"),
-                                      curated_count=Int(default_value=30, description="Number of curated "
+                                      curated_count=Int(default_value=5, description="Number of curated "
                                                                                       "results to return"))
     list_topics = List(Topic)
 
-    def resolve_get_topic_recommendations(self, info, slug: str, algorithmic_count: int,
+    async def resolve_get_topic_recommendations(self, info, slug: str, algorithmic_count: int,
                                           curated_count: int) -> TopicRecommendations:
-        return TopicRecommendationsModel.get_recommendations(slug=slug, algorithmic_count=algorithmic_count,
+        return await TopicRecommendationsModel.get_recommendations(slug=slug, algorithmic_count=algorithmic_count,
                                                              curated_count=curated_count)
 
-    def resolve_list_topics(self, info) -> [TopicModel]:
-        return TopicModel.get_all()
+    async def resolve_list_topics(self, info) -> [TopicModel]:
+        return await TopicModel.get_all()
 
 
 ##

@@ -46,7 +46,7 @@ phases:
     commands:
       - echo Installing JQ, AWS CLI, Perl Utils, Node, NPM
       # Within our terraform files we execute jq, and aws-cli and python
-      - apt-get -qq update && apt-get -qq install jq nodejs npm curl wget > /dev/null
+      - apt-get -qq update && apt-get -qq install jq nodejs npm curl wget awscli > /dev/null
       # Install conda.
       - wget -nv https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && bash Miniconda3-latest-Linux-x86_64.sh -b  -p $HOME/miniconda
       # Install pipenv and we need to ignore what exists because distutils does not uninstall
@@ -99,9 +99,8 @@ phases:
       - hash -r
       - conda config --append channels conda-forge
 
-      # Install our deployment packages so we can run metaflow
-      # TODO: see if theres a way in pipenv to just have a --metaflow that will install only metaflow packages
-      # so we can remove gcc and python3-dev
+      # Install deployment packages from jobs/Pipfile.lock so we can run metaflow
+      - cd jobs/
       - pipenv install --deploy
 
       - pipenv run python AlgorithmicCandidatesFlow.py --environment=conda check
