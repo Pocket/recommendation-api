@@ -30,6 +30,7 @@ class CuratedNotNewTab(FlowSpec):
 
     @step
     def start(self):
+        """Fetch curated items that aren't on new tab anymore"""
         from elasticsearch import Elasticsearch, RequestsHttpConnection
         from elasticsearch_dsl import Search
         from requests_aws4auth import AWS4Auth
@@ -58,6 +59,7 @@ class CuratedNotNewTab(FlowSpec):
     @step
     def end(self):
         pass
+
 
 if __name__ == '__main__':
     CuratedNotNewTab()
