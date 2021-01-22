@@ -3,7 +3,6 @@ import logging
 import os
 
 from metaflow import FlowSpec, step, Parameter, IncludeFile, conda, conda_base, schedule, Flow, namespace
-
 from utils import setup_logger
 
 
@@ -34,14 +33,15 @@ class LongReadsCandidatesFlow(FlowSpec):
                           default=45)
 
     min_words = Parameter("min_words",
-                          help="minimum required word count for recommendation filtering, default is 900",
+                          help="minimum required word count for recommendation filtering, default is 4500 \
+                                based on a reading time of 20 mins and 225 words/min reading speed.",
                           type=int,
-                          default=900)
+                          default=4500)
 
     time_scale = Parameter("time_scale",
                            help="The time scale for the decay in elastic search, default is 6 days",
                            type=str,
-                           default="6d")
+                           default="18d")
 
     save_origin = Parameter("save_origin",
                             help="The origin for the save decay in elastic search, default is 600",
@@ -89,11 +89,7 @@ class LongReadsCandidatesFlow(FlowSpec):
 
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
-
-        logger.info("AlgorithmicTrendingCandidatesFlow is starting.")
-        self.topic_map = get_topic_map()
-        self.topics = [k for k, x in self.topic_map.items() if x["pageType"] == "topic_page"]
-        logger.info(f"flow will process {len(self.topics)} topics.")
+        logger.info("LongReadsCandidatesFlow is starting.")
 
         session = boto3.Session()
         credentials = session.get_credentials()
@@ -142,8 +138,8 @@ class LongReadsCandidatesFlow(FlowSpec):
 
         from elasticsearch_dsl import Search
         from elasticsearch.exceptions import NotFoundError, RequestError, AuthorizationException
-        from jobs.query import algorithmic_by_length, postprocess_search_results
-        from jobs.ranking import apply_rankers
+        from query import algorithmic_by_length, postprocess_search_results
+        from ranking import apply_rankers
 
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
@@ -177,27 +173,16 @@ class LongReadsCandidatesFlow(FlowSpec):
             logger.error("ElasticSearch " + str(err))
 
         logger.info(f"Metaflow says its time to get apply ranking models to elasticsearch results for long reads")
-        self.ranked_results = apply_rankers(self.search_results,
-                                            topic_predictor=None,
-                                            approval_model=self.approval_model,
-                                            count=self.limit,
-                                            featurizer=self.featurizer,
-                                            approval_percentile=self.approval_threshold)
+        results = apply_rankers(self.search_results,
+                                topic_predictor=None,
+                                approval_model=self.approval_model,
+                                count=self.limit,
+                                featurizer=self.featurizer,
+                                approval_percentile=self.approval_threshold)
 
-        self.next(self.join)
-
-    @step
-    def join(self):
-        """
-        a step in which single topic results are combined together in a single output dict
-        """
-        logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
-
-        logger.info("Metaflow says its time to join the results")
-        ### NEED TO REVISIT THIS AND GET FEEDS ORGANIZED BY ........ ID??????
         self.final_results = [{"feed_name": "longreads",
-                               "items": self.ranked_results}]
+                               "items": results}]
+        logger.info(f"Returned {len(results)} for long reads")
         self.next(self.end)
 
     @step
@@ -206,13 +191,7 @@ class LongReadsCandidatesFlow(FlowSpec):
         This is the 'end' step. All flows must have an 'end' step, which is the
         last step in the flow.
         """
-        logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
-
-        for t in self.final_results:
-            logger.info(f"Returned {len(t['items'])} for {t['feed_name']}")
-        logger.info("LongReadsFlow is done.")
-
+        pass
 
 if __name__ == '__main__':
     setup_logger()
