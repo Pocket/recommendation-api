@@ -1,6 +1,8 @@
 import json
 import logging
 import os
+import sys
+
 from metaflow import FlowSpec, step, Parameter, IncludeFile, conda, conda_base, schedule, Flow, namespace
 
 from utils import setup_logger
@@ -153,6 +155,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         domain_allowlist = json.loads(self.domain_allowlist_file)
         logger.info(f"Metaflow says its time to get some elasticsearch results for: {self.input}")
         logger.info(f"min_saves: {self.min_saves} scale: {self.time_scale}")
+
         try:
             s = Search(using=self.es, index=self.es_path).query("function_score",
                                                                 query=topic_query,
@@ -168,6 +171,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
 
         except (NotFoundError, RequestError, AuthorizationException) as err:
             logger.error("ElasticSearch " + str(err))
+            sys.exit(1)
 
         logger.info(f"Metaflow says its time to get apply ranking models to elasticsearch results for: {self.input}")
         # model files are dicts keyed on curator labels

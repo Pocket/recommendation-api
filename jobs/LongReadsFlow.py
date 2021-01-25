@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import sys
 
 from metaflow import FlowSpec, step, Parameter, IncludeFile, conda, conda_base, schedule, Flow, namespace
 from utils import setup_logger
@@ -155,6 +156,7 @@ class LongReadsCandidatesFlow(FlowSpec):
         domain_allowlist = json.loads(self.domain_allowlist_file)
         logger.info(f"Metaflow says its time to get some elasticsearch results for long reads")
         logger.info(f"min_saves: {self.min_saves} scale: {self.time_scale} min_words: {self.min_words}")
+
         try:
             s = Search(using=self.es, index=self.es_path).query("function_score",
                                                                 query=longreads_query,
@@ -170,6 +172,7 @@ class LongReadsCandidatesFlow(FlowSpec):
 
         except (NotFoundError, RequestError, AuthorizationException) as err:
             logger.error("ElasticSearch " + str(err))
+            sys.exit(1)
 
         logger.info(f"Metaflow says its time to get apply ranking models to elasticsearch results for long reads")
         results = apply_rankers(self.search_results,

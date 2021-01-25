@@ -183,7 +183,7 @@ def collection_by_feed(feed: int, scale: str = "90d") -> Bool:
 
 
 def algorithmic_by_topic(curator_topic: str, topic_map: Dict, min_saves: int = 300,
-                         scale: str = "90d", save_origin: int = 6000, save_scale: int = 3000):
+                         scale: str = None, save_origin: int = 6000, save_scale: int = 3000):
     """
     routine to generate algorithmic elasticsearch query
     :param curator_topic: topic string must be a curator topic
@@ -206,7 +206,7 @@ def algorithmic_by_topic(curator_topic: str, topic_map: Dict, min_saves: int = 3
                             Range(action_counts__save_count={"gte": min_saves})],
                       must_not=[Exists(field="flags")])  # flags are adult or sensitive subjects
 
-    scale2 = convert_to_days(scale) if scale else "180d"
+    scale2 = convert_to_days(scale) if scale else "90d"
     date_range = "now-%s" % scale2
     bool_query.must.append(Range(date_published__time_first_parsed={"gte": date_range}))
 
@@ -240,7 +240,7 @@ def algorithmic_by_topic(curator_topic: str, topic_map: Dict, min_saves: int = 3
     return Bool(filter=bool_query, should=kw_query), score_functions
 
 
-def algorithmic_by_length(min_saves: int = 300, scale: str = "9d", min_words: int = 1200,
+def algorithmic_by_length(min_saves: int = 300, scale: str = None, min_words: int = 1200,
                           save_origin: int = 6000, save_scale: int = 3000):
     """
     routine to generate algorithmic elasticsearch query
@@ -252,6 +252,9 @@ def algorithmic_by_length(min_saves: int = 300, scale: str = "9d", min_words: in
     :return: Bool query
     """
 
+    scale2 = convert_to_days(scale) if scale else "9d"
+    date_range = "now-%s" % scale2
+
     bool_query = Bool(must=[Exists(field="date_published.date_published_parsed"),
                             Exists(field="date_published.time_first_parsed"),
                             Exists(field="domain.domain_id"),
@@ -260,12 +263,9 @@ def algorithmic_by_length(min_saves: int = 300, scale: str = "9d", min_words: in
                             Exists(field="impact_scores.total_score"),
                             Term(lang="en"),
                             Range(word_count={"gte": min_words}),
+                            Range(date_published__time_first_parsed={"gte": date_range}),
                             Range(action_counts__save_count={"gte": min_saves})],
                       must_not=[Exists(field="flags")])  # flags are adult or sensitive subjects
-
-    scale2 = convert_to_days(scale) if scale else "180d"
-    date_range = "now-%s" % scale2
-    bool_query.must.append(Range(date_published__time_first_parsed={"gte": date_range}))
 
     score_functions = [Gauss(date_published__time_first_parsed={
                                 "origin": "now",
