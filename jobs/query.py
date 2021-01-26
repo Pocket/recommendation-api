@@ -143,6 +143,7 @@ def postprocess_search_results(raw_results, allowlist, blocklists, limit):
 
         filtered.append({"rec": {"item_id": source["resolved_id"],
                                  "top_domain_name": source["domain"]["top_domain_name"],
+                                 "resolved_url": source["resolved_url"],
                                  "title": source["title"],
                                  "feed_id": approved_feed_id,
                                  "google_categories": gdata},
