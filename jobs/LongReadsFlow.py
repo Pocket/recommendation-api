@@ -138,7 +138,7 @@ class LongReadsCandidatesFlow(FlowSpec):
 
         from elasticsearch_dsl import Search
         from elasticsearch.exceptions import NotFoundError, RequestError, AuthorizationException
-        from query import algorithmic_by_length, postprocess_search_results
+        from query import algorithmic_by_counts, postprocess_search_results
         from ranking import apply_rankers
 
         logger = logging.getLogger()
@@ -147,11 +147,11 @@ class LongReadsCandidatesFlow(FlowSpec):
         logger.info("Metaflow says its time to get longreads results")
         logger.info(f"min_saves: {self.input}, scale: {self.time_scale} \
                     filter_curated: {self.filter_curated}, approval_ranking: {self.approval_modeling}")
-        longreads_query, score_fuctions = algorithmic_by_length(min_saves=self.min_saves,
-                                                                scale=self.time_scale,
-                                                                min_words=self.min_words,
-                                                                save_origin=self.save_origin,
-                                                                save_scale=self.save_scale)
+        longreads_query, score_functions = algorithmic_by_counts(min_saves=self.min_saves,
+                                                                 scale=self.time_scale,
+                                                                 min_words=self.min_words,
+                                                                 save_origin=self.save_origin,
+                                                                 save_scale=self.save_scale)
 
         domain_allowlist = json.loads(self.domain_allowlist_file)
         logger.info(f"Metaflow says its time to get some elasticsearch results for long reads")
@@ -161,7 +161,7 @@ class LongReadsCandidatesFlow(FlowSpec):
             s = Search(using=self.es, index=self.es_path).query("function_score",
                                                                 query=longreads_query,
                                                                 min_score=0.01,
-                                                                functions=score_fuctions)
+                                                                functions=score_functions)
 
             # get extra results in case some are duplicates or filtered downstream
             total = min(900, self.limit*9)

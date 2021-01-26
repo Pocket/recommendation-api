@@ -240,7 +240,7 @@ def algorithmic_by_topic(curator_topic: str, topic_map: Dict, min_saves: int = 3
     return Bool(filter=bool_query, should=kw_query), score_functions
 
 
-def algorithmic_by_length(min_saves: int = 300, scale: str = None, min_words: int = 1200,
+def algorithmic_by_counts(min_saves: int = 300, scale: str = None, min_words: int = 200,
                           save_origin: int = 6000, save_scale: int = 3000):
     """
     routine to generate algorithmic elasticsearch query
@@ -279,8 +279,8 @@ def algorithmic_by_length(min_saves: int = 300, scale: str = None, min_words: in
                              ),
                        FieldValueFactor(field="impact_scores.total_score"),
                        Gauss(action_counts__open_count={
-                             "origin": save_origin,
-                             "scale": save_scale
+                             "origin": (save_origin // 2),
+                             "scale": (save_scale // 2)
                              }, weight=3),
                        Gauss(action_counts__save_count={
                                 "origin": save_origin,
