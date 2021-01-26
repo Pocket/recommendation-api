@@ -31,7 +31,6 @@ fastapi = "*"
 uvloop = "*"
 httptools = "*"
 gql = "*"
-pynamodb = "*"
 xraysink = "*"
 aws-xray-sdk = "*"
 
