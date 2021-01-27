@@ -1,3 +1,4 @@
+import logging
 from elasticsearch_dsl.query import Bool, MultiMatch
 from elasticsearch_dsl.query import Exists, Range, Term, Match
 from elasticsearch_dsl.function import Gauss, FieldValueFactor
@@ -38,7 +39,7 @@ def order_curated_by_approval_time(raw_results: Dict, feed_id: int = None) -> Li
     return sorted(rec_approval_times, key=lambda x: x[1], reverse=True)
 
 
-def transform_curated_results(raw_results: Dict, feed_id: int = FEED_ID_EN_US) -> List:
+def transform_curated_results(raw_results: Dict, blocklists: Dict, feed_id: int = FEED_ID_EN_US) -> List:
     """
     This routine takes the raw elastic search output and converts to a List of items
     ordered by time_approved
@@ -51,6 +52,9 @@ def transform_curated_results(raw_results: Dict, feed_id: int = FEED_ID_EN_US) -
     out = list()
     for hit in sorted_recs:
         source = hit[0]["_source"]
+        # this handles case where curated item gets taken down by resolved_id
+        if str(source["resolved_id"]) in blocklists["items"]:
+            continue
         out.append({"item_id": source["resolved_id"], "publisher": source["domain"]["top_domain_name"],
                     "feed_id": feed_id})
 
@@ -84,7 +88,7 @@ def merge_collection_results(results1: Dict, feed_id1: int, results2: Dict, feed
     return out
 
 
-def postprocess_search_results(raw_results, allowlist, limit):
+def postprocess_search_results(raw_results, allowlist, blocklists, limit):
     """
     * filter results that are not from publishers included in allowlist
     * retain fields required for ranking
@@ -93,15 +97,37 @@ def postprocess_search_results(raw_results, allowlist, limit):
     :param limit: desired number of returned results
     :return: list of recs with reduced fields
     """
+
+    logger = logging.getLogger()
     recs = [x for x in raw_results["hits"]["hits"]]
     filtered = list()
     for r in recs:
         source = r["_source"]
         if source["domain"]["top_domain_name"] not in allowlist:
+            logger.info(f"removing rec with top-level domain that is not in allowlist: \
+                        {source['resolved_id']}, {source['resolved_url']}")
+            continue
+
+        if source["domain"]["domain_name"] in blocklists["domains"]:
+            logger.info(f"removing rec with domain that is in sub-domain blocklist: \
+                        {source['resolved_id']}, {source['resolved_url']}")
+            continue
+
+        if str(source["resolved_id"]) in blocklists["items"]:
+            logger.info(f"removing rec that is in item blocklist: \
+                        {source['resolved_id']}, {source['resolved_url']}")
+            continue
+
+        # this exists if a curator rejected the item
+        if "rejected_feeds" in source:
+            logger.info(f"removing rec that was rejected by curators: \
+                        {source['resolved_id']}, {source['resolved_url']} ")
             continue
 
         # recommendations need titles
         if "title" not in source:
+            logger.info(f"removing rec that has no title in elastic search: \
+                        {source['resolved_id']}, {source['resolved_url']}")
             continue
 
         # collect google category information
@@ -117,6 +143,7 @@ def postprocess_search_results(raw_results, allowlist, limit):
 
         filtered.append({"rec": {"item_id": source["resolved_id"],
                                  "top_domain_name": source["domain"]["top_domain_name"],
+                                 "resolved_url": source["resolved_url"],
                                  "title": source["title"],
                                  "feed_id": approved_feed_id,
                                  "google_categories": gdata},
