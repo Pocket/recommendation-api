@@ -39,6 +39,11 @@ class AlgorithmicCandidatesFlow(FlowSpec):
                                         help="Pocket domain allowlist",
                                         default="./resources/domain_allowlist_20200630.json")
 
+    blocklist_file = IncludeFile("blocklist_file",
+                                 is_text=True,
+                                 help="Pocket domain and item blocklist",
+                                 default="./resources/blocklist_20210120.json")
+
     """
     A flow where Metaflow generates algorithmic candidates.
     """
@@ -50,7 +55,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         """
         from elasticsearch import Elasticsearch, RequestsHttpConnection
         from requests_aws4auth import AWS4Auth
-        from utils import get_topic_map
+        from recs_api import get_topic_map
 
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
@@ -58,6 +63,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
         logger.info("AlgorithmicCandidatesFlow is starting.")
         self.topic_map = get_topic_map()
         self.domain_allowlist = json.loads(self.domain_allowlist_file)
+        self.blocklists = json.loads(self.blocklist_file)
         self.topics = [k for k, x in self.topic_map.items() if x["pageType"] == "topic_page"]
         logger.info(f"flow will process {len(self.topics)} topics.")
 
@@ -137,6 +143,7 @@ class AlgorithmicCandidatesFlow(FlowSpec):
             s = s[:total]
             self.search_results = postprocess_search_results(s.execute().to_dict(),
                                                              self.domain_allowlist,
+                                                             self.blocklists,
                                                              self.limit*6)
 
         except (NotFoundError, RequestError, AuthorizationException) as err:

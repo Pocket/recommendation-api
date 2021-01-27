@@ -1,7 +1,8 @@
 import logging
 import boto3
 import os
-from metaflow import FlowSpec, step, Parameter, conda_base, schedule
+import json
+from metaflow import FlowSpec, step, Parameter, conda_base, schedule, IncludeFile
 
 from utils import setup_logger
 
@@ -25,6 +26,12 @@ class CollectionCandidatesFlow(FlowSpec):
                       type=int,
                       default=15)
 
+    blocklist_file = IncludeFile("blocklist_file",
+                                 is_text=True,
+                                 help="Pocket domain and item blocklist",
+                                 default="./resources/blocklist_20210120.json")
+
+
     """
     A flow where Metaflow retrieves curated items for dedicated collections (i.e. COVID) from elastic search.
     """
@@ -36,7 +43,7 @@ class CollectionCandidatesFlow(FlowSpec):
 
         from elasticsearch import Elasticsearch, RequestsHttpConnection
         from requests_aws4auth import AWS4Auth
-        from utils import get_topic_map
+        from recs_api import get_topic_map
 
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
@@ -44,6 +51,7 @@ class CollectionCandidatesFlow(FlowSpec):
         logger.info("CollectionCandidatesFlow is starting.")
         self.topic_map = get_topic_map()
         self.topics = [k for k, x in self.topic_map.items() if x["pageType"] == "editorial_collection"]
+        self.blocklists = json.loads(self.blocklist_file)
         logger.info(f"flow will process {len(self.topics)} topics.")
 
         session = boto3.Session()
@@ -113,7 +121,7 @@ class CollectionCandidatesFlow(FlowSpec):
 
             self.results = merge_collection_results(results1, 1, results2, feed_id2=colln_feed_id)
         else:
-            self.results = transform_curated_results(results1, feed_id=1)
+            self.results = transform_curated_results(results1, self.blocklists, feed_id=1)
 
         self.next(self.join)
 

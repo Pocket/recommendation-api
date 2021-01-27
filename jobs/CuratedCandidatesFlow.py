@@ -1,7 +1,8 @@
 import logging
 import boto3
 import os
-from metaflow import FlowSpec, step, Parameter, conda_base, schedule
+import json
+from metaflow import FlowSpec, step, Parameter, conda_base, schedule, IncludeFile
 
 from query import FEED_ID_EN_US
 from utils import setup_logger
@@ -31,6 +32,12 @@ class CuratedCandidatesFlow(FlowSpec):
                         type=int,
                         default=FEED_ID_EN_US)
 
+    blocklist_file = IncludeFile("blocklist_file",
+                                 is_text=True,
+                                 help="Pocket domain and item blocklist",
+                                 default="./resources/blocklist_20210120.json")
+
+
     """
     A flow where Metaflow retrieves curated items from elastic search.
     """
@@ -42,13 +49,14 @@ class CuratedCandidatesFlow(FlowSpec):
 
         from elasticsearch import Elasticsearch, RequestsHttpConnection
         from requests_aws4auth import AWS4Auth
-        from utils import get_topic_map
+        from recs_api import get_topic_map
 
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
 
         logger.info("CuratedCandidatesFlow is starting.")
         self.topic_map = get_topic_map()
+        self.blocklists = json.loads(self.blocklist_file)
         self.topics = [k for k, x in self.topic_map.items() if x["pageType"] == "topic_page"]
         logger.info(f"flow will process {len(self.topics)} topics.")
 
@@ -91,7 +99,8 @@ class CuratedCandidatesFlow(FlowSpec):
 
             # get 3x results in case some are duplicates or filtered downstream
             s = s[:(self.limit * 3)]
-            self.results = transform_curated_results(s.execute().to_dict(), feed_id=self.feed_id)
+            self.results = transform_curated_results(s.execute().to_dict(), self.blocklists,
+                                                     feed_id=self.feed_id)
 
         except (NotFoundError, RequestError, AuthorizationException) as err:
             logger.error("ElasticSearch " + str(err))
