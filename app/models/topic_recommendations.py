@@ -55,7 +55,7 @@ class TopicRecommendationsModel(BaseModel):
             # topic_recommendations.curated_recommendations = TopicRecommendationsModelUtils.thompson_sampling(
             #     topic_recommendations.curated_recommendations, RecommendationModules.TOPIC)
 
-            topic_recommendations.algorithmic_recommendations = TopicRecommendationsModelUtils.thompson_sampling(
+            topic_recommendations.algorithmic_recommendations = await TopicRecommendationsModelUtils.thompson_sampling(
                 topic_recommendations.algorithmic_recommendations, RecommendationModules.TOPIC)
 
         # spread out publishers in algorithmic recommendations so articles from the same publisher are not right next
@@ -165,8 +165,8 @@ class TopicRecommendationsModelUtils:
 
     @staticmethod
     @xray_recorder.capture('models_topic_thompson_sample')
-    def thompson_sampling(recs: List[RecommendationModel],
-                          module: RecommendationModules) -> List[RecommendationModel]:
+    async def thompson_sampling(recs: List[RecommendationModel],
+                                module: RecommendationModules) -> List[RecommendationModel]:
         """
         Re-rank items using Thompson sampling which combines exploitation of known item CTR
         with exploration of new items with unknown CTR modeled by a prior
@@ -183,7 +183,7 @@ class TopicRecommendationsModelUtils:
         item_list = [item.item_id for item in recs]
         try:
             # returns a dict with item_id as key and dynamodb row modeled as ClickDataModel
-            clk_data = ClickdataModel.get_clickdata(module, item_list)
+            clk_data = await ClickdataModel.get_clickdata(module, item_list)
             # 'default' is a special key we can use for anything that is missing.
             # The values here aren't actually clicks or impressions,
             # but instead direct alpha and beta parameters for the module CTR prior

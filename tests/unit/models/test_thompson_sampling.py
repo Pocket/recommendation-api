@@ -21,7 +21,7 @@ class TestThompsonSampling(TestDynamoDBBase):
 
         return recs
 
-    def test_thompson_sampling(self):
+    async def test_thompson_sampling(self):
         self.clickdataTable.put_item(Item={
             "mod_item": "home/999999",
             "clicks": "99",
@@ -53,7 +53,7 @@ class TestThompsonSampling(TestDynamoDBBase):
         ntrials = 36
         ranks = dict()
         for i in range(ntrials):
-            sampled_recs = TopicRecommendationsModelUtils.thompson_sampling(recs, RecommendationModules.HOME)
+            sampled_recs = await TopicRecommendationsModelUtils.thompson_sampling(recs, RecommendationModules.HOME)
             c = 1
             for rec in sampled_recs:
                 # compute average positional rank over the trials
@@ -67,7 +67,7 @@ class TestThompsonSampling(TestDynamoDBBase):
         assert final_ranks[2][0] == "333333"
 
 
-    def test_missing_clickdata(self):
+    async def test_missing_clickdata(self):
         self.clickdataTable.put_item(Item={
             "mod_item": "home/999999",
             "clicks": "99",
@@ -78,7 +78,7 @@ class TestThompsonSampling(TestDynamoDBBase):
 
         recs = self.generate_recommendations(["333333", "999999"])
 
-        sampled_recs = TopicRecommendationsModelUtils.thompson_sampling(recs, RecommendationModules.HOME)
+        sampled_recs = await TopicRecommendationsModelUtils.thompson_sampling(recs, RecommendationModules.HOME)
 
         assert len(sampled_recs) == 2
 

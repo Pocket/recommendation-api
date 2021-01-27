@@ -4,7 +4,7 @@ from app.models.clickdata import ClickdataModel, RecommendationModules
 
 class TestClickdataModel(TestDynamoDBBase):
 
-    def test_get_clickdata_by_item(self):
+    async def test_get_clickdata_by_item(self):
         self.clickdataTable.put_item(Item={
             "mod_item": "home/999999",
             "clicks": "99",
@@ -29,7 +29,7 @@ class TestClickdataModel(TestDynamoDBBase):
             "expires_at": "0"
         })
 
-        executed = ClickdataModel.get_clickdata(RecommendationModules.HOME, ["666666", "333333"])
+        executed = await ClickdataModel.get_clickdata(RecommendationModules.HOME, ["666666", "333333"])
         assert len(executed) == 2
         assert "666666" in executed
         assert "333333" in executed

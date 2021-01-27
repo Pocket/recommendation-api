@@ -1,0 +1,67 @@
+{
+  "recommendation_api_clickdata": [
+    {
+      "PutRequest": {
+        "Item": {
+          "mod_item": {
+            "S": "a187ffb4-5c6f-4079-bad9-92442e97bdd1"
+          },
+          "clicks": {
+            "N": "99"
+          },
+          "impressions": {
+            "N": "999"
+          },
+          "expires_at": {
+            "S": "2020-04-05T00:13:52.093Z"
+          },
+          "created_at": {
+            "S": "2020-03-05T00:13:52.093Z"
+          }
+        }
+      }
+    },
+        {
+      "PutRequest": {
+        "Item": {
+          "mod_item": {
+            "S": "a187ffb4-5c6f-4079-bad9-92125e97bdd1"
+          },
+          "clicks": {
+            "N": "66"
+          },
+          "impressions": {
+            "N": "999"
+          },
+          "expires_at": {
+            "S": "2020-04-05T00:13:52.093Z"
+          },
+          "created_at": {
+            "S": "2020-03-05T00:13:52.093Z"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "mod_item": {
+            "S": "a187ffb4-5c6f-4079-bad9-92810e97bdd1"
+          },
+          "clicks": {
+            "N": "33"
+          },
+          "impressions": {
+            "N": "999"
+          },
+          "expires_at": {
+            "S": "2020-04-05T00:13:52.093Z"
+          },
+          "created_at": {
+            "S": "2020-03-05T00:13:52.093Z"
+          }
+        }
+      }
+    }
+  ]
+}
