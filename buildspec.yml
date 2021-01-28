@@ -43,6 +43,8 @@ env:
 #All phases are ran within the hashicorp/terraform:light docker image
 phases:
   install:
+    runtime-versions:
+      python: 3.8.5
     commands:
       - echo Installing JQ, AWS CLI, Perl Utils, Node, NPM
       # Within our terraform files we execute jq, and aws-cli and python
@@ -101,7 +103,7 @@ phases:
 
       # Install deployment packages from jobs/Pipfile.lock so we can run metaflow
       - cd jobs/
-      - pipenv install --deploy
+      - pipenv install --deploy --python 3.8.5
 
       - pipenv run python AlgorithmicCandidatesFlow.py --environment=conda check
 
