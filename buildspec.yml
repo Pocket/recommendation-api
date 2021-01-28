@@ -104,7 +104,8 @@ phases:
       # Install deployment packages from jobs/Pipfile.lock so we can run metaflow
       - cd jobs/
       - ls -lah /usr/local/bin
-      - pipenv install --deploy --python 3.8.5
+      - python -v
+      - pipenv install --deploy --python /usr/local/bin/python
 
       - pipenv run python AlgorithmicCandidatesFlow.py --environment=conda check
 
