@@ -11,7 +11,7 @@ RUN pip install pipenv
 RUN wget https://www.python.org/ftp/python/3.8.5/Python-3.8.5.tgz \
     && tar zxf Python-3.8.5.tgz \
     && cd Python-3.8.5/ \
-    && ./configure --prefix=/usr/local \
+    && ./configure --prefix=/usr/local --enable-optimizations \
     && make install \
     && cd .. \
     && rm -rf Python-3.8.5 Python-3.8.5.tgz
