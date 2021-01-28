@@ -49,6 +49,12 @@ phases:
       - echo Installing JQ, AWS CLI, Perl Utils, Node, NPM
       # Within our terraform files we execute jq, and aws-cli and python
       - apt-get -qq update && apt-get -qq install jq nodejs npm curl wget awscli > /dev/null
+      # Install python 3.8.5
+      - wget https://www.python.org/ftp/python/3.8.5/Python-3.8.5.tgz
+      - tar zxf Python-3.8.5.tgz
+      - cd Python-3.8.5/
+      - ./configure --prefix=/usr/local
+      - make install
       # Install conda.
       - wget -nv https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && bash Miniconda3-latest-Linux-x86_64.sh -b  -p $HOME/miniconda
       # Install pipenv and we need to ignore what exists because distutils does not uninstall
@@ -105,7 +111,7 @@ phases:
       - cd jobs/
       - ls -lah /usr/local/bin
       - python --version
-      - pipenv install --deploy --python /usr/local/bin/python
+      - pipenv install --deploy --python /usr/local/bin/python3.8
 
       - pipenv run python AlgorithmicCandidatesFlow.py --environment=conda check
 
