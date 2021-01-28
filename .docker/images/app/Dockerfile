@@ -7,6 +7,15 @@ ARG GIT_SHA=local
 # Install pipenv
 RUN pip install pipenv
 
+# Install python 3.8.5
+RUN wget https://www.python.org/ftp/python/3.8.5/Python-3.8.5.tgz \
+    && tar zxf Python-3.8.5.tgz \
+    && cd Python-3.8.5/ \
+    && ./configure --prefix=/usr/local \
+    && make install \
+    && cd .. \
+    && rm -rf Python-3.8.5 Python-3.8.5.tgz
+
 # Install python dependencies in /.venv
 WORKDIR /
 COPY Pipfile .
