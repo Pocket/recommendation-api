@@ -102,7 +102,7 @@ phases:
 
       # Install deployment packages from jobs/Pipfile.lock so we can run metaflow
       - cd jobs/
-      - pipenv install --deploy
+      - pipenv install --deploy --python /root/miniconda/bin/python
       - pipenv run python AlgorithmicCandidatesFlow.py --environment=conda check
 
       #### If the branch is main lets generate our metaflow functions
