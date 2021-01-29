@@ -46,7 +46,7 @@ class TestThompsonSampling(TestDynamoDBBase):
             "expires_at": "0"
         })
 
-        recs = self.generate_recommendations(["333333", "666666", "999999"])
+        recs = self.generate_recommendations(["333333", "666666", "999999", "222222"])
 
         # goal of test is to rank by CTR over ntrials
         # order should be 999999, 666666, 333333
@@ -65,6 +65,18 @@ class TestThompsonSampling(TestDynamoDBBase):
         assert final_ranks[0][0] == "999999"
         assert final_ranks[1][0] == "666666"
         assert final_ranks[2][0] == "333333"
+        # clickdata here should sample from default prior a = 0.02 b = 1, mean = 0.019
+        assert final_ranks[3][0] == "222222"
+
+        # ranks are not deterministic
+        assert (ranks["999999"] > 1 and ranks["999999"] < 2)
+        assert (ranks["666666"] > 2 and ranks["666666"] < 3)
+        assert (ranks["333333"] > 3 and ranks["333333"] < 4)
+        # final_ranks["222222"] is reliably in [3.7, 3.9] but I haven't figured out
+        # the actual confidence interval for the ranks
+        # the scores themselves aren't coming back from thompson_sampling because I am using
+        # RecommendationModel for the recs
+        assert (ranks["222222"] > 3.5 and ranks["222222"] > ranks["333333"])
 
 
     async def test_missing_clickdata(self):
