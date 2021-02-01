@@ -92,6 +92,12 @@ class RecommendationAPI extends TerraformStack {
               name: 'RECOMMENDATION_API_CANDIDATES_TABLE',
               value: dynamodb.candidatesTable.dynamodb.name
             }
+          ],
+          secretEnvVars: [
+            {
+              name: 'SENTRY_DSN',
+              valueFrom: `arn:aws:ssm:${region.name}:${caller.accountId}:parameter/${config.name}/${config.environment}/SENTRY_DSN`
+            }
           ]
         },
         {
