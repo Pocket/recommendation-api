@@ -99,10 +99,13 @@ phases:
       - hash -r
       - conda config --append channels conda-forge
 
+      # Install python for conda. We need to do this to make sure the python version
+      # pipenv uses to run the flows are conda compatible
+      - conda install python=3.8
+
       # Install deployment packages from jobs/Pipfile.lock so we can run metaflow
       - cd jobs/
-      - pipenv install --deploy
-
+      - pipenv install --deploy --python /root/miniconda/bin/python
       - pipenv run python AlgorithmicCandidatesFlow.py --environment=conda check
 
       #### If the branch is main lets generate our metaflow functions
