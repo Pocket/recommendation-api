@@ -147,8 +147,10 @@ class RecommendationAPI extends TerraformStack {
             resources: [
               dynamodb.candidatesTable.dynamodb.arn,
               dynamodb.metadataTable.dynamodb.arn,
+              dynamodb.clickdataTable.arn,
               `${dynamodb.candidatesTable.dynamodb.arn}/*`,
               `${dynamodb.metadataTable.dynamodb.arn}/*`,
+              `${dynamodb.clickdataTable.arn}/*`,
             ],
             effect: 'Allow'
           },
