@@ -91,6 +91,10 @@ class RecommendationAPI extends TerraformStack {
             {
               name: 'RECOMMENDATION_API_CANDIDATES_TABLE',
               value: dynamodb.candidatesTable.dynamodb.name
+            },
+            {
+              name: 'RECOMMENDATION_API_CANDIDATES_TABLE',
+              value: dynamodb.clickdataTable.name
             }
           ],
           secretEnvVars: [
