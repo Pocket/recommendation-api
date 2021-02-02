@@ -137,6 +137,16 @@ class RecommendationAPI extends TerraformStack {
               secretsManager.targetKeyArn
             ],
             effect: 'Allow'
+          },
+          {
+            actions: [
+              "ssm:GetParameter*"
+            ],
+            resources: [
+              `arn:aws:ssm:${region.name}:${caller.accountId}:parameter/${config.name}/${config.environment}`,
+              `arn:aws:ssm:${region.name}:${caller.accountId}:parameter/${config.name}/${config.environment}/*`,
+            ],
+            effect: 'Allow'
           }
         ],
         taskRolePolicyStatements: [
