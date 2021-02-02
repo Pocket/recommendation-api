@@ -25,8 +25,8 @@ def make_key(module: RecommendationModules, key: str):
 
 class ClickdataModel(BaseModel):
     mod_item: str = None
-    clicks: int = None
-    impressions: int = None
+    clicks: float = None
+    impressions: float = None
     created_at: int = None
     expires_at: int = None
 
