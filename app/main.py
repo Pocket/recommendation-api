@@ -38,21 +38,9 @@ async def read_root():
     return {"Hello": "World"}
 
 
-# Middleware for FastAPI to grab http exceptions
-# https://medium.com/@PhilippeGirard5/integrate-sentry-to-fastapi-7250603c070f
-@app.middleware("http")
-async def sentry_exception(request: Request, call_next):
-    try:
-        response = await call_next(request)
-        return response
-    except Exception as e:
-        with sentry_sdk.push_scope() as scope:
-            scope.set_context("request", request)
-            scope.set_user({
-                "ip_address": request.client.host,
-            })
-            sentry_sdk.capture_exception(e)
-        raise e
+@app.get("/divide-by-zero")
+async def dummy_error():
+    return {"Test": 1/0}
 
 
 if __name__ == "__main__":
