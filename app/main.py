@@ -25,7 +25,7 @@ xray_recorder.configure(context=AsyncContext(), service=service.get('domain'))
 
 
 app = FastAPI()
-app.add_middleware(BaseHTTPMiddleware, dispatch=xray_middleware)
+#app.add_middleware(BaseHTTPMiddleware, dispatch=xray_middleware)
 app.add_middleware(SentryAsgiMiddleware)
 
 # Add our GraphQL route to the main url

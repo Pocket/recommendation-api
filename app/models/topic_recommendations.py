@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from pydantic import BaseModel
 from typing import List
@@ -15,7 +16,7 @@ class TopicRecommendationsModel(BaseModel):
     algorithmic_recommendations: List[RecommendationModel] = []
 
     @staticmethod
-    @xray_recorder.capture_async('models_topic_get_recommendations')
+    #@xray_recorder.capture_async('models_topic_get_recommendations')
     async def get_recommendations(
             slug: str,
             algorithmic_count: int,
@@ -73,7 +74,7 @@ class TopicRecommendationsModel(BaseModel):
 
 class TopicRecommendationsModelUtils:
     @staticmethod
-    @xray_recorder.capture('models_topic_dedupe')
+    #@xray_recorder.capture('models_topic_dedupe')
     def dedupe(topic_recs_model: TopicRecommendationsModel) -> TopicRecommendationsModel:
         """
         If a recommendation exists in both the curated and algorithmic lists, removes that recommendation from the
@@ -110,7 +111,7 @@ class TopicRecommendationsModelUtils:
         return topic_recommendations
 
     @staticmethod
-    @xray_recorder.capture('models_topic_spread_publishers')
+    #@xray_recorder.capture('models_topic_spread_publishers')
     def spread_publishers(recs: List[RecommendationModel], spread: int = 3) -> List[RecommendationModel]:
         """
         Makes sure stories from the same publisher/domain are not listed sequentially, and have a configurable number
@@ -164,7 +165,7 @@ class TopicRecommendationsModelUtils:
         return reordered
 
     @staticmethod
-    @xray_recorder.capture('models_topic_thompson_sample')
+    #@xray_recorder.capture('models_topic_thompson_sample')
     async def thompson_sampling(recs: List[RecommendationModel],
                                 module: RecommendationModules) -> List[RecommendationModel]:
         """
@@ -183,7 +184,9 @@ class TopicRecommendationsModelUtils:
         item_list = [item.item_id for item in recs]
         try:
             # returns a dict with item_id as key and dynamodb row modeled as ClickDataModel
+            logging.error(f"module={module}, item_list={item_list}")
             clk_data = await ClickdataModel.get_clickdata(module, item_list)
+            logging.error("clk_data =" + str(clk_data))
             # 'default' is a special key we can use for anything that is missing.
             # The values here aren't actually clicks or impressions,
             # but instead direct alpha and beta parameters for the module CTR prior

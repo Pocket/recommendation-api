@@ -29,7 +29,7 @@ class TopicModel(BaseModel):
     custom_feed_id: str = None
 
     @staticmethod
-    @xray_recorder.capture_async('models_topic_get_all')
+    #@xray_recorder.capture_async('models_topic_get_all')
     async def get_all() -> ['TopicModel']:
         async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
             table = await dynamodb.Table(dynamodb_config['recommendation_api_metadata_table'])
@@ -37,7 +37,7 @@ class TopicModel(BaseModel):
         return sorted(list(map(TopicModel.parse_obj, response['Items'])), key=lambda topic: topic.slug)
 
     @staticmethod
-    @xray_recorder.capture_async('models_topic_get_topic')
+    #@xray_recorder.capture_async('models_topic_get_topic')
     async def get_topic(slug: str) -> Optional['TopicModel']:
         async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
             table = await dynamodb.Table(dynamodb_config['recommendation_api_metadata_table'])
