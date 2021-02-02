@@ -19,14 +19,15 @@ sentry_sdk.init(
     environment=sentry_config['environment'],
     traces_sample_rate=0.1
 )
+sentry_sdk.utils.MAX_STRING_LENGTH = 8192  # undocumented truncation length as of v0.12.2
 
 # Standard asyncio X-Ray configuration, customise as you choose
 xray_recorder.configure(context=AsyncContext(), service=service.get('domain'))
 
 
 app = FastAPI()
-app.add_middleware(BaseHTTPMiddleware, dispatch=xray_middleware)
 app.add_middleware(SentryAsgiMiddleware)
+app.add_middleware(BaseHTTPMiddleware, dispatch=xray_middleware)
 
 # Add our GraphQL route to the main url
 app.add_route("/", GraphQLApp(schema=schema,
