@@ -110,39 +110,6 @@ jobs:
       - store_test_results:
           path: test-reports
 
-  check_metaflow:
-    docker:
-      - image: python:3.8
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-        environment:
-          USERNAME: 'test'
-    parameters:
-      pipenv_path:
-        default: "jobs/"
-        type: string
-    steps:
-      - checkout
-      - run:
-          name: Build environment and install requirements
-          command: |
-            apt-get -qq update && apt-get -qq install wget > /dev/null
-            wget -nv https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && bash Miniconda3-latest-Linux-x86_64.sh -b  -p $HOME/miniconda
-            pip install pipenv
-            cd <<parameters.pipenv_path>>
-            pipenv install --deploy
-      - run:
-          name: Run flow validation
-          command: |
-            source "$HOME/miniconda/etc/profile.d/conda.sh"
-            hash -r
-            conda config --append channels conda-forge
-            cd <<parameters.pipenv_path>>
-            pipenv run python AlgorithmicCandidatesFlow.py --environment=conda check
-            pipenv run python CuratedCandidatesFlow.py --environment=conda check
-            pipenv run python CollectionCandidatesFlow.py --environment=conda check
-
   docker_build:
     parameters:
       tag:
@@ -298,9 +265,6 @@ workflows:
           <<: *not_main
           context: pocket
       - test_lambda:
-          <<: *not_main
-          context: pocket
-      - check_metaflow:
           <<: *not_main
           context: pocket
 
