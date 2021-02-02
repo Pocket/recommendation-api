@@ -93,7 +93,7 @@ class RecommendationAPI extends TerraformStack {
               value: dynamodb.candidatesTable.dynamodb.name
             },
             {
-              name: 'RECOMMENDATION_API_CANDIDATES_TABLE',
+              name: 'RECOMMENDATION_API_CLICKDATA_TABLE',
               value: dynamodb.clickdataTable.name
             }
           ],
