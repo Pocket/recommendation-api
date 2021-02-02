@@ -21,7 +21,7 @@ class TopicRecommendationsModel(BaseModel):
             algorithmic_count: int,
             curated_count: int,
             publisher_spread: int = 3,
-            thompson_sampling: bool = False) -> ['TopicRecommendationsModel']:
+            thompson_sampling: bool = True) -> ['TopicRecommendationsModel']:
 
         # Pull in the topic so we can split what we do based on the page type.
         topic = await TopicModel.get_topic(slug=slug)
