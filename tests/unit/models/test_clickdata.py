@@ -1,5 +1,6 @@
 from app.models.clickdata import ClickdataModel
 
+
 class TestClickdata:
 
     def test_dynamodb_row_to_clickdata(self):

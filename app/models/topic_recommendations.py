@@ -16,13 +16,12 @@ class TopicRecommendationsModel(BaseModel):
     algorithmic_recommendations: List[RecommendationModel] = []
 
     @staticmethod
-    #@xray_recorder.capture_async('models_topic_get_recommendations')
+    @xray_recorder.capture_async('models_topic_get_recommendations')
     async def get_recommendations(
             slug: str,
             algorithmic_count: int,
             curated_count: int,
-            publisher_spread: int = 3,
-            thompson_sampling: bool = True) -> ['TopicRecommendationsModel']:
+            publisher_spread: int = 3) -> ['TopicRecommendationsModel']:
 
         # Pull in the topic so we can split what we do based on the page type.
         topic = await TopicModel.get_topic(slug=slug)
@@ -50,14 +49,11 @@ class TopicRecommendationsModel(BaseModel):
         # dedupe items in the algorithmic recommendations
         topic_recommendations = TopicRecommendationsModelUtils.dedupe(topic_recommendations)
 
-        # apply thompson sampling to the recommendations
-        if thompson_sampling:
+        # topic_recommendations.curated_recommendations = TopicRecommendationsModelUtils.thompson_sampling(
+        #     topic_recommendations.curated_recommendations, RecommendationModules.TOPIC)
 
-            # topic_recommendations.curated_recommendations = TopicRecommendationsModelUtils.thompson_sampling(
-            #     topic_recommendations.curated_recommendations, RecommendationModules.TOPIC)
-
-            topic_recommendations.algorithmic_recommendations = await TopicRecommendationsModelUtils.thompson_sampling(
-                topic_recommendations.algorithmic_recommendations, RecommendationModules.TOPIC)
+        topic_recommendations.algorithmic_recommendations = await TopicRecommendationsModelUtils.thompson_sampling(
+            topic_recommendations.algorithmic_recommendations, RecommendationModules.TOPIC)
 
         # spread out publishers in algorithmic recommendations so articles from the same publisher are not right next
         # to each other. (curated recommendations are expected to be intentionally ordered.)
@@ -74,7 +70,7 @@ class TopicRecommendationsModel(BaseModel):
 
 class TopicRecommendationsModelUtils:
     @staticmethod
-    #@xray_recorder.capture('models_topic_dedupe')
+    @xray_recorder.capture('models_topic_dedupe')
     def dedupe(topic_recs_model: TopicRecommendationsModel) -> TopicRecommendationsModel:
         """
         If a recommendation exists in both the curated and algorithmic lists, removes that recommendation from the
@@ -111,7 +107,7 @@ class TopicRecommendationsModelUtils:
         return topic_recommendations
 
     @staticmethod
-    #@xray_recorder.capture('models_topic_spread_publishers')
+    @xray_recorder.capture('models_topic_spread_publishers')
     def spread_publishers(recs: List[RecommendationModel], spread: int = 3) -> List[RecommendationModel]:
         """
         Makes sure stories from the same publisher/domain are not listed sequentially, and have a configurable number
@@ -165,7 +161,7 @@ class TopicRecommendationsModelUtils:
         return reordered
 
     @staticmethod
-    #@xray_recorder.capture('models_topic_thompson_sample')
+    @xray_recorder.capture('models_topic_thompson_sample')
     async def thompson_sampling(recs: List[RecommendationModel],
                                 module: RecommendationModules) -> List[RecommendationModel]:
         """

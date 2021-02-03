@@ -6,6 +6,7 @@ from app.models.clickdata import ClickdataModel, RecommendationModules
 from app.models.topic_recommendations import TopicRecommendationsModelUtils
 from app.models.recommendation import RecommendationModel
 
+
 class TestThompsonSampling(TestDynamoDBBase):
 
     @staticmethod

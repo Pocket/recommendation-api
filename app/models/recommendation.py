@@ -27,7 +27,7 @@ class RecommendationModel(BaseModel):
         return recommendation
 
     @staticmethod
-    #@xray_recorder.capture_async('model_recommendations_get_recommendations')
+    @xray_recorder.capture_async('model_recommendations_get_recommendations')
     async def get_recommendations(topic_id: str, recommendation_type: RecommendationType) -> ['RecommendationModel']:
         async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
             table = await dynamodb.Table(dynamodb_config['recommendation_api_candidates_table'])
