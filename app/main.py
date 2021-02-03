@@ -3,8 +3,8 @@ import sentry_sdk
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from app.config import sentry as sentry_config
 
+from app.graphql_app import GraphQLAppWithMiddleware, GraphQLSentryMiddleware
 from fastapi import FastAPI
-from starlette.graphql import GraphQLApp
 from app.graphql.graphql import schema
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -19,6 +19,8 @@ sentry_sdk.init(
     environment=sentry_config['environment'],
     traces_sample_rate=0.1
 )
+# Ignore graphql.execution.utils to prevent duplicate Sentry events. Exceptions are handled by GraphQLSentryMiddleware.
+sentry_sdk.integrations.logging.ignore_logger("graphql.execution.utils")
 
 # Standard asyncio X-Ray configuration, customise as you choose
 xray_recorder.configure(context=AsyncContext(), service=service.get('domain'))
@@ -28,8 +30,10 @@ app.add_middleware(BaseHTTPMiddleware, dispatch=xray_middleware)
 app.add_middleware(SentryAsgiMiddleware)
 
 # Add our GraphQL route to the main url
-app.add_route("/", GraphQLApp(schema=schema,
-                              executor_class=AsyncioExecutor))
+app.add_route("/", GraphQLAppWithMiddleware(
+    schema=schema,
+    executor_class=AsyncioExecutor,
+    middleware=[GraphQLSentryMiddleware()]))
 
 
 @app.get("/health-check")
