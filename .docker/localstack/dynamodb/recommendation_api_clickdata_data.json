@@ -4,6 +4,27 @@
       "PutRequest": {
         "Item": {
           "mod_item": {
+            "S": "topic/default"
+          },
+          "clicks": {
+            "N": "0.045687984008122705"
+          },
+          "impressions": {
+            "N": "2.207612237118199"
+          },
+          "expires_at": {
+            "S": "2020-04-05T00:13:52.093Z"
+          },
+          "created_at": {
+            "S": "2020-03-05T00:13:52.093Z"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "mod_item": {
             "S": "a187ffb4-5c6f-4079-bad9-92442e97bdd1"
           },
           "clicks": {
@@ -21,7 +42,7 @@
         }
       }
     },
-        {
+    {
       "PutRequest": {
         "Item": {
           "mod_item": {
