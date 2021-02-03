@@ -19,6 +19,7 @@ sentry_sdk.init(
     environment=sentry_config['environment'],
     traces_sample_rate=0.1
 )
+# Ignore graphql.execution.utils to prevent duplicate Sentry events. Exceptions are handled by GraphQLSentryMiddleware.
 sentry_sdk.integrations.logging.ignore_logger("graphql.execution.utils")
 
 # Standard asyncio X-Ray configuration, customise as you choose
