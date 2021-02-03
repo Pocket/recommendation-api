@@ -1,0 +1,19 @@
+{
+  "TableName": "recommendation_api_clickdata",
+  "KeySchema": [
+    {
+      "AttributeName": "mod_item",
+      "KeyType": "HASH"
+    }
+  ],
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "mod_item",
+      "AttributeType": "S"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5
+  }
+}

@@ -9,11 +9,13 @@ from aws_xray_sdk import global_sdk_config
 
 
 class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
-    TABLE_NAMES: Tuple[str] = ('recommendation_api_metadata', 'recommendation_api_candidates')
+    TABLE_NAMES: Tuple[str] = ('recommendation_api_metadata', 'recommendation_api_candidates',
+                               'recommendation_api_clickdata')
     dynamodb: DynamoDBServiceResource
     jsonRoot = ROOT_DIR + '.docker/localstack/dynamodb/'
     metadataTable: DynamoDBServiceResource.Table
     candidateTable: DynamoDBServiceResource.Table
+    clickdataTable: DynamoDBServiceResource.Table
 
     def setup_method(self, method):
         global_sdk_config.set_sdk_enabled(False)
@@ -39,6 +41,7 @@ class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
     def create_tables(self):
         self.metadataTable = self.create_recommendation_api_metadata_table()
         self.candidateTable = self.create_recommendation_api_candidates_table()
+        self.clickdataTable = self.create_recommendation_api_clickdata_table()
 
     def create_table(self, table_schema) -> DynamoDBServiceResource.Table:
         with open(table_schema) as f:
@@ -55,3 +58,6 @@ class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
 
     def create_recommendation_api_candidates_table(self) -> DynamoDBServiceResource.Table:
         return self.create_table(self.jsonRoot + 'recommendation_api_candidates.json')
+
+    def create_recommendation_api_clickdata_table(self) -> DynamoDBServiceResource.Table:
+        return self.create_table(self.jsonRoot + 'recommendation_api_clickdata.json')
