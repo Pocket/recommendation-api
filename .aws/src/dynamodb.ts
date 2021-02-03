@@ -2,16 +2,19 @@ import {Resource} from "cdktf";
 import {Construct} from "constructs";
 import {config} from "./config";
 import {ApplicationDynamoDBTable} from "@pocket/terraform-modules";
+import {DataAwsDynamodbTable} from "../.gen/providers/aws";
 
 export class DynamoDB extends Resource {
 
     public readonly candidatesTable: ApplicationDynamoDBTable
     public readonly metadataTable: ApplicationDynamoDBTable
+    public readonly clickdataTable: DataAwsDynamodbTable
 
     constructor(scope: Construct, name: string) {
         super(scope, name);
         this.candidatesTable = this.setupCandidatesTable();
         this.metadataTable = this.setupTopicsMetadataTable();
+        this.clickdataTable = this.getClickdataTable();
     }
 
     /**
@@ -107,6 +110,12 @@ export class DynamoDB extends Resource {
                 max: 100,
                 min: 5
             }
+        });
+    }
+
+    private getClickdataTable() {
+        return new DataAwsDynamodbTable(this, `clickdata`, {
+            name: config.clickdataDynamodbName,
         });
     }
 }

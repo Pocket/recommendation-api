@@ -4,6 +4,7 @@ set -x
 TABLE_DEFINITIONS=(
   'recommendation_api_metadata'
   'recommendation_api_candidates'
+  'recommendation_api_clickdata'
 )
 
 for json_file in "${TABLE_DEFINITIONS[@]}"; do
