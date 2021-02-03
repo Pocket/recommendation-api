@@ -4,7 +4,7 @@ from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from app.config import sentry as sentry_config
 
 from fastapi import FastAPI, Request
-from app.graphql_app import GraphQLAppWithMiddleware
+from starlette.graphql import GraphQLApp
 from app.graphql.graphql import schema
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -29,7 +29,7 @@ app.add_middleware(BaseHTTPMiddleware, dispatch=xray_middleware)
 app.add_middleware(SentryAsgiMiddleware)
 
 # Add our GraphQL route to the main url
-graphql_app = GraphQLAppWithMiddleware(schema=schema, executor_class=AsyncioExecutor)
+graphql_app = GraphQLApp(schema=schema, executor_class=AsyncioExecutor)
 app.add_route("/", graphql_app)
 
 
