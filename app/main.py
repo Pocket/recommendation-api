@@ -29,9 +29,8 @@ app.add_middleware(BaseHTTPMiddleware, dispatch=xray_middleware)
 app.add_middleware(SentryAsgiMiddleware)
 
 # Add our GraphQL route to the main url
-graphql_app = GraphQLApp(schema=schema, executor_class=AsyncioExecutor)
-app.add_route("/", graphql_app)
-
+app.add_route("/", GraphQLApp(schema=schema,
+                              executor_class=AsyncioExecutor))
 
 @app.get("/health-check")
 async def read_root():
