@@ -1,5 +1,4 @@
 import asyncio
-import logging
 
 from pydantic import BaseModel
 from typing import List
@@ -180,9 +179,7 @@ class TopicRecommendationsModelUtils:
         item_list = [item.item_id for item in recs]
         try:
             # returns a dict with item_id as key and dynamodb row modeled as ClickDataModel
-            logging.error(f"module={module}, item_list={item_list}")
             clk_data = await ClickdataModel.get_clickdata(module, item_list)
-            logging.error("clk_data =" + str(clk_data))
             # 'default' is a special key we can use for anything that is missing.
             # The values here aren't actually clicks or impressions,
             # but instead direct alpha and beta parameters for the module CTR prior
