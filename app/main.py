@@ -20,6 +20,7 @@ sentry_sdk.init(
     environment=sentry_config['environment'],
     traces_sample_rate=0.1
 )
+sentry_sdk.integrations.logging.ignore_logger("graphql.execution.utils")
 
 # Standard asyncio X-Ray configuration, customise as you choose
 xray_recorder.configure(context=AsyncContext(), service=service.get('domain'))
