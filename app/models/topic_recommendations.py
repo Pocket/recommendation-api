@@ -4,6 +4,7 @@ from app.models.recommendation import RecommendationModel, RecommendationType
 from app.models.topic import TopicModel, PageType
 import asyncio
 from aws_xray_sdk.core import xray_recorder
+from sentry_sdk.integrations.serverless import serverless_function
 
 
 class TopicRecommendationsModel(BaseModel):
@@ -17,9 +18,6 @@ class TopicRecommendationsModel(BaseModel):
             algorithmic_count: int,
             curated_count: int,
             publisher_spread: int = 3) -> ['TopicRecommendationsModel']:
-
-        if slug == 'exception':
-            raise Exception('Foo bar!')
 
         # Pull in the topic so we can split what we do based on the page type.
         topic = await TopicModel.get_topic(slug=slug)

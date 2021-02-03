@@ -3,22 +3,27 @@ from starlette.concurrency import run_in_threadpool
 import sentry_sdk
 
 
+async def capture_and_reraise(e):
+    sentry_sdk.capture_exception(e)
+    raise e
+
 
 class GraphQLSentryMiddleware(object):
+
     def resolve(self, next, root, info, **args):
-        try:
-            return next(root, info, **args)
-        except Exception as e:
-            with sentry_sdk.push_scope() as scope:
-                scope.set_context("info", info)
-                sentry_sdk.capture_exception(e)
-            raise e
+        promise = next(root, info, **args)
+        return promise.then(did_reject=capture_and_reraise)
 
 
+# Starlette has an open PR to support middleware, but it's not merged in yet as of today:
+# https://github.com/encode/starlette/pull/1044
 class GraphQLAppWithMiddleware(GraphQLApp):
+    def __init__(self, *args, **kwargs):
+        self._middleware = kwargs.pop('middleware', None)
+        super().__init__(*args, **kwargs)
 
     """
-    Copied from starlette.graphql
+    Copied from starlette.graphql, with the only modification being to add middleware.
     """
     async def execute(  # type: ignore
         self, query, variables=None, context=None, operation_name=None
@@ -31,7 +36,7 @@ class GraphQLAppWithMiddleware(GraphQLApp):
                 executor=self.executor,
                 return_promise=True,
                 context=context,
-                middleware=[GraphQLSentryMiddleware()]
+                middleware=self._middleware
             )
         else:
             return await run_in_threadpool(
