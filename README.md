@@ -13,6 +13,10 @@ We use this app for serving customers recommendations of topics they might like.
 
 1. To install dependencies for development and run a virtual environment, run `pipenv install --dev`
 1. After this, preface all command line calls with `pipenv run <command>`
+2. Create a `.env` file in the project root:
+```
+SENTRY_DSN=<local Sentry DSN>
+```
 
 ### Running the Tests
 
