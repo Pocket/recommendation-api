@@ -36,6 +36,14 @@ def handler(event: Dict[str, Any], context=None):
         raise
 
 
+def handler_v2(event: Dict[str, Any], context=None):
+    for record in event['Records']:
+        print("test")
+        payload = record["body"]
+        print(type(event))
+        print(str(payload))
+
+
 def dynamodb_batch_write(data, flow_name):
     dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config.get('endpoint_url'))
     table = dynamodb.Table(dynamodb_config.get('recommendation_api_candidates_table'))

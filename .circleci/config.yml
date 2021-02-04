@@ -222,6 +222,17 @@ jobs:
                 codedeploy-application-name: RecommendationAPI-<< parameters.env_capital_name >>-Translation-Lambda
                 codedeploy-deployment-group-name: RecommendationAPI-<< parameters.env_capital_name >>-Translation-Lambda
                 function-name: RecommendationAPI-<< parameters.env_capital_name >>-Translation-Function
+            - run:
+                name: Upload Package
+                command: aws s3 cp "/tmp/$CIRCLE_SHA1.zip" s3://pocket-recommendationapi-<< parameters.env_lower_name >>-sqs-translation/
+            - pocket/deploy_lambda:
+                s3-bucket: pocket-recommendationapi-<< parameters.env_lower_name >>-sqs-translation
+                aws-access-key-id: << parameters.env_capital_name >>_AWS_ACCESS_KEY
+                aws-secret-access-key: << parameters.env_capital_name >>_AWS_SECRET_ACCESS_KEY
+                aws-region: << parameters.env_capital_name >>_AWS_DEFAULT_REGION
+                codedeploy-application-name: RecommendationAPI-<< parameters.env_capital_name >>-Sqs-Translation-Lambda
+                codedeploy-deployment-group-name: RecommendationAPI-<< parameters.env_capital_name >>-Sqs-Translation-Lambda
+                function-name: RecommendationAPI-<< parameters.env_capital_name >>-Sqs-Translation-Function
 
       - store_artifacts:
           path: /tmp/build.zip
