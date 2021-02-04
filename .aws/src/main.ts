@@ -13,6 +13,7 @@ import {PocketALBApplication} from "@pocket/terraform-modules";
 import {EventBridgeLambda} from "./eventBridgeLambda";
 import {PocketPagerDuty} from "@pocket/terraform-modules/dist/src/pocket/PocketPagerDuty";
 import {PagerdutyProvider} from "../.gen/providers/pagerduty";
+import {SqsLambda} from "./sqsLambda";
 
 class RecommendationAPI extends TerraformStack {
   constructor(scope: Construct, name: string) {
@@ -210,6 +211,7 @@ class RecommendationAPI extends TerraformStack {
     });
 
     new EventBridgeLambda(this, 'event-bridge-lambda', dynamodb.candidatesTable, pagerDuty);
+    new SqsLambda(this, 'sqs-lambda', dynamodb.candidatesTable, pagerDuty);
   }
 }
 

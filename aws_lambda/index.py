@@ -36,6 +36,22 @@ def handler(event: Dict[str, Any], context=None):
         raise
 
 
+def handler_v2(event: Dict[str, Any], context=None):
+    flow_name = get_flow_name(event)
+    data = get_metaflow_data(flow_name)
+    try:
+        dynamodb_batch_write(data, flow_name)
+    except Exception as e:
+        details = {
+            'flow_name': flow_name,
+            'run_id': get_run_id(event),
+            'data': data,
+            'exception': e
+        }
+        print(f'Insert failed. Details: {details}')
+        raise
+
+
 def dynamodb_batch_write(data, flow_name):
     dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config.get('endpoint_url'))
     table = dynamodb.Table(dynamodb_config.get('recommendation_api_candidates_table'))
