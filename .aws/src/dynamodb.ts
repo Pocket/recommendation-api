@@ -138,6 +138,16 @@ export class DynamoDB extends Resource {
             type: 'N'
           }
         ],
+        globalSecondaryIndex: [
+          {
+            name: 'id_created_at',
+            hashKey: 'id',
+            rangeKey: 'created_at',
+            projectionType: 'ALL',
+            readCapacity: 5,
+            writeCapacity: 5,
+          }
+        ],
         ttl: [
           {
             attributeName: 'expires_at',
