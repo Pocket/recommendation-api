@@ -1,0 +1,49 @@
+{
+  "recommendation_api_candidates": [
+    {
+      "PutRequest": {
+        "Item": {
+          "candidates": {
+            "L": [
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "3242933715"
+                  },
+                  "publisher": {
+                    "S": "The Atlantic"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "item_id": {
+                    "N": "3241253231"
+                  },
+                  "publisher": {
+                    "S": "The New Yorker"
+                  }
+                }
+              }
+            ]
+          },
+          "created_at": {
+            "N": "1612470655"
+          },
+          "expires_at": {
+            "N": "1738711178"
+          },
+          "id": {
+            "S": "1234-5678-ABCD-CEDF"
+          },
+          "version": {
+            "N": "1"
+          }
+        }
+      }
+    }
+  ]
+}
