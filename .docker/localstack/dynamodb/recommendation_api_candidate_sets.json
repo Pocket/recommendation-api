@@ -4,42 +4,12 @@
     {
       "AttributeName": "id",
       "KeyType": "HASH"
-    },
-    {
-      "AttributeName": "created_at",
-      "KeyType": "RANGE"
     }
   ],
   "AttributeDefinitions": [
     {
       "AttributeName": "id",
       "AttributeType": "S"
-    },
-    {
-      "AttributeName": "created_at",
-      "AttributeType": "N"
-    }
-  ],
-  "GlobalSecondaryIndexes": [
-    {
-      "IndexName": "id_created_at",
-      "KeySchema": [
-        {
-          "AttributeName": "id",
-          "KeyType": "HASH"
-        },
-        {
-          "AttributeName": "created_at",
-          "KeyType": "RANGE"
-        }
-      ],
-      "Projection": {
-        "ProjectionType": "ALL"
-      },
-      "ProvisionedThroughput": {
-        "ReadCapacityUnits": 5,
-        "WriteCapacityUnits": 5
-      }
     }
   ],
   "ProvisionedThroughput": {
