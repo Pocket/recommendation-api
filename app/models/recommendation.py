@@ -2,7 +2,6 @@ from pydantic import BaseModel
 import aioboto3
 from boto3.dynamodb.conditions import Key
 from app.config import dynamodb as dynamodb_config
-from app.models.topic import TopicModel
 from enum import Enum
 from aws_xray_sdk.core import xray_recorder
 

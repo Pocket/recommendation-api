@@ -1,6 +1,7 @@
 type Query {
-    getTopicRecommendations(slug: String!, algorithmicCount: Int = 30, curatedCount: Int = 30): TopicRecommendations
+    getTopicRecommendations(slug: String!, algorithmicCount: Int = 20, curatedCount: Int = 5): TopicRecommendations
     listTopics: [Topic!]!
+    getSlate(slateId: String!): Slate
 }
 
 enum PageType {
@@ -34,4 +35,14 @@ type Recommendation {
     itemId: ID!
     feedId: Int
     publisher: String!
+}
+
+type Slate {
+    id: String!
+    requestID: String
+    experimentID: String
+    pageviewGUID: String
+    displayName: String
+    description: String
+    recommendations: [Recommendation!]!
 }
