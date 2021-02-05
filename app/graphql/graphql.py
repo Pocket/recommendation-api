@@ -4,10 +4,11 @@ from graphene_federation import build_schema
 from app.models.topic import TopicModel
 from app.models.topic_recommendations import TopicRecommendationsModel
 from app.models.slate import SlateModel
-
+from app.models.layout import LayoutModel
 from app.graphql.topic import Topic
 from app.graphql.topic_recommendations import TopicRecommendations
 from app.graphql.slate import Slate
+from app.graphql.layout import Layout
 
 
 class Query(ObjectType):
@@ -20,6 +21,7 @@ class Query(ObjectType):
                                                                                      "results to return"))
     list_topics = List(Topic)
     get_slate = Field(Slate, slate_id=String(required=True, description="Slate id to get a specific slate"))
+    get_layout = Field(Layout, layout_id=String(required=True, description="Layout id to get a specific layout"))
 
     async def resolve_get_topic_recommendations(self, info, slug: str, algorithmic_count: int,
                                                 curated_count: int) -> TopicRecommendations:
@@ -32,6 +34,8 @@ class Query(ObjectType):
     async def resolve_get_slate(self, info, slate_id: str) -> SlateModel:
         return await SlateModel.get_slate(slate_id=slate_id)
 
+    async def resolve_get_layout(self, info, layout_id: str) -> LayoutModel:
+        return await LayoutModel.get_layout(layout_id=layout_id)
 
 ##
 # Graphene requires that you define your schema programmatically.
