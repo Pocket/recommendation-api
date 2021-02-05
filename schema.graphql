@@ -45,3 +45,11 @@ type Slate {
     displayName: String
     recommendations: [Recommendation!]!
 }
+
+type Layout {
+    id: ID!
+    requestID: String
+    name: String
+    experimentID: String
+    slates: [Slate!]!
+}
