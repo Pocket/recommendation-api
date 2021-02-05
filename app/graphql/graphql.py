@@ -5,7 +5,6 @@ from app.models.topic import TopicModel
 from app.models.topic_recommendations import TopicRecommendationsModel
 from app.models.slate import SlateModel
 from app.models.layout import LayoutModel
-
 from app.graphql.topic import Topic
 from app.graphql.topic_recommendations import TopicRecommendations
 from app.graphql.slate import Slate

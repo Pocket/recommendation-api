@@ -6,7 +6,6 @@ from app.models.slate import SlateModel
 
 class LayoutModel(BaseModel):
     id: str
-    name: str = None
     requestID: str = None
     experimentID: str = None
     slates: List[SlateModel]
@@ -19,8 +18,6 @@ class LayoutModel(BaseModel):
             'id': layout_id,
             'requestID': '1',
             'experimentID': '1',
-            'pageviewGUID': '1',
-            'display_name': 'Fake slate',
             'slates': []
         })
         layout.slates = [SlateModel.get_slate(slate_id='1234')]

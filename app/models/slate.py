@@ -22,6 +22,7 @@ class SlateModel(BaseModel):
             'experimentID': '1',
             'pageviewGUID': '1',
             'display_name': 'Fake slate',
+            'description': 'Fake description for the people',
             'recommendations': [{
                 'feed_item_id': '1',
                 'item_id': '1',

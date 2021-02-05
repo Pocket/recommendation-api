@@ -279,6 +279,11 @@ workflows:
           <<: *not_main
           context: pocket
 
+      - apollo:
+          <<: *only_main
+          requires:
+            - deploy_ecs_prod
+
       # Build & Deploy Development Lambdas
       - lambda:
           <<: *only_dev
