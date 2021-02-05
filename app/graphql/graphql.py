@@ -1,4 +1,5 @@
 from graphene import ObjectType, String, Field, List, Schema, Int
+from graphene_federation import build_schema
 
 from app.models.topic import TopicModel
 from app.models.topic_recommendations import TopicRecommendationsModel
@@ -37,4 +38,4 @@ class Query(ObjectType):
 # Looks like Graphene 3 will support loading from a .graphql file.
 # For now this file should stay in sync with *.graphql
 ##
-schema = Schema(query=Query)
+schema = build_schema(query=Query)
