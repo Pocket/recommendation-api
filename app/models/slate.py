@@ -15,7 +15,7 @@ class SlateModel(BaseModel):
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_slate')
-    async def get_slate(slate_id: str) -> ['SlateModel']:
+    async def get_slate(slate_id: str) -> 'SlateModel':
         return SlateModel.parse_obj({
             'id': slate_id,
             'requestID': '1',
