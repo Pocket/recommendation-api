@@ -10,7 +10,7 @@ jobs:
 
   apollo:
     docker:
-      - image: circleci/node:14
+      - image: circleci/node:15
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
@@ -24,7 +24,7 @@ jobs:
       - run:
           name: push service
           command: |
-            apollo service:push --graph=pocket-client-api --localSchemaFile=schema.graphql --key=$APOLLO_KEY --serviceURL=https://explore-topics.readitatler.com/ --serviceName=explore-topics
+            apollo service:push --graph=pocket-client-api --localSchemaFile=schema.graphql --key=$APOLLO_KEY --serviceURL=https://recommendation-api.readitlater.com/ --serviceName=recommendation-api
 
   test_app:
     docker:
@@ -278,6 +278,11 @@ workflows:
       - test_lambda:
           <<: *not_main
           context: pocket
+
+      - apollo:
+          <<: *only_main
+          requires:
+            - deploy_ecs_prod
 
       # Build & Deploy Development Lambdas
       - lambda:
