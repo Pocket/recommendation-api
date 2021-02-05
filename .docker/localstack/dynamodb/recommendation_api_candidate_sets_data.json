@@ -1,5 +1,5 @@
 {
-  "recommendation_api_candidates": [
+  "recommendation_api_candidate_sets": [
     {
       "PutRequest": {
         "Item": {

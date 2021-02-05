@@ -5,6 +5,7 @@ TABLE_DEFINITIONS=(
   'recommendation_api_metadata'
   'recommendation_api_candidates'
   'recommendation_api_clickdata'
+  'recommendation_api_candidate_sets'
 )
 
 for json_file in "${TABLE_DEFINITIONS[@]}"; do
