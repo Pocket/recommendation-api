@@ -27,10 +27,6 @@ class TestExperimentInstantiation(unittest.TestCase):
 
         self.assertTrue('invalid is not a valid ranker' in str(context.exception))
 
-    def test_ranker_case_insensitive(self):
-        experiment = Experiment(description='desc', candidate_sets=['a'], rankers=['Top15', 'Thompson-Sampling'], weight=0.1)
-        self.assertEqual(experiment.rankers, ['top15', 'thompson-sampling'])
-
     def test_valid_instantiation(self):
         desc = 'd'
         cs = ['a', 'b']
