@@ -1,0 +1,63 @@
+[
+  {
+   "id": "c410516f-18b3-46a1-b356-c7c003de2b53",
+   "displayName": "Trending Articles",
+   "description": "Curated articles within the last week that have high cascade probability",
+   "experiments": [
+     {
+       "description": "TS window 30",
+       "candidateSets": [
+         "39d0dc54-f6f8-4f13-bea4-4320b3bd8217",
+         "df8a86c1-8b40-48bf-b85d-c144ed96c3fc"
+       ],
+       "rankers": [
+         "top30",
+         "thompson-sampling",
+         "pubspread"
+       ]
+     },
+     {
+       "description": "TS window 15",
+       "candidateSets": [
+         "40d0dc54-f6f8-4f13-bea4-4320b3bd8218",
+         "ab8a86c1-8b40-48bf-b85d-c144ed96c3fd"
+       ],
+       "rankers": [
+         "top15",
+         "thompson-sampling",
+         "pubspread"
+       ],
+       "weight": 0.5
+     }
+   ]
+ },
+ {
+   "id": "b410516f-18b3-1337-b356-c7c003de2b42",
+   "displayName": "Bending Particles",
+   "description": "Bended particles within the last week that have high dawn probability",
+   "experiments": [
+     {
+       "description": "TS window 15",
+       "candidateSets": [
+         "41d0dc54-f6f8-4f13-bea4-4320b3bd8219",
+         "cd8a86c1-8b40-48bf-b85d-c144ed96c3fe"
+       ],
+       "rankers": [
+         "thompson-sampling",
+         "top15"
+       ],
+       "weight": 0.2
+     },
+     {
+       "description": "PubSpread Candidates",
+       "candidateSets": [
+         "42d0dc54-f6f8-4f13-bea4-4320b3bd8220",
+         "ef8a86c1-8b40-48bf-b85d-c144ed96c3ff"
+       ],
+       "rankers": [
+         "pubspread"
+       ]
+     }
+   ]
+ }
+]
