@@ -12,7 +12,7 @@ from xraysink.context import AsyncContext
 from app.config import ENV, ENV_PROD, service, sentry as sentry_config
 from app.graphql.graphql import schema
 from app.graphql_app import GraphQLAppWithMiddleware, GraphQLSentryMiddleware
-from app.models.experiment import Experiment
+from app.models.experiment import ExperimentModel
 from app.models.slateconfig import SlateConfigModel
 
 
@@ -57,7 +57,7 @@ async def load_slate_configs():
                 for cs in experiment.candidate_sets:
                     # TODO: this check is currently stubbed to return True
                     # https://getpocket.atlassian.net/browse/BACK-598 will implement
-                    if not Experiment.candidate_set_is_valid(cs):
+                    if not ExperimentModel.candidate_set_is_valid(cs):
                         raise ValueError(f'{slateconfig.id}|{experiment.description}|{cs} was not found in the database - '
                                          'application start failed')
 
