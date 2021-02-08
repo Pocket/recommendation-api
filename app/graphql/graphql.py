@@ -21,6 +21,7 @@ class Query(ObjectType):
                                                                                      "results to return"))
     list_topics = List(Topic)
     get_slate = Field(Slate, slate_id=String(required=True, description="Slate id to get a specific slate"))
+    list_slates = List(Slate)
     get_layout = Field(Layout, layout_id=String(required=True, description="Layout id to get a specific layout"))
 
     async def resolve_get_topic_recommendations(self, info, slug: str, algorithmic_count: int,
@@ -33,6 +34,9 @@ class Query(ObjectType):
 
     async def resolve_get_slate(self, info, slate_id: str) -> SlateModel:
         return await SlateModel.get_slate(slate_id=slate_id)
+
+    async def resolve_list_slates(self, info) -> [SlateModel]:
+        return await SlateModel.get_all()
 
     async def resolve_get_layout(self, info, layout_id: str) -> LayoutModel:
         return await LayoutModel.get_layout(layout_id=layout_id)
