@@ -2,6 +2,7 @@ type Query {
     getTopicRecommendations(slug: String!, algorithmicCount: Int = 20, curatedCount: Int = 5): TopicRecommendations
     listTopics: [Topic!]!
     getSlate(slateId: String!): Slate
+    listSlates: [Slate!]!
     getLayout(layoutId: String): Layout
 }
 
