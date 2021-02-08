@@ -11,6 +11,20 @@ SLATE_CONFIGS = []
 
 
 class SlateConfigModel:
+    """
+    Configures the experiments that we might run when a layout or a client requests a slate of this id. Data for this
+    model lives in hard-coded JSON files (which will be incrementally updated through PRs).
+
+    This JSON is parsed at startup, and instances of this model created then will be persisted in-memory for use
+    by Slate instances.
+
+    Accepts on initialization:
+    :param slate_id: str, the slate for which a request would run one of these experiments
+    :param display_name: str, to provide clarity of what this slate includes (especially for topic slates)
+    :param description: str, to provide clarity of what this slate includes when it's more complicated than a single
+            topic
+    """
+
     def __init__(self, slate_id: str, display_name: str, description: str, experiments=None):
         self.id = slate_id
         self.displayName = display_name
@@ -50,7 +64,7 @@ class SlateConfigModel:
 
             # populate experiments for the slate
             for ex in s["experiments"]:
-                slate.experiments.append(Experiment.load_from_json(ex))
+                slate.experiments.append(Experiment.load_from_dict(ex))
 
             slates_objs.append(slate)
 

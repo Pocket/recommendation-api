@@ -57,7 +57,7 @@ class TestLoadFromJson(unittest.TestCase):
            ]
          }
         """
-        ex = Experiment.load_from_json(json.loads(json_str))
+        ex = Experiment.load_from_dict(json.loads(json_str))
 
         self.assertEqual(ex.description, "TS window 30")
         self.assertEqual(ex.weight, Experiment.DEFAULT_WEIGHT)
@@ -80,7 +80,7 @@ class TestLoadFromJson(unittest.TestCase):
            "weight": 0.3
          }
         """
-        ex = Experiment.load_from_json(json.loads(json_str))
+        ex = Experiment.load_from_dict(json.loads(json_str))
 
         self.assertEqual(ex.description, "TS window 15")
         self.assertEqual(ex.weight, 0.3)

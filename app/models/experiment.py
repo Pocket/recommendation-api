@@ -35,14 +35,15 @@ class Experiment:
         self.weight = weight
 
     @staticmethod
-    def load_from_json(json: dict) -> 'Experiment':
+    def load_from_dict(experiment_dict: dict) -> 'Experiment':
         """
         creates an experiment object from a json-derived dictionary
-        :param json: a dictionary derived from parsing json
+        :param experiment_dict: a dictionary derived from parsing json
         :return: an instance of Experiment
         """
-        weight = json.get('weight', Experiment.DEFAULT_WEIGHT)
-        return Experiment(json["description"], json["candidateSets"], json["rankers"], weight)
+        weight = experiment_dict.get('weight', Experiment.DEFAULT_WEIGHT)
+        return Experiment(experiment_dict["description"], experiment_dict["candidateSets"], experiment_dict["rankers"],
+                          weight)
 
     @staticmethod
     def candidate_set_is_valid(candidate_set: str) -> bool:
