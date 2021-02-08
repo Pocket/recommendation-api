@@ -4,19 +4,18 @@ from typing import List
 
 from app.config import JSON_DIR
 from app.json.utils import parse_to_dict
-from app.models.experiment import ExperimentModel
+from app.models.slate_experiment import SlateExperimentModel
 
-# store loaded slates
+# store loaded slate configs
 SLATE_CONFIGS = []
 
 
 class SlateConfigModel:
     """
-    Configures the experiments that we might run when a layout or a client requests a slate of this id. Data for this
+    Represents the experiments that we might run when a layout or a client requests a slate of this id. Data for this
     model lives in hard-coded JSON files (which will be incrementally updated through PRs).
 
-    This JSON is parsed at startup, and instances of this model created then will be persisted in-memory for use
-    by Slate instances.
+    This JSON is parsed at startup, and instances of this model will be persisted in-memory for use by Slate instances.
 
     Accepts on initialization:
     :param slate_id: str, the slate for which a request would run one of these experiments
@@ -34,19 +33,20 @@ class SlateConfigModel:
     @staticmethod
     def load_from_dict(slate_dict: dict) -> 'SlateConfigModel':
         """
-        instantiates a Slate object from a json-generated dictionary
+        instantiates a SlateConfigModel object from a json-generated dictionary
         :param slate_dict: dictionary created from parsing json
-        :return: Slate instance
+        :return: SlateConfigModel instance
         """
         return SlateConfigModel(slate_dict["id"], slate_dict["displayName"], slate_dict["description"])
 
     @staticmethod
-    def load_slateconfigs(
-            slate_file=os.path.join(JSON_DIR, 'slateconfigs.json'),
-            schema_file=os.path.join(JSON_DIR, 'slateconfig.schema.json')
+    def load_slate_configs(
+            slate_file=os.path.join(JSON_DIR, 'slate_configs.json'),
+            schema_file=os.path.join(JSON_DIR, 'slate_config.schema.json')
     ) -> List['SlateConfigModel']:
         """
-        validates slate_file against schema_file and creates instances of Slate for each slate found in the json
+        validates slate_file against schema_file and creates instances of SlateConfigModel for each slate found in the
+        json
 
         :param slate_file: path to the json file containing slates
         :param schema_file: path to the json schema file used to validate slate_file
@@ -64,7 +64,7 @@ class SlateConfigModel:
 
             # populate experiments for the slate
             for ex in s["experiments"]:
-                slate.experiments.append(ExperimentModel.load_from_dict(ex))
+                slate.experiments.append(SlateExperimentModel.load_from_dict(ex))
 
             slates_objs.append(slate)
 

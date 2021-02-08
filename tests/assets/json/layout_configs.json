@@ -1,0 +1,62 @@
+[
+ {
+   "id": "34a35300-73c0-4ecc-8f11-4779b7dc1378",
+   "description": "Android discover",
+   "experiments": [
+     {
+       "description": "Android is where it's at",
+       "rankers": [
+         "thompson-sampling"
+       ],
+       "slates": [
+         "c410516f-18b3-46a1-b356-c7c003de2b53",
+         "c410516f-18b3-46a1-b356-c7c003de2b54"
+       ]
+     },
+     {
+       "description": "Android is where it's at part 2",
+       "rankers": [
+         "top30"
+       ],
+       "slates": [
+         "c410516f-18b3-46a1-b356-c7c003de2b63",
+         "c410516f-18b3-46a1-b356-c7c003de2b64"
+       ]
+     }
+   ]
+ },
+  {
+   "id": "34a35300-73c0-4ecc-8f11-4779b7dc1379",
+   "description": "iOS discover",
+   "experiments": [
+     {
+       "description": "iOS is where it's at",
+       "rankers": [
+         "pubspread",
+         "top15"
+       ],
+       "slates": [
+         "d410516f-18b3-46a1-b356-c7c003de2b53"
+       ]
+     }
+   ]
+ },
+  {
+   "id": "34a35300-73c0-4ecc-8f11-4779b7dc1379",
+   "description": "firefoxOS discover",
+   "experiments": [
+     {
+       "description": "firefoxOS is...where?",
+       "rankers": [
+         "pubspread",
+         "top15",
+         "thompson-sampling"
+       ],
+       "slates": [
+         "e410516f-18b3-46a1-b356-c7c003de2b53",
+         "e410516f-18b3-46a1-b356-c7c003de2b54"
+       ]
+     }
+   ]
+ }
+]

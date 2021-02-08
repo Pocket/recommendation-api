@@ -1,23 +1,25 @@
 import hashlib
 import json
 
-from typing import List
+from abc import ABCMeta, abstractmethod
+from typing import List, Type
 
 from app.rankers import RANKERS as ALL_RANKERS
 
 
-class ExperimentModel:
+class ExperimentModel(metaclass=ABCMeta):
+    """
+    This is a base class for Slate experiments and Layout experiments. As of writing, these implementations are nearly
+    identical - slate experiments have candidate sets (an array of strings) while layout experiments have slates (also
+    an array of strings). This base class seemed the most appropriate abstraction at the time, but may require
+    revisiting if experiments diverge further.
+    """
     # should this be in a config somewhere?
     DEFAULT_WEIGHT = 1
 
-    def __init__(self, experiment_id: str, description: str, candidate_sets: List[str], rankers: List[str],
-                 weight: float = DEFAULT_WEIGHT):
+    def __init__(self, experiment_id: str, description: str, rankers: List[str], weight: float = DEFAULT_WEIGHT):
         # initialize values
         self.rankers = []
-
-        # validate candidate sets
-        if len(candidate_sets) < 1:
-            raise ValueError('no candidate sets provided for experiment')
 
         # validate rankers
         if len(rankers) < 1:
@@ -36,7 +38,6 @@ class ExperimentModel:
 
         self.id = experiment_id
         self.description = description
-        self.candidate_sets = candidate_sets
         self.weight = weight
 
     @staticmethod
@@ -54,27 +55,6 @@ class ExperimentModel:
         return hashed[:7]
 
     @staticmethod
-    def load_from_dict(experiment_dict: dict) -> 'ExperimentModel':
-        """
-        creates an experiment object from a json-derived dictionary
-        :param experiment_dict: a dictionary derived from parsing json
-        :return: an instance of Experiment
-        """
-        # generate an id for the experiment
-        experiment_id = ExperimentModel.generate_experiment_id(experiment_dict)
-
-        # determine the weight
-        weight = experiment_dict.get('weight', ExperimentModel.DEFAULT_WEIGHT)
-
-        return ExperimentModel(experiment_id, experiment_dict["description"], experiment_dict["candidateSets"],
-                               experiment_dict["rankers"], weight)
-
-    @staticmethod
-    def candidate_set_is_valid(candidate_set: str) -> bool:
-        """
-        :param candidate_set: string id of a candidate set to be verified
-        :return: boolean (pronounced like "jolene")
-        """
-        # TODO: hit the database to make sure the candidate set exists
-        # implement in https://getpocket.atlassian.net/browse/BACK-598
-        return True
+    @abstractmethod
+    def load_from_dict(experiment_dict: dict) -> Type['ExperimentModel']:
+        pass
