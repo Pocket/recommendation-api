@@ -1,6 +1,5 @@
 from typing import List
 
-# from app.models.rankers import Ranker
 from app.rankers.rankers import RANKERS as ALL_RANKERS
 
 

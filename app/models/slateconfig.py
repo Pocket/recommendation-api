@@ -1,11 +1,10 @@
 import os
 
-from app.models.experiment import Experiment
 from typing import List
 
 from app.config import JSON_DIR
 from app.json.utils import parse_to_dict
-
+from app.models.experiment import Experiment
 
 # store loaded slates
 SLATE_CONFIGS = []
