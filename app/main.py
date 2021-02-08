@@ -1,17 +1,20 @@
 import uvicorn
 import sentry_sdk
-from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
-from app.config import sentry as sentry_config
 
-from app.graphql_app import GraphQLAppWithMiddleware, GraphQLSentryMiddleware
-from fastapi import FastAPI
-from app.graphql.graphql import schema
-from graphql.execution.executors.asyncio import AsyncioExecutor
-from starlette.middleware.base import BaseHTTPMiddleware
 from aws_xray_sdk.core import xray_recorder
-from xraysink.context import AsyncContext
+from fastapi import FastAPI, Request
+from graphql.execution.executors.asyncio import AsyncioExecutor
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from xraysink.asgi.middleware import xray_middleware
-from app.config import service
+from xraysink.context import AsyncContext
+
+from app.config import ENV, ENV_PROD, service, sentry as sentry_config
+from app.graphql.graphql import schema
+from app.graphql_app import GraphQLAppWithMiddleware, GraphQLSentryMiddleware
+from app.models.experiment import Experiment
+from app.models.slateconfig import SlateConfigModel
+
 
 sentry_sdk.init(
     dsn=sentry_config['dsn'],
@@ -39,6 +42,24 @@ app.add_route("/", GraphQLAppWithMiddleware(
 @app.get("/health-check")
 async def read_root():
     return {"Hello": "World"}
+
+
+@app.on_event("startup")
+async def load_slate_configs():
+    # parse json into objects
+    SlateConfigModel.SLATE_CONFIGS = SlateConfigModel.load_slateconfigs()
+
+    # if we're in prod, ensure candidate sets exist in the db
+    if ENV == ENV_PROD:
+        # wow i do not love this nested loop soup, BUT it does give us nice full context for the error message
+        for slateconfig in SlateConfigModel.SLATE_CONFIGS:
+            for experiment in slateconfig.experiments:
+                for cs in experiment.candidate_sets:
+                    # TODO: this check is currently stubbed to return True
+                    # https://getpocket.atlassian.net/browse/BACK-598 will implement
+                    if not Experiment.candidate_set_is_valid(cs):
+                        raise ValueError(f'{slateconfig.id}|{experiment.description}|{cs} was not found in the database - '
+                                         'application start failed')
 
 
 if __name__ == "__main__":

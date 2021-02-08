@@ -1,0 +1,129 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "array",
+  "title": "The Root Schema",
+  "items": {
+    "$id": "#/slates",
+    "type": "object",
+    "title": "The Slates Schema",
+    "required": [
+      "id",
+      "displayName",
+      "description",
+      "experiments"
+    ],
+    "properties": {
+      "id": {
+        "$id": "#/properties/id",
+        "type": "string",
+        "title": "The ID Schema",
+        "default": "",
+        "examples": [
+          "c410516f-18b3-46a1-b356-c7c003de2b53"
+        ],
+        "pattern": "^(.+)$"
+      },
+      "displayName": {
+        "$id": "#/properties/displayName",
+        "type": "string",
+        "title": "The Display Name Schema",
+        "default": "",
+        "examples": [
+          "Trending Articles"
+        ],
+        "pattern": "^(.+)$"
+      },
+      "description": {
+        "$id": "#/properties/description",
+        "type": "string",
+        "title": "The Description Schema",
+        "default": "",
+        "examples": [
+          "Curated articles within the last week that have high cascade probability"
+        ],
+        "pattern": "^(.+)$"
+      },
+      "experiments": {
+        "$id": "#/properties/experiments",
+        "type": "array",
+        "title": "The Experiments Schema",
+        "items": {
+          "$id": "#/properties/experiments/items",
+          "type": "object",
+          "title": "The Experiments Items Schema",
+          "required": [
+            "description",
+            "candidateSets",
+            "rankers"
+          ],
+          "properties": {
+            "description": {
+              "$id": "#/properties/experiments/properties/description",
+              "type": "string",
+              "title": "The Experiment Description Schema",
+              "default": "",
+              "examples": [
+                "TS window 30"
+              ],
+              "pattern": "^(.+)$"
+            },
+            "candidateSets": {
+              "$id": "#/properties/experiments/properties/candidateSets",
+              "type": "array",
+              "title": "The Experiment Candidate Sets Schema",
+              "default": null,
+              "uniqueItems": true,
+              "items": {
+                "$id": "#/properties/experiments/properties/candidateSets/items",
+                "type": "string",
+                "title": "The Candidate Set Items Schema",
+                "default": "",
+                "examples": [
+                  "39d0dc54-f6f8-4f13-bea4-4320b3bd8217"
+                ],
+                "pattern": "^([A-Za-z0-9\\-]+)$"
+              }
+            },
+            "rankers": {
+              "$id": "#/properties/experiments/properties/rankers",
+              "type": "array",
+              "title": "The Experiment Rankers Schema",
+              "default": null,
+              "uniqueItems": true,
+              "items": {
+                "$id": "#/properties/experiments/properties/rankers/items",
+                "type": "string",
+                "enum": [
+                  "pubspread",
+                  "top15",
+                  "top30",
+                  "thompson-sampling"
+                ],
+                "title": "The Items Schema",
+                "default": "",
+                "examples": [
+                  "pubspread",
+                  "top30"
+                ],
+                "pattern": "^(.+)$"
+              }
+            },
+            "weight": {
+              "$id": "#/properties/experiments/properties/weight",
+              "type": "number",
+              "title": "The Experiment Weight Schema",
+              "default": 1,
+              "examples": [
+                1,
+                0.1
+              ],
+              "pattern": "^(.*)$"
+            }
+          }
+        }
+      }
+    }
+  }
+}

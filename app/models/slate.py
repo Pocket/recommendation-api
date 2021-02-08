@@ -1,6 +1,7 @@
-from pydantic import BaseModel
 from aws_xray_sdk.core import xray_recorder
+from pydantic import BaseModel
 from typing import List
+
 from app.models.recommendation import RecommendationModel
 
 

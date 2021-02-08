@@ -27,6 +27,10 @@ SENTRY_DSN=<local Sentry DSN>
 1. To run the app, run `docker-compose up`
 2. The app should then be available at localhost:8000
 
+### Adding Packages
+
+`pipenv install <package>`. for dev packages, `pipenv install -d <package>`.
+
 ### Using the App
 
 1. This is an API on the GraphQL protocol. When you visit localhost:8000, you will have:
