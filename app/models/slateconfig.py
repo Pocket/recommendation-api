@@ -4,7 +4,7 @@ from typing import List
 
 from app.config import JSON_DIR
 from app.json.utils import parse_to_dict
-from app.models.experiment import Experiment
+from app.models.experiment import ExperimentModel
 
 # store loaded slates
 SLATE_CONFIGS = []
@@ -64,7 +64,7 @@ class SlateConfigModel:
 
             # populate experiments for the slate
             for ex in s["experiments"]:
-                slate.experiments.append(Experiment.load_from_dict(ex))
+                slate.experiments.append(ExperimentModel.load_from_dict(ex))
 
             slates_objs.append(slate)
 
