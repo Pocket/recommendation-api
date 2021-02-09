@@ -3,7 +3,7 @@ import json
 
 from typing import List
 
-from app.rankers.rankers import RANKERS as ALL_RANKERS
+from app.rankers import RANKERS as ALL_RANKERS
 
 
 class ExperimentModel:

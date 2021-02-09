@@ -1,32 +1,17 @@
-from typing import List
-import random
-
+from tests.unit.utils import generate_recommendations
 from app.models.topic_recommendations import TopicRecommendationsModel, TopicRecommendationsModelUtils
-from app.models.recommendation import RecommendationModel
 
 
 class TestRecommendationsModelUtils:
-    @staticmethod
-    def generate_recommendations(item_ids: List[int]) -> List[RecommendationModel]:
-        recs = []
-        for item_id in item_ids:
-            rec = RecommendationModel()
-            rec.item_id = item_id
-            rec.feed_id = random.randint(0, 101)
-            rec.feed_item_id = random.randint(0, 101)
-            rec.rec_src = 'bowling'
-            recs.append(rec)
-
-        return recs
 
     def setup_class(self):
-        self.curated = TestRecommendationsModelUtils.generate_recommendations([1, 2, 3, 4, 5])
+        self.curated = generate_recommendations([1, 2, 3, 4, 5])
 
     # dedupe tests
     # ------------------------------------
 
     def test_no_dupes(self):
-        algorithmic = TestRecommendationsModelUtils.generate_recommendations([6, 7, 8, 9])
+        algorithmic = generate_recommendations([6, 7, 8, 9])
         topic_recs = TopicRecommendationsModel()
         topic_recs.curated_recommendations = self.curated
         topic_recs.algorithmic_recommendations = algorithmic
@@ -36,7 +21,7 @@ class TestRecommendationsModelUtils:
         assert algorithmic_result_ids == [6, 7, 8, 9]
 
     def test_dedupes_single_item(self):
-        algorithmic = TestRecommendationsModelUtils.generate_recommendations([1, 6, 7, 8, 9])
+        algorithmic = generate_recommendations([1, 6, 7, 8, 9])
         topic_recs = TopicRecommendationsModel()
         topic_recs.curated_recommendations = self.curated
         topic_recs.algorithmic_recommendations = algorithmic
@@ -46,7 +31,7 @@ class TestRecommendationsModelUtils:
         assert algorithmic_result_ids == [6, 7, 8, 9]
 
     def test_dedupes_multiple_items(self):
-        algorithmic = TestRecommendationsModelUtils.generate_recommendations([1, 2, 6, 7, 8])
+        algorithmic = generate_recommendations([1, 2, 6, 7, 8])
         topic_recs = TopicRecommendationsModel()
         topic_recs.curated_recommendations = self.curated
         topic_recs.algorithmic_recommendations = algorithmic
@@ -57,7 +42,7 @@ class TestRecommendationsModelUtils:
         assert algorithmic_result_ids == [6, 7, 8]
 
     def test_curated_recs_untouched(self):
-        algorithmic = TestRecommendationsModelUtils.generate_recommendations([1, 6, 7, 8, 9])
+        algorithmic = generate_recommendations([1, 6, 7, 8, 9])
         topic_recs = TopicRecommendationsModel()
         topic_recs.curated_recommendations = self.curated
         topic_recs.algorithmic_recommendations = algorithmic
@@ -70,7 +55,7 @@ class TestRecommendationsModelUtils:
     # ------------------------------------
 
     def test_limits_array(self):
-        algorithmic = TestRecommendationsModelUtils.generate_recommendations([1, 6, 7, 8, 9])
+        algorithmic = generate_recommendations([1, 6, 7, 8, 9])
         topic_recs = TopicRecommendationsModel()
         topic_recs.curated_recommendations = self.curated
         topic_recs.algorithmic_recommendations = algorithmic
@@ -80,7 +65,7 @@ class TestRecommendationsModelUtils:
         assert len(result.curated_recommendations) == 2
 
     def test_limits_array_when_less(self):
-        algorithmic = TestRecommendationsModelUtils.generate_recommendations([1, 6, 7, 8, 9])
+        algorithmic = generate_recommendations([1, 6, 7, 8, 9])
         topic_recs = TopicRecommendationsModel()
         topic_recs.curated_recommendations = self.curated
         topic_recs.algorithmic_recommendations = algorithmic
