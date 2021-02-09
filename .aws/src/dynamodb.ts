@@ -9,14 +9,14 @@ export class DynamoDB extends Resource {
   public readonly candidatesTable: ApplicationDynamoDBTable
   public readonly metadataTable: ApplicationDynamoDBTable
   public readonly clickdataTable: DataAwsDynamodbTable
-  public readonly candidateSets: ApplicationDynamoDBTable;
+  public readonly candidateSetsTable: ApplicationDynamoDBTable;
 
   constructor(scope: Construct, name: string) {
     super(scope, name);
     this.candidatesTable = this.setupCandidatesTable();
     this.metadataTable = this.setupTopicsMetadataTable();
     this.clickdataTable = this.getClickdataTable();
-    this.candidateSets = this.setupCandidateSetsTable();
+    this.candidateSetsTable = this.setupCandidateSetsTable();
   }
 
   /**
