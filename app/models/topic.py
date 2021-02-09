@@ -1,11 +1,12 @@
+import aioboto3
+
+from aws_xray_sdk.core import xray_recorder
+from boto3.dynamodb.conditions import Key
 from enum import Enum
+from pydantic import BaseModel
 from typing import Optional
 
-from pydantic import BaseModel
-import aioboto3
 from app.config import dynamodb as dynamodb_config
-from boto3.dynamodb.conditions import Key
-from aws_xray_sdk.core import xray_recorder
 
 
 class PageType(str, Enum):

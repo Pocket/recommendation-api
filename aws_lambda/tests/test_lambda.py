@@ -7,7 +7,7 @@ from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 import boto3
 from moto import mock_dynamodb2
 
-from aws_lambda.tests.lambda_test_data import event, metaflow_data
+from aws_lambda.tests.fixtures.lambda_test_data import event, metaflow_data
 from aws_lambda import index
 from app.config import ROOT_DIR
 

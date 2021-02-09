@@ -30,13 +30,3 @@ class SlateExperimentModel(ExperimentModel):
 
         return SlateExperimentModel(experiment_id, experiment_dict["description"], experiment_dict["rankers"],
                                     experiment_dict["candidateSets"], weight)
-
-    @staticmethod
-    def candidate_set_is_valid(candidate_set: str) -> bool:
-        """
-        :param candidate_set: string id of a candidate set to be verified
-        :return: boolean (pronounced like "jolene")
-        """
-        # TODO: hit the database to make sure the candidate set exists
-        # implement in https://getpocket.atlassian.net/browse/BACK-598
-        return True
