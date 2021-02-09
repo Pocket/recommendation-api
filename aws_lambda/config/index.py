@@ -13,7 +13,9 @@ secrets = {
 dynamodb = {
     'endpoint_url': os.getenv('AWS_DYNAMODB_ENDPOINT_URL', None),
     'recommendation_api_candidates_table':
-        os.getenv('RECOMMENDATION_API_CANDIDATES_TABLE', 'recommendation_api_candidates')
+        os.getenv('RECOMMENDATION_API_CANDIDATES_TABLE', 'recommendation_api_candidates'),
+    'recommendation_api_candidate_sets_table':
+        os.getenv('RECOMMENDATION_API_CANDIDATE_SETS_TABLE', 'recommendation_api_candidate_sets'),
 }
 
 sentry = {
