@@ -11,9 +11,9 @@ from app.models.recommendation import RecommendationModel
 
 class CandidateSetModel(BaseModel):
     candidates: List[RecommendationModel]
-    id: str = None
+    id: str
     created_at: int = None
-    version: int = None
+    version: int
 
     @staticmethod
     @xray_recorder.capture_async('model_candidate_set_verify_candidate_set')

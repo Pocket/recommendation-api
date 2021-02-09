@@ -3,7 +3,7 @@ from app.models.candidate_set import CandidateSetModel
 
 
 class TestCandidateSetsModel(TestDynamoDBBase):
-    async def test_get_latest_curated_candidates_for_topic(self):
+    async def test_verify_candidate_set(self):
         self.candidateSetTable.put_item(Item={
             "id": "asdasd-12sd1asd3-5512",
             "candidates": [
