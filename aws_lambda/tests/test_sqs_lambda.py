@@ -6,7 +6,7 @@ from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 import boto3
 from moto import mock_dynamodb2
 
-from aws_lambda.tests.fixtures.lambda_sqs_test_data import event
+from aws_lambda.tests.fixtures.lambda_sqs_test_data import event, body, body2
 from aws_lambda import sqs_handler
 from app.config import ROOT_DIR
 
@@ -43,10 +43,5 @@ def test_handler(mock_dynamodb_resource):
 
     response = table.scan()
 
-    assert {
-        'id': '1234-5678-ABCD-CEDF',
-        'version': 1,
-        'created_at': 1612470655,
-        'expires_at': 1644006655,
-        'candidates': [{"item_id": 3242933715,"publisher": "TheAtlantic", "feed_id":1}]
-    }.items() <= response['Items'][0].items()
+    assert body.items() <= response['Items'][0].items()
+    assert body2.items() <= response['Items'][1].items()
