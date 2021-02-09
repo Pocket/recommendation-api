@@ -96,6 +96,10 @@ class RecommendationAPI extends TerraformStack {
             {
               name: 'RECOMMENDATION_API_CLICKDATA_TABLE',
               value: dynamodb.clickdataTable.name
+            },
+              {
+              name: 'RECOMMENDATION_API_CANDIDATE_SETS_TABLE',
+              value: dynamodb.candidateSetsTable.dynamodb.name
             }
           ],
           secretEnvVars: [
@@ -166,6 +170,7 @@ class RecommendationAPI extends TerraformStack {
               `${dynamodb.candidatesTable.dynamodb.arn}/*`,
               `${dynamodb.metadataTable.dynamodb.arn}/*`,
               `${dynamodb.clickdataTable.arn}/*`,
+              `${dynamodb.candidateSetsTable.dynamodb.arn}/*`
             ],
             effect: 'Allow'
           },
