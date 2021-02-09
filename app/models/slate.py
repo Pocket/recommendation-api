@@ -1,7 +1,10 @@
+import aioboto3
+
 from aws_xray_sdk.core import xray_recorder
 from pydantic import BaseModel
 from typing import List
 
+from app.config import dynamodb as dynamodb_config
 from app.models.recommendation import RecommendationModel
 
 
@@ -17,6 +20,13 @@ class SlateModel(BaseModel):
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_slate')
     async def get_slate(slate_id: str) -> 'SlateModel':
+        async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
+            table = await dynamodb.Table(dynamodb_config['recommendation_api_metadata_table'])
+            response = await table.query(IndexName='slug', Limit=1, KeyConditionExpression=Key('slug').eq(slug))
+        if response['Items']:
+            return TopicModel.parse_obj(response['Items'][0])
+        raise ValueError('Topic not found')
+
         return SlateModel.parse_obj({
             'id': slate_id,
             'requestID': '1',
