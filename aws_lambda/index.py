@@ -37,6 +37,18 @@ def handler(event: Dict[str, Any], context=None):
 
 
 def handler_v2(event: Dict[str, Any], context=None):
+    try:
+        dynamodb_batch_write(data, flow_name)
+    except Exception as e:
+        details = {
+            'flow_name': flow_name,
+            'run_id': get_run_id(event),
+            'data': data,
+            'exception': e
+        }
+        print(f'Insert failed. Details: {details}')
+        raise
+
     for record in event['Records']:
         print("test")
         payload = record["body"]

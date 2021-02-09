@@ -12,7 +12,7 @@ export class SqsLambda extends Resource {
   constructor(
     scope: Construct,
     private name: string,
-    candidatesTable: ApplicationDynamoDBTable,
+    candidateSetsTable: ApplicationDynamoDBTable,
     pagerDuty: PocketPagerDuty
   ) {
     super(scope, name);
@@ -23,7 +23,8 @@ export class SqsLambda extends Resource {
 
     new PocketSQSWithLambdaTarget(this, 'translation-sqs-lambda', {
       name: `${config.prefix}-Sqs-Translation`,
-      batchSize: 100,
+      /* batchSize is set to 25 because DynamoDB allows 25 put requests per BatchWriteItem. */
+      batchSize: 25,
       batchWindow: 60,
       sqsQueue: {
         maxReceiveCount: 3,
@@ -31,7 +32,7 @@ export class SqsLambda extends Resource {
       },
       lambda: {
         runtime: LAMBDA_RUNTIMES.PYTHON38,
-        handler: 'aws_lambda.index.handler_v2',
+        handler: 'aws_lambda.sqs_handler.handler',
         timeout: 30,
         executionPolicyStatements: [
           {
@@ -42,15 +43,14 @@ export class SqsLambda extends Resource {
               'dynamodb:DescribeTable',
               'dynamodb:UpdateItem'
             ],
-            /* TODO: Change this to candidate set dynamodb resource once ready. */
             resources: [
-              candidatesTable.dynamodb.arn,
-              `${candidatesTable.dynamodb.arn}/*`
+              candidateSetsTable.dynamodb.arn,
+              `${candidateSetsTable.dynamodb.arn}/*`
             ]
           }
         ],
         environment: {
-          RECOMMENDATION_API_CANDIDATES_TABLE: candidatesTable.dynamodb.name,
+          RECOMMENDATION_API_CANDIDATE_SETS_TABLE: candidateSetsTable.dynamodb.name,
           SENTRY_DSN: sentryDsn,
           GIT_SHA: gitSha,
           ENVIRONMENT: config.environment === 'Prod' ? 'production' : 'development',
