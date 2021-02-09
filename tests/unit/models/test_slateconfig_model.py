@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from app.models.slateconfig import SlateConfigModel
+from app.models.slate_config import SlateConfigModel
 
 
 class TestSlateConfigLoadFromJson(unittest.TestCase):

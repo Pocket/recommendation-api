@@ -1,0 +1,18 @@
+[
+ {
+   "id": "34a35300-73c0-4ecc-8f11-4779b7dc1378",
+   "description": "Android discover",
+   "experiments": [
+     {
+       "description": "Android discover experiment 1",
+       "rankers": [
+         "thompson-sampling"
+       ],
+       "slates": [
+         "c410516f-18b3-46a1-b356-c7c003de2b53",
+         "c410516f-18b3-46a1-b356-c7c003de2b54"
+       ]
+     }
+   ]
+ }
+]

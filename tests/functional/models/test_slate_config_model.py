@@ -1,13 +1,13 @@
 import os
 import unittest
 
-from app.models.slateconfig import SlateConfigModel
+from app.models.slate_config import SlateConfigModel
 from app.config import ROOT_DIR
 
 
-class TestSlateModel(unittest.TestCase):
+class TestSlateConfigModel(unittest.TestCase):
     def test_load_valid_slates(self):
-        slateconfigs = SlateConfigModel.load_slateconfigs(os.path.join(ROOT_DIR, 'tests/assets/json/slateconfigs.json'))
+        slateconfigs = SlateConfigModel.load_slate_configs(os.path.join(ROOT_DIR, 'tests/assets/json/slate_configs.json'))
 
         # make sure both slates in the test file were loaded
         self.assertEqual(2, len(slateconfigs))

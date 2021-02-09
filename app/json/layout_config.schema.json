@@ -10,7 +10,6 @@
     "title": "The Slates Schema",
     "required": [
       "id",
-      "displayName",
       "description",
       "experiments"
     ],
@@ -21,17 +20,7 @@
         "title": "The ID Schema",
         "default": "",
         "examples": [
-          "c410516f-18b3-46a1-b356-c7c003de2b53"
-        ],
-        "pattern": "^(.+)$"
-      },
-      "displayName": {
-        "$id": "#/properties/displayName",
-        "type": "string",
-        "title": "The Display Name Schema",
-        "default": "",
-        "examples": [
-          "Trending Articles"
+          "34a35300-73c0-4ecc-8f11-4779b7dc1378"
         ],
         "pattern": "^(.+)$"
       },
@@ -55,7 +44,7 @@
           "title": "The Experiments Items Schema",
           "required": [
             "description",
-            "candidateSets",
+            "slates",
             "rankers"
           ],
           "properties": {
@@ -70,15 +59,15 @@
               "pattern": "^(.+)$"
             },
             "candidateSets": {
-              "$id": "#/properties/experiments/properties/candidateSets",
+              "$id": "#/properties/experiments/properties/slates",
               "type": "array",
-              "title": "The Experiment Candidate Sets Schema",
+              "title": "The Experiment Slates Schema",
               "default": null,
               "uniqueItems": true,
               "items": {
-                "$id": "#/properties/experiments/properties/candidateSets/items",
+                "$id": "#/properties/experiments/properties/slates/items",
                 "type": "string",
-                "title": "The Candidate Set Items Schema",
+                "title": "The Experiment Slate Items Schema",
                 "default": "",
                 "examples": [
                   "39d0dc54-f6f8-4f13-bea4-4320b3bd8217"
@@ -109,17 +98,6 @@
                 ],
                 "pattern": "^(.+)$"
               }
-            },
-            "weight": {
-              "$id": "#/properties/experiments/properties/weight",
-              "type": "number",
-              "title": "The Experiment Weight Schema",
-              "default": 1,
-              "examples": [
-                1,
-                0.1
-              ],
-              "pattern": "^(.*)$"
             }
           }
         }
