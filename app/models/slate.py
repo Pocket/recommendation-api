@@ -32,3 +32,8 @@ class SlateModel(BaseModel):
                 'publisher': 'Fake Times'
             }],
         })
+
+    @staticmethod
+    @xray_recorder.capture_async('models_slate_get_all')
+    async def get_all() -> ['SlateModel']:
+        return [SlateModel.get_slate('fake1'), SlateModel.get_slate('fake2')]
