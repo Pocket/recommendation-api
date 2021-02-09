@@ -15,7 +15,6 @@ pytest-mock = "*"
 aws_secretsmanager_caching = "*"
 # We define the essential stubs
 boto3-stubs = {extras = ["essential"], version = "==1.16.15.0"}
-jsonschema = "*"
 
 [packages]
 graphene = "*"
@@ -35,6 +34,7 @@ gql = "*"
 xraysink = "*"
 aws-xray-sdk = "*"
 scipy = "*"
+jsonschema = "*"
 
 [requires]
 python_version = "3.8"
