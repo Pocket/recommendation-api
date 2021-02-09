@@ -6,9 +6,6 @@ from app.config import JSON_DIR
 from app.json.utils import parse_to_dict
 from app.models.layout_experiment import LayoutExperimentModel
 
-# store loaded layout configs
-LAYOUT_CONFIGS = []
-
 
 class LayoutConfigModel:
     """
@@ -21,6 +18,9 @@ class LayoutConfigModel:
     :param layout_id: str, the layout for which a request would run one of these experiments
     :param description: str, to provide clarity of what this layout includes
     """
+
+    # store loaded layout configs
+    LAYOUT_CONFIGS = []
 
     def __init__(self, layout_id: str, description: str, experiments=None):
         self.id = layout_id

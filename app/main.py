@@ -50,6 +50,7 @@ async def read_root():
 async def load_slate_configs():
     # parse json into objects
     SlateConfigModel.SLATE_CONFIGS = SlateConfigModel.load_slate_configs()
+    SlateConfigModel.SLATE_CONFIGS_BY_ID = {s.id: s for s in SlateConfigModel.load_slate_configs()}
     LayoutConfigModel.LAYOUT_CONFIGS = LayoutConfigModel.load_layout_configs()
 
     # if we're in prod, ensure candidate sets exist in the db
@@ -65,7 +66,7 @@ async def load_slate_configs():
         for layout_config in LayoutConfigModel.LAYOUT_CONFIGS:
             for experiment in layout_config.experiments:
                 for slate in experiment.slates:
-                    if not LayoutExperimentModel.slate_is_valid(slate):
+                    if not LayoutExperimentModel.slate_id_exists(slate):
                         raise ValueError(f'slate {layout_config.id}|{experiment.description}|{slate} was not found in'
                                          ' the database - application start failed')
 

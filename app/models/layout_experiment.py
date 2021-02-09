@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Dict
 
 from app.models.experiment import ExperimentModel
+from app.models.slate_config import SlateConfigModel
 
 
 class LayoutExperimentModel(ExperimentModel):
@@ -32,11 +33,10 @@ class LayoutExperimentModel(ExperimentModel):
                                      experiment_dict["slates"], weight)
 
     @staticmethod
-    def slate_is_valid(slate_id: str) -> bool:
+    def slate_id_exists(slate_id: str) -> bool:
         """
+        Verify that the slate id exists
         :param slate_id: string id of a slate to be verified
         :return: boolean (pronounced like "jolene")
         """
-        # TODO: hit the database to make sure the slate exists
-        # implement in https://getpocket.atlassian.net/browse/BACK-???
-        return True
+        return slate_id in SlateConfigModel.SLATE_CONFIGS_BY_ID
