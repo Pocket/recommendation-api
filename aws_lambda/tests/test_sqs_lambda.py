@@ -50,4 +50,3 @@ def test_handler(mock_dynamodb_resource):
         'expires_at': 1644006655,
         'candidates': [{"item_id": 3242933715,"publisher": "TheAtlantic", "feed_id":1}]
     }.items() <= response['Items'][0].items()
-
