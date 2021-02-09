@@ -16,7 +16,7 @@ class CandidateSetModel(BaseModel):
     version: int = None
 
     @staticmethod
-    @xray_recorder.capture_async('model_recommendations_get_recommendations')
+    @xray_recorder.capture_async('model_candidate_set_verify_candidate_set')
     async def verify_candidate_set(cs_id: str) -> bool:
         async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
             table = await dynamodb.Table(dynamodb_config['recommendation_api_candidate_sets_table'])
