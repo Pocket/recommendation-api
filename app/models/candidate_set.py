@@ -21,8 +21,7 @@ class CandidateSetModel(BaseModel):
         async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
             table = await dynamodb.Table(dynamodb_config['recommendation_api_candidate_sets_table'])
             key_condition = Key('id').eq(cs_id)
-            response = await table.query(IndexName='id', Limit=1, KeyConditionExpression=key_condition,
-                                         ScanIndexForward=False)
+            response = await table.query(KeyConditionExpression=key_condition)
         if not response['Items']:
             return False
 
