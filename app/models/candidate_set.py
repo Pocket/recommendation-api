@@ -33,6 +33,7 @@ class CandidateSetModel(BaseModel):
 
         candidate_set = response['Items'][0]
         instance = CandidateSetModel.parse_obj(candidate_set)
+        # We should keep an eye on performance here if/when candidate sets become large
         instance.candidates = list(map(RecommendationModel.parse_obj, candidate_set['candidates']))
 
         return instance
