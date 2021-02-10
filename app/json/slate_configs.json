@@ -16,5 +16,23 @@
         ]
       }
     ]
+  },
+  {
+    "id": "this-is-a-test-dont-use-it-too",
+    "displayName": "Test Slate",
+    "description": "Daniel and Jonathan manually put this in the DB. Fun times.",
+    "experiments": [
+      {
+        "description": "idk shrug",
+        "candidateSets": [
+          "1234-5678-ABCD-CEDF"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      }
+    ]
   }
 ]

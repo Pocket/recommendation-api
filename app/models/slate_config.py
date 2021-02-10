@@ -6,9 +6,6 @@ from app.config import JSON_DIR
 from app.json.utils import parse_to_dict
 from app.models.slate_experiment import SlateExperimentModel
 
-# store loaded slate configs
-SLATE_CONFIGS = []
-
 
 class SlateConfigModel:
     """
@@ -23,6 +20,10 @@ class SlateConfigModel:
     :param description: str, to provide clarity of what this slate includes when it's more complicated than a single
             topic
     """
+
+    # store loaded slate configs
+    SLATE_CONFIGS = []
+    SLATE_CONFIGS_BY_ID = {}
 
     def __init__(self, slate_id: str, display_name: str, description: str, experiments=None):
         self.id = slate_id
