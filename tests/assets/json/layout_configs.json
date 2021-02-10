@@ -31,10 +31,7 @@
    "experiments": [
      {
        "description": "iOS is where it's at",
-       "rankers": [
-         "pubspread",
-         "top15"
-       ],
+       "rankers": [],
        "slates": [
          "d410516f-18b3-46a1-b356-c7c003de2b53"
        ]
