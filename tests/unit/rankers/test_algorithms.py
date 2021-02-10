@@ -2,7 +2,7 @@ import unittest
 
 from tests.unit.utils import generate_recommendations
 from app.models.clickdata import ClickdataModel
-from app.rankers.algorithms import spread_publishers, top15, top30, thompson_sampling
+from app.rankers.algorithms import spread_publishers, top15, top30, thompson_sampling, blocklist
 from operator import itemgetter
 
 
@@ -112,6 +112,18 @@ class TestAlgorithmsTop30(unittest.TestCase):
         recs = generate_recommendations([1, 2])
         top_30 = top30(recs)
         assert [x.item_id for x in top_30] == [1, 2]
+
+
+class TestAlgorithmsBlocklist(unittest.TestCase):
+    def test_block_item_using_blocklist_file(self):
+        recs = generate_recommendations([1, 2, 3203292423, 99, 999])
+        filtered = blocklist(recs)
+        assert [x.item_id for x in filtered] == [1, 2, 99, 999]
+
+    def test_block_item_using_blocklist_param(self):
+        recs = generate_recommendations([1, 2, 33, 66, 99, 999])
+        filtered = blocklist(recs, blocklist=[2, 99])
+        assert [x.item_id for x in filtered] == [1, 33, 66, 999]
 
 
 class TestAlgorithmsThompsonSampling(unittest.TestCase):
