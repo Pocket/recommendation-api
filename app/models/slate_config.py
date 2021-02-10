@@ -70,3 +70,24 @@ class SlateConfigModel:
             slates_objs.append(slate)
 
         return slates_objs
+
+    @staticmethod
+    def find_by_id(slate_id: str):
+        """
+        Gets a slate config from the list of slate configs
+
+        :param slate_id: slate id
+        :return: a SlateConfigModel object
+        """
+        slate_configs = SlateConfigModel.load_slate_configs()
+        slate_config = None
+
+        for config in slate_configs:
+            if config.id == slate_id:
+                slate_config = config
+                break
+
+        if not slate_config:
+            raise ValueError(f'slate id {slate_id} was not found in the slate configs')
+
+        return slate_config

@@ -47,7 +47,7 @@ class LayoutConfigModel:
 
         :param layout_file: path to the json file containing slates
         :param schema_file: path to the json schema file used to validate slate_file
-        :return: a List of Slate objects
+        :return: a List of Layout objects
         """
         # validate and retrieve the dictionary from json
         layouts_dict = parse_to_dict(layout_file, schema_file)
@@ -66,3 +66,24 @@ class LayoutConfigModel:
             layouts_objs.append(layout)
 
         return layouts_objs
+
+    @staticmethod
+    def find_by_id(layout_id: str):
+        """
+        Gets a layout config from the list of layout configs
+
+        :param layout_id: layout id
+        :return: a LayoutConfigModel object
+        """
+        layout_configs = LayoutConfigModel.load_layout_configs()
+        layout_config = None
+
+        for config in layout_configs:
+            if config.id == layout_id:
+                layout_config = config
+                break
+
+        if not layout_config:
+            raise ValueError(f'layout id {layout_id} was not found in the layout configs')
+
+        return layout_config
