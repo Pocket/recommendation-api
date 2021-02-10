@@ -1,5 +1,5 @@
 from aws_xray_sdk.core import xray_recorder
-from typing import List, Dict
+from typing import List, Dict, Any
 from app.models.clickdata import ClickdataModel
 from operator import itemgetter
 from scipy.stats import beta
@@ -7,24 +7,24 @@ from scipy.stats import beta
 from app.models.recommendation import RecommendationModel
 
 
-def top15(recs: List[RecommendationModel]) -> List[RecommendationModel]:
+def top15(items: List[Any]) -> List[RecommendationModel]:
     """
     Gets the first 15 recommendations from the list of recommendations.
 
-    :param recs: a list of recommendations in the desired order (pre-publisher spread)
+    :param items: a list of recommendations in the desired order (pre-publisher spread)
     :return: first 15 recommendations from the list of recommendations
     """
-    return recs[:15]
+    return items[:15]
 
 
-def top30(recs: List[RecommendationModel]) -> List[RecommendationModel]:
+def top30(items: List[Any]) -> List[RecommendationModel]:
     """
     Gets the first 30 recommendations from the list of recommendations.
 
-    :param recs: a list of recommendations in the desired order (pre-publisher spread)
+    :param items: a list of recommendations in the desired order (pre-publisher spread)
     :return: first 30 recommendations from the list of recommendations
     """
-    return recs[:30]
+    return items[:30]
 
 
 def thompson_sampling(
