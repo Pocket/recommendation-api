@@ -2,7 +2,7 @@ import random
 
 from pydantic import BaseModel
 from aws_xray_sdk.core import xray_recorder
-from typing import List
+from typing import List, Tuple
 from time import perf_counter
 from asyncio import gather
 
@@ -12,6 +12,7 @@ from app.models.slate_config import SlateConfigModel
 from app.models.candidate_set import CandidateSetModel
 from app.models.clickdata import ClickdataModel, RecommendationModules
 from app.models.recommendation import RecommendationModel
+from app.models.layout_experiment import LayoutExperimentModel
 from app.rankers import RANKERS
 
 
@@ -40,7 +41,7 @@ class LayoutModel(BaseModel):
         return layout
 
     @staticmethod
-    async def __get_slates_from_layout(layout_id):
+    async def __get_slates_from_layout(layout_id) -> Tuple[LayoutExperimentModel, List[SlateModel]]:
         # get the requested layout from the config using the layout_id
         layout_config = LayoutConfigModel.find_by_id(layout_id)
         # get the random experiment from the layout
@@ -57,7 +58,7 @@ class LayoutModel(BaseModel):
         return experiment, await LayoutModel.__get_slate_models(slate_configs)
 
     @staticmethod
-    async def __get_slate_models(slate_configs):
+    async def __get_slate_models(slate_configs) -> ['SlateModel']:
         slate_models = []
         # for each slate, get random experiment
         for slate_config in slate_configs:
@@ -78,34 +79,36 @@ class LayoutModel(BaseModel):
         return slate_models
 
     @staticmethod
-    async def __get_slate_recommendations(experiment):
-        recommendations = []
+    async def __get_slate_recommendations(experiment) -> [RecommendationModel]:
         candidate_sets = []
         # for each candidate set id, get the candidate set record from the db
         for candidate_set_id in experiment.candidate_sets:
             candidate_sets.append(CandidateSetModel.get(candidate_set_id))
         candidate_sets = await gather(*candidate_sets)
+
+        candidates = []
+        # get the recommendations
         for candidate_set in candidate_sets:
-            # apply rankers from the slate experiment on the candidate set's candidates
-            for ranker in experiment.rankers:
-                if ranker == 'thompson-sampling':
-                    # thompson sampling takes two specific arguments so it needs to be handled differently
-                    candidate_set.candidates = await LayoutModel.__thompson_sample(candidate_set, ranker)
-                    continue
-                candidate_set.candidates = RANKERS[ranker](candidate_set.candidates)
+            for candidate in candidate_set.candidates:
+                candidates.append(candidate)
 
-                # add the recommendations
-                for candidate in candidate_set.candidates:
-                    recommendations.append(candidate)
+        # apply rankers from the slate experiment on the candidate set's candidates
+        for ranker in experiment.rankers:
+            if ranker == 'thompson-sampling':
+                # thompson sampling takes two specific arguments so it needs to be handled differently
+                candidates = await LayoutModel.__thompson_sample(candidates, ranker)
+                continue
+            candidates = RANKERS[ranker](candidates)
 
-        return recommendations
+        return candidates
 
     @staticmethod
-    async def __thompson_sample(candidate_set, ranker) -> ['RecommendationModel']:
-        recs = [candidate.item_id for candidate in candidate_set.candidates]
+    async def __thompson_sample(candidates, ranker) -> ['RecommendationModel']:
+        item_ids = [candidate.item_id for candidate in candidates]
         try:
-            click_data = await ClickdataModel.get_clickdata(RecommendationModules.TOPIC, recs)
+            click_data = await ClickdataModel.get_clickdata(RecommendationModules.TOPIC, item_ids)
         except ValueError:
-            print(f'click data not found for candidates in candidate set id {candidate_set.id}')
+            candidate_item_ids = ','.join(item_ids)
+            print(f'click data not found for candidates with item ids: {candidate_item_ids}')
             click_data = {}
-        return RANKERS[ranker](candidate_set.candidates, click_data)
+        return RANKERS[ranker](candidates, click_data)

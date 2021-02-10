@@ -13,7 +13,7 @@ layout_experiment = LayoutExperimentModel('test-ex', 'test-ex-desc', ['top15'], 
 layout_config_model = LayoutConfigModel(layout_config_id, 'test-desc', [layout_experiment])
 
 slate_config_id = 'test-layout-config-id'
-slate_experiment = SlateExperimentModel('test-ex', 'test-ex-desc', ['top15'], ['test-candidate-id'])
+slate_experiment = SlateExperimentModel('test-ex', 'test-ex-desc', ['top15', 'thompson-sampling'], ['test-candidate-id'])
 slate_config_model = SlateConfigModel(slate_config_id, 'test-this-slate', 'test-desc', [slate_experiment])
 
 
