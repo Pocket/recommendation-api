@@ -18,11 +18,10 @@ class TestSlateExperimentModel(unittest.TestCase):
         self.assertTrue('no candidate sets provided for experiment' in str(context.exception))
 
     def test_no_rankers(self):
-        with self.assertRaises(ValueError) as context:
-            SlateExperimentModel(experiment_id='c3h5n3o9', description='desc', candidate_sets=['a', 'b'], rankers=[],
-                                 weight=0)
+        sem = SlateExperimentModel(experiment_id='c3h5n3o9', description='desc', candidate_sets=['a', 'b'], rankers=[],
+                                   weight=0)
 
-        self.assertTrue('no rankers provided for experiment' in str(context.exception))
+        self.assertEqual(len(sem.rankers), 0)
 
     def test_invalid_ranker(self):
         with self.assertRaises(KeyError) as context:
@@ -79,10 +78,7 @@ class TestSlateExperimentModel(unittest.TestCase):
                  "df8a86c1-8b40-48bf-b85d-c144ed96c3fc",
                  "df8a86c1-8b40-48bf-b85d-c144ed96c3fd"
                ],
-               "rankers": [
-                 "top15",
-                 "thompson-sampling"
-               ],
+               "rankers": [],
                "weight": 0.3
              }
             """
@@ -91,4 +87,4 @@ class TestSlateExperimentModel(unittest.TestCase):
         self.assertEqual(ex.description, "TS window 15")
         self.assertEqual(ex.weight, 0.3)
         self.assertEqual(len(ex.candidate_sets), 3)
-        self.assertEqual(len(ex.rankers), 2)
+        self.assertEqual(len(ex.rankers), 0)

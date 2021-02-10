@@ -1,3 +1,4 @@
+import json
 from aws_xray_sdk.core import xray_recorder
 from typing import List, Dict, Any
 from app.models.clickdata import ClickdataModel
@@ -25,6 +26,22 @@ def top30(items: List[Any]) -> List[RecommendationModel]:
     :return: first 30 recommendations from the list of recommendations
     """
     return items[:30]
+
+
+def blocklist(recs: List[RecommendationModel], blocklist: List = None) -> List[RecommendationModel]:
+    """
+    this filters recommendations by item_id using the blocklist available
+    in ./app/resources/blocklists.json
+    :param recs: a list of recommendations in the desired order (pre-publisher spread)
+    :param blocklist: a list of item_ids to be blocked
+    :return: filtered recommendations from the input list of recommendations
+    """
+    if not blocklist:
+        with open("app/resources/blocklists.json", "r") as fp:
+            blocklists = json.load(fp)
+        return [rec for rec in recs if str(rec.item_id) not in blocklists["items"]]
+    else:
+        return [rec for rec in recs if rec.item_id not in blocklist]
 
 
 def thompson_sampling(

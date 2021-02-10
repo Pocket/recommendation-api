@@ -21,20 +21,16 @@ class ExperimentModel(metaclass=ABCMeta):
         # initialize values
         self.rankers = []
 
-        # validate rankers
-        if len(rankers) < 1:
-            raise ValueError('no rankers provided for experiment')
-        else:
-            for ranker in rankers:
-                # the ranker must exist in our pre-defined global list
-                if ranker not in ALL_RANKERS:
-                    raise KeyError(f'{ranker} is not a valid ranker')
+        for ranker in rankers:
+            # the ranker must exist in our pre-defined global list
+            if ranker not in ALL_RANKERS:
+                raise KeyError(f'{ranker} is not a valid ranker')
 
-                # the ranker cannot be duplicated in a single experiment
-                if ranker in self.rankers:
-                    raise KeyError(f'{ranker} was previously included in this list')
+            # the ranker cannot be duplicated in a single experiment
+            if ranker in self.rankers:
+                raise KeyError(f'{ranker} was previously included in this list')
 
-                self.rankers.append(ranker)
+            self.rankers.append(ranker)
 
         self.id = experiment_id
         self.description = description
