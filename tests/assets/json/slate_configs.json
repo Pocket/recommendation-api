@@ -10,11 +10,7 @@
          "39d0dc54-f6f8-4f13-bea4-4320b3bd8217",
          "df8a86c1-8b40-48bf-b85d-c144ed96c3fc"
        ],
-       "rankers": [
-         "top30",
-         "thompson-sampling",
-         "pubspread"
-       ]
+       "rankers": []
      },
      {
        "description": "TS window 15",

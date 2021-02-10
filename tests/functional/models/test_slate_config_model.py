@@ -7,12 +7,12 @@ from app.config import ROOT_DIR
 
 class TestSlateConfigModel(unittest.TestCase):
     def test_load_valid_slates(self):
-        slateconfigs = SlateConfigModel.load_slate_configs(os.path.join(ROOT_DIR, 'tests/assets/json/slate_configs.json'))
+        slate_configs = SlateConfigModel.load_slate_configs(os.path.join(ROOT_DIR, 'tests/assets/json/slate_configs.json'))
 
         # make sure both slates in the test file were loaded
-        self.assertEqual(2, len(slateconfigs))
+        self.assertEqual(2, len(slate_configs))
 
         # make sure each slate's experiments were also loaded
         # (this is some wild list comprehension syntax - gets all experiments in all slates)
-        experiments = [ex for s in slateconfigs for ex in s.experiments]
+        experiments = [ex for s in slate_configs for ex in s.experiments]
         self.assertEqual(4, len(experiments))
