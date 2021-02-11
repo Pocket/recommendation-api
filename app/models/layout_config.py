@@ -21,6 +21,7 @@ class LayoutConfigModel:
 
     # store loaded layout configs
     LAYOUT_CONFIGS = []
+    LAYOUT_CONFIGS_BY_ID = {}
 
     def __init__(self, layout_id: str, description: str, experiments=None):
         self.id = layout_id
@@ -55,12 +56,12 @@ class LayoutConfigModel:
         # get ready to store python Slate objects
         layouts_objs = []
 
-        for l in layouts_dict:
+        for ld in layouts_dict:
             # populate simple slate properties
-            layout = LayoutConfigModel.load_from_dict(l)
+            layout = LayoutConfigModel.load_from_dict(ld)
 
             # populate experiments for the slate
-            for ex in l["experiments"]:
+            for ex in ld["experiments"]:
                 layout.experiments.append(LayoutExperimentModel.load_from_dict(ex))
 
             layouts_objs.append(layout)
@@ -75,13 +76,7 @@ class LayoutConfigModel:
         :param layout_id: layout id
         :return: a LayoutConfigModel object
         """
-        layout_configs = LayoutConfigModel.load_layout_configs()
-        layout_config = None
-
-        for config in layout_configs:
-            if config.id == layout_id:
-                layout_config = config
-                break
+        layout_config = LayoutConfigModel.LAYOUT_CONFIGS_BY_ID.get(layout_id)
 
         if not layout_config:
             raise ValueError(f'layout id {layout_id} was not found in the layout configs')

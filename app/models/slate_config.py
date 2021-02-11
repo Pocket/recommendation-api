@@ -1,10 +1,14 @@
 import os
+import random
 
-from typing import List
+from typing import List, Tuple
 
 from app.config import JSON_DIR
 from app.json.utils import parse_to_dict
 from app.models.slate_experiment import SlateExperimentModel
+from app.models.layout_config import LayoutConfigModel
+from app.models.layout_experiment import LayoutExperimentModel
+from app.rankers import RANKERS
 
 
 class SlateConfigModel:
@@ -72,22 +76,39 @@ class SlateConfigModel:
         return slates_objs
 
     @staticmethod
-    def find_by_id(slate_id: str):
+    def find_by_id(slate_id: str) -> 'SlateConfigModel':
         """
         Gets a slate config from the list of slate configs
 
         :param slate_id: slate id
         :return: a SlateConfigModel object
         """
-        slate_configs = SlateConfigModel.load_slate_configs()
-        slate_config = None
-
-        for config in slate_configs:
-            if config.id == slate_id:
-                slate_config = config
-                break
+        slate_config = SlateConfigModel.SLATE_CONFIGS_BY_ID.get(slate_id)
 
         if not slate_config:
             raise ValueError(f'slate id {slate_id} was not found in the slate configs')
 
         return slate_config
+
+    @staticmethod
+    def get_configs_from_layout_config(
+            layout_config: LayoutConfigModel) -> Tuple[LayoutExperimentModel, List['SlateConfigModel']]:
+        """
+        Gets a slate config from the list of slate configs
+
+        :param layout_config: LayoutConfigModel object
+        :return: a list of SlateConfigModel objects
+        """
+        # get the random experiment from the layout
+        experiment = random.choice(layout_config.experiments)
+        # get slate_ids from the experiment
+        slate_ids = experiment.slates
+        # get slates from the slate_ids
+        slate_configs = []
+        for slate_id in slate_ids:
+            slate_configs.append(SlateConfigModel.find_by_id(slate_id))
+        # apply rankers from the layout experiment on the slates
+        for ranker in experiment.rankers:
+            slate_configs = RANKERS[ranker](slate_configs)
+
+        return experiment, slate_configs

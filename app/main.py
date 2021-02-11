@@ -50,8 +50,9 @@ async def read_root():
 async def load_slate_configs():
     # parse json into objects
     SlateConfigModel.SLATE_CONFIGS = SlateConfigModel.load_slate_configs()
-    SlateConfigModel.SLATE_CONFIGS_BY_ID = {s.id: s for s in SlateConfigModel.load_slate_configs()}
+    SlateConfigModel.SLATE_CONFIGS_BY_ID = {s.id: s for s in SlateConfigModel.SLATE_CONFIGS}
     LayoutConfigModel.LAYOUT_CONFIGS = LayoutConfigModel.load_layout_configs()
+    LayoutConfigModel.LAYOUT_CONFIGS_BY_ID = {s.id: s for s in LayoutConfigModel.LAYOUT_CONFIGS}
 
     # if we're in prod, ensure candidate sets exist in the db
     if ENV == ENV_PROD:
