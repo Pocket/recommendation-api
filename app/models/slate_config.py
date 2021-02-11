@@ -1,6 +1,6 @@
 import os
 
-from typing import List
+from typing import List, Tuple
 
 from app.config import JSON_DIR
 from app.json.utils import parse_to_dict
@@ -70,3 +70,18 @@ class SlateConfigModel:
             slates_objs.append(slate)
 
         return slates_objs
+
+    @staticmethod
+    def find_by_id(slate_id: str) -> 'SlateConfigModel':
+        """
+        Gets a slate config from the list of slate configs
+
+        :param slate_id: slate id
+        :return: a SlateConfigModel object
+        """
+        slate_config = SlateConfigModel.SLATE_CONFIGS_BY_ID.get(slate_id)
+
+        if not slate_config:
+            raise ValueError(f'slate id {slate_id} was not found in the slate configs')
+
+        return slate_config
