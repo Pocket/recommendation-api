@@ -1,6 +1,8 @@
 from copy import deepcopy
 import json
+import math
 import os
+import time
 
 import pytest
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
@@ -47,6 +49,11 @@ def test_handler(mock_dynamodb_resource):
 
     assert body.items() <= response['Items'][0].items()
     assert body2.items() <= response['Items'][1].items()
+
+    # Assert created_at is set to now. (+/- 10 second tolerance to ensure test runs reliably.)
+    # pytest.assert doesn't work with Decimals, which is what DynamoDB returns.
+    assert math.isclose(response['Items'][0]['created_at'], time.time(), abs_tol=10)
+    assert math.isclose(response['Items'][1]['created_at'], time.time(), abs_tol=10)
 
 
 def test_handler_validates_id(mock_dynamodb_resource):
