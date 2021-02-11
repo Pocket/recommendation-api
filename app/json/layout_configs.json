@@ -6,7 +6,8 @@
      {
        "description": "Android discover experiment 1",
        "rankers": [
-         "thompson-sampling"
+         "top15",
+         "top30"
        ],
        "slates": [
          "this-is-a-test-dont-use-it",
