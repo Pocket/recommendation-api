@@ -105,7 +105,14 @@ class LayoutConfigModel:
         for slate_id in slate_ids:
             slate_configs.append(SlateConfigModel.find_by_id(slate_id))
         # apply rankers from the layout experiment on the slates
+
+        # apply rankers from the layout experiment on the slate_configs
+        # each experiment in the layout has 0 - x number of rankers which will
+        # change the order of the slate_configs within the layout's experiment
         for ranker in experiment.rankers:
+            # slate configs get ranked and re-assigned for every ranker within the experiment
+            # for example we might first take the top 15 slate configs(that is one ranker)
+            # and then randomize those 15 (which would be the second ranker)
             slate_configs = get_ranker(ranker)(slate_configs)
 
         return experiment, slate_configs

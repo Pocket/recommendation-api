@@ -5,7 +5,6 @@ from time import perf_counter
 
 from app.models.slate import SlateModel
 from app.models.layout_config import LayoutConfigModel
-from app.models.slate_config import SlateConfigModel
 from app.models.layout_experiment import LayoutExperimentModel
 
 
