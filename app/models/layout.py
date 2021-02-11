@@ -36,7 +36,6 @@ class LayoutModel(BaseModel):
     @staticmethod
     async def __get_slates_from_layout(layout_id) -> Tuple[LayoutExperimentModel, List[SlateModel]]:
         # get the requested layout from the config using the layout_id
-        layout_config = LayoutConfigModel.find_by_id(layout_id)
-        experiment, slate_configs = SlateConfigModel.get_configs_from_layout_config(layout_config)
+        experiment, slate_configs = LayoutConfigModel.get_slate_configs_from_layout(layout_id)
 
         return experiment, await SlateModel.get_slates_from_slate_configs(slate_configs)

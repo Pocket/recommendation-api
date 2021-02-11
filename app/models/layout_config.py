@@ -1,10 +1,13 @@
 import os
+import random
 
 from typing import List
 
 from app.config import JSON_DIR
 from app.json.utils import parse_to_dict
 from app.models.layout_experiment import LayoutExperimentModel
+from app.models.slate_config import SlateConfigModel
+from app.rankers import get_ranker
 
 
 class LayoutConfigModel:
@@ -82,3 +85,27 @@ class LayoutConfigModel:
             raise ValueError(f'layout id {layout_id} was not found in the layout configs')
 
         return layout_config
+
+    @staticmethod
+    def get_slate_configs_from_layout(layout_id):
+        """
+        Gets a slate config from the list of slate configs
+
+        :param layout_id: LayoutConfigModel object
+        :return: a list of SlateConfigModel objects
+        """
+
+        layout_config = LayoutConfigModel.find_by_id(layout_id)
+        # get the random experiment from the layout
+        experiment = random.choice(layout_config.experiments)
+        # get slate_ids from the experiment
+        slate_ids = experiment.slates
+        # get slates from the slate_ids
+        slate_configs = []
+        for slate_id in slate_ids:
+            slate_configs.append(SlateConfigModel.find_by_id(slate_id))
+        # apply rankers from the layout experiment on the slates
+        for ranker in experiment.rankers:
+            slate_configs = get_ranker(ranker)(slate_configs)
+
+        return experiment, slate_configs

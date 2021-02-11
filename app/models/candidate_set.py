@@ -3,14 +3,13 @@ import aioboto3
 from aws_xray_sdk.core import xray_recorder
 from boto3.dynamodb.conditions import Key
 from pydantic import BaseModel
-from typing import List
+from typing import List, Dict, Any
 
 from app.config import dynamodb as dynamodb_config
-from app.models.recommendation import RecommendationModel
 
 
 class CandidateSetModel(BaseModel):
-    candidates: List[RecommendationModel]
+    candidates: List[Dict[str, Any]]
     id: str
     created_at: int = None
     version: int
@@ -33,8 +32,6 @@ class CandidateSetModel(BaseModel):
 
         candidate_set = response['Items'][0]
         instance = CandidateSetModel.parse_obj(candidate_set)
-        # We should keep an eye on performance here if/when candidate sets become large
-        instance.candidates = list(map(RecommendationModel.parse_obj, candidate_set['candidates']))
 
         return instance
 

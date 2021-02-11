@@ -10,7 +10,7 @@ from app.config import dynamodb as dynamodb_config
 from app.models.slate_experiment import SlateExperimentModel
 from app.models.candidate_set import CandidateSetModel
 from app.models.clickdata import ClickdataModel, RecommendationModules
-from app.rankers import RANKERS
+from app.rankers import get_ranker
 
 
 class RecommendationType(Enum):
@@ -57,7 +57,7 @@ class RecommendationModel(BaseModel):
         # get the recommendations
         for candidate_set in candidate_sets:
             for candidate in candidate_set.candidates:
-                recommendations.append(candidate)
+                recommendations.append(RecommendationModel.parse_obj(candidate))
 
         # apply rankers from the slate experiment on the candidate set's candidates
         for ranker in experiment.rankers:
@@ -65,7 +65,7 @@ class RecommendationModel(BaseModel):
                 # thompson sampling takes two specific arguments so it needs to be handled differently
                 recommendations = await RecommendationModel.__thompson_sample(recommendations, ranker)
                 continue
-            recommendations = RANKERS[ranker](recommendations)
+            recommendations = get_ranker(ranker)(recommendations)
 
         return recommendations
 
@@ -78,4 +78,4 @@ class RecommendationModel(BaseModel):
             rec_item_ids = ','.join(item_ids)
             print(f'click data not found for candidates with item ids: {rec_item_ids}')
             click_data = {}
-        return RANKERS[ranker](recommendations, click_data)
+        return get_ranker(ranker)(recommendations, click_data)

@@ -1,14 +1,20 @@
+from __future__ import annotations
+
 import json
+
+from typing import TYPE_CHECKING
+
 from aws_xray_sdk.core import xray_recorder
 from typing import List, Dict, Any
 from app.models.clickdata import ClickdataModel
 from operator import itemgetter
 from scipy.stats import beta
 
-from app.models.recommendation import RecommendationModel
+if TYPE_CHECKING:
+    from app.models.recommendation import RecommendationModel
 
 
-def top15(items: List[Any]) -> List[RecommendationModel]:
+def top15(items: List[Any]) -> List[Any]:
     """
     Gets the first 15 recommendations from the list of recommendations.
 
@@ -18,7 +24,7 @@ def top15(items: List[Any]) -> List[RecommendationModel]:
     return items[:15]
 
 
-def top30(items: List[Any]) -> List[RecommendationModel]:
+def top30(items: List[Any]) -> List[Any]:
     """
     Gets the first 30 recommendations from the list of recommendations.
 
@@ -28,7 +34,7 @@ def top30(items: List[Any]) -> List[RecommendationModel]:
     return items[:30]
 
 
-def blocklist(recs: List[RecommendationModel], blocklist: List = None) -> List[RecommendationModel]:
+def blocklist(recs: List['RecommendationModel'], blocklist: List = None) -> List['RecommendationModel']:
     """
     this filters recommendations by item_id using the blocklist available
     in ./app/resources/blocklists.json
@@ -45,8 +51,8 @@ def blocklist(recs: List[RecommendationModel], blocklist: List = None) -> List[R
 
 
 def thompson_sampling(
-        recs: List[RecommendationModel],
-        clk_data: Dict[(int or str), 'ClickdataModel']) -> List[RecommendationModel]:
+        recs: List['RecommendationModel'],
+        clk_data: Dict[(int or str), 'ClickdataModel']) -> List['RecommendationModel']:
     """
     Re-rank items using Thompson sampling which combines exploitation of known item CTR
     with exploration of new items with unknown CTR modeled by a prior
@@ -92,7 +98,7 @@ def thompson_sampling(
 
 
 @xray_recorder.capture('rankers_algorithms_spread_publishers')
-def spread_publishers(recs: List[RecommendationModel], spread: int = 3) -> List[RecommendationModel]:
+def spread_publishers(recs: List['RecommendationModel'], spread: int = 3) -> List['RecommendationModel']:
     """
     Makes sure stories from the same publisher/domain are not listed sequentially, and have a configurable number
     of stories in-between them.
