@@ -7,10 +7,7 @@
       {
         "description": "idk shrug",
         "candidateSets": [
-          "1234-5678-ABCD-CEDF",
-          "1234-5678-ABCD-CEDG",
-          "1234-5678-ABCD-CEDH",
-          "1234-5678-ABCD-CEDI"
+          "1234-5678-ABCD-CEDF"
         ],
         "rankers": [
           "top30",
@@ -28,10 +25,7 @@
       {
         "description": "idk shrug",
         "candidateSets": [
-          "1234-5678-ABCD-CEDF",
-          "1234-5678-ABCD-CEDG",
-          "1234-5678-ABCD-CEDH",
-          "1234-5678-ABCD-CEDI"
+          "1234-5678-ABCD-CEDF"
         ],
         "rankers": [
           "top30",
