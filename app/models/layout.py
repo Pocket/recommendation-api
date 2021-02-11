@@ -17,7 +17,6 @@ class LayoutModel(BaseModel):
     @staticmethod
     @xray_recorder.capture_async('models_layout_get_layout')
     async def get_layout(layout_id: str) -> 'LayoutModel':
-        t_start = perf_counter()
         layout_experiment, slates = await LayoutModel.__get_slates_from_layout(layout_id)
 
         layout = LayoutModel.parse_obj({
@@ -26,9 +25,6 @@ class LayoutModel(BaseModel):
             'slates': []
         })
         layout.slates = slates
-
-        t_stop = perf_counter()
-        print("Elapsed time during whole function execution seconds:", t_stop - t_start)
 
         return layout
 
