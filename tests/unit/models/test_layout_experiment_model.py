@@ -18,11 +18,10 @@ class TestLayoutExperimentModel(unittest.TestCase):
         self.assertTrue('no slates provided for experiment' in str(context.exception))
 
     def test_no_rankers(self):
-        with self.assertRaises(ValueError) as context:
-            LayoutExperimentModel(experiment_id='c3h5n3o9', description='desc', slates=['a', 'b'], rankers=[],
-                            weight=0)
+        lem = LayoutExperimentModel(experiment_id='c3h5n3o9', description='desc', slates=['a', 'b'], rankers=[],
+                                    weight=0)
 
-        self.assertTrue('no rankers provided for experiment' in str(context.exception))
+        self.assertEqual(len(lem.rankers), 0)
 
     def test_invalid_ranker(self):
         with self.assertRaises(KeyError) as context:
