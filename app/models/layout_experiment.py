@@ -40,3 +40,7 @@ class LayoutExperimentModel(ExperimentModel):
         :return: boolean (pronounced like "jolene")
         """
         return slate_id in SlateConfigModel.SLATE_CONFIGS_BY_ID
+
+    @staticmethod
+    def choose_experiment(experiments: List['LayoutExperimentModel']) -> 'LayoutExperimentModel':
+        return super().choose_experiment(experiments)

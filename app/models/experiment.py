@@ -1,5 +1,6 @@
 import hashlib
 import json
+import random
 
 from abc import ABCMeta, abstractmethod
 from typing import List, Type
@@ -49,6 +50,23 @@ class ExperimentModel(metaclass=ABCMeta):
         ).hexdigest()
 
         return hashed[:7]
+
+    @staticmethod
+    @abstractmethod
+    def choose_experiment(experiments: List['ExperimentModel']):
+        """
+        This is marked as abstract to require the child class to define the return type. Child classes will only set a
+        return type and call super().choose_experiment. This might be silly to just get type hinting, but it's the
+        cleanest solution I've found. (Obviously this doesn't scale super well but we only have two child classes with
+        no plans for more, so I think it is practical.
+        :param experiments: a list of child classes of this class
+        :return: a child class of this class
+        """
+        # pull all the weights for each experiment
+        weights = [e.weight for e in experiments]
+
+        # use python's magic to make a random, weighted choice
+        return random.choices(experiments, weights=weights)[0]
 
     @staticmethod
     @abstractmethod

@@ -14,7 +14,6 @@ class SlateExperimentModel(ExperimentModel):
 
         self.candidate_sets = candidate_sets
 
-
     @staticmethod
     def load_from_dict(experiment_dict: dict) -> 'SlateExperimentModel':
         """
@@ -30,3 +29,7 @@ class SlateExperimentModel(ExperimentModel):
 
         return SlateExperimentModel(experiment_id, experiment_dict["description"], experiment_dict["rankers"],
                                     experiment_dict["candidateSets"], weight)
+
+    @staticmethod
+    def choose_experiment(experiments: List['SlateExperimentModel']) -> 'SlateExperimentModel':
+        return super().choose_experiment(experiments)
