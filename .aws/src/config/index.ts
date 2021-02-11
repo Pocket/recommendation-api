@@ -24,9 +24,7 @@ export const config = {
   stateMachines: [
     'CuratedCandidatesFlow',
     'AlgorithmicCandidatesFlow',
-    'CoronavirusPageFlow',
-    'CollectionsFlow',
-    'CuratedNotNewTab'
+    'CoronavirusPageFlow'
   ],
   tags: {
     service: name,
