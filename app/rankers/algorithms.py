@@ -1,8 +1,4 @@
-from __future__ import annotations
-
 import json
-
-from typing import TYPE_CHECKING
 
 from aws_xray_sdk.core import xray_recorder
 from typing import List, Dict, Any
@@ -10,8 +6,7 @@ from app.models.clickdata import ClickdataModel
 from operator import itemgetter
 from scipy.stats import beta
 
-if TYPE_CHECKING:
-    from app.models.recommendation import RecommendationModel
+from app.models.recommendation import RecommendationModel
 
 
 def top15(items: List[Any]) -> List[Any]:

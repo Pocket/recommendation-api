@@ -49,22 +49,22 @@ async def read_root():
 @app.on_event("startup")
 async def load_slate_configs():
     # parse json into objects
-    SlateConfigModel.SLATE_CONFIGS = SlateConfigModel.load_slate_configs()
-    SlateConfigModel.SLATE_CONFIGS_BY_ID = {s.id: s for s in SlateConfigModel.SLATE_CONFIGS}
-    LayoutConfigModel.LAYOUT_CONFIGS = LayoutConfigModel.load_layout_configs()
-    LayoutConfigModel.LAYOUT_CONFIGS_BY_ID = {s.id: s for s in LayoutConfigModel.LAYOUT_CONFIGS}
+    slate_configs = SlateConfigModel.load_slate_configs()
+    SlateConfigModel.SLATE_CONFIGS_BY_ID = {s.id: s for s in slate_configs}
+    layout_configs = LayoutConfigModel.load_layout_configs()
+    LayoutConfigModel.LAYOUT_CONFIGS_BY_ID = {s.id: s for s in layout_configs}
 
     # if we're in prod, ensure candidate sets exist in the db
     if ENV == ENV_PROD:
         # wow i do not love this nested loop soup, BUT it does give us nice full context for the error message
-        for slate_config in SlateConfigModel.SLATE_CONFIGS:
+        for slate_config in slate_configs:
             for experiment in slate_config.experiments:
                 for cs in experiment.candidate_sets:
                     if not CandidateSetModel.verify_candidate_set(cs):
                         raise ValueError(f'candidate set {slate_config.id}|{experiment.description}|{cs} was not found'
                                          ' in the database - application start failed')
 
-        for layout_config in LayoutConfigModel.LAYOUT_CONFIGS:
+        for layout_config in layout_configs:
             for experiment in layout_config.experiments:
                 for slate in experiment.slates:
                     if not LayoutExperimentModel.slate_id_exists(slate):
