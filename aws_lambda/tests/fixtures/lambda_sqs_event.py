@@ -1,15 +1,15 @@
 import json
+from copy import deepcopy
 
 
 body = {
   "id": "1234-5678-ABCD-CEDF",
   "version": 1,
-  "created_at": 1612470655,
   "expires_at": 1644006655,
   "candidates": [{"item_id": 3242933715, "publisher": "TheAtlantic", "feed_id": 1}]
 }
 
-body2 = body.copy()
+body2 = deepcopy(body)
 body2['id'] = '2345-5678-ABCD-FDEC'
 
 event = {
