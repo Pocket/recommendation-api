@@ -1,4 +1,3 @@
-from decimal import Decimal
 import json
 import time
 from typing import Dict, Any
@@ -21,7 +20,7 @@ def handler(event: Dict[str, Any], context=None):
     table = dynamodb.Table(dynamodb_config.get('recommendation_api_candidate_sets_table'))
     with table.batch_writer() as batch:
         for record in records:
-            candidate_set = json.loads(record['body'], parse_float=Decimal)
+            candidate_set = json.loads(record['body'])
             batch.put_item(Item=get_dynamodb_item(candidate_set))
 
     return {
