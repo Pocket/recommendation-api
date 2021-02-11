@@ -1,10 +1,13 @@
 import os
+import random
 
 from typing import List
 
 from app.config import JSON_DIR
 from app.json.utils import parse_to_dict
 from app.models.layout_experiment import LayoutExperimentModel
+from app.models.slate_config import SlateConfigModel
+from app.rankers import get_ranker
 
 
 class LayoutConfigModel:
@@ -21,6 +24,7 @@ class LayoutConfigModel:
 
     # store loaded layout configs
     LAYOUT_CONFIGS = []
+    LAYOUT_CONFIGS_BY_ID = {}
 
     def __init__(self, layout_id: str, description: str, experiments=None):
         self.id = layout_id
@@ -47,7 +51,7 @@ class LayoutConfigModel:
 
         :param layout_file: path to the json file containing slates
         :param schema_file: path to the json schema file used to validate slate_file
-        :return: a List of Slate objects
+        :return: a List of Layout objects
         """
         # validate and retrieve the dictionary from json
         layouts_dict = parse_to_dict(layout_file, schema_file)
@@ -55,14 +59,59 @@ class LayoutConfigModel:
         # get ready to store python Slate objects
         layouts_objs = []
 
-        for l in layouts_dict:
+        for ld in layouts_dict:
             # populate simple slate properties
-            layout = LayoutConfigModel.load_from_dict(l)
+            layout = LayoutConfigModel.load_from_dict(ld)
 
             # populate experiments for the slate
-            for ex in l["experiments"]:
+            for ex in ld["experiments"]:
                 layout.experiments.append(LayoutExperimentModel.load_from_dict(ex))
 
             layouts_objs.append(layout)
 
         return layouts_objs
+
+    @staticmethod
+    def find_by_id(layout_id: str):
+        """
+        Gets a layout config from the list of layout configs
+
+        :param layout_id: layout id
+        :return: a LayoutConfigModel object
+        """
+        layout_config = LayoutConfigModel.LAYOUT_CONFIGS_BY_ID.get(layout_id)
+
+        if not layout_config:
+            raise ValueError(f'layout id {layout_id} was not found in the layout configs')
+
+        return layout_config
+
+    @staticmethod
+    def get_slate_configs_from_layout(layout_id):
+        """
+        Gets a slate config from the list of slate configs
+
+        :param layout_id: LayoutConfigModel object
+        :return: a list of SlateConfigModel objects
+        """
+
+        layout_config = LayoutConfigModel.find_by_id(layout_id)
+        # get the random experiment from the layout
+        experiment = random.choice(layout_config.experiments)
+        # get slate_ids from the experiment
+        slate_ids = experiment.slates
+        # get slates from the slate_ids
+        slate_configs = []
+        for slate_id in slate_ids:
+            slate_configs.append(SlateConfigModel.find_by_id(slate_id))
+
+        # apply rankers from the layout experiment on the slate_configs
+        # each experiment in the layout has 0 - x number of rankers which will
+        # change the order of the slate_configs within the layout's experiment
+        for ranker in experiment.rankers:
+            # slate configs get ranked and re-assigned for every ranker within the experiment
+            # for example we might first take the top 15 slate configs(that is one ranker)
+            # and then randomize those 15 (which would be the second ranker)
+            slate_configs = get_ranker(ranker)(slate_configs)
+
+        return experiment, slate_configs

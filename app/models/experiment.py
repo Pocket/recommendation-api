@@ -4,7 +4,7 @@ import json
 from abc import ABCMeta, abstractmethod
 from typing import List, Type
 
-from app.rankers import RANKERS as ALL_RANKERS
+from app.rankers import get_all_rankers
 
 
 class ExperimentModel(metaclass=ABCMeta):
@@ -23,7 +23,7 @@ class ExperimentModel(metaclass=ABCMeta):
 
         for ranker in rankers:
             # the ranker must exist in our pre-defined global list
-            if ranker not in ALL_RANKERS:
+            if ranker not in get_all_rankers():
                 raise KeyError(f'{ranker} is not a valid ranker')
 
             # the ranker cannot be duplicated in a single experiment
