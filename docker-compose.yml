@@ -9,6 +9,8 @@ services:
       - .docker/local.env
       - .env
     command: /start-reload.sh # Only for development. Reloads Gunicorn when source changes.
+    healthcheck:
+      disable: true # Disable healthcheck for local development.
     ports:
       - "8000:8000"
     volumes:
