@@ -11,7 +11,7 @@ from app.models.slate_experiment import SlateExperimentModel
 from app.models.candidate_set import CandidateSetModel
 from app.models.clickdata import ClickdataModel, RecommendationModules
 from app.rankers import get_ranker
-from app.graphql.item import ItemModel
+from app.models.item import ItemModel
 
 
 class RecommendationType(Enum):
@@ -29,11 +29,11 @@ class RecommendationModel(BaseModel):
 
     @staticmethod
     def candidate_to_recommendation(candidate: dict):
-        recommendation = RecommendationModel().parse_obj({
-            'feed_id': candidate.get('feed_id'),
-            'publisher': candidate.get('publisher')
-        })
-        recommendation.item = ItemModel.parse_obj({'item_id': candidate.get('item_id')})
+        recommendation = RecommendationModel(
+            feed_id=candidate.get('feed_id'),
+            publisher=candidate.get('publisher'),
+            item=ItemModel(item_id=candidate.get('item_id'))
+        )
         recommendation.feed_item_id = recommendation.rec_src + '/' + recommendation.item.item_id
         return recommendation
 

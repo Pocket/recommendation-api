@@ -1,5 +1,6 @@
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 from app.models.recommendation import RecommendationModel, RecommendationType
+from app.models.item import ItemModel
 
 
 class TestRecommendationsModel(TestDynamoDBBase):
@@ -62,8 +63,17 @@ class TestRecommendationsModel(TestDynamoDBBase):
             ]
         })
         executed = await RecommendationModel.get_recommendations(topic_id='a187ffb4-5c6f-4079-bad9-92442e97bdd1',
-                                                           recommendation_type=RecommendationType.CURATED)
+                                                                 recommendation_type=RecommendationType.CURATED)
         assert executed == [
-            RecommendationModel(item_id=986, feed_id=6, feed_item_id='RecommendationAPI/986', publisher='test.yes'),
-            RecommendationModel(item_id=93, feed_item_id='RecommendationAPI/93', publisher='test.yes'),
+            RecommendationModel(
+                item=ItemModel(item_id=986),
+                feed_id=6,
+                feed_item_id='RecommendationAPI/986',
+                publisher='test.yes'
+            ),
+            RecommendationModel(
+                item=ItemModel(item_id=93),
+                feed_item_id='RecommendationAPI/93',
+                publisher='test.yes'
+            ),
         ]

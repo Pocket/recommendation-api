@@ -44,8 +44,8 @@ class TestGraphQLCandidates(TestDynamoDBBase):
 
         executed = self.client.execute('''{
             getTopicRecommendations(slug: "tech") {
-                algorithmicRecommendations {feedItemId itemId feedId publisher}
-                curatedRecommendations {feedItemId itemId feedId publisher}
+                algorithmicRecommendations {feedItemId item {itemId} feedId publisher}
+                curatedRecommendations {feedItemId item {itemId} feedId publisher}
             }
         }''', executor=AsyncioExecutor())
         assert executed == {
@@ -53,8 +53,10 @@ class TestGraphQLCandidates(TestDynamoDBBase):
                 'getTopicRecommendations': {
                     'algorithmicRecommendations': [],
                     'curatedRecommendations': [
-                        {'feedItemId': 'RecommendationAPI/123', 'feedId': 5, 'itemId': '123', 'publisher': 'test.yes'},
-                        {'feedItemId': 'RecommendationAPI/1253', 'feedId': None, 'itemId': '1253', 'publisher': 'test.yes'}
+                        {'feedItemId': 'RecommendationAPI/123', 'feedId': 5, 'item': {'itemId': '123'},
+                         'publisher': 'test.yes'},
+                        {'feedItemId': 'RecommendationAPI/1253', 'feedId': None, 'item': {'itemId': '1253'},
+                         'publisher': 'test.yes'}
                     ],
                 }
             }
@@ -129,11 +131,10 @@ class TestGraphQLCandidates(TestDynamoDBBase):
             ]
         })
 
-
         executed = self.client.execute('''{
             getTopicRecommendations(slug: "special") {
-                algorithmicRecommendations {feedItemId itemId feedId publisher}
-                curatedRecommendations {feedItemId itemId feedId publisher}
+                algorithmicRecommendations {feedItemId item {itemId} feedId publisher}
+                curatedRecommendations {feedItemId item {itemId} feedId publisher}
             }
         }''', executor=AsyncioExecutor())
         assert executed == {
@@ -141,8 +142,9 @@ class TestGraphQLCandidates(TestDynamoDBBase):
                 'getTopicRecommendations': {
                     'algorithmicRecommendations': [],
                     'curatedRecommendations': [
-                        {'feedItemId': 'RecommendationAPI/123', 'feedId': 5, 'itemId': '123', 'publisher': 'special.yes'},
-                        {'feedItemId': 'RecommendationAPI/1253', 'feedId': None, 'itemId': '1253',
+                        {'feedItemId': 'RecommendationAPI/123', 'feedId': 5, 'item': {'itemId': '123'},
+                         'publisher': 'special.yes'},
+                        {'feedItemId': 'RecommendationAPI/1253', 'feedId': None, 'item': {'itemId': '1253'},
                          'publisher': 'test.yes'}
                     ],
                 }

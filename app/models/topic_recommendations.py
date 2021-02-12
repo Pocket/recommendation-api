@@ -87,8 +87,9 @@ class TopicRecommendationsModelUtils:
 
         if dupes:
             # if there are dupes, remove the duplicates from the algorithmic recs
-            topic_recs_model.algorithmic_recommendations = list(filter(lambda rec: rec.item_id not in curated_item_ids,
-                                                                       topic_recs_model.algorithmic_recommendations))
+            topic_recs_model.algorithmic_recommendations = list(
+                filter(lambda rec: rec.item.item_id not in curated_item_ids,
+                       topic_recs_model.algorithmic_recommendations))
 
         return topic_recs_model
 
