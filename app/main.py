@@ -1,3 +1,5 @@
+import logging
+
 import uvicorn
 import sentry_sdk
 
@@ -64,6 +66,7 @@ async def load_slate_configs():
         for slate_config in slate_configs:
             for experiment in slate_config.experiments:
                 for cs in experiment.candidate_sets:
+                    logging.info(f"Validating candidate set {cs}")
                     if not await CandidateSetModel.verify_candidate_set(cs):
                         set_health_status(HealthStatus.UNHEALTHY)
                         raise ValueError(f'candidate set {slate_config.id}|{experiment.description}|{cs} was not found'
@@ -72,6 +75,7 @@ async def load_slate_configs():
         for layout_config in layout_configs:
             for experiment in layout_config.experiments:
                 for slate in experiment.slates:
+                    logging.info(f"Validating slate id {slate}")
                     if not LayoutExperimentModel.slate_id_exists(slate):
                         set_health_status(HealthStatus.UNHEALTHY)
                         raise ValueError(f'slate {layout_config.id}|{experiment.description}|{slate} was not found'
