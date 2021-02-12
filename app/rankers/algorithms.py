@@ -40,9 +40,9 @@ def blocklist(recs: List['RecommendationModel'], blocklist: List = None) -> List
     if not blocklist:
         with open("app/resources/blocklists.json", "r") as fp:
             blocklists = json.load(fp)
-        return [rec for rec in recs if str(rec.item_id) not in blocklists["items"]]
+        return [rec for rec in recs if str(rec.item.item_id) not in blocklists["items"]]
     else:
-        return [rec for rec in recs if rec.item_id not in blocklist]
+        return [rec for rec in recs if rec.item.item_id not in blocklist]
 
 
 def thompson_sampling(
@@ -77,7 +77,7 @@ def thompson_sampling(
     scores = []
     prior = beta(alpha_prior, beta_prior)
     for rec in recs:
-        resolved_id = rec.item_id
+        resolved_id = rec.item.item_id
         d = clk_data.get(resolved_id)
         if d:
             clicks = max(d.clicks + alpha_prior, 1e-18)

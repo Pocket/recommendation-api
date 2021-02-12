@@ -11,6 +11,7 @@ from app.models.slate_experiment import SlateExperimentModel
 from app.models.candidate_set import CandidateSetModel
 from app.models.clickdata import ClickdataModel, RecommendationModules
 from app.rankers import get_ranker
+from app.graphql.item import ItemModel
 
 
 class RecommendationType(Enum):
@@ -21,15 +22,19 @@ class RecommendationType(Enum):
 
 class RecommendationModel(BaseModel):
     feed_item_id: str = None
-    item_id: str = None
     feed_id: int = None
+    item: ItemModel = None
     rec_src: str = 'RecommendationAPI'
     publisher: str = None
 
     @staticmethod
-    def dynamodb_candidate_to_recommendation(candidate: dict):
-        recommendation = RecommendationModel().parse_obj(candidate)
-        recommendation.feed_item_id = recommendation.rec_src + '/' + recommendation.item_id
+    def candidate_to_recommendation(candidate: dict):
+        recommendation = RecommendationModel().parse_obj({
+            'feed_id': candidate.get('feed_id'),
+            'publisher': candidate.get('publisher')
+        })
+        recommendation.item = ItemModel.parse_obj({'item_id': candidate.get('item_id')})
+        recommendation.feed_item_id = recommendation.rec_src + '/' + recommendation.item.item_id
         return recommendation
 
     @staticmethod
@@ -43,7 +48,7 @@ class RecommendationModel(BaseModel):
         if not response['Items']:
             return []
         # assume 'candidates' below contains publisher
-        return list(map(RecommendationModel.dynamodb_candidate_to_recommendation, response['Items'][0]['candidates']))
+        return list(map(RecommendationModel.candidate_to_recommendation, response['Items'][0]['candidates']))
 
     @staticmethod
     async def get_recommendations_from_experiment(experiment: SlateExperimentModel) -> ['RecommendationModel']:
@@ -57,7 +62,7 @@ class RecommendationModel(BaseModel):
         # get the recommendations
         for candidate_set in candidate_sets:
             for candidate in candidate_set.candidates:
-                recommendations.append(RecommendationModel.parse_obj(candidate))
+                recommendations.append(RecommendationModel.candidate_to_recommendation(candidate))
 
         # apply rankers from the slate experiment on the candidate set's candidates
         for ranker in experiment.rankers:
@@ -71,7 +76,7 @@ class RecommendationModel(BaseModel):
 
     @staticmethod
     async def __thompson_sample(recommendations, ranker) -> ['RecommendationModel']:
-        item_ids = [recommendation.item_id for recommendation in recommendations]
+        item_ids = [recommendation.item.item_id for recommendation in recommendations]
         try:
             click_data = await ClickdataModel.get_clickdata(RecommendationModules.TOPIC, item_ids)
         except ValueError:

@@ -80,8 +80,8 @@ class TopicRecommendationsModelUtils:
         """
 
         # are there dupes?
-        curated_item_ids = {x.item_id for x in topic_recs_model.curated_recommendations}
-        algorithmic_item_ids = {x.item_id for x in topic_recs_model.algorithmic_recommendations}
+        curated_item_ids = {x.item.item_id for x in topic_recs_model.curated_recommendations}
+        algorithmic_item_ids = {x.item.item_id for x in topic_recs_model.algorithmic_recommendations}
 
         dupes = set(curated_item_ids) & set(algorithmic_item_ids)
 
@@ -122,7 +122,7 @@ class TopicRecommendationsModelUtils:
         if not recs:
             return recs
 
-        item_list = [item.item_id for item in recs]
+        item_list = [item.item.item_id for item in recs]
         try:
             # returns a dict with item_id as key and dynamodb row modeled as ClickDataModel
             clk_data = await ClickdataModel.get_clickdata(module, item_list)
