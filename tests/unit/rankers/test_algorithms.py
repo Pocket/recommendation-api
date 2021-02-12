@@ -127,36 +127,6 @@ class TestAlgorithmsBlocklist(unittest.TestCase):
 
 
 class TestAlgorithmsThompsonSampling(unittest.TestCase):
-    def test_thompson_sampling(self):
-        recs = generate_recommendations(["333", "666", "999"])
-
-        click_data = {
-            "999": ClickdataModel.parse_obj({
-                "mod_item": "home/999",
-                "clicks": "99",
-                "impressions": "999",
-                "created_at": "0",
-                "expires_at": "0"
-            }),
-            "666": ClickdataModel.parse_obj({
-                "mod_item": "home/666",
-                "clicks": "66",
-                "impressions": "999",
-                "created_at": "0",
-                "expires_at": "0"
-            }),
-            "333": ClickdataModel.parse_obj({
-                "mod_item": "home/333",
-                "clicks": "33",
-                "impressions": "999",
-                "created_at": "0",
-                "expires_at": "0"
-            })
-        }
-
-        sampled_recs = thompson_sampling(recs, click_data)
-        assert [item.item_id for item in sampled_recs] == ["999", "666", "333"]
-
     def test_it_can_rank_items_with_missing_click_data(self):
         recs = generate_recommendations(["333", "999"])
 
@@ -171,10 +141,18 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         }
 
         sampled_recs = thompson_sampling(recs, click_data)
-        assert [item.item_id for item in sampled_recs] == ["999", "333"]
+        # this needs to be a set since order isn't guaranteed in single trial
+        assert {item.item_id for item in sampled_recs} == {"999", "333"}
 
     # Moved from a previous thompson sampling test file
-    def test_rank_by_ctr_over_n_trials(self):
+    def test_rank_by_ctr_over_n_trials(self, ntrials=45):
+        """
+        This routine tests the Thompson sampling ranker by
+        aggregating results over multiple trials.  In a single run of the
+        ranker results may not be ordered by CTR, but over multiple trials the
+        ranks converge to descending by CTR
+        :param ntrails is the number of trials for the aggregation
+        """
         recs = generate_recommendations(["333333", "666666", "999999", "222222"])
 
         click_data = {
@@ -203,7 +181,6 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
 
         # goal of test is to rank by CTR over ntrials
         # order should be 999999, 666666, 333333
-        ntrials = 36
         ranks = dict()
         for i in range(ntrials):
             sampled_recs = thompson_sampling(recs, click_data)
