@@ -43,6 +43,7 @@ def get_dynamodb_item(candidate_set: Dict[str, Any]) -> Dict[str, Any]:
 
 def _validate_candidate_set(candidate_set: Dict[str, Any]):
     _validate_dict_value_type(candidate_set, 'id', str)
+    _validate_dict_value_type(candidate_set, 'version', int)
     _validate_dict_value_type(candidate_set, 'candidates', list)
 
     for candidate in candidate_set['candidates']:
