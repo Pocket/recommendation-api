@@ -32,4 +32,4 @@ class SlateExperimentModel(ExperimentModel):
 
     @staticmethod
     def choose_experiment(experiments: List['SlateExperimentModel']) -> 'SlateExperimentModel':
-        return super().choose_experiment(experiments)
+        return ExperimentModel.choose_experiment(experiments)

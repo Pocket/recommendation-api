@@ -43,4 +43,4 @@ class LayoutExperimentModel(ExperimentModel):
 
     @staticmethod
     def choose_experiment(experiments: List['LayoutExperimentModel']) -> 'LayoutExperimentModel':
-        return super().choose_experiment(experiments)
+        return ExperimentModel.choose_experiment(experiments)
