@@ -23,7 +23,6 @@ class LayoutConfigModel:
     """
 
     # store loaded layout configs
-    LAYOUT_CONFIGS = []
     LAYOUT_CONFIGS_BY_ID = {}
 
     def __init__(self, layout_id: str, description: str, experiments=None):
