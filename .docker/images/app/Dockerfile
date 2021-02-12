@@ -35,3 +35,6 @@ ENV GIT_SHA=$GIT_SHA
 # Install application into container
 WORKDIR /
 COPY ./app /app
+
+HEALTHCHECK --interval=15s --timeout=5s --retries=3 \
+  CMD curl -f http://localhost:8000/health-check || exit 1
