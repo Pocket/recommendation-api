@@ -9,7 +9,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from xraysink.asgi.middleware import xray_middleware
 from xraysink.context import AsyncContext
 
-from app.config import ENV, ENV_PROD, service, sentry as sentry_config
+from app.config import ENV, ENV_PROD, ENV_DEV, service, sentry as sentry_config
 from app.graphql.graphql import schema
 from app.graphql_app import GraphQLAppWithMiddleware, GraphQLSentryMiddleware
 from app.models.candidate_set import CandidateSetModel
@@ -59,7 +59,7 @@ async def load_slate_configs():
     LayoutConfigModel.LAYOUT_CONFIGS_BY_ID = {lc.id: lc for lc in layout_configs}
 
     # if we're in prod, ensure candidate sets exist in the db
-    if True or ENV == ENV_PROD:
+    if ENV in {ENV_PROD, ENV_DEV}:
         # wow i do not love this nested loop soup, BUT it does give us nice full context for the error message
         for slate_config in slate_configs:
             for experiment in slate_config.experiments:
@@ -77,7 +77,7 @@ async def load_slate_configs():
                         raise ValueError(f'slate {layout_config.id}|{experiment.description}|{slate} was not found'
                                          f' - application start failed')
 
-    set_app_status(AppStatus.FAILED)
+    set_app_status(AppStatus.SUCCESS)
 
 
 if __name__ == "__main__":
