@@ -16,7 +16,7 @@ from app.models.candidate_set import CandidateSetModel
 from app.models.layout_experiment import LayoutExperimentModel
 from app.models.layout_config import LayoutConfigModel
 from app.models.slate_config import SlateConfigModel
-from app.startup_validation import get_app_status, set_app_status, AppStatus
+from app.health_status import get_health_status, set_health_status, HealthStatus
 
 
 sentry_sdk.init(
@@ -44,10 +44,10 @@ app.add_route("/", GraphQLAppWithMiddleware(
 
 @app.get("/health-check")
 async def read_root(response: Response):
-    if get_app_status() != AppStatus.SUCCESS:
+    if get_health_status() != HealthStatus.HEALTHY:
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
 
-    return {"status": get_app_status().name}
+    return {"status": get_health_status().name}
 
 
 @app.on_event("startup")
@@ -65,7 +65,7 @@ async def load_slate_configs():
             for experiment in slate_config.experiments:
                 for cs in experiment.candidate_sets:
                     if not await CandidateSetModel.verify_candidate_set(cs):
-                        set_app_status(AppStatus.FAILED)
+                        set_health_status(HealthStatus.UNHEALTHY)
                         raise ValueError(f'candidate set {slate_config.id}|{experiment.description}|{cs} was not found'
                                          ' in the database - application start failed')
 
@@ -73,11 +73,11 @@ async def load_slate_configs():
             for experiment in layout_config.experiments:
                 for slate in experiment.slates:
                     if not LayoutExperimentModel.slate_id_exists(slate):
-                        set_app_status(AppStatus.FAILED)
+                        set_health_status(HealthStatus.UNHEALTHY)
                         raise ValueError(f'slate {layout_config.id}|{experiment.description}|{slate} was not found'
                                          f' - application start failed')
 
-    set_app_status(AppStatus.SUCCESS)
+    set_health_status(HealthStatus.HEALTHY)
 
 
 if __name__ == "__main__":
