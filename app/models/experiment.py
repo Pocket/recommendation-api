@@ -52,15 +52,13 @@ class ExperimentModel(metaclass=ABCMeta):
         return hashed[:7]
 
     @staticmethod
-    @abstractmethod
     def choose_experiment(experiments: List['ExperimentModel']):
         """
-        This is marked as abstract to require the child class to define the return type. Child classes will only set a
-        return type and call super().choose_experiment. This might be silly to just get type hinting, but it's the
-        cleanest solution I've found. (Obviously this doesn't scale super well but we only have two child classes with
-        no plans for more, so I think it is practical.
+        There's no return type-hint here as there's no easy way (I could find) to have python set the return type to
+        be the implementing/child class. We *could* overrdie this method in each child class to specify the return type,
+        but that seemed, well, to be doing a lot just for a type hint.
         :param experiments: a list of child classes of this class
-        :return: a child class of this class
+        :return: ExperimentModel instance
         """
         # pull all the weights for each experiment
         weights = [e.weight for e in experiments]
