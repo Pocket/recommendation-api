@@ -3,9 +3,13 @@ import json
 import random
 
 from abc import ABCMeta, abstractmethod
-from typing import List, Type
+from typing import List, Type, TypeVar
 
 from app.rankers import get_all_rankers
+
+
+# defined for parameter and return typing on base static method 'choose_experiment'
+T = TypeVar('T', bound='ExperimentModel')
 
 
 class ExperimentModel(metaclass=ABCMeta):
@@ -52,11 +56,8 @@ class ExperimentModel(metaclass=ABCMeta):
         return hashed[:7]
 
     @staticmethod
-    def choose_experiment(experiments: List['ExperimentModel']):
+    def choose_experiment(experiments: List[Type[T]]) -> 'T':
         """
-        There's no return type-hint here as there's no easy way (I could find) to have python set the return type to
-        be the implementing/child class. We *could* overrdie this method in each child class to specify the return type,
-        but that seemed, well, to be doing a lot just for a type hint.
         :param experiments: a list of child classes of this class
         :return: ExperimentModel instance
         """
