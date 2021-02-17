@@ -4,28 +4,70 @@ We use this app for serving customers recommendations of topics they might like.
 
 ## Development Setup
 
-### Requirements:
+### Requirements
 
 - pip
 - pipenv
 - docker (and, if you're on Windows or Linux, separately install docker-compose. It comes with the docker Mac installation)
 - An IDE (we like PyCharm)
-
-1. To install dependencies for development and run a virtual environment, run `pipenv install --dev`
-1. After this, preface all command line calls with `pipenv run <command>`
-2. Create a `.env` file in the project root:
+- Create a `.env` file in the project root:
 ```
 SENTRY_DSN=<local Sentry DSN>
 ```
 
-### Running the Tests
+### Adding interpreters to PyCharm
+
+Remote application interpreter:
+1. Open PyCharm > Preferences > Project: recommendation-api > Python Interpreter
+2. Click the cog in the top-right, and choose 'add interpreter'
+3. Choose 'Docker Compose'.
+
+aws_lambda pipenv interpreter:
+1. In PyCharm, choose File > Open, and open recommandation-api/aws_lambda
+2. Open PyCharm > Preferences > Project: aws_lambda > Python Interpreter
+2. Click the cog in the top-right, and choose 'add interpreter'
+3. Choose 'PipEnv', and click 'OK'
+4. Close the aws_lambda PyCharm project
+
+### Adding Run/Debug configurations
+
+Add a configuration for the app:
+1. Click Run > Edit configurations
+2. Click the + icon in the top-left, choose Python
+3. Enter the settings from the screenshot below.
+
+Add a configuration for aws_lambda tests:
+1. Click Run > Edit configurations
+2. Click the + icon in the top-left, choose Python tests > pytest
+3. Enter the settings from the screenshot below
+4. Run the tests by clicking the green play button. Contact #team-backend if the following error shows up:
+```
+botocore.exceptions.NoRegionError: You must specify a region.
+```
+
+## Running the Tests
 
 1. Run with `pipenv run pytest tests`
 
+#### App tests
+1. Select Remote Python docker-compose interpreter as the project default. (See Adding interpreters to PyCharm)
+2. Rightclick on 'tests' directory in the project root, and run 'pytest in tests'.
+
+#### AWS Lambda test
+
+Setup:
+7. 
+
 ### Running the App
 
+0. Whenever dependencies change, run `docker-compose build` to rebuild the container.
 1. To run the app, run `docker-compose up`
 2. The app should then be available at localhost:8000
+
+### TEMP
+
+1. To install dependencies for development and run a virtual environment, run `pipenv install --dev`
+2. Run `docker-compose build` to build the 
 
 ### Adding Packages
 
