@@ -71,11 +71,22 @@ class RecommendationAPI extends TerraformStack {
       tags: config.tags,
       cdn: false,
       domain: config.domain,
+      taskSize: {
+        cpu: 2048,
+        memory: 4096,
+      },
       containerConfigs: [
         {
           name: 'app',
           hostPort: 8000,
           containerPort: 8000,
+          healthCheck: {
+            command: ["CMD-SHELL", "curl -f http://localhost:8000/health-check || exit 1" ],
+            interval: 15,
+            retries: 3,
+            timeout: 5,
+            startPeriod: 0,
+          },
           envVars: [
             {
               name: 'ENVIRONMENT',
@@ -186,8 +197,6 @@ class RecommendationAPI extends TerraformStack {
             resources: ['*'],
             effect: 'Allow'
           }
-
-
         ],
         taskExecutionDefaultAttachmentArn: 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy',
       },
