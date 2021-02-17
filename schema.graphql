@@ -208,3 +208,10 @@ type Layout {
     """
     slates: [Slate!]!
 }
+
+extend type Item @key(fields: "itemId") {
+    """
+    The ID of the item that is used by apollo federation to reference the Item entity.
+    """
+    itemId: String! @external
+}

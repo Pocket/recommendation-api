@@ -8,6 +8,7 @@ def generate_recommendations(item_ids: List[int or str]) -> List[RecommendationM
     recs = []
     for item_id in item_ids:
         rec = RecommendationModel()
+        rec.item_id = item_id
         rec.item = ItemModel(item_id=item_id)
         rec.feed_id = random.randint(0, 101)
         rec.feed_item_id = random.randint(0, 101)
