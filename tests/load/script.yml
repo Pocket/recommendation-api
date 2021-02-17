@@ -6,10 +6,10 @@
 config:
   # this hostname will be used as a prefix for each URI in the flow unless a complete URI is specified
   # dev
-  # target: "https://recommendation-api.getpocket.dev"
+  target: "https://recommendation-api.getpocket.dev"
 
   # prod
-  target: "https://recommendation-api.getpocket.dev"
+  # target: "https://recommendation-api.readitlater.com"
 
   plugins:
     expect: {}
