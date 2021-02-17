@@ -63,7 +63,7 @@ class TestGraphQLCandidates(TestDynamoDBBase):
                         {
                             'feedItemId': 'RecommendationAPI/1253',
                             'feedId': None,
-                            'itemId': '123',
+                            'itemId': '1253',
                             'item': {'itemId': '1253'},
                             'publisher': 'test.yes'
                         }

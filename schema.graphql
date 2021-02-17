@@ -137,6 +137,11 @@ type Recommendation {
     itemId: ID!
 
     """
+    The Item that is resolved by apollo federation using the itemId
+    """
+    item: Item
+
+    """
     The feed id from mysql that this item was curated from (if it was curated)
     """
     feedId: Int
