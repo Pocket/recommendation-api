@@ -128,7 +128,7 @@ type Recommendation {
     """
     A generated id from the Data and Learning team that represents the Recomendation
     """
-    feedItemId: ID!
+    feedItemId: ID
 
     """
     The ID of the item this recomendation represents
@@ -139,7 +139,7 @@ type Recommendation {
     """
     The Item that is resolved by apollo federation using the itemId
     """
-    item: Item
+    item: Item!
 
     """
     The feed id from mysql that this item was curated from (if it was curated)
@@ -149,7 +149,12 @@ type Recommendation {
     """
     The publisher of the item
     """
-    publisher: String!
+    publisher: String
+
+    """
+    The source of the recommendation
+    """
+    recSrc: String!
 }
 
 """
