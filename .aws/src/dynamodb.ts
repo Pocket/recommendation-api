@@ -140,6 +140,7 @@ export class DynamoDB extends Resource {
             enabled: true
           }
         ],
+        globalSecondaryIndex: [],
       },
       readCapacity: {
         tracking: 70,

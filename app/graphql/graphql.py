@@ -1,4 +1,4 @@
-from graphene import ObjectType, String, Field, List, Schema, Int
+from graphene import ObjectType, String, Field, List, Int
 from graphene_federation import build_schema
 
 from app.models.topic import TopicModel
@@ -40,6 +40,7 @@ class Query(ObjectType):
 
     async def resolve_get_layout(self, info, layout_id: str) -> LayoutModel:
         return await LayoutModel.get_layout(layout_id=layout_id)
+
 
 ##
 # Graphene requires that you define your schema programmatically.
