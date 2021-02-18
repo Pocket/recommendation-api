@@ -86,8 +86,8 @@ async def load_slate_configs():
                     if not LayoutExperimentModel.slate_id_exists(slate):
                         set_health_status(HealthStatus.UNHEALTHY)
                         raise MissingSlateException(
-                            f'slate {layout_config.id}|{experiment.description}|{slate} was not found -'
-                            f'application start failed')
+                            f'slate {layout_config.id}|{experiment.description}|{slate} was not found'
+                            f'in json/slate_configs.json - application start failed')
 
     set_health_status(HealthStatus.HEALTHY)
 

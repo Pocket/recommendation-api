@@ -22,7 +22,7 @@ class LayoutConfigModel:
     :param description: str, to provide clarity of what this layout includes
     """
 
-    # store loaded layout configs
+    # store loaded layout configs (loaded at app startup)
     LAYOUT_CONFIGS_BY_ID = {}
 
     def __init__(self, layout_id: str, description: str, experiments=None):
@@ -96,7 +96,7 @@ class LayoutConfigModel:
 
         layout_config = LayoutConfigModel.find_by_id(layout_id)
         # get the random experiment from the layout
-        experiment = random.choice(layout_config.experiments)
+        experiment = LayoutExperimentModel.choose_experiment(layout_config.experiments)
         # get slate_ids from the experiment
         slate_ids = experiment.slates
         # get slates from the slate_ids

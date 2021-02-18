@@ -14,7 +14,6 @@ class SlateExperimentModel(ExperimentModel):
 
         self.candidate_sets = candidate_sets
 
-
     @staticmethod
     def load_from_dict(experiment_dict: dict) -> 'SlateExperimentModel':
         """

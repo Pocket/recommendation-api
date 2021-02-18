@@ -21,7 +21,7 @@ class SlateConfigModel:
             topic
     """
 
-    # store loaded slate configs
+    # store loaded slate configs (loaded at app startup)
     SLATE_CONFIGS_BY_ID = {}
 
     def __init__(self, slate_id: str, display_name: str, description: str, experiments=None):
