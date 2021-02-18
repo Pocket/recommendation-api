@@ -26,6 +26,27 @@ You will see:
 
 1. This is an API on the GraphQL protocol. When you visit localhost:8000, you will have:
 
+## Adding Python dependencies using Pipenv
+Run `pipenv install <package>` to add a package to Pipfile and Pipfile.lock,
+and to install it to the environment. Add `--dev` if the package is not needed in production.
+
+### Error: "libraries mkl_rt not found" on Big Sur
+At the time of writing, SciPy, pip, and BigSur aren't compatible. This will likely be solved
+by an update in pip and/or SciPy in the near future. Until then:
+
+- Ask someone on Linux (Mathijs) or macOS Catalina (Chelsea) to add dependencies to Pipfile.
+- Untested alternative:
+   - Start a generic Python docker container.
+       ```
+       version: "3.9"
+   
+       services:
+         dev:
+           image: python:3.8
+       ```
+   - Run `apt-get install pipenv`
+   - Run `pipenv install <package>` in the Docker container.
+
 ## Debugging the app in PyCharm 
 1. Complete the 'Basic setup' above.
 2. Follow the steps to
