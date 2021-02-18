@@ -1,17 +1,261 @@
 [
- {
-   "id": "34a35300-73c0-4ecc-8f11-4779b7dc1378",
-   "description": "Android discover",
+  {
+    "id": "34a35300-73c0-4ecc-8f11-4779b7dc1378",
+    "description": "Android discover",
+    "experiments": [
+      {
+        "description": "Android discover experiment 1",
+        "rankers": [
+          "top15",
+          "top30"
+        ],
+        "slates": [
+          "this-is-a-test-dont-use-it",
+          "this-is-a-test-dont-use-it-too"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "3b064b50-5592-4030-b19a-9f05468fbbcd",
+    "description": "Perf test layout",
+    "experiments": [
+      {
+        "description": "Layout test 1",
+        "rankers": [ ],
+        "slates": [
+          "de254c5d-57a7-4553-850f-153ee385014d",
+          "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
+          "0c09627b-a409-4768-b87d-7e1d29259785",
+          "b4032752-155b-4f09-ac1e-f5337df19e88",
+          "72ce0827-9dbc-470f-9722-39476daaeb0f",
+          "9bece73b-4d54-43a6-bb10-d7b02abcd181",
+          "ea40bef5-4406-488d-ad9d-915dfa1f0794"
+        ]
+      },
+      {
+        "description": "Layout test 2",
+        "rankers": [ ],
+        "slates": [
+          "de254c5d-57a7-4553-850f-153ee385014d",
+          "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
+          "e6600ffe-b65a-42d3-b570-f460f3d7326e",
+          "72ce0827-9dbc-470f-9722-39476daaeb0f",
+          "9bece73b-4d54-43a6-bb10-d7b02abcd181",
+          "ea40bef5-4406-488d-ad9d-915dfa1f0794",
+          "e0d7063a-9421-4148-b548-446e9fbc8566",
+          "9389d944-fdcf-4394-9ca3-4604c0af4fac"
+        ]
+      }
+    ]
+  },
+
+  {
+   "id": "c18b41d8-8100-4037-aa64-416994e1d4cf",
+   "description": "Explore Business Topic Layout",
    "experiments": [
      {
-       "description": "Android discover experiment 1",
-       "rankers": [
-         "top15",
-         "top30"
-       ],
+       "description": "Explore Topic Layout",
+       "rankers": [ ],
        "slates": [
-         "this-is-a-test-dont-use-it",
-         "this-is-a-test-dont-use-it-too"
+         "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
+         "505c0126-d54d-42ef-8fe7-0f6a6f24e3a5"
+       ]
+     }
+   ]
+ },
+ {
+   "id": "ff23f296-6c5e-4f53-a46a-3feb5006f261",
+   "description": "Explore Career Topic Layout",
+   "experiments": [
+     {
+       "description": "Explore Topic Layout",
+       "rankers": [ ],
+       "slates": [
+         "e6c8db8d-cae7-4947-a57e-872dec639472",
+         "b4032752-155b-4f09-ac1e-f5337df19e88"
+       ]
+     }
+   ]
+ },
+ {
+   "id": "7bf5c80a-ffd1-436a-9dea-4f9badea463a",
+   "description": "Explore Education Topic Layout",
+   "experiments": [
+     {
+       "description": "Explore Topic Layout",
+       "rankers": [ ],
+       "slates": [
+         "8aaac382-9c27-42ab-9470-ac1dfc666262",
+         "b0de37c0-81ef-4063-a432-1bb64270b039"
+       ]
+     }
+   ]
+ },
+ {
+   "id": "cd1f803f-30bd-424b-9d75-6e8d3c8e8450",
+   "description": "Explore Entertainment Topic Layout",
+   "experiments": [
+     {
+       "description": "Explore Topic Layout",
+       "rankers": [ ],
+       "slates": [
+         "ce96db55-f32e-48f1-929f-216eb2e8c082",
+         "e9df8a81-19af-48e2-a90f-05e9a37491ca"
+       ]
+     }
+   ]
+ },
+ {
+   "id": "c057d284-31e6-4ba0-ae09-3478f3d40ec7",
+   "description": "Explore Food Topic Layout",
+   "experiments": [
+     {
+       "description": "Explore Topic Layout",
+       "rankers": [ ],
+       "slates": [
+         "884414d5-502d-4e1a-8e70-1dc8eb4a345a",
+         "1a634351-361b-4115-a9d5-b79131b1f95a"
+       ]
+     }
+   ]
+ },
+ {
+   "id": "b966a787-d9f2-432a-bd30-741d1ac797d1",
+   "description": "Explore Gaming Topic Layout",
+   "experiments": [
+     {
+       "description": "Explore Topic Layout",
+       "rankers": [ ],
+       "slates": [
+         "44dff273-3604-40e9-a0b5-bf3852581990",
+         "4cc738f7-25a9-4511-9cc3-68a8f9be91f8"
+       ]
+     }
+   ]
+ },
+ {
+   "id": "1abc55f1-75b1-44cb-b5bd-65c4282b158d",
+   "description": "Explore Health Topic Layout",
+   "experiments": [
+     {
+       "description": "Explore Topic Layout",
+       "rankers": [ ],
+       "slates": [
+         "494eaa68-f048-4f52-bb9a-5e7d2526f5cb",
+         "7cb4f497-fd05-42c5-9f78-3650e9ddba21"
+       ]
+     }
+   ]
+ },
+ {
+   "id": "d273a8e2-ab17-43e8-809d-0abde4d617d7",
+   "description": "Explore Parenting Topic Layout",
+   "experiments": [
+     {
+       "description": "Explore Topic Layout",
+       "rankers": [ ],
+       "slates": [
+         "e6600ffe-b65a-42d3-b570-f460f3d7326e",
+         "90adee1c-7794-4f41-9645-2ff9cf91113c"
+       ]
+     }
+   ]
+ },
+ {
+   "id": "62585952-3eb8-4380-be06-266eca903cbc",
+   "description": "Explore Personal Finance Topic Layout",
+   "experiments": [
+     {
+       "description": "Explore Topic Layout",
+       "rankers": [ ],
+       "slates": [
+         "72ce0827-9dbc-470f-9722-39476daaeb0f",
+         "0c09627b-a409-4768-b87d-7e1d29259785"
+       ]
+     }
+   ]
+ },
+ {
+   "id": "72c3878f-c48b-413c-aff8-90d7a0d79d32",
+   "description": "Explore Politics Topic Layout",
+   "experiments": [
+     {
+       "description": "Explore Topic Layout",
+       "rankers": [ ],
+       "slates": [
+         "9901851d-ea76-4667-8dc7-0c1677ecb910",
+         "9bece73b-4d54-43a6-bb10-d7b02abcd181"
+       ]
+     }
+   ]
+ },
+ {
+   "id": "c2829dc4-6a86-4c87-aa3e-f75f67ae8230",
+   "description": "Explore Science Topic Layout",
+   "experiments": [
+     {
+       "description": "Explore Topic Layout",
+       "rankers": [ ],
+       "slates": [
+         "ab6048ca-5c61-4e87-aefd-7a612b60ab7b",
+         "b64c873e-7f05-496e-8be4-bfae929c8a04"
+       ]
+     }
+   ]
+ },
+ {
+   "id": "63f24663-0e80-4c08-82aa-3fb0e06c4979",
+   "description": "Explore Self-Improvement Topic Layout",
+   "experiments": [
+     {
+       "description": "Explore Topic Layout",
+       "rankers": [ ],
+       "slates": [
+         "47688fcf-2bbb-4e0e-a02e-1f68c248a67e",
+         "6d1273a5-055e-4de0-8a5b-5f2b79d37e5c"
+       ]
+     }
+   ]
+ },
+ {
+   "id": "695e39f3-62e8-4430-8d12-e8b457ac7751",
+   "description": "Explore Sports Topic Layout",
+   "experiments": [
+     {
+       "description": "Explore Topic Layout",
+       "rankers": [ ],
+       "slates": [
+         "8a495385-9972-4d0e-b93e-4234f4897939",
+         "ea40bef5-4406-488d-ad9d-915dfa1f0794"
+       ]
+     }
+   ]
+ },
+ {
+   "id": "dc010ef1-1f34-473a-a4b5-4cc155e18a4a",
+   "description": "Explore Technology Topic Layout",
+   "experiments": [
+     {
+       "description": "Explore Topic Layout",
+       "rankers": [ ],
+       "slates": [
+         "fa61096a-b681-4251-b299-2fda06c49ebf",
+         "e0d7063a-9421-4148-b548-446e9fbc8566"
+       ]
+     }
+   ]
+ },
+ {
+   "id": "f16f670d-14f7-425d-a310-0bb8c267dba2",
+   "description": "Explore Travel Topic Layout",
+   "experiments": [
+     {
+       "description": "Explore Topic Layout",
+       "rankers": [ ],
+       "slates": [
+         "d024ce9c-ed96-453f-a81e-8a0b850681e7",
+         "9389d944-fdcf-4394-9ca3-4604c0af4fac"
        ]
      }
    ]

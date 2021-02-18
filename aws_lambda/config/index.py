@@ -3,7 +3,7 @@ import os
 topic_types = {
     'CuratedCandidatesFlow': 'curated',
     'AlgorithmicCandidatesFlow': 'algorithmic',
-    'CollectionCandidatesFlow': 'collection',
+    'CoronavirusPageFlow': 'collection',
 }
 
 secrets = {

@@ -19,14 +19,11 @@ class LayoutModel(BaseModel):
     async def get_layout(layout_id: str) -> 'LayoutModel':
         layout_experiment, slates = await LayoutModel.__get_slates_from_layout(layout_id)
 
-        layout = LayoutModel.parse_obj({
-            'id': layout_id,
-            'experimentID': layout_experiment.id,
-            'slates': []
-        })
-        layout.slates = slates
-
-        return layout
+        return LayoutModel(
+            id=layout_id,
+            experimentID=layout_experiment.id,
+            slates=slates
+        )
 
     @staticmethod
     async def __get_slates_from_layout(layout_id) -> Tuple[LayoutExperimentModel, List[SlateModel]]:
