@@ -68,7 +68,6 @@ async def load_slate_configs():
                 for cs in experiment.candidate_sets:
                     logging.info(f"Validating candidate set {cs}")
                     if not await CandidateSetModel.verify_candidate_set(cs):
-                        set_health_status(HealthStatus.UNHEALTHY)
                         raise ValueError(f'candidate set {slate_config.id}|{experiment.description}|{cs} was not found'
                                          ' in the database - application start failed')
 
