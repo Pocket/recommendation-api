@@ -37,7 +37,7 @@ class TestSlateModel(TestDynamoDBBase):
         slate = await SlateModel.get_slate(slate_config_id)
 
         assert slate.id == slate_config_id
-        assert slate.recommendations[0].item_id == '3208490410'
+        assert slate.recommendations[0].item.item_id == '3208490410'
         assert slate.recommendations[0].publisher == 'hbr.org'
 
     async def test_list_slates(self):
