@@ -128,13 +128,18 @@ type Recommendation {
     """
     A generated id from the Data and Learning team that represents the Recomendation
     """
-    feedItemId: ID!
+    feedItemId: ID
 
     """
     The ID of the item this recomendation represents
     TODO: Use apollo federation to turn this into an Item type.
     """
     itemId: ID!
+
+    """
+    The Item that is resolved by apollo federation using the itemId
+    """
+    item: Item!
 
     """
     The feed id from mysql that this item was curated from (if it was curated)
@@ -144,7 +149,12 @@ type Recommendation {
     """
     The publisher of the item
     """
-    publisher: String!
+    publisher: String
+
+    """
+    The source of the recommendation
+    """
+    recSrc: String!
 }
 
 """
@@ -207,4 +217,11 @@ type Layout {
     An ordered list of slates for the client to display
     """
     slates: [Slate!]!
+}
+
+extend type Item @key(fields: "itemId") {
+    """
+    The ID of the item that is used by apollo federation to reference the Item entity.
+    """
+    itemId: String! @external
 }

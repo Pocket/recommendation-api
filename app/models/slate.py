@@ -51,13 +51,10 @@ class SlateModel(BaseModel):
             experiment = None
             recommendations = []
 
-        # add the slate model to the list
-        slate_model = SlateModel.parse_obj({
-            'id': slate_config.id,
-            'experimentID': experiment.id if experiment else None,
-            'description': slate_config.description,
-            'display_name': slate_config.displayName
-        })
-        slate_model.recommendations = recommendations
-
-        return slate_model
+        return SlateModel(
+            id=slate_config.id,
+            experimentID=experiment.id if experiment else None,
+            description=slate_config.description,
+            display_name=slate_config.displayName,
+            recommendations=recommendations
+        )
