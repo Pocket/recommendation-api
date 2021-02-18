@@ -80,15 +80,16 @@ class TopicRecommendationsModelUtils:
         """
 
         # are there dupes?
-        curated_item_ids = {x.item_id for x in topic_recs_model.curated_recommendations}
-        algorithmic_item_ids = {x.item_id for x in topic_recs_model.algorithmic_recommendations}
+        curated_item_ids = {x.item.item_id for x in topic_recs_model.curated_recommendations}
+        algorithmic_item_ids = {x.item.item_id for x in topic_recs_model.algorithmic_recommendations}
 
         dupes = set(curated_item_ids) & set(algorithmic_item_ids)
 
         if dupes:
             # if there are dupes, remove the duplicates from the algorithmic recs
-            topic_recs_model.algorithmic_recommendations = list(filter(lambda rec: rec.item_id not in curated_item_ids,
-                                                                       topic_recs_model.algorithmic_recommendations))
+            topic_recs_model.algorithmic_recommendations = list(
+                filter(lambda rec: rec.item.item_id not in curated_item_ids,
+                       topic_recs_model.algorithmic_recommendations))
 
         return topic_recs_model
 
@@ -122,7 +123,7 @@ class TopicRecommendationsModelUtils:
         if not recs:
             return recs
 
-        item_list = [item.item_id for item in recs]
+        item_list = [item.item.item_id for item in recs]
         try:
             # returns a dict with item_id as key and dynamodb row modeled as ClickDataModel
             clk_data = await ClickdataModel.get_clickdata(module, item_list)
