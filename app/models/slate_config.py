@@ -1,6 +1,6 @@
 import os
 
-from typing import List, Tuple
+from typing import List
 
 from app.config import JSON_DIR
 from app.json.utils import parse_to_dict
@@ -22,7 +22,6 @@ class SlateConfigModel:
     """
 
     # store loaded slate configs
-    SLATE_CONFIGS = []
     SLATE_CONFIGS_BY_ID = {}
 
     def __init__(self, slate_id: str, display_name: str, description: str, experiments=None):

@@ -1,21 +1,24 @@
+import logging
+
 import uvicorn
 import sentry_sdk
 
 from aws_xray_sdk.core import xray_recorder
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Response, status
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from xraysink.asgi.middleware import xray_middleware
 from xraysink.context import AsyncContext
 
-from app.config import ENV, ENV_PROD, service, sentry as sentry_config
+from app.config import ENV, ENV_PROD, ENV_DEV, service, sentry as sentry_config
 from app.graphql.graphql import schema
 from app.graphql_app import GraphQLAppWithMiddleware, GraphQLSentryMiddleware
 from app.models.candidate_set import CandidateSetModel
 from app.models.layout_experiment import LayoutExperimentModel
 from app.models.layout_config import LayoutConfigModel
 from app.models.slate_config import SlateConfigModel
+from app.health_status import get_health_status, set_health_status, HealthStatus
 
 
 sentry_sdk.init(
@@ -42,8 +45,11 @@ app.add_route("/", GraphQLAppWithMiddleware(
 
 
 @app.get("/health-check")
-async def read_root():
-    return {"Hello": "World"}
+async def read_root(response: Response):
+    if get_health_status() != HealthStatus.HEALTHY:
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+
+    return {"status": get_health_status().name}
 
 
 @app.on_event("startup")
@@ -55,21 +61,27 @@ async def load_slate_configs():
     LayoutConfigModel.LAYOUT_CONFIGS_BY_ID = {lc.id: lc for lc in layout_configs}
 
     # if we're in prod, ensure candidate sets exist in the db
-    if ENV == ENV_PROD:
+    if ENV in {ENV_PROD, ENV_DEV}:
         # wow i do not love this nested loop soup, BUT it does give us nice full context for the error message
         for slate_config in slate_configs:
             for experiment in slate_config.experiments:
                 for cs in experiment.candidate_sets:
+                    logging.info(f"Validating candidate set {cs}")
                     if not await CandidateSetModel.verify_candidate_set(cs):
+                        set_health_status(HealthStatus.UNHEALTHY)
                         raise ValueError(f'candidate set {slate_config.id}|{experiment.description}|{cs} was not found'
                                          ' in the database - application start failed')
 
         for layout_config in layout_configs:
             for experiment in layout_config.experiments:
                 for slate in experiment.slates:
+                    logging.info(f"Validating slate id {slate}")
                     if not LayoutExperimentModel.slate_id_exists(slate):
-                        raise ValueError(f'slate {layout_config.id}|{experiment.description}|{slate} was not found in'
-                                         ' the database - application start failed')
+                        set_health_status(HealthStatus.UNHEALTHY)
+                        raise ValueError(f'slate {layout_config.id}|{experiment.description}|{slate} was not found'
+                                         f' - application start failed')
+
+    set_health_status(HealthStatus.HEALTHY)
 
 
 if __name__ == "__main__":

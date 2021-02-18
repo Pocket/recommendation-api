@@ -71,11 +71,22 @@ class RecommendationAPI extends TerraformStack {
       tags: config.tags,
       cdn: false,
       domain: config.domain,
+      taskSize: {
+        cpu: 2048,
+        memory: 4096,
+      },
       containerConfigs: [
         {
           name: 'app',
           hostPort: 8000,
           containerPort: 8000,
+          healthCheck: {
+            command: ["CMD-SHELL", "curl -f http://localhost:8000/health-check || exit 1" ],
+            interval: 15,
+            retries: 3,
+            timeout: 5,
+            startPeriod: 0,
+          },
           envVars: [
             {
               name: 'ENVIRONMENT',
@@ -186,8 +197,6 @@ class RecommendationAPI extends TerraformStack {
             resources: ['*'],
             effect: 'Allow'
           }
-
-
         ],
         taskExecutionDefaultAttachmentArn: 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy',
       },
@@ -204,14 +213,18 @@ class RecommendationAPI extends TerraformStack {
           actions: [pagerDuty.snsCriticalAlarmTopic.arn]
         },
         httpLatency: {
+          threshold: 0.5,
           evaluationPeriods: 2,
-          threshold: 500,
+          period: 300,
           actions: [pagerDuty.snsCriticalAlarmTopic.arn]
         },
         httpRequestCount: {
           threshold: 5000,
           evaluationPeriods: 2,
-          actions: [pagerDuty.snsCriticalAlarmTopic.arn]
+          period: 300,
+          // We raise a non-critical alarm on request count, because a higher-than-expected
+          // request volume does not have to result an outage. The above two critical alarms cover that.
+          actions: [pagerDuty.snsNonCriticalAlarmTopic.arn]
         }
       }
     });
