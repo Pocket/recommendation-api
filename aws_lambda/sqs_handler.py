@@ -3,8 +3,17 @@ import time
 from typing import Dict, Any
 
 import boto3
+import sentry_sdk
+from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
 
-from aws_lambda.config.index import dynamodb as dynamodb_config
+from aws_lambda.config.index import sentry, dynamodb as dynamodb_config
+
+sentry_sdk.init(
+    dsn=sentry.get('dsn'),
+    integrations=[AwsLambdaIntegration()],
+    release=sentry.get('release'),
+    environment=sentry.get('environment')
+)
 
 
 def handler(event: Dict[str, Any], context=None):
@@ -43,6 +52,7 @@ def get_dynamodb_item(candidate_set: Dict[str, Any]) -> Dict[str, Any]:
 
 def _validate_candidate_set(candidate_set: Dict[str, Any]):
     _validate_dict_value_type(candidate_set, 'id', str)
+    _validate_dict_value_type(candidate_set, 'version', int)
     _validate_dict_value_type(candidate_set, 'candidates', list)
 
     for candidate in candidate_set['candidates']:
