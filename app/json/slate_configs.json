@@ -36,6 +36,35 @@
     ]
   },
   {
+    "id": "de254c5d-57a7-4553-850f-153ee385014d",
+    "displayName": "Curated Not New Tab",
+    "description": "Curated items that are over a week old",
+    "experiments": [
+      {
+        "description": "default",
+        "candidateSets": [
+          "34167872-ab8f-444e-9a6e-15606c2706d9"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "ts15",
+        "candidateSets": [
+          "34167872-ab8f-444e-9a6e-15606c2706d9"
+        ],
+        "rankers": [
+          "top15",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      }
+    ]
+  },
+  {
     "id": "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
     "displayName": "Algorithmic Business Slate",
     "description": "Popular with Pocket readers  Stories from across the web",
