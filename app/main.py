@@ -52,6 +52,14 @@ async def read_root(response: Response):
     return {"status": get_health_status().name}
 
 
+class MissingSlateException(ValueError):
+    """
+    Raise when a slate is referenced in a layout, but does not exist in slate_configs.json.
+    This allows Sentry to group these exceptions, and trigger an alarm based on them.
+    """
+    pass
+
+
 @app.on_event("startup")
 async def load_slate_configs():
     # parse json into objects
@@ -68,9 +76,8 @@ async def load_slate_configs():
                 for cs in experiment.candidate_sets:
                     logging.info(f"Validating candidate set {cs}")
                     if not await CandidateSetModel.verify_candidate_set(cs):
-                        set_health_status(HealthStatus.UNHEALTHY)
-                        raise ValueError(f'candidate set {slate_config.id}|{experiment.description}|{cs} was not found'
-                                         ' in the database - application start failed')
+                        logging.error(f'candidate set {slate_config.id}|{experiment.description}|{cs} was not found'
+                                      f' in the database.')
 
         for layout_config in layout_configs:
             for experiment in layout_config.experiments:
@@ -78,8 +85,9 @@ async def load_slate_configs():
                     logging.info(f"Validating slate id {slate}")
                     if not LayoutExperimentModel.slate_id_exists(slate):
                         set_health_status(HealthStatus.UNHEALTHY)
-                        raise ValueError(f'slate {layout_config.id}|{experiment.description}|{slate} was not found'
-                                         f' - application start failed')
+                        raise MissingSlateException(
+                            f'slate {layout_config.id}|{experiment.description}|{slate} was not found -'
+                            f'application start failed')
 
     set_health_status(HealthStatus.HEALTHY)
 
