@@ -3,8 +3,17 @@ import time
 from typing import Dict, Any
 
 import boto3
+import sentry_sdk
+from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
 
-from aws_lambda.config.index import dynamodb as dynamodb_config
+from aws_lambda.config.index import sentry, dynamodb as dynamodb_config
+
+sentry_sdk.init(
+    dsn=sentry.get('dsn'),
+    integrations=[AwsLambdaIntegration()],
+    release=sentry.get('release'),
+    environment=sentry.get('environment')
+)
 
 
 def handler(event: Dict[str, Any], context=None):
