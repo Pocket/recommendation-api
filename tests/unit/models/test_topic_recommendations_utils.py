@@ -16,9 +16,9 @@ class TestRecommendationsModelUtils:
         topic_recs.curated_recommendations = self.curated
         topic_recs.algorithmic_recommendations = algorithmic
         result = TopicRecommendationsModelUtils.dedupe(topic_recs)
-        algorithmic_result_ids = [x.item_id for x in result.algorithmic_recommendations]
+        algorithmic_result_ids = [x.item.item_id for x in result.algorithmic_recommendations]
 
-        assert algorithmic_result_ids == [6, 7, 8, 9]
+        assert algorithmic_result_ids == ['6', '7', '8', '9']
 
     def test_dedupes_single_item(self):
         algorithmic = generate_recommendations([1, 6, 7, 8, 9])
@@ -26,9 +26,9 @@ class TestRecommendationsModelUtils:
         topic_recs.curated_recommendations = self.curated
         topic_recs.algorithmic_recommendations = algorithmic
         result = TopicRecommendationsModelUtils.dedupe(topic_recs)
-        algorithmic_result_ids = [res.item_id for res in result.algorithmic_recommendations]
+        algorithmic_result_ids = [res.item.item_id for res in result.algorithmic_recommendations]
 
-        assert algorithmic_result_ids == [6, 7, 8, 9]
+        assert algorithmic_result_ids == ['6', '7', '8', '9']
 
     def test_dedupes_multiple_items(self):
         algorithmic = generate_recommendations([1, 2, 6, 7, 8])
@@ -36,10 +36,10 @@ class TestRecommendationsModelUtils:
         topic_recs.curated_recommendations = self.curated
         topic_recs.algorithmic_recommendations = algorithmic
         result = TopicRecommendationsModelUtils.dedupe(topic_recs)
-        algorithmic_result_ids = [res.item_id for res in result.algorithmic_recommendations]
+        algorithmic_result_ids = [res.item.item_id for res in result.algorithmic_recommendations]
         # Ensures that filter in dedupe does not break the list type of algorithmic_recommendations
         assert len(result.algorithmic_recommendations) == 3
-        assert algorithmic_result_ids == [6, 7, 8]
+        assert algorithmic_result_ids == ['6', '7', '8']
 
     def test_curated_recs_untouched(self):
         algorithmic = generate_recommendations([1, 6, 7, 8, 9])
@@ -47,9 +47,9 @@ class TestRecommendationsModelUtils:
         topic_recs.curated_recommendations = self.curated
         topic_recs.algorithmic_recommendations = algorithmic
         result = TopicRecommendationsModelUtils.dedupe(topic_recs)
-        curated_result_ids = [res.item_id for res in result.curated_recommendations]
+        curated_result_ids = [res.item.item_id for res in result.curated_recommendations]
 
-        assert curated_result_ids == [x.item_id for x in self.curated]
+        assert curated_result_ids == [x.item.item_id for x in self.curated]
 
     # limit_results tests
     # ------------------------------------
