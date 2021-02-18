@@ -76,6 +76,12 @@ def test_get_dynamodb_item_validation():
         test_case['id'] = None
         sqs_handler.get_dynamodb_item(test_case)
 
+    # version not being integer raises AssertionError
+    with pytest.raises(AssertionError):
+        test_case = deepcopy(body)
+        test_case['version'] = '1'
+        sqs_handler.get_dynamodb_item(test_case)
+
     # Missing candidates raises AssertionError
     with pytest.raises(AssertionError):
         test_case = deepcopy(body)
