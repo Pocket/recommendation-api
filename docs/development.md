@@ -21,7 +21,7 @@ You will see:
     - a panel (center) where results of queries will appear when you write a query and click the "play" button on the top bar.
     - a panel (right) for clicking around to explore our GraphQL query model.
 
-![GraphQL playground](images/graphql_playground.png)
+![GraphQL playground](/docs/images/graphql_playground.png)
 
 
 1. This is an API on the GraphQL protocol. When you visit localhost:8000, you will have:
@@ -60,7 +60,7 @@ on Confluence.
     - Set 'Working directory' to `<project root path>/app/`.
 5. To test your setup, set a breakpoint in app/main.py in the healthcheck, and visit http://localhost/health-check.
 
-![main configuration](images/main-configuration.png)
+![main configuration](/docs/images/main-configuration.png)
 
 ## Running/debugging app tests in PyCharm
 Follow steps 1-2 from the above section 'Debugging the app in PyCharm', to add a Docker-Compose interpreter.
@@ -75,7 +75,7 @@ With the remote interpreter selected as the project default, there are many ways
         - Set the 'Python interpreter' to the Remote interpreter.
         - Set the working directory to the project root.
 
-![pytest configuration](images/pytest-configuration.png)
+![pytest configuration](/docs/images/pytest-configuration.png)
 
 ## Running/debugging aws_lambda tests
 Create a Pipenv virtual environment:
@@ -105,7 +105,7 @@ Now use the aws_lambda Pipenv interpreter in the recommendation-api PyCharm proj
         - Set the 'Python interpreter' to the Pipenv (aws_lambda) interpreter.
         - Set the working directory to `<project root path>/aws_lambda`.
 
-![aws_lambda pytest configuration](images/aws-lambda-pytest-configuration.png)
+![aws_lambda pytest configuration](/docs/images/aws-lambda-pytest-configuration.png)
 
 ### Error: You must specify a region
 The tests pass reliably in CircleCI, but we currently don't have a local Docker environment
