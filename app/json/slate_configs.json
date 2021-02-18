@@ -168,8 +168,9 @@
     "experiments": [
       {
         "description": "curated entertainment items",
+        "HACK": "Change candidateSets back to ad9b3930-9f16-43dc-ae5c-eb14766c1ec9 when it's available.",
         "candidateSets": [
-          "ad9b3930-9f16-43dc-ae5c-eb14766c1ec9"
+          "56053d72-5fd2-4bc3-ae12-5fda3160d96d"
         ],
         "rankers": [
           "top30",
