@@ -210,13 +210,13 @@ class RecommendationAPI extends TerraformStack {
           threshold: 10,
           evaluationPeriods: 2,
           period: 600,
-          actions: [pagerDuty.snsCriticalAlarmTopic.arn]
+          actions: config.environment == 'Dev' ? [] : [pagerDuty.snsCriticalAlarmTopic.arn]
         },
         httpLatency: {
           threshold: 0.5,
           evaluationPeriods: 2,
           period: 300,
-          actions: [pagerDuty.snsCriticalAlarmTopic.arn]
+          actions: config.environment == 'Dev' ? [] : [pagerDuty.snsCriticalAlarmTopic.arn]
         },
         httpRequestCount: {
           threshold: 5000,
@@ -224,7 +224,7 @@ class RecommendationAPI extends TerraformStack {
           period: 300,
           // We raise a non-critical alarm on request count, because a higher-than-expected
           // request volume does not have to result an outage. The above two critical alarms cover that.
-          actions: [pagerDuty.snsNonCriticalAlarmTopic.arn]
+          actions: config.environment == 'Dev' ? [] : [pagerDuty.snsNonCriticalAlarmTopic.arn]
         }
       }
     });
