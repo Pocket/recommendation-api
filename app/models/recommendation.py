@@ -13,6 +13,9 @@ from app.models.clickdata import ClickdataModel, RecommendationModules
 from app.rankers import get_ranker
 from app.models.item import ItemModel
 
+# Needs to exist for pydantic to resolve the model field "item: ItemModel" in the RecommendationModel
+from app.graphql.item import Item
+
 
 class RecommendationType(Enum):
     COLLECTION = 'collection'
@@ -23,8 +26,8 @@ class RecommendationType(Enum):
 class RecommendationModel(BaseModel):
     feed_item_id: str = None
     feed_id: int = None
-    item_id: str = None
-    item: ItemModel = None
+    item_id: str
+    item: ItemModel
     rec_src: str = 'RecommendationAPI'
     publisher: str = None
 

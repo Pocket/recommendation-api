@@ -124,7 +124,7 @@ type TopicRecommendations {
 """
 Represents a Recomendation from Pocket
 """
-type Recommendation {
+type Recommendation @key(fields: "item { itemId }") {
     """
     A generated id from the Data and Learning team that represents the Recomendation
     """
