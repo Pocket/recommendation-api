@@ -24,7 +24,7 @@ def handler(event: Dict[str, Any], context=None):
     with table.batch_writer() as batch:
         for record in records:
             candidate_set = json.loads(record['body'])
-            sentry_sdk.set_context('candidate_set.id', candidate_set.get('id'))
+            sentry_sdk.set_context('candidate_set', {'id': candidate_set.get('id')})
             batch.put_item(Item=get_dynamodb_item(candidate_set))
 
     return {
