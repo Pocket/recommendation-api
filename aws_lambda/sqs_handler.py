@@ -1,4 +1,5 @@
 import json
+import logging
 import time
 from typing import Dict, Any
 
@@ -15,6 +16,8 @@ sentry_sdk.init(
     environment=sentry.get('environment')
 )
 
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 def handler(event: Dict[str, Any], context=None):
     """
@@ -30,6 +33,7 @@ def handler(event: Dict[str, Any], context=None):
     with table.batch_writer() as batch:
         for record in records:
             candidate_set = json.loads(record['body'])
+            sentry_sdk.set_context('candidate_set', {'id': candidate_set.get('id')})
             batch.put_item(Item=get_dynamodb_item(candidate_set))
 
     return {
@@ -43,6 +47,7 @@ def get_dynamodb_item(candidate_set: Dict[str, Any]) -> Dict[str, Any]:
     :param candidate_set: Candidate set dict. Will be modified by this method.
     :return:
     """
+    logger.info("Validating %s", candidate_set.get("id"))
     _validate_candidate_set(candidate_set)
 
     candidate_set['created_at'] = int(time.time())
