@@ -7,6 +7,7 @@ from typing import List
 from app.models.slate_experiment import SlateExperimentModel
 from app.models.recommendation import RecommendationModel
 from app.models.slate_config import SlateConfigModel
+from asyncio import gather
 
 
 class SlateModel(BaseModel):
@@ -37,9 +38,10 @@ class SlateModel(BaseModel):
         slate_models = []
         # for each slate, get random experiment
         for slate_config in slate_configs:
-            slate_model = await SlateModel.__get_slate_from_slate_config(slate_config, with_recs=with_recs)
+            slate_model = SlateModel.__get_slate_from_slate_config(slate_config, with_recs=with_recs)
             slate_models.append(slate_model)
 
+        slate_models = await gather(*slate_models)
         return slate_models
 
     @staticmethod

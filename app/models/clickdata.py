@@ -36,6 +36,7 @@ class ClickdataModel(BaseModel):
         return clickdata
 
     @staticmethod
+    @xray_recorder.capture_async('models_clickdata_get_clickdata')
     async def get_clickdata(module: RecommendationModules, item_list: List[str]) -> Dict[str, 'ClickdataModel']:
 
         table = dynamodb_config['recommendation_api_clickdata_table']
