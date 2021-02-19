@@ -1,4 +1,5 @@
 import json
+import logging
 import time
 from typing import Dict, Any
 
@@ -6,6 +7,8 @@ import boto3
 
 from aws_lambda.config.index import dynamodb as dynamodb_config
 
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 def handler(event: Dict[str, Any], context=None):
     """
@@ -34,6 +37,7 @@ def get_dynamodb_item(candidate_set: Dict[str, Any]) -> Dict[str, Any]:
     :param candidate_set: Candidate set dict. Will be modified by this method.
     :return:
     """
+    logger.info("Validating %s", candidate_set["id"])
     _validate_candidate_set(candidate_set)
 
     candidate_set['created_at'] = int(time.time())
