@@ -4,6 +4,7 @@ from aws_xray_sdk.core import xray_recorder
 from pydantic import BaseModel
 from typing import List
 
+from app.models.slate_experiment import SlateExperimentModel
 from app.models.recommendation import RecommendationModel
 from app.models.slate_config import SlateConfigModel
 
@@ -45,7 +46,7 @@ class SlateModel(BaseModel):
     @xray_recorder.capture_async('models_slate_get_slate_from_slate_config')
     async def __get_slate_from_slate_config(slate_config: 'SlateConfigModel', with_recs: bool = True) -> 'SlateModel':
         if with_recs:
-            experiment = random.choice(slate_config.experiments)
+            experiment = SlateExperimentModel.choose_experiment(slate_config.experiments)
             recommendations = await RecommendationModel.get_recommendations_from_experiment(experiment)
         else:
             experiment = None

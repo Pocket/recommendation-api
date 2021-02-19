@@ -1,10 +1,15 @@
 import hashlib
 import json
+import random
 
 from abc import ABCMeta, abstractmethod
-from typing import List, Type
+from typing import List, Type, TypeVar
 
 from app.rankers import get_all_rankers
+
+
+# defined for parameter and return typing on base static method 'choose_experiment'
+T = TypeVar('T', bound='ExperimentModel')
 
 
 class ExperimentModel(metaclass=ABCMeta):
@@ -49,6 +54,18 @@ class ExperimentModel(metaclass=ABCMeta):
         ).hexdigest()
 
         return hashed[:7]
+
+    @staticmethod
+    def choose_experiment(experiments: List[Type[T]]) -> 'T':
+        """
+        :param experiments: a list of child classes of this class
+        :return: ExperimentModel instance
+        """
+        # pull all the weights for each experiment
+        weights = [e.weight for e in experiments]
+
+        # use python's magic to make a random, weighted choice
+        return random.choices(experiments, weights=weights)[0]
 
     @staticmethod
     @abstractmethod

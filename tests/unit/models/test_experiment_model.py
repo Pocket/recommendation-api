@@ -2,6 +2,7 @@ import json
 import unittest
 
 from app.models.experiment import ExperimentModel
+from app.models.slate_experiment import SlateExperimentModel
 
 
 class TestExperimentModel(unittest.TestCase):
@@ -29,3 +30,25 @@ class TestExperimentModel(unittest.TestCase):
 
         # make sure repeated calls with the same dict result in the same id
         self.assertEqual(ex_id, ex_id_again)
+
+    def test_choose_experiment(self):
+        experiments = [
+            SlateExperimentModel('1', 'first', [], ['a', 'b', 'c'], 0.1),
+            SlateExperimentModel('2', 'second', [], ['d', 'e', 'f'], 0.3),
+            SlateExperimentModel('3', 'third', [], ['g', 'h', 'i'], 0.6)
+        ]
+
+        choices = []
+
+        # choose 100 times to get a sample size
+        for _ in range(100):
+            choices.append(ExperimentModel.choose_experiment(experiments))
+
+        # make sure the number of each choice roughly corresponds with the expected weight/frequency
+        first = [e.id for e in choices if e.id == '1']
+        second = [e.id for e in choices if e.id == '2']
+        third = [e.id for e in choices if e.id == '3']
+
+        # as we're dealing with semi-randomness, it's inconsistent to check percentages, but we *should* always be able
+        # to count on the frequency order to be predictable (...right?)
+        self.assertTrue(len(third) > len(second) > len(first))
