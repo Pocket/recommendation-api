@@ -86,9 +86,9 @@ async def load_slate_configs():
                     if not await CandidateSetModel.verify_candidate_set(cs):
                         # Send event to Sentry, but don't raise it, because missing candidate sets should not
                         # block successfully starting the application.
-                        e = MissingCandidateSetException(
-                            f'candidate set {slate_config.id}|{experiment.description}|{cs} was not found.')
-                        sentry_sdk.capture_exception(e)
+                        message = f'candidate set {slate_config.id}|{experiment.description}|{cs} was not found.'
+                        logging.error(message)
+                        sentry_sdk.capture_exception(MissingCandidateSetException(message))
 
         for layout_config in layout_configs:
             for experiment in layout_config.experiments:
