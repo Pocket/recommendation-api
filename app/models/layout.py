@@ -1,7 +1,8 @@
+import uuid
+from typing import List, Tuple
+
 from pydantic import BaseModel
 from aws_xray_sdk.core import xray_recorder
-from typing import List, Tuple
-from time import perf_counter
 
 from app.models.slate import SlateModel
 from app.models.layout_config import LayoutConfigModel
@@ -22,7 +23,8 @@ class LayoutModel(BaseModel):
         return LayoutModel(
             id=layout_id,
             experimentID=layout_experiment.id,
-            slates=slates
+            slates=slates,
+            requestId=uuid.uuid4(),
         )
 
     @staticmethod
