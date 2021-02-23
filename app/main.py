@@ -44,6 +44,11 @@ app.add_route("/", GraphQLAppWithMiddleware(
     middleware=[GraphQLSentryMiddleware()]))
 
 
+@app.get("/dynamodb-test")
+async def dynamodb_test(response: Response):
+    import app.dynamodb_test
+    app.dynamodb_test.handler(None, None)
+
 @app.get("/health-check")
 async def read_root(response: Response):
     if get_health_status() != HealthStatus.HEALTHY:
