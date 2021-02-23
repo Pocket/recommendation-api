@@ -17,7 +17,7 @@ class LayoutModel(BaseModel):
 
     @staticmethod
     @xray_recorder.capture_async('models_layout_get_layout')
-    async def get_layout(layout_id: str) -> 'LayoutModel':
+    async def get_layout(layout_id: str, user_id: str = None) -> 'LayoutModel':
         layout_experiment, slates = await LayoutModel.__get_slates_from_layout(layout_id)
 
         return LayoutModel(

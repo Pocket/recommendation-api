@@ -13,6 +13,7 @@ from xraysink.context import AsyncContext
 
 from app.config import ENV, ENV_PROD, ENV_DEV, service, sentry as sentry_config
 from app.graphql.graphql import schema
+from app.graphql.user_middleware import UserMiddleware
 from app.graphql_app import GraphQLAppWithMiddleware, GraphQLSentryMiddleware
 from app.models.candidate_set import CandidateSetModel
 from app.models.layout_experiment import LayoutExperimentModel
@@ -41,7 +42,7 @@ app.add_middleware(SentryAsgiMiddleware)
 app.add_route("/", GraphQLAppWithMiddleware(
     schema=schema,
     executor_class=AsyncioExecutor,
-    middleware=[GraphQLSentryMiddleware()]))
+    middleware=[GraphQLSentryMiddleware(), UserMiddleware()]))
 
 
 @app.get("/health-check")
@@ -60,6 +61,14 @@ class MissingSlateException(ValueError):
     pass
 
 
+class MissingCandidateSetException(ValueError):
+    """
+    Raise when a candidate set is referenced in a slate, but does not exist in the database.
+    This allows Sentry to group these exceptions, and trigger an alarm based on them.
+    """
+    pass
+
+
 @app.on_event("startup")
 async def load_slate_configs():
     # parse json into objects
@@ -68,7 +77,7 @@ async def load_slate_configs():
     layout_configs = LayoutConfigModel.load_layout_configs()
     LayoutConfigModel.LAYOUT_CONFIGS_BY_ID = {lc.id: lc for lc in layout_configs}
 
-    # if we're in prod, ensure candidate sets exist in the db
+    # Validate layout and slate configs on prod and dev, not locally.
     if ENV in {ENV_PROD, ENV_DEV}:
         # wow i do not love this nested loop soup, BUT it does give us nice full context for the error message
         for slate_config in slate_configs:
@@ -76,8 +85,11 @@ async def load_slate_configs():
                 for cs in experiment.candidate_sets:
                     logging.info(f"Validating candidate set {cs}")
                     if not await CandidateSetModel.verify_candidate_set(cs):
-                        logging.error(f'candidate set {slate_config.id}|{experiment.description}|{cs} was not found'
-                                      f' in the database.')
+                        # Send event to Sentry, but don't raise it, because missing candidate sets should not
+                        # block successfully starting the application.
+                        message = f'candidate set {slate_config.id}|{experiment.description}|{cs} was not found.'
+                        logging.error(message)
+                        sentry_sdk.capture_exception(MissingCandidateSetException(message))
 
         for layout_config in layout_configs:
             for experiment in layout_config.experiments:

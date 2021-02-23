@@ -33,13 +33,13 @@ class Query(ObjectType):
         return await TopicModel.get_all()
 
     async def resolve_get_slate(self, info, slate_id: str) -> SlateModel:
-        return await SlateModel.get_slate(slate_id=slate_id)
+        return await SlateModel.get_slate(slate_id=slate_id, user_id=info.context.get('user_id'))
 
     async def resolve_list_slates(self, info) -> [SlateModel]:
         return await SlateModel.get_all()
 
     async def resolve_get_layout(self, info, layout_id: str) -> LayoutModel:
-        return await LayoutModel.get_layout(layout_id=layout_id)
+        return await LayoutModel.get_layout(layout_id=layout_id, user_id=info.context.get('user_id'))
 
 
 ##
