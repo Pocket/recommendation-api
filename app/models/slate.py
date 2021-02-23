@@ -1,4 +1,4 @@
-import random
+import uuid
 
 from aws_xray_sdk.core import xray_recorder
 from pydantic import BaseModel
@@ -59,5 +59,6 @@ class SlateModel(BaseModel):
             experimentID=experiment.id if experiment else None,
             description=slate_config.description,
             display_name=slate_config.displayName,
-            recommendations=recommendations
+            recommendations=recommendations,
+            requestID=str(uuid.uuid4()),
         )
