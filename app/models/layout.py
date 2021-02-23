@@ -24,7 +24,7 @@ class LayoutModel(BaseModel):
             id=layout_id,
             experimentID=layout_experiment.id,
             slates=slates,
-            requestId=uuid.uuid4(),
+            requestID=str(uuid.uuid4()),
         )
 
     @staticmethod

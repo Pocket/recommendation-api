@@ -60,5 +60,5 @@ class SlateModel(BaseModel):
             description=slate_config.description,
             display_name=slate_config.displayName,
             recommendations=recommendations,
-            requestId=uuid.uuid4(),
+            requestID=str(uuid.uuid4()),
         )
