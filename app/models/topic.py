@@ -10,11 +10,17 @@ from app.config import dynamodb as dynamodb_config
 
 
 class PageType(str, Enum):
+    """
+    Define the possible page types for a topic.
+    """
     editorial_collection = 'editorial_collection'
     topic_page = 'topic_page'
 
 
 class TopicModel(BaseModel):
+    """
+    Models a topic, e.g. Technology, Gaming.
+    """
     id: str
     display_name: str
     page_type: PageType
@@ -32,6 +38,11 @@ class TopicModel(BaseModel):
     @staticmethod
     @xray_recorder.capture_async('models_topic_get_all')
     async def get_all() -> ['TopicModel']:
+        """
+        Retrieves all topics from dynamo db
+
+        :return: a list of TopicModel objects
+        """
         async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
             table = await dynamodb.Table(dynamodb_config['recommendation_api_metadata_table'])
             response = await table.scan()
@@ -40,6 +51,12 @@ class TopicModel(BaseModel):
     @staticmethod
     @xray_recorder.capture_async('models_topic_get_topic')
     async def get_topic(slug: str) -> Optional['TopicModel']:
+        """
+        Retrieves a single topic from dynamo db
+
+        :param slug: string slug of the topic to be retrieved
+        :return: a TopicModel object
+        """
         async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
             table = await dynamodb.Table(dynamodb_config['recommendation_api_metadata_table'])
             response = await table.query(IndexName='slug', Limit=1, KeyConditionExpression=Key('slug').eq(slug))

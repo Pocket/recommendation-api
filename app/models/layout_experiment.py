@@ -1,10 +1,13 @@
-from typing import List, Dict
+from typing import List
 
 from app.models.experiment import ExperimentModel
 from app.models.slate_config import SlateConfigModel
 
 
 class LayoutExperimentModel(ExperimentModel):
+    """
+    Models a layout experiment
+    """
     def __init__(self, experiment_id: str, description: str, rankers: List[str],slates: List[str],
                  weight: float = ExperimentModel.DEFAULT_WEIGHT):
         ExperimentModel.__init__(self, experiment_id, description, rankers, weight)
@@ -15,13 +18,13 @@ class LayoutExperimentModel(ExperimentModel):
 
         self.slates = slates
 
-
     @staticmethod
     def load_from_dict(experiment_dict: dict) -> 'LayoutExperimentModel':
         """
-        creates an experiment object from a json-derived dictionary
+        Creates an experiment object from a json-derived dictionary
+
         :param experiment_dict: a dictionary derived from parsing json
-        :return: an instance of LayoutExperimentModel
+        :return: a LayoutExperimentModel object
         """
         # generate an id for the experiment
         experiment_id = ExperimentModel.generate_experiment_id(experiment_dict)
@@ -36,6 +39,7 @@ class LayoutExperimentModel(ExperimentModel):
     def slate_id_exists(slate_id: str) -> bool:
         """
         Verify that the slate id exists
+
         :param slate_id: string id of a slate to be verified
         :return: boolean (pronounced like "jolene")
         """

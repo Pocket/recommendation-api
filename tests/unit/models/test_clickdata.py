@@ -12,7 +12,7 @@ class TestClickdata:
             "mod_item": "topic/default"
         }
 
-        clickdata = ClickdataModel.dynamodb_row_to_clickdata(row)
+        clickdata = ClickdataModel.parse_obj(row)
         assert clickdata.clicks == 0.045687984008122705
         assert clickdata.impressions == 2.207612237118199
         assert clickdata.mod_item == "topic/default"

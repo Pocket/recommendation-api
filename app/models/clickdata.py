@@ -31,14 +31,15 @@ class ClickdataModel(BaseModel):
     expires_at: int = None
 
     @staticmethod
-    def dynamodb_row_to_clickdata(row: Dict):
-        clickdata = ClickdataModel().parse_obj(row)
-        return clickdata
-
-    @staticmethod
     @xray_recorder.capture_async('models_clickdata_get_clickdata')
     async def get_clickdata(module: RecommendationModules, item_list: List[str]) -> Dict[str, 'ClickdataModel']:
+        """
+        Retrieves click data for the given items in the given module (home/topic)
 
+        :param module: the module to filter against - home or topic currently
+        :param item_list: list of string item ids
+        :return: dictionary of ClickdataModel objects with keys of their respective `mod_item` values
+        """
         table = dynamodb_config['recommendation_api_clickdata_table']
 
         # Key are namespaced by the module we are getting data from
@@ -48,7 +49,8 @@ class ClickdataModel(BaseModel):
         keys.add(make_key(module, "default"))
         keys = list(keys)
 
-        clickdata = dict()
+        clickdata = {}
+
         async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
             for keychunk in chunks(keys):
                 request = {
@@ -56,9 +58,10 @@ class ClickdataModel(BaseModel):
                         "Keys": [{"mod_item": c} for c in keychunk]
                         }
                     }
+
                 responses = await dynamodb.batch_get_item(RequestItems=request)
 
-                for item in (ClickdataModel.dynamodb_row_to_clickdata(row) for row in responses["Responses"][table]):
+                for item in (ClickdataModel.parse_obj(row) for row in responses["Responses"][table]):
                     clickdata[item.mod_item.split("/")[1]] = item
 
         if not clickdata:
