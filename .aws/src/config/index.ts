@@ -1,16 +1,22 @@
 const name = 'RecommendationAPI';
 let environment;
 let domain;
-let clickdataDynamodbName
+let clickdataDynamodbName;
+let cacheNodes;
+let cacheSize;
 
 if (process.env.NODE_ENV === 'development') {
   environment = 'Dev';
   domain = 'recommendation-api.getpocket.dev';
   clickdataDynamodbName = 'ExploreClickData-ClickData';
+  cacheNodes = 2;
+  cacheSize = 'cache.t2.micro';
 } else {
   environment = 'Prod';
   domain = 'recommendation-api.readitlater.com';
   clickdataDynamodbName = 'explore-clickdata-update-prod-ClickData';
+  cacheNodes = 2;
+  cacheSize = 'cache.t3.medium';
 }
 
 export const config = {
@@ -21,6 +27,8 @@ export const config = {
   environment,
   domain,
   clickdataDynamodbName,
+  cacheNodes,
+  cacheSize,
   stateMachines: [
     'CuratedCandidatesFlow',
     'AlgorithmicCandidatesFlow',

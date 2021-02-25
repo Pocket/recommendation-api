@@ -14,6 +14,7 @@ import {EventBridgeLambda} from "./eventBridgeLambda";
 import {PocketPagerDuty} from "@pocket/terraform-modules/dist/src/pocket/PocketPagerDuty";
 import {PagerdutyProvider} from "../.gen/providers/pagerduty";
 import {SqsLambda} from "./sqsLambda";
+import {Elasticache} from "./elasticache";
 
 class RecommendationAPI extends TerraformStack {
   constructor(scope: Construct, name: string) {
@@ -64,6 +65,8 @@ class RecommendationAPI extends TerraformStack {
 
     const dynamodb = new DynamoDB(this, 'dynamodb');
 
+    const elasticache = new Elasticache(this, 'elasticache')
+
     new PocketALBApplication(this, 'application', {
       internal: true,
       prefix: config.prefix,
@@ -111,7 +114,11 @@ class RecommendationAPI extends TerraformStack {
               {
               name: 'RECOMMENDATION_API_CANDIDATE_SETS_TABLE',
               value: dynamodb.candidateSetsTable.dynamodb.name
-            }
+            },
+            {
+              name: 'MEMCACHED_SERVERS',
+              value: elasticache.nodeList.join(','),
+            },
           ],
           secretEnvVars: [
             {
