@@ -50,7 +50,7 @@ class RecommendationAPI extends TerraformStack {
       service: {
         criticalEscalationPolicyId: incidentManagement.get('policy_backend_critical_id'),
         nonCriticalEscalationPolicyId: incidentManagement.get('policy_backend_non_critical_id')
-      }
+      },
     })
 
     const region = new DataAwsRegion(this, 'region');

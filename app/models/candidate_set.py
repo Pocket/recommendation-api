@@ -1,4 +1,5 @@
 import aioboto3
+from aiocache import cached, Cache
 
 from aws_xray_sdk.core import xray_recorder
 from boto3.dynamodb.conditions import Key
@@ -6,6 +7,7 @@ from pydantic import BaseModel
 from typing import List, Dict, Any
 
 from app.config import dynamodb as dynamodb_config
+import app.cache
 
 
 class CandidateSetModel(BaseModel):
@@ -25,6 +27,7 @@ class CandidateSetModel(BaseModel):
 
     @staticmethod
     @xray_recorder.capture_async('model_candidate_set_get')
+    @cached(ttl=600, alias=app.cache.alias)
     async def get(cs_id: str) -> 'CandidateSetModel':
         response = await CandidateSetModel.__query_by_id(cs_id)
         if not response['Items']:
@@ -42,5 +45,3 @@ class CandidateSetModel(BaseModel):
             key_condition = Key('id').eq(cs_id)
             response = await table.query(KeyConditionExpression=key_condition)
         return response
-
-

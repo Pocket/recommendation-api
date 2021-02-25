@@ -27,3 +27,8 @@ sentry = {
     'release': os.getenv('GIT_SHA', '1234'),
     'environment': ENV
 }
+
+elasticache = {
+    # Convert comma-separated string MEMCACHED_SERVERS to list.
+    'servers': os.getenv('MEMCACHED_SERVERS', '001.example.com:11211,002.example.com:11211').split(',')
+}
