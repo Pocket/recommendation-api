@@ -106,6 +106,11 @@ class RecommendationModel(BaseModel):
         """
         Special processing for handling the thompson sampling ranker. Retrieves click data for the items being ranked
         and uses that for thompson sampling algorithm.
+
+        Thompson Sampling uses click data to make a list of tried-and-true recommendations that typically generate a
+        lot of interest, mixed in with some newer ones that we want to try out so we can keep adding more interesting
+        items to our repertoire.
+
         :param recommendations: a list of RecommendationModel instances
         :return: a list of RecommendationModel instances
         """

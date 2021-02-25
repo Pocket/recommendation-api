@@ -64,7 +64,9 @@ class SlateModel(BaseModel):
             slate_models.append(slate_model)
 
         slate_models = await gather(*slate_models)
-        return slate_models  # unsure why this is failing the type hint...
+
+        # unsure why this is failing the type hint - probably something to do with `gather`
+        return slate_models
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_slate_from_slate_config')

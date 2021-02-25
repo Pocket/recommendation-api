@@ -53,6 +53,10 @@ def thompson_sampling(
     Re-rank items using Thompson sampling which combines exploitation of known item CTR
     with exploration of new items with unknown CTR modeled by a prior
 
+    Thompson Sampling uses click data to make a list of tried-and-true recommendations that typically generate a
+    lot of interest, mixed in with some newer ones that we want to try out so we can keep adding more interesting
+    items to our repertoire.
+
     :param recs: a list of recommendations in the desired order (pre-publisher spread)
     :param clk_data: a dict with item_id as key and dynamodb row modeled as ClickDataModel
     :return: a re-ordered version of recs satisfying the spread as best as possible
