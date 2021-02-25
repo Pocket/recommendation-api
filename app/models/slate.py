@@ -1,4 +1,4 @@
-import random
+import uuid
 
 from aws_xray_sdk.core import xray_recorder
 from pydantic import BaseModel
@@ -21,7 +21,7 @@ class SlateModel(BaseModel):
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_slate')
-    async def get_slate(slate_id: str) -> 'SlateModel':
+    async def get_slate(slate_id: str, user_id: str = None) -> 'SlateModel':
         slate_config = SlateConfigModel.find_by_id(slate_id)
         return await SlateModel.__get_slate_from_slate_config(slate_config)
 
@@ -59,5 +59,6 @@ class SlateModel(BaseModel):
             experimentID=experiment.id if experiment else None,
             description=slate_config.description,
             display_name=slate_config.displayName,
-            recommendations=recommendations
+            recommendations=recommendations,
+            requestID=str(uuid.uuid4()),
         )

@@ -13,6 +13,7 @@ from xraysink.context import AsyncContext
 
 from app.config import ENV, ENV_PROD, ENV_DEV, service, sentry as sentry_config
 from app.graphql.graphql import schema
+from app.graphql.user_middleware import UserMiddleware
 from app.graphql_app import GraphQLAppWithMiddleware, GraphQLSentryMiddleware
 from app.models.candidate_set import CandidateSetModel
 from app.models.layout_experiment import LayoutExperimentModel
@@ -41,7 +42,7 @@ app.add_middleware(SentryAsgiMiddleware)
 app.add_route("/", GraphQLAppWithMiddleware(
     schema=schema,
     executor_class=AsyncioExecutor,
-    middleware=[GraphQLSentryMiddleware()]))
+    middleware=[GraphQLSentryMiddleware(), UserMiddleware()]))
 
 
 @app.get("/dynamodb-test")

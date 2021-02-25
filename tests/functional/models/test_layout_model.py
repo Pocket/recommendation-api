@@ -39,6 +39,7 @@ class TestLayoutModel(TestDynamoDBBase):
 
         assert layout.id == layout_config_id
         assert layout.slates[0].id == slate_config_id
+        assert len(layout.requestID) == 36  # length of uuid4
         assert layout.slates[0].recommendations[0].item.item_id == '3208490410'
 
 
