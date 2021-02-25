@@ -5,8 +5,8 @@ from pydantic import BaseModel
 from aiocache import caches, Cache
 from aiocache.serializers import BaseSerializer
 
-
 import app.config
+from app.models.candidate_set import CandidateSetModel
 
 
 class PydanticSerializer(BaseSerializer):
@@ -15,8 +15,10 @@ class PydanticSerializer(BaseSerializer):
         return value.json()
 
     def loads(self, value: str):
-        from app.models.candidate_set import CandidateSetModel
-        return CandidateSetModel.parse_obj(value)
+        if value is None:
+            return None
+
+        return CandidateSetModel.parse_raw(value)
 
 
 def get_cache_config():
@@ -24,17 +26,23 @@ def get_cache_config():
     endpoint, port = server.split(':')
 
     return {
-        'default': {
-            'cache': Cache.MEMCACHED,
-            'endpoint': endpoint,
-            'port': port,
-            'serializer': {
-                'class': PydanticSerializer,
-            },
-        }
+        'cache': Cache.MEMCACHED,
+        'endpoint': endpoint,
+        'port': port,
+        'serializer': {
+            'class': PydanticSerializer,
+        },
     }
 
 
-caches.set_config(get_cache_config())
+alias = 'elasticache'
 
-alias = 'default'
+
+def initialize_caches():
+    caches.add(alias, get_cache_config())
+
+#
+# try:
+#     caches.get(alias)
+# except KeyError:
+#     initialize_caches()

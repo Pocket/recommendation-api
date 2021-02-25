@@ -34,10 +34,10 @@ class RecommendationModel(BaseModel):
     @staticmethod
     def candidate_to_recommendation(candidate: dict):
         recommendation = RecommendationModel(
-            feed_id=candidate.get('feed_id'),
-            publisher=candidate.get('publisher'),
-            item_id=candidate.get('item_id'),
-            item=ItemModel(item_id=candidate.get('item_id'))
+            feed_id=candidate.feed_id,
+            publisher=candidate.publisher,
+            item_id=candidate.item_id,
+            item=ItemModel(item_id=candidate.item_id)
         )
         recommendation.feed_item_id = recommendation.rec_src + '/' + recommendation.item.item_id
         return recommendation

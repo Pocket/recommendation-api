@@ -11,6 +11,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from xraysink.asgi.middleware import xray_middleware
 from xraysink.context import AsyncContext
 
+from app.cache import initialize_caches
 from app.config import ENV, ENV_PROD, ENV_DEV, service, sentry as sentry_config
 from app.graphql.graphql import schema
 from app.graphql.user_middleware import UserMiddleware
@@ -34,6 +35,7 @@ sentry_sdk.integrations.logging.ignore_logger("graphql.execution.utils")
 # Standard asyncio X-Ray configuration, customise as you choose
 xray_recorder.configure(context=AsyncContext(), service=service.get('domain'))
 
+
 app = FastAPI()
 app.add_middleware(BaseHTTPMiddleware, dispatch=xray_middleware)
 app.add_middleware(SentryAsgiMiddleware)
@@ -52,6 +54,19 @@ async def dynamodb_test(response: Response):
 
 @app.get("/health-check")
 async def read_root(response: Response):
+    # from aiocache import Cache, caches
+    #
+    # caches.add('my_memcached', {'cache': Cache.MEMCACHED, 'endpoint': 'memcached', 'port': '11211'})
+    #
+    # cache = Cache.from_url("memcached://memcached:11211")
+    # cache2 = caches.get(alias)
+    #
+    # success = await cache.set('key', 'value')
+    # result = await cache.get('key')
+    #
+    # success2 = await cache2.set('key', 'value2')
+    # result2 = await cache2.get('key')
+
     if get_health_status() != HealthStatus.HEALTHY:
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
 
@@ -73,6 +88,10 @@ class MissingCandidateSetException(ValueError):
     """
     pass
 
+
+@app.on_event("startup")
+async def initialize_cache():
+    initialize_caches()
 
 @app.on_event("startup")
 async def load_slate_configs():
