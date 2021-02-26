@@ -1,5 +1,3 @@
-import logging
-
 import aioboto3
 from aiocache import caches, decorators
 from pydantic import BaseModel
