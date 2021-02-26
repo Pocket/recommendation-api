@@ -34,12 +34,6 @@ class ClickdataModel(BaseModel):
     expires_at: int = None
 
     @staticmethod
-    def dynamodb_row_to_clickdata(row: Dict):
-        clickdata = ClickdataModel().parse_obj(row)
-        return clickdata
-
-
-    @staticmethod
     @xray_recorder.capture_async('models.clickdata.get')
     async def get(module: RecommendationModules, item_list: List[str]) -> Dict[str, 'ClickdataModel']:
         # Keys are namespaced by the module we are getting data from
