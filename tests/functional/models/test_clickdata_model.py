@@ -32,7 +32,7 @@ class TestClickdataModel(TestDynamoDBBase):
 
         app.cache.initialize_caches()
 
-        executed = await ClickdataModel.get_clickdata(RecommendationModules.HOME, ["666666", "333333"])
+        executed = await ClickdataModel.get(RecommendationModules.HOME, ["666666", "333333"])
         assert len(executed) == 2
         assert "666666" in executed
         assert "333333" in executed

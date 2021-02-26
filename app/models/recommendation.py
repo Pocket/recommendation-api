@@ -80,7 +80,7 @@ class RecommendationModel(BaseModel):
     async def __thompson_sample(recommendations, ranker) -> ['RecommendationModel']:
         item_ids = [recommendation.item.item_id for recommendation in recommendations]
         try:
-            click_data = await ClickdataModel.get_clickdata(RecommendationModules.TOPIC, item_ids)
+            click_data = await ClickdataModel.get(RecommendationModules.TOPIC, item_ids)
         except ValueError:
             rec_item_ids = ','.join(item_ids)
             print(f'click data not found for candidates with item ids: {rec_item_ids}')

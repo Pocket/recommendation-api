@@ -42,8 +42,8 @@ class ClickdataModel(BaseModel):
 
 
     @staticmethod
-    @xray_recorder.capture_async('models_clickdata_get_clickdata_dynamodb')
-    async def get_clickdata(module: RecommendationModules, item_list: List[str]) -> Dict[str, 'ClickdataModel']:
+    @xray_recorder.capture_async('models.clickdata.get')
+    async def get(module: RecommendationModules, item_list: List[str]) -> Dict[str, 'ClickdataModel']:
         # Keys are namespaced by the module we are getting data from
         keys = {make_key(module, item) for item in item_list}
 
@@ -61,7 +61,7 @@ class ClickdataModel(BaseModel):
         return clickdata
 
     @staticmethod
-    @xray_recorder.capture_async('models_clickdata_query_cached_clickdata')
+    @xray_recorder.capture_async('models.clickdata._query_cached_clickdata')
     async def _query_cached_clickdata(clickdata_keys: List) -> Dict[str, 'ClickdataModel']:
         multi_cache = decorators.multi_cached(
             "clickdata_keys",
@@ -74,7 +74,7 @@ class ClickdataModel(BaseModel):
         return {k: None if v == app.cache.JsonSerializerWithNoneToken.NoneValue else v for k, v in results.items()}
 
     @staticmethod
-    @xray_recorder.capture_async('models_clickdata_query_clickdata')
+    @xray_recorder.capture_async('models.clickdata._query_clickdata')
     async def _query_clickdata(clickdata_keys: List):
         table = app.config.dynamodb['recommendation_api_clickdata_table']
 
