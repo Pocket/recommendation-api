@@ -27,7 +27,6 @@ class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
         self.create_tables()
 
         initialize_caches()
-        await self.clear_caches()
 
     async def asyncTearDown(self):
         self.delete_tables()
@@ -39,6 +38,10 @@ class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
         for alias in (candidate_set_alias, clickdata_alias):
             cache = caches.get(alias)
             await cache.clear()
+            # aiocache doesn't support deleting caches.
+            # If we don't delete them, an error is raised "attached to a different loop", because
+            # IsolatedAsyncioTestCase creates a new event loop for every test case.
+            del caches._caches[alias]
 
     def delete_tables(self):
         for table_name in TestDynamoDBBase.TABLE_NAMES:
