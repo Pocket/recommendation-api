@@ -170,7 +170,7 @@
       {
         "description": "ts15",
         "candidateSets": [
-          "493a5556-9800-449f-8f8c-c27bb6c8c810",
+          "493a5556-9800-449f-8f8c-c27bb6c8c810"
         ],
         "rankers": [
           "top15",
