@@ -4,11 +4,9 @@ from typing import ClassVar
 
 from pydantic import BaseModel
 from aiocache import caches, Cache
-from aiocache.serializers import BaseSerializer
+from aiocache.serializers import BaseSerializer, JsonSerializer
 
 import app.config
-from app.models.candidate_set import CandidateSetModel
-from app.models.clickdata import ClickdataModel
 from typing import ClassVar, Optional, Union
 
 
@@ -39,12 +37,14 @@ class _PydanticSerializer(BaseSerializer):
 class CandidateSetModelSerializer(_PydanticSerializer):
 
     def _parse(self, value: str):
+        from app.models.candidate_set import CandidateSetModel
         return CandidateSetModel.parse_raw(value)
 
 
 class ClickdataModelSerializer(_PydanticSerializer):
 
     def _parse(self, value: str):
+        from app.models.clickdata import ClickdataModel
         return ClickdataModel.parse_raw(value)
 
 
@@ -67,5 +67,5 @@ clickdata_alias = 'clickdata-cache'
 
 
 def initialize_caches():
-    caches.add(candidate_set_alias, get_cache_config(serializer_class=CandidateSetModelSerializer))
-    caches.add(clickdata_alias, get_cache_config(serializer_class=ClickdataModelSerializer))
+    caches.add(candidate_set_alias, get_cache_config(serializer_class=JsonSerializer))
+    caches.add(clickdata_alias, get_cache_config(serializer_class=JsonSerializer))

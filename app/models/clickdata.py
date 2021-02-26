@@ -1,3 +1,5 @@
+import logging
+
 import aioboto3
 from aiocache import caches, decorators
 from pydantic import BaseModel
@@ -51,7 +53,7 @@ class ClickdataModel(BaseModel):
 
         clickdata = await ClickdataModel._query_cached_clickdata(keys)
         # Remove "<modules>/" prefix and remove None values
-        clickdata = {k.split("/")[1]: v for k, v in clickdata.items() if v is not None}
+        clickdata = {k.split("/")[1]: ClickdataModel.parse_obj(v) for k, v in clickdata.items() if v is not None}
 
         if not clickdata:
             raise ValueError(f"No results from DynamoDB: module {module.value}")
@@ -69,14 +71,13 @@ class ClickdataModel(BaseModel):
         results = await multi_cache(clickdata_keys)
 
         # Map cache.MissingCacheValue to None
-        return {k: None if type(v) == app.cache.EmptyCacheValue else v for k, v in results}
+        return {k: None if type(v) == app.cache.EmptyCacheValue else v for k, v in results.items()}
 
     @staticmethod
     @xray_recorder.capture_async('models_clickdata_query_clickdata')
     async def _query_clickdata(clickdata_keys: List):
         table = app.config.dynamodb['recommendation_api_clickdata_table']
 
-        clickdata = dict()
         async with aioboto3.resource('dynamodb', endpoint_url=app.config.dynamodb['endpoint_url']) as dynamodb:
             for keychunk in chunks(clickdata_keys):
                 request = {
@@ -86,7 +87,5 @@ class ClickdataModel(BaseModel):
                 }
                 responses = await dynamodb.batch_get_item(RequestItems=request)
 
-                for item in (ClickdataModel.dynamodb_row_to_clickdata(row) for row in responses["Responses"][table]):
-                    clickdata[item.mod_item] = item
-
+        clickdata = {row["mod_item"]: row for row in responses["Responses"][table]}
         return {k: clickdata.get(k) for k in clickdata_keys}

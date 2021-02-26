@@ -34,10 +34,10 @@ class RecommendationModel(BaseModel):
     @staticmethod
     def candidate_to_recommendation(candidate: dict):
         recommendation = RecommendationModel(
-            feed_id=candidate.feed_id,
-            publisher=candidate.publisher,
-            item_id=candidate.item_id,
-            item=ItemModel(item_id=candidate.item_id)
+            feed_id=candidate.get('feed_id'),
+            publisher=candidate.get('publisher'),
+            item_id=candidate.get('item_id'),
+            item=ItemModel(item_id=candidate.get('item_id'))
         )
         recommendation.feed_item_id = recommendation.rec_src + '/' + recommendation.item.item_id
         return recommendation
@@ -57,17 +57,14 @@ class RecommendationModel(BaseModel):
 
     @staticmethod
     async def get_recommendations_from_experiment(experiment: SlateExperimentModel) -> ['RecommendationModel']:
-        candidate_sets = []
         # for each candidate set id, get the candidate set record from the db
-        for candidate_set_id in experiment.candidate_sets:
-            candidate_sets.append(CandidateSetModel.get(candidate_set_id))
-        candidate_sets = await gather(*candidate_sets)
+        candidate_sets = await gather(*(CandidateSetModel.get(cs_id) for cs_id in experiment.candidate_sets))
 
         recommendations = []
         # get the recommendations
         for candidate_set in candidate_sets:
             for candidate in candidate_set.candidates:
-                recommendations.append(RecommendationModel.candidate_to_recommendation(candidate))
+                recommendations.append(RecommendationModel.candidate_to_recommendation(candidate.dict()))
 
         # apply rankers from the slate experiment on the candidate set's candidates
         for ranker in experiment.rankers:

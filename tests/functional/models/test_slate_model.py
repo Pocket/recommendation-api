@@ -13,8 +13,8 @@ slate_config_model = SlateConfigModel(slate_config_id, 'test-this-slate', 'test-
 
 
 class TestSlateModel(TestDynamoDBBase):
-    def setup_method(self, method):
-        super().setup_method(method)
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         self.candidateSetTable.put_item(Item={
             'id': 'test-candidate-id',
             'version': 1,
@@ -28,8 +28,8 @@ class TestSlateModel(TestDynamoDBBase):
             ]
         })
 
-    def teardown_method(self, method):
-        super().teardown_method(method)
+    async def asyncTearDown(self):
+        await super().asyncTearDown()
         SlateConfigModel.SLATE_CONFIGS_BY_ID = {}
 
     @patch('app.models.slate_config.SlateConfigModel.find_by_id', return_value=slate_config_model)

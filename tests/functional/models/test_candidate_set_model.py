@@ -39,4 +39,4 @@ class TestCandidateSetsModel(TestDynamoDBBase):
         assert candidate_set.id == 'asdasd-12sd1asd3-5512'
         assert len(candidate_set.candidates) == 1
         candidate = candidate_set.candidates[0]
-        assert candidate['item_id'] == 3208490410
+        assert candidate.item_id == 3208490410

@@ -1,5 +1,6 @@
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 from app.models.clickdata import ClickdataModel, RecommendationModules
+import app.cache
 
 
 class TestClickdataModel(TestDynamoDBBase):
@@ -28,6 +29,8 @@ class TestClickdataModel(TestDynamoDBBase):
             "created_at": "0",
             "expires_at": "0"
         })
+
+        app.cache.initialize_caches()
 
         executed = await ClickdataModel.get_clickdata(RecommendationModules.HOME, ["666666", "333333"])
         assert len(executed) == 2
