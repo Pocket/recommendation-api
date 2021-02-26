@@ -46,27 +46,8 @@ app.add_route("/", GraphQLAppWithMiddleware(
     executor_class=AsyncioExecutor,
     middleware=[GraphQLSentryMiddleware(), UserMiddleware()]))
 
-
-@app.get("/dynamodb-test")
-async def dynamodb_test(response: Response):
-    import app.dynamodb_test
-    app.dynamodb_test.handler(None, None)
-
 @app.get("/health-check")
 async def read_root(response: Response):
-    # from aiocache import Cache, caches
-    #
-    # caches.add('my_memcached', {'cache': Cache.MEMCACHED, 'endpoint': 'memcached', 'port': '11211'})
-    #
-    # cache = Cache.from_url("memcached://memcached:11211")
-    # cache2 = caches.get(alias)
-    #
-    # success = await cache.set('key', 'value')
-    # result = await cache.get('key')
-    #
-    # success2 = await cache2.set('key', 'value2')
-    # result2 = await cache2.get('key')
-
     if get_health_status() != HealthStatus.HEALTHY:
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
 
