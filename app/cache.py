@@ -1,34 +1,41 @@
-import json
 import random
-from typing import ClassVar
 
-from pydantic import BaseModel
 from aiocache import caches, Cache
-from aiocache.serializers import BaseSerializer, JsonSerializer
+from aiocache.serializers import JsonSerializer
 
 import app.config
-from typing import ClassVar, Optional, Union
+from typing import ClassVar
 
 
-# If the cached value parses to None, aiocache will consider this a cache-miss, so we need a special token for this.
-class EmptyCacheValue:
-    pass
+class JsonSerializerWithNoneToken(JsonSerializer):
+    """
+    This class caches None values, and returns EmptyCacheValue instead of None.
 
+    aiocache considers None values to be cache misses, and will therefore always call the function.
+    """
 
-class JsonSerializerWithMissingValues(JsonSerializer):
+    # Special token representing a cached None value.
+    class NoneValue:
+        pass
 
-    EMPTY_TOKEN: str = '<EMPTY>'
+    _NONE_STRING: str = '<NONE>'
 
     def dumps(self, value):
+        """
+        :return: '<NONE>' if value is None, otherwise dumps value to json.
+        """
         if value is None:
-            return self.EMPTY_TOKEN
+            return self._NONE_STRING
         else:
             return super().dumps(value)
 
     def loads(self, value):
+        """
+        :return: NoneValue if value is '<NONE>', otherwise loads value using json.loads.
+        """
         result = super().loads(value)
-        if result == self.EMPTY_TOKEN:
-            return EmptyCacheValue
+        if result == self._NONE_STRING:
+            return JsonSerializerWithNoneToken.NoneValue
         else:
             return result
 
@@ -53,4 +60,4 @@ clickdata_alias = 'clickdata-cache'
 
 def initialize_caches():
     caches.add(candidate_set_alias, get_cache_config(serializer_class=JsonSerializer))
-    caches.add(clickdata_alias, get_cache_config(serializer_class=JsonSerializerWithMissingValues))
+    caches.add(clickdata_alias, get_cache_config(serializer_class=JsonSerializerWithNoneToken))
