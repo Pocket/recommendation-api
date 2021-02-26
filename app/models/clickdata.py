@@ -65,13 +65,13 @@ class ClickdataModel(BaseModel):
     async def _query_cached_clickdata(clickdata_keys: List) -> Dict[str, 'ClickdataModel']:
         multi_cache = decorators.multi_cached(
             "clickdata_keys",
-            ttl=app.config.elasticache.get('clickdata_ttl'),
+            ttl=app.config.elasticache['clickdata_ttl'],
             alias=app.cache.clickdata_alias)(ClickdataModel._query_clickdata)
 
         results = await multi_cache(clickdata_keys)
 
         # Map cache.MissingCacheValue to None
-        return {k: None if v == app.cache.JsonSerializerWithNoneToken.NoneValue else v for k, v in results.items()}
+        return {k: None if v == app.cache.NoneValue else v for k, v in results.items()}
 
     @staticmethod
     @xray_recorder.capture_async('models.clickdata._query_clickdata')

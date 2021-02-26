@@ -1,7 +1,7 @@
 import logging
 
 import aioboto3
-from aiocache import caches
+from aiocache import caches, decorators
 
 from aws_xray_sdk.core import xray_recorder
 from boto3.dynamodb.conditions import Key
@@ -60,7 +60,7 @@ class CandidateSetModel(BaseModel):
 
         result = await CandidateSetModel._query_by_id(cs_id)
 
-        await cache.set(key, result)
+        await cache.set(key, result, ttl=app.config.elasticache['candidate_set_ttl'])
         return result
 
     @staticmethod

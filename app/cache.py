@@ -7,16 +7,17 @@ import app.config
 from typing import ClassVar
 
 
+# Special token representing a cached None value.
+class NoneValue:
+    pass
+
+
 class JsonSerializerWithNoneToken(JsonSerializer):
     """
     This class caches None values, and returns EmptyCacheValue instead of None.
 
     aiocache considers None values to be cache misses, and will therefore always call the function.
     """
-
-    # Special token representing a cached None value.
-    class NoneValue:
-        pass
 
     _NONE_STRING: str = '<NONE>'
 
@@ -33,11 +34,10 @@ class JsonSerializerWithNoneToken(JsonSerializer):
         """
         :return: NoneValue if value is '<NONE>', otherwise loads value using json.loads.
         """
-        result = super().loads(value)
-        if result == self._NONE_STRING:
-            return JsonSerializerWithNoneToken.NoneValue
+        if value == self._NONE_STRING:
+            return NoneValue
         else:
-            return result
+            return super().loads(value)
 
 
 def get_cache_config(serializer_class: ClassVar):
@@ -51,6 +51,8 @@ def get_cache_config(serializer_class: ClassVar):
         'serializer': {
             'class': serializer_class,
         },
+        # ttl can't be set here due to a bug in BaseCache.__init__, which converts ttl to float instead of int.
+        # ttl needs to be set by the caller/decorator, which doesn't have this bug.
     }
 
 
