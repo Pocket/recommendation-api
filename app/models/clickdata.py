@@ -68,7 +68,7 @@ class ClickdataModel(BaseModel):
 
         results = await multi_cache(clickdata_keys)
 
-        # Map cache.MissingCacheValue to None
+        # Map app.cache's NoneValue to None. aiocache treats None as a cache miss, so we need a special token for this.
         return {k: None if v == app.cache.NoneValue else v for k, v in results.items()}
 
     @staticmethod
