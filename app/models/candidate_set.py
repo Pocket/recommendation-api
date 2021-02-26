@@ -37,7 +37,7 @@ class CandidateSetModel(BaseModel):
         :return: Candidate Set model
         """
         key = f'candidate_set.get.{cs_id}'
-        cache = caches.get(app.cache.alias)
+        cache = caches.get(app.cache.candidate_set_alias)
         value = await cache.get(key)
         if value is not None:
             return value

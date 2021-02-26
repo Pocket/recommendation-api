@@ -5,7 +5,7 @@ from aws_xray_sdk.core import xray_recorder
 from typing import List, Dict
 from enum import Enum
 
-from app.config import dynamodb as dynamodb_config
+import app.config
 import app.cache
 
 
@@ -42,7 +42,7 @@ class ClickdataModel(BaseModel):
     @staticmethod
     @xray_recorder.capture_async('models_clickdata_get_clickdata_dynamodb')
     async def get_clickdata(module: RecommendationModules, item_list: List[str]) -> Dict[str, 'ClickdataModel']:
-        # Key are namespaced by the module we are getting data from
+        # Keys are namespaced by the module we are getting data from
         keys = {make_key(module, item) for item in item_list}
 
         # Always get the default key, it is used for items that don't have any clickstream data
@@ -50,6 +50,8 @@ class ClickdataModel(BaseModel):
         keys = list(keys)
 
         clickdata = await ClickdataModel._query_cached_clickdata(keys)
+        # Remove "<modules>/" prefix and remove None values
+        clickdata = {k.split("/")[1]: v for k, v in clickdata.items() if v is not None}
 
         if not clickdata:
             raise ValueError(f"No results from DynamoDB: module {module.value}")
@@ -59,18 +61,23 @@ class ClickdataModel(BaseModel):
     @staticmethod
     @xray_recorder.capture_async('models_clickdata_query_cached_clickdata')
     async def _query_cached_clickdata(clickdata_keys: List) -> Dict[str, 'ClickdataModel']:
-        multi_cache = decorators.multi_cached("clickdata_keys", ttl=600, alias=app.cache.alias)
-        multi_cache = multi_cache(ClickdataModel._query_clickdata)
-        result = await multi_cache(clickdata_keys)
-        return result
+        multi_cache = decorators.multi_cached(
+            "clickdata_keys",
+            ttl=app.config.elasticache.get('clickdata_ttl'),
+            alias=app.cache.clickdata_alias)(ClickdataModel._query_clickdata)
+
+        results = await multi_cache(clickdata_keys)
+
+        # Map cache.MissingCacheValue to None
+        return {k: None if type(v) == app.cache.EmptyCacheValue else v for k, v in results}
 
     @staticmethod
     @xray_recorder.capture_async('models_clickdata_query_clickdata')
     async def _query_clickdata(clickdata_keys: List):
-        table = dynamodb_config['recommendation_api_clickdata_table']
+        table = app.config.dynamodb['recommendation_api_clickdata_table']
 
         clickdata = dict()
-        async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
+        async with aioboto3.resource('dynamodb', endpoint_url=app.config.dynamodb['endpoint_url']) as dynamodb:
             for keychunk in chunks(clickdata_keys):
                 request = {
                     table: {
@@ -80,6 +87,6 @@ class ClickdataModel(BaseModel):
                 responses = await dynamodb.batch_get_item(RequestItems=request)
 
                 for item in (ClickdataModel.dynamodb_row_to_clickdata(row) for row in responses["Responses"][table]):
-                    clickdata[item.mod_item.split("/")[1]] = item
+                    clickdata[item.mod_item] = item
 
-        return clickdata
+        return {k: clickdata.get(k) for k in clickdata_keys}
