@@ -16,7 +16,7 @@ config:
     cloudwatch:
       namespace: serverless-artillery-recommendation-api-loadtest
   phases:
-    - duration: 600
+    - duration: 1800
       arrivalRate: 2
       rampTo: 15
       name: "Warm up recommendation-api 15req/sec"
