@@ -1,7 +1,5 @@
-import logging
-
 import aioboto3
-from aiocache import caches, decorators
+from aiocache import caches
 
 from aws_xray_sdk.core import xray_recorder
 from boto3.dynamodb.conditions import Key
@@ -20,7 +18,7 @@ class CandidateSetModel(BaseModel):
     version: int
 
     @staticmethod
-    @xray_recorder.capture_async('model_candidate_set_verify_candidate_set')
+    @xray_recorder.capture_async('models.candidate_set.verify_candidate_set')
     async def verify_candidate_set(cs_id: str) -> bool:
         response = await CandidateSetModel._query_by_id(cs_id)
         if not response['Items']:
@@ -30,7 +28,7 @@ class CandidateSetModel(BaseModel):
 
 
     @staticmethod
-    @xray_recorder.capture_async('models.candidate_set._query_by_id')
+    @xray_recorder.capture_async('models.candidate_set.get')
     async def get(cs_id: str) -> 'CandidateSetModel':
         response = await CandidateSetModel._cached_query_by_id(cs_id)
         if not response['Items']:
@@ -42,7 +40,7 @@ class CandidateSetModel(BaseModel):
         return instance
 
     @staticmethod
-    @xray_recorder.capture_async('models.candidate_set.get')
+    @xray_recorder.capture_async('models.candidate_set._cached_query_by_id')
     async def _cached_query_by_id(cs_id: str) -> Dict[str, Any]:
         """
         Wrap the _query_by_id function in a cache.
