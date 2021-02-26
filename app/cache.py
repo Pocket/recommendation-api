@@ -17,9 +17,17 @@ class EmptyCacheValue:
 
 class JsonSerializerWithMissingValues(JsonSerializer):
 
+    EMPTY_TOKEN: str = '<EMPTY>'
+
+    def dumps(self, value):
+        if value is None:
+            return self.EMPTY_TOKEN
+        else:
+            return super().dumps(value)
+
     def loads(self, value):
         result = super().loads(value)
-        if result is None:
+        if result == self.EMPTY_TOKEN:
             return EmptyCacheValue
         else:
             return result
