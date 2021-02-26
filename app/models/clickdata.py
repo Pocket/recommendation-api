@@ -71,7 +71,7 @@ class ClickdataModel(BaseModel):
         results = await multi_cache(clickdata_keys)
 
         # Map cache.MissingCacheValue to None
-        return {k: None if type(v) == app.cache.EmptyCacheValue else v for k, v in results.items()}
+        return {k: None if v == app.cache.EmptyCacheValue else v for k, v in results.items()}
 
     @staticmethod
     @xray_recorder.capture_async('models_clickdata_query_clickdata')
