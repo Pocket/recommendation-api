@@ -47,7 +47,7 @@ class CandidateSetModel(BaseModel):
         A nicer solution would be to use the aiocache decorator, but it raises a "different loop" error,
         because the decorator is called before FastAPI starts.
         :param cs_id: Candidate Set id
-        :return: Candidate Set model
+        :return: Candidate Set dict
         """
         cache = caches.get(app.cache.candidate_set_alias)
 
