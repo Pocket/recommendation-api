@@ -15,37 +15,14 @@ class EmptyCacheValue:
     pass
 
 
-class _PydanticSerializer(BaseSerializer):
+class JsonSerializerWithMissingValues(JsonSerializer):
 
-    def dumps(self, value: Optional[BaseModel]):
-        if value is None:
-            return json.dumps(value)
+    def loads(self, value):
+        result = super().loads(value)
+        if result is None:
+            return EmptyCacheValue
         else:
-            # JSON encode Pydantic model
-            return value.json()
-
-    def loads(self, value: str) -> Union[BaseModel, EmptyCacheValue]:
-        if value is None or value == 'null':
-            return EmptyCacheValue()
-        else:
-            return self._parse(value)
-
-    def _parse(self, value: str):
-        raise NotImplementedError()
-
-
-class CandidateSetModelSerializer(_PydanticSerializer):
-
-    def _parse(self, value: str):
-        from app.models.candidate_set import CandidateSetModel
-        return CandidateSetModel.parse_raw(value)
-
-
-class ClickdataModelSerializer(_PydanticSerializer):
-
-    def _parse(self, value: str):
-        from app.models.clickdata import ClickdataModel
-        return ClickdataModel.parse_raw(value)
+            return result
 
 
 def get_cache_config(serializer_class: ClassVar):
@@ -68,4 +45,4 @@ clickdata_alias = 'clickdata-cache'
 
 def initialize_caches():
     caches.add(candidate_set_alias, get_cache_config(serializer_class=JsonSerializer))
-    caches.add(clickdata_alias, get_cache_config(serializer_class=JsonSerializer))
+    caches.add(clickdata_alias, get_cache_config(serializer_class=JsonSerializerWithMissingValues))
