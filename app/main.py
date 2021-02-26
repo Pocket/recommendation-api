@@ -72,6 +72,9 @@ class MissingCandidateSetException(ValueError):
 
 @app.on_event("startup")
 async def initialize_cache():
+    # aiocache needs to be on the same event loop as FastAPI.
+    # Currently initialize_caches() isn't asynchronous, but we put initialize_caches() in a startup event, just in case
+    # it will need to be in the future.
     initialize_caches()
 
 @app.on_event("startup")
