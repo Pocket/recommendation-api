@@ -32,7 +32,7 @@ sentry_sdk.init(
 sentry_sdk.integrations.logging.ignore_logger("graphql.execution.utils")
 
 # Standard asyncio X-Ray configuration, customise as you choose
-xray_recorder.configure(context=AsyncContext(), service=service.get('domain'))
+xray_recorder.configure(context=AsyncContext(), service=service.get('domain'), plugins=['ecsplugin'])
 
 app = FastAPI()
 app.add_middleware(BaseHTTPMiddleware, dispatch=xray_middleware)
