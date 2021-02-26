@@ -65,6 +65,64 @@
     ]
   },
   {
+    "id": "0737b00e-a21e-4875-a4c7-3e14926d4acf",
+    "displayName": "All Curated New Tab",
+    "description": "Curated items with syndicated that are at most a week old",
+    "experiments": [
+      {
+        "description": "default",
+        "candidateSets": [
+          "35018233-48cd-4ec4-bcfd-7b1b1ccf30de"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "ts15",
+        "candidateSets": [
+          "35018233-48cd-4ec4-bcfd-7b1b1ccf30de"
+        ],
+        "rankers": [
+          "top15",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
+    "displayName": "Curated Without Syndicated New Tab",
+    "description": "Curated items without syndicated that are at most a week old",
+    "experiments": [
+      {
+        "description": "default",
+        "candidateSets": [
+          "493a5556-9800-449f-8f8c-c27bb6c8c810"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "ts15",
+        "candidateSets": [
+          "493a5556-9800-449f-8f8c-c27bb6c8c810",
+        ],
+        "rankers": [
+          "top15",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      }
+    ]
+  },
+  {
     "id": "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
     "displayName": "Algorithmic Business Slate",
     "description": "Popular with Pocket readers  Stories from across the web",
