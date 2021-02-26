@@ -34,6 +34,7 @@ aws-xray-sdk = "*"
 scipy = "*"
 jsonschema = "*"
 aiocache = {extras = ["memcached"], version = "*"}
+# aiocache will automatically use ujson when available. ujson supports decimal types, and json does not.
 ujson = "*"
 
 [requires]
