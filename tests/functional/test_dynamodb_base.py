@@ -38,7 +38,7 @@ class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
         # Clear memcached
         for alias in (candidate_set_alias, clickdata_alias):
             cache = caches.get(alias)
-            cache.clear()
+            await cache.clear()
 
     def delete_tables(self):
         for table_name in TestDynamoDBBase.TABLE_NAMES:
