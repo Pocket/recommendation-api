@@ -77,6 +77,7 @@ async def initialize_cache():
     # it will need to be in the future.
     initialize_caches()
 
+
 @app.on_event("startup")
 async def load_slate_configs():
     # parse json into objects
