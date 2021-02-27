@@ -9,13 +9,13 @@ if (process.env.NODE_ENV === 'development') {
   environment = 'Dev';
   domain = 'recommendation-api.getpocket.dev';
   clickdataDynamodbName = 'ExploreClickData-ClickData';
-  cacheNodes = 2;
-  cacheSize = 'cache.t2.micro';
+  cacheNodes = 1;
+  cacheSize = 'cache.t3.micro';
 } else {
   environment = 'Prod';
   domain = 'recommendation-api.readitlater.com';
   clickdataDynamodbName = 'explore-clickdata-update-prod-ClickData';
-  cacheNodes = 2;
+  cacheNodes = 1;
   cacheSize = 'cache.t3.medium';
 }
 
