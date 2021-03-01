@@ -42,4 +42,50 @@ class TestLayoutModel(TestDynamoDBBase):
         assert len(layout.requestID) == 36  # length of uuid4
         assert layout.slates[0].recommendations[0].item.item_id == '3208490410'
 
+    @patch('app.models.layout_config.LayoutConfigModel.find_by_id', return_value=layout_config_model)
+    @patch('app.models.slate_config.SlateConfigModel.find_by_id', return_value=slate_config_model)
+    async def test_get_layout_limited_recs(self, slate_config, layout_config):
+        self.candidateSetTable.put_item(Item={
+            "id": "test-candidate-id",
+            "version": 1,
+            "created_at": 1612907252,
+            "candidates": [
+                {
+                    "feed_id": 1,
+                    "item_id": 3208490410,
+                    "publisher": "hbr.org"
+                },
+                {
+                    "feed_id": 1,
+                    "item_id": 3208650410,
+                    "publisher": "hbr.org"
+                },
+                {
+                    "feed_id": 1,
+                    "item_id": 32084925410,
+                    "publisher": "hbr.org"
+                }
+            ]
+        })
 
+        layout = await LayoutModel.get_layout(layout_config_id, recommendation_count=1)
+        assert len(layout.slates[0].recommendations) == 1
+
+    @patch('app.models.layout_config.LayoutConfigModel.find_by_id', return_value=layout_config_model)
+    @patch('app.models.slate_config.SlateConfigModel.find_by_id', return_value=slate_config_model)
+    async def test_get_layout_no_slates(self, slate_config, layout_config):
+        self.candidateSetTable.put_item(Item={
+            "id": "test-candidate-id",
+            "version": 1,
+            "created_at": 1612907252,
+            "candidates": [
+                {
+                    "feed_id": 1,
+                    "item_id": 3208490410,
+                    "publisher": "hbr.org"
+                }
+            ]
+        })
+
+        layout = await LayoutModel.get_layout(layout_config_id, slate_count=0)
+        assert len(layout.slates) == 0
