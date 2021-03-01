@@ -57,8 +57,8 @@ def get_cache_config(serializer_class: ClassVar):
     }
 
 
-candidate_set_alias = 'candidate-set-cache'
-clickdata_alias = 'clickdata-cache'
+candidate_set_alias = 'candidate_set_cache'
+clickdata_alias = 'clickdata_cache'
 
 
 def initialize_caches():
