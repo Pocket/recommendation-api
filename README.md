@@ -1,4 +1,4 @@
-# Welcome to the Explore Topics API App!
+# Welcome to the Recommendations API App!
 
 We use this app for serving customers recommendations of topics they might like.
 
