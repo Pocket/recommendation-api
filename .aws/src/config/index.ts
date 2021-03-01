@@ -15,6 +15,7 @@ if (process.env.NODE_ENV === 'development') {
   environment = 'Prod';
   domain = 'recommendation-api.readitlater.com';
   clickdataDynamodbName = 'explore-clickdata-update-prod-ClickData';
+  // aiocache currently does not support data partitioning, so there's little benefit to having more than 1 node.
   cacheNodes = 1;
   cacheSize = 'cache.t3.medium';
 }
