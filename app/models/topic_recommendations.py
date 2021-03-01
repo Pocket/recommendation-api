@@ -139,7 +139,7 @@ class TopicRecommendationsModelUtils:
         item_list = [item.item.item_id for item in recs]
         try:
             # returns a dict with item_id as key and dynamodb row modeled as ClickDataModel
-            clk_data = await ClickdataModel.get_clickdata(module, item_list)
+            clk_data = await ClickdataModel.get(module, item_list)
         except ValueError:
             # indicates no results were returned
             clk_data = {}
