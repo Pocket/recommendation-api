@@ -19,6 +19,7 @@ class ExperimentModel(metaclass=ABCMeta):
     an array of strings). This base class seemed the most appropriate abstraction at the time, but may require
     revisiting if experiments diverge further.
     """
+
     # should this be in a config somewhere?
     DEFAULT_WEIGHT = 1
 
@@ -46,6 +47,7 @@ class ExperimentModel(metaclass=ABCMeta):
         """
         Generates an ID for an experiment based on the dictionary representation of the experiment. This will ensure that
         if an experiment changes, the ID will also change (which helps analytics).
+
         :param experiment_dict: dictionary representation of an experiment (after parsing from json)
         :return: first 7 characters of the hash created
         """
@@ -58,8 +60,10 @@ class ExperimentModel(metaclass=ABCMeta):
     @staticmethod
     def choose_experiment(experiments: List[Type[T]]) -> 'T':
         """
+        Performs a weighted random choice on the list of experiments
+
         :param experiments: a list of child classes of this class
-        :return: ExperimentModel instance
+        :return: ExperimentModel object
         """
         # pull all the weights for each experiment
         weights = [e.weight for e in experiments]
@@ -70,4 +74,10 @@ class ExperimentModel(metaclass=ABCMeta):
     @staticmethod
     @abstractmethod
     def load_from_dict(experiment_dict: dict) -> Type['ExperimentModel']:
+        """
+        Abstract method - must be implemented in child classes
+
+        :param experiment_dict: dictionary representation of an experiment (from JSON configs)
+        :return: an ExperimentModel object
+        """
         pass

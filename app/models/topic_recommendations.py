@@ -11,6 +11,11 @@ from app.rankers.algorithms import spread_publishers, thompson_sampling
 
 
 class TopicRecommendationsModel(BaseModel):
+    """
+    A meta class that contains two lists of recommendations - curated and algorithmic. These lists are not guaranteed
+    to contain recommendations, e.g. if the requested topic is an editorial collection, no algorithmic recommendations
+    will be retrieved.
+    """
     curated_recommendations: List[RecommendationModel] = []
     algorithmic_recommendations: List[RecommendationModel] = []
 
@@ -20,7 +25,15 @@ class TopicRecommendationsModel(BaseModel):
             slug: str,
             algorithmic_count: int,
             curated_count: int,
-            publisher_spread: int = 3) -> ['TopicRecommendationsModel']:
+            publisher_spread: int = 3) -> 'TopicRecommendationsModel':
+        """
+        Retrieves the requested number of curated and potentially algorithmic recommendations for the given topic.
+        :param slug: the string slug of the topic, e.g. science, gaming
+        :param algorithmic_count: the number of algorithmic recommendations to retrieve
+        :param curated_count: the number of curated recommendations to retrieve
+        :param publisher_spread: the number of recommendations that should ideally exist before repeating a publisher
+        :return: a TopicRecommendationsModel instance
+        """
 
         # Pull in the topic so we can split what we do based on the page type.
         topic = await TopicModel.get_topic(slug=slug)

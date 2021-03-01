@@ -86,17 +86,19 @@ class LayoutConfigModel:
         return layout_config
 
     @staticmethod
-    def get_slate_configs_from_layout(layout_id):
+    def get_experiment_from_layout(layout_id: str) -> LayoutExperimentModel:
+        layout_config = LayoutConfigModel.find_by_id(layout_id)
+        # get the random experiment from the layout
+        return LayoutExperimentModel.choose_experiment(layout_config.experiments)
+
+    @staticmethod
+    def get_slate_configs_from_experiment(experiment: LayoutExperimentModel) -> List[SlateConfigModel]:
         """
         Gets a slate config from the list of slate configs
 
-        :param layout_id: LayoutConfigModel object
+        :param experiment: LayoutExperimentModel object
         :return: a list of SlateConfigModel objects
         """
-
-        layout_config = LayoutConfigModel.find_by_id(layout_id)
-        # get the random experiment from the layout
-        experiment = LayoutExperimentModel.choose_experiment(layout_config.experiments)
         # get slate_ids from the experiment
         slate_ids = experiment.slates
         # get slates from the slate_ids
@@ -113,4 +115,4 @@ class LayoutConfigModel:
             # and then randomize those 15 (which would be the second ranker)
             slate_configs = get_ranker(ranker)(slate_configs)
 
-        return experiment, slate_configs
+        return slate_configs

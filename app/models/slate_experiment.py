@@ -4,6 +4,9 @@ from app.models.experiment import ExperimentModel
 
 
 class SlateExperimentModel(ExperimentModel):
+    """
+    Models a slate experiment
+    """
     def __init__(self, experiment_id: str, description: str, rankers: List[str], candidate_sets: List[str],
                  weight: float = ExperimentModel.DEFAULT_WEIGHT):
         ExperimentModel.__init__(self, experiment_id, description, rankers, weight)
@@ -17,9 +20,10 @@ class SlateExperimentModel(ExperimentModel):
     @staticmethod
     def load_from_dict(experiment_dict: dict) -> 'SlateExperimentModel':
         """
-        creates an experiment object from a json-derived dictionary
+        Creates an experiment object from a json-derived dictionary
+
         :param experiment_dict: a dictionary derived from parsing json
-        :return: an instance of SlateExperimentModel
+        :return: a SlateExperimentModel object
         """
         # generate an id for the experiment
         experiment_id = ExperimentModel.generate_experiment_id(experiment_dict)

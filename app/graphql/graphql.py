@@ -25,7 +25,7 @@ class Query(ObjectType):
     get_layout = Field(Layout, layout_id=String(required=True, description="Layout id to get a specific layout"))
 
     async def resolve_get_topic_recommendations(self, info, slug: str, algorithmic_count: int,
-                                                curated_count: int) -> TopicRecommendations:
+                                                curated_count: int) -> TopicRecommendationsModel:
         return await TopicRecommendationsModel.get_recommendations(slug=slug, algorithmic_count=algorithmic_count,
                                                                    curated_count=curated_count)
 

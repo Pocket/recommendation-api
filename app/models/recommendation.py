@@ -1,29 +1,35 @@
 import aioboto3
 
-from pydantic import BaseModel
+from asyncio import gather
+from aws_xray_sdk.core import xray_recorder
 from boto3.dynamodb.conditions import Key
 from enum import Enum
-from aws_xray_sdk.core import xray_recorder
-from asyncio import gather
+from pydantic import BaseModel
 
 from app.config import dynamodb as dynamodb_config
-from app.models.slate_experiment import SlateExperimentModel
-from app.models.candidate_set import CandidateSetModel
-from app.models.clickdata import ClickdataModel, RecommendationModules
-from app.rankers import get_ranker
-from app.models.item import ItemModel
-
 # Needs to exist for pydantic to resolve the model field "item: ItemModel" in the RecommendationModel
 from app.graphql.item import Item
+from app.models.candidate_set import CandidateSetModel
+from app.models.clickdata import ClickdataModel, RecommendationModules
+from app.models.item import ItemModel
+from app.models.slate_experiment import SlateExperimentModel
+from app.rankers import get_ranker
 
 
 class RecommendationType(Enum):
+    """
+    Defines the possible types of recommendations.
+    """
     COLLECTION = 'collection'
     CURATED = 'curated'
     ALGORITHMIC = 'algorithmic'
 
 
 class RecommendationModel(BaseModel):
+    """
+    A recommendation models a single article. The properties here are the bare minimum necessary to represent an
+    article. The `item` property contains all article details, e.g. title, excerpt, image, etc.
+    """
     feed_item_id: str = None
     feed_id: int = None
     item_id: str
@@ -33,6 +39,11 @@ class RecommendationModel(BaseModel):
 
     @staticmethod
     def candidate_to_recommendation(candidate: dict):
+        """
+        Instantiate and populate a RecommendationModel object.
+        :param candidate: a dictionary returned from dynamo db
+        :return: RecommendationModel instance
+        """
         recommendation = RecommendationModel(
             feed_id=candidate.get('feed_id'),
             publisher=candidate.get('publisher'),
@@ -45,6 +56,12 @@ class RecommendationModel(BaseModel):
     @staticmethod
     @xray_recorder.capture_async('model_recommendations_get_recommendations')
     async def get_recommendations(topic_id: str, recommendation_type: RecommendationType) -> ['RecommendationModel']:
+        """
+        Retrieves recommendations for the given `topic_id` of the given type from dynamo db.
+        :param topic_id: id of the topic we want recommendations for
+        :param recommendation_type: the type of recommendations we want, e.g. algorithmic, curated
+        :return: list of RecommendationModel objects
+        """
         async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
             table = await dynamodb.Table(dynamodb_config['recommendation_api_candidates_table'])
             key_condition = Key('topic_id-type').eq(topic_id + '|' + recommendation_type.value)
@@ -57,6 +74,11 @@ class RecommendationModel(BaseModel):
 
     @staticmethod
     async def get_recommendations_from_experiment(experiment: SlateExperimentModel) -> ['RecommendationModel']:
+        """
+        Retrieves a list of RecommendationModel objects for on the given slate experiment.
+        :param experiment: a SlateExperimentModel instance
+        :return: a list of RecommendationModel instances
+        """
         candidate_sets = []
         # for each candidate set id, get the candidate set record from the db
         for candidate_set_id in experiment.candidate_sets:
@@ -73,14 +95,31 @@ class RecommendationModel(BaseModel):
         for ranker in experiment.rankers:
             if ranker == 'thompson-sampling':
                 # thompson sampling takes two specific arguments so it needs to be handled differently
-                recommendations = await RecommendationModel.__thompson_sample(recommendations, ranker)
+                recommendations = await RecommendationModel.__thompson_sample(recommendations)
                 continue
             recommendations = get_ranker(ranker)(recommendations)
 
         return recommendations
 
     @staticmethod
-    async def __thompson_sample(recommendations, ranker) -> ['RecommendationModel']:
+    async def __thompson_sample(recommendations: ['RecommendationModel']) -> ['RecommendationModel']:
+        """
+        Special processing for handling the thompson sampling ranker. Retrieves click data for the items being ranked
+        and uses that for thompson sampling algorithm with beta distirbutions.
+
+        Thompson sampling is a probabilistic approach to estimating the CTR of an item.  It combines historical data
+        about item CTR on a specific recommendation surface with per-item click and impression data to form
+        a distribution for each item's CTR.  For new items, the distribution relies more on the historical data.  For
+        items with available click data, the distribution will reflect the observed performance and improve in
+        its accuracy.
+
+        Items are ranked by sampling from the corresponding CTR distribution which is updated daily.
+        This allows us to balance the need to explore new items' performance, and rank highly items
+        that have already demonstrated high performance (in terms of CTR).
+
+        :param recommendations: a list of RecommendationModel instances
+        :return: a list of RecommendationModel instances
+        """
         item_ids = [recommendation.item.item_id for recommendation in recommendations]
         try:
             click_data = await ClickdataModel.get_clickdata(RecommendationModules.TOPIC, item_ids)
@@ -88,4 +127,4 @@ class RecommendationModel(BaseModel):
             rec_item_ids = ','.join(item_ids)
             print(f'click data not found for candidates with item ids: {rec_item_ids}')
             click_data = {}
-        return get_ranker(ranker)(recommendations, click_data)
+        return get_ranker('thompson-sampling')(recommendations, click_data)
