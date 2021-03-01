@@ -15,7 +15,7 @@ type Query {
     getSlate(
         "The {Slate.id} of the slate to return"
         slateId: String!,
-        "Maximum number of recommendations to return in {Slate.recommendations}"
+        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to all"
         recommendationCount: Int
     ): Slate
 
@@ -23,7 +23,7 @@ type Query {
     List all available slates
     """
     listSlates(
-        "Maximum number of recommendations to return in {Slate.recommendations}"
+        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 0"
         recommendationCount: Int = 0
     ): [Slate!]!
 
@@ -33,9 +33,9 @@ type Query {
     getLayout(
         "The {Layout.id} of the layout to return"
         layoutId: String!,
-        "Maximum number of slates to return in {Layout.slates}"
+        "Maximum number of slates to return in {Layout.slates}, defaults to all"
         slateCount: Int,
-        "Maximum number of recommendations to return in {Slate.recommendations}"
+        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to all"
         recommendationCount: Int
     ): Layout
 }
