@@ -50,7 +50,7 @@ class TestSlateModel(TestDynamoDBBase):
         assert len(slates[0].recommendations) == 0
 
     async def test_get_slates_from_slate_configs_without_recs(self):
-        slates = await SlateModel.get_slates_from_slate_configs([slate_config_model], with_recs=0)
+        slates = await SlateModel.get_slates_from_slate_configs([slate_config_model], recommendation_count=0)
 
         assert slates[0].id == slate_config_id
         assert len(slates[0].recommendations) == 0
@@ -62,6 +62,31 @@ class TestSlateModel(TestDynamoDBBase):
         assert len(slates[0].recommendations) == 1
 
     async def test_get_slates_from_slate_configs_with_limited_recs(self):
+        self.candidateSetTable.put_item(Item={
+            'id': 'test-candidate-id',
+            'version': 1,
+            'created_at': 1612907252,
+            'candidates': [
+                {
+                    'feed_id': 1,
+                    'item_id': 32087904190,
+                    'publisher': 'hbr.org'
+                }
+            ]
+        })
+
+        self.candidateSetTable.put_item(Item={
+            'id': 'test-candidate-id',
+            'version': 1,
+            'created_at': 1612907252,
+            'candidates': [
+                {
+                    'feed_id': 1,
+                    'item_id': 3208490510,
+                    'publisher': 'hbr.org'
+                }
+            ]
+        })
         slates = await SlateModel.get_slates_from_slate_configs([slate_config_model], recommendation_count=2)
 
         assert slates[0].id == slate_config_id
