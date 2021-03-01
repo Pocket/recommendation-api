@@ -41,6 +41,7 @@ class JsonSerializerWithNoneToken(JsonSerializer):
 
 
 def get_cache_config(serializer_class: ClassVar):
+    # aiocache doesn't support data partitioning. It only accepts a single server for Memcached and Redis.
     server = random.choice(app.config.elasticache['servers'])
     endpoint, port = server.split(':')
 

@@ -38,7 +38,7 @@ class RecommendationModel(BaseModel):
     publisher: str = None
 
     @staticmethod
-    def candidate_to_recommendation(candidate: dict):
+    def candidate_dict_to_recommendation(candidate: dict):
         """
         Instantiate and populate a RecommendationModel object.
         :param candidate: a dictionary returned from dynamo db
@@ -70,7 +70,7 @@ class RecommendationModel(BaseModel):
         if not response['Items']:
             return []
         # assume 'candidates' below contains publisher
-        return list(map(RecommendationModel.candidate_to_recommendation, response['Items'][0]['candidates']))
+        return list(map(RecommendationModel.candidate_dict_to_recommendation, response['Items'][0]['candidates']))
 
     @staticmethod
     async def get_recommendations_from_experiment(experiment: SlateExperimentModel) -> ['RecommendationModel']:
@@ -86,7 +86,7 @@ class RecommendationModel(BaseModel):
         # get the recommendations
         for candidate_set in candidate_sets:
             for candidate in candidate_set.candidates:
-                recommendations.append(RecommendationModel.candidate_to_recommendation(candidate.dict()))
+                recommendations.append(RecommendationModel.candidate_dict_to_recommendation(candidate.dict()))
 
         # apply rankers from the slate experiment on the candidate set's candidates
         for ranker in experiment.rankers:
