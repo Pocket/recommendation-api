@@ -81,15 +81,19 @@ class SlateModel(BaseModel):
         :param recommendation_count: int, None = include unlimited recs, 0 = no recs, > 0 include this many recs
         :return: a SlateModel object
         """
-        if recommendation_count is None:
-            experiment = SlateExperimentModel.choose_experiment(slate_config.experiments)
-            recommendations = await RecommendationModel.get_recommendations_from_experiment(experiment)
-        elif recommendation_count == 0:
-            experiment = None
-            recommendations = []
+
+        experiment = None
+        recommendations = []
 
         """
-        If we have a none 0 recommendation count lets slice the results to what we want to return
+        If we have a None or > 0 recommendation count lets get some recommendations
+        """
+        if recommendation_count != 0:
+            experiment = SlateExperimentModel.choose_experiment(slate_config.experiments)
+            recommendations = await RecommendationModel.get_recommendations_from_experiment(experiment)
+
+        """
+        If we have a None or > 0 recommendation count lets slice the recs up.
         """
         if recommendation_count is not None and int(recommendation_count) > 0:
             recommendations = recommendations[:recommendation_count]
