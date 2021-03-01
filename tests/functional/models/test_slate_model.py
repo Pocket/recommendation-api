@@ -50,8 +50,8 @@ class TestSlateModel(TestDynamoDBBase):
         assert len(slates[0].recommendations) == 0
 
     async def test_get_slates_from_slate_configs_without_recs(self):
-        slates = await SlateModel.get_slates_from_slate_configs([slate_config_model], with_recs=False)
-        
+        slates = await SlateModel.get_slates_from_slate_configs([slate_config_model], with_recs=0)
+
         assert slates[0].id == slate_config_id
         assert len(slates[0].recommendations) == 0
 
@@ -60,3 +60,9 @@ class TestSlateModel(TestDynamoDBBase):
 
         assert slates[0].id == slate_config_id
         assert len(slates[0].recommendations) == 1
+
+    async def test_get_slates_from_slate_configs_with_limited_recs(self):
+        slates = await SlateModel.get_slates_from_slate_configs([slate_config_model], recommendation_count=2)
+
+        assert slates[0].id == slate_config_id
+        assert len(slates[0].recommendations) == 2

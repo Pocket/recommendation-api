@@ -12,7 +12,12 @@ type Query {
     """
     Request a specific `Slate` by id
     """
-    getSlate(slateId: String!): Slate
+    getSlate(
+        "The {Slate.id} of the slate to return"
+        slateId: String!,
+        "Maximum number of recommendations to return in {Slate.recommendations}"
+        recommendationCount: Int
+    ): Slate
 
     """
     List all available slates
@@ -22,7 +27,14 @@ type Query {
     """
     Request a specific `Layout` by id
     """
-    getLayout(layoutId: String): Layout
+    getLayout(
+        "The {Layout.id} of the layout to return"
+        layoutId: String!,
+        "Maximum number of slates to return in {Layout.slates}"
+        slateCount: Int,
+        "Maximum number of recommendations to return in {Slate.recommendations}"
+        recommendationCount: Int
+    ): Layout
 }
 
 """
