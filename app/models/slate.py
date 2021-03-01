@@ -88,10 +88,10 @@ class SlateModel(BaseModel):
             experiment = None
             recommendations = []
 
-        """s
+        """
         If we have a none 0 recommendation count lets slice the results to what we want to return
         """
-        if recommendation_count > 0:
+        if recommendation_count is not None and int(recommendation_count) > 0:
             recommendations = recommendations[:recommendation_count]
 
         return SlateModel(
