@@ -80,12 +80,14 @@ def thompson_sampling(
         alpha_prior, beta_prior = 0.02, 1.0
 
     scores = []
+    # create prior distribution for CTR from parameters in click data table
     prior = beta(alpha_prior, beta_prior)
     for rec in recs:
         resolved_id = rec.item.item_id
         d = clk_data.get(resolved_id)
         if d:
             clicks = max(d.clicks + alpha_prior, 1e-18)
+            # posterior combines click data with prior (also a beta distribution)
             no_clicks = max(d.impressions - d.clicks + beta_prior, 1e-18)
             # sample from posterior for CTR given click data
             score = beta.rvs(clicks, no_clicks)

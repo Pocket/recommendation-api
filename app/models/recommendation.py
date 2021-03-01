@@ -105,11 +105,17 @@ class RecommendationModel(BaseModel):
     async def __thompson_sample(recommendations: ['RecommendationModel']) -> ['RecommendationModel']:
         """
         Special processing for handling the thompson sampling ranker. Retrieves click data for the items being ranked
-        and uses that for thompson sampling algorithm.
+        and uses that for thompson sampling algorithm with beta distirbutions.
 
-        Thompson Sampling uses click data to make a list of tried-and-true recommendations that typically generate a
-        lot of interest, mixed in with some newer ones that we want to try out so we can keep adding more interesting
-        items to our repertoire.
+        Thompson sampling is a probabilistic approach to estimating the CTR of an item.  It combines historical data
+        about item CTR on a specific recommendation surface with per-item click and impression data to form
+        a distribution for each item's CTR.  For new items, the distribution relies more on the historical data.  For
+        items with available click data, the distribution will reflect the observed performance and improve in
+        its accuracy.
+
+        Items are ranked by sampling from the corresponding CTR distribution which is updated daily.
+        This allows us to balance the need to explore new items' performance, and rank highly items
+        that have already demonstrated high performance (in terms of CTR).
 
         :param recommendations: a list of RecommendationModel instances
         :return: a list of RecommendationModel instances
