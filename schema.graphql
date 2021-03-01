@@ -22,7 +22,10 @@ type Query {
     """
     List all available slates
     """
-    listSlates: [Slate!]!
+    listSlates(
+        "Maximum number of recommendations to return in {Slate.recommendations}"
+        recommendationCount: Int = 0
+    ): [Slate!]!
 
     """
     Request a specific `Layout` by id
@@ -186,11 +189,6 @@ type Slate {
     Production apps typically won't request a specific one, but can for QA or during a/b testing.
     """
     experimentID: String!
-
-    """
-    TODO: What is this?
-    """
-    pageviewGUID: String
 
     """
     The name to show to the user for this set of recomendations

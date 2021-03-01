@@ -38,14 +38,14 @@ class SlateModel(BaseModel):
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_all')
-    async def get_all() -> List['SlateModel']:
+    async def get_all(recommendation_count: int = 0) -> List['SlateModel']:
         """
         Retrieves all slates from the database
-
+        :param recommendation_count: int, None = include unlimited recs, 0 = no recs, > 0 include this many recs
         :return: a list fo SlateModel objects
         """
         slate_configs = SlateConfigModel.SLATE_CONFIGS_BY_ID.values()
-        return await SlateModel.get_slates_from_slate_configs(slate_configs, recommendation_count=0)
+        return await SlateModel.get_slates_from_slate_configs(slate_configs, recommendation_count=recommendation_count)
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_slates_from_slate_configs')
@@ -85,16 +85,12 @@ class SlateModel(BaseModel):
         experiment = None
         recommendations = []
 
-        """
-        If we have a None or > 0 recommendation count lets get some recommendations
-        """
+        # If we have a None or > 0 recommendation count lets get some recommendations
         if recommendation_count != 0:
             experiment = SlateExperimentModel.choose_experiment(slate_config.experiments)
             recommendations = await RecommendationModel.get_recommendations_from_experiment(experiment)
 
-        """
-        If we have a None or > 0 recommendation count lets slice the recs up.
-        """
+        # If we have a None or > 0 recommendation count lets slice the recs up.
         if recommendation_count is not None and int(recommendation_count) > 0:
             recommendations = recommendations[:recommendation_count]
 
