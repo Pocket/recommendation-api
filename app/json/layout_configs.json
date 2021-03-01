@@ -49,7 +49,20 @@
       }
     ]
   },
-
+  {
+   "id": "9c3018a8-8aa9-4f91-81e9-ebcd95fc82da",
+   "description": "Explore Home Layout",
+   "experiments": [
+     {
+       "description": "Explore Home - No syndicated in top 5 results, live syndicated allowed below",
+       "rankers": [ ],
+       "slates": [
+         "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
+         "0737b00e-a21e-4875-a4c7-3e14926d4acf"
+       ]
+     }
+   ]
+  },
   {
    "id": "c18b41d8-8100-4037-aa64-416994e1d4cf",
    "description": "Explore Business Topic Layout",

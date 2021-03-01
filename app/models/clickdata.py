@@ -36,6 +36,13 @@ class ClickdataModel(BaseModel):
     @staticmethod
     @xray_recorder.capture_async('models.clickdata.get')
     async def get(module: RecommendationModules, item_list: List[str]) -> Dict[str, 'ClickdataModel']:
+        """
+        Retrieves click data for the given items in the given module (home/topic)
+
+        :param module: the module to filter against - home or topic currently
+        :param item_list: list of string item ids
+        :return: dictionary of ClickdataModel objects with keys of their respective `mod_item` values
+        """
         # Keys are namespaced by the module we are getting data from
         keys = {make_key(module, item) for item in item_list}
 

@@ -35,17 +35,12 @@ At the time of writing, SciPy, pip, and BigSur aren't compatible. This will like
 by an update in pip and/or SciPy in the near future. Until then:
 
 - Ask someone on Linux (Mathijs) or macOS Catalina (Chelsea) to add dependencies to Pipfile.
-- Untested alternative:
-   - Start a generic Python docker container.
-       ```
-       version: "3.9"
-   
-       services:
-         dev:
-           image: python:3.8
-       ```
-   - Run `apt-get install pipenv`
-   - Run `pipenv install <package>` in the Docker container.
+- Spin up a Python docker container:
+   - `docker-compose -f docker-compose-python-macosbigsur.yml run python /bin/bash`
+   - In the Docker container, run the following:
+        - `pip install pipenv`
+        - `cd recsapi`
+        - `pipenv install <package>` or `pipenv update <package>` for all necessary packages
 
 ## Debugging the app in PyCharm 
 1. Complete the 'Basic setup' above.
