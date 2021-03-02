@@ -43,7 +43,7 @@ class TestSlateModel(TestDynamoDBBase):
 
     async def test_list_slates(self):
         SlateConfigModel.SLATE_CONFIGS_BY_ID = {slate_config_id: slate_config_model}
-        slates = await SlateModel.get_all()
+        slates = await SlateModel.get_all(recommendation_count=100)
 
         assert type(slates) is list
         assert slates[0].id == slate_config_id
