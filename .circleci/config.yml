@@ -32,6 +32,11 @@ jobs:
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
+      - image: library/memcached:1.6
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+        name: memcached
       - image: localstack/localstack:0.12.1
         auth:
           username: $DOCKERHUB_USERNAME

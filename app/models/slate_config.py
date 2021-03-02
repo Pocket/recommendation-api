@@ -9,7 +9,7 @@ from app.models.slate_experiment import SlateExperimentModel
 
 class SlateConfigModel:
     """
-    Represents the experiments that we might run when a layout or a client requests a slate of this id. Data for this
+    Represents the experiments that we might run when a slate_lineup or a client requests a slate of this id. Data for this
     model lives in hard-coded JSON files (which will be incrementally updated through PRs).
 
     This JSON is parsed at startup, and instances of this model will be persisted in-memory for use by Slate instances.

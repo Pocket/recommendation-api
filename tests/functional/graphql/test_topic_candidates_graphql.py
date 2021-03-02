@@ -7,8 +7,8 @@ from tests.functional.test_dynamodb_base import TestDynamoDBBase
 class TestGraphQLCandidates(TestDynamoDBBase):
     client: Client
 
-    def setup_method(self, method):
-        super().setup_method(self)
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         self.client = Client(schema)
 
     def test_get_topic_recommendations(self):

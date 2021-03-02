@@ -3,8 +3,8 @@ from app.models.topic import TopicModel, PageType
 
 
 class TestTopicMetadata(TestDynamoDBBase):
-    def setup_method(self, method):
-        super().setup_method(self)
+    async def asyncSetUp(self):
+        await super().asyncSetUp()
         self.populate_metadata_table()
 
     async def test_main_list_topics(self):

@@ -53,6 +53,10 @@ def thompson_sampling(
     Re-rank items using Thompson sampling which combines exploitation of known item CTR
     with exploration of new items with unknown CTR modeled by a prior
 
+    Thompson Sampling uses click data to make a list of tried-and-true recommendations that typically generate a
+    lot of interest, mixed in with some newer ones that we want to try out so we can keep adding more interesting
+    items to our repertoire.
+
     :param recs: a list of recommendations in the desired order (pre-publisher spread)
     :param clk_data: a dict with item_id as key and dynamodb row modeled as ClickDataModel
     :return: a re-ordered version of recs satisfying the spread as best as possible
@@ -76,12 +80,14 @@ def thompson_sampling(
         alpha_prior, beta_prior = 0.02, 1.0
 
     scores = []
+    # create prior distribution for CTR from parameters in click data table
     prior = beta(alpha_prior, beta_prior)
     for rec in recs:
         resolved_id = rec.item.item_id
         d = clk_data.get(resolved_id)
         if d:
             clicks = max(d.clicks + alpha_prior, 1e-18)
+            # posterior combines click data with prior (also a beta distribution)
             no_clicks = max(d.impressions - d.clicks + beta_prior, 1e-18)
             # sample from posterior for CTR given click data
             score = beta.rvs(clicks, no_clicks)
