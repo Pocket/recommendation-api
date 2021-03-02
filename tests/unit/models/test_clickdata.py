@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from app.models.clickdata import ClickdataModel
 
 
@@ -5,11 +7,11 @@ class TestClickdata:
 
     def test_dynamodb_row_to_clickdata(self):
         row = {
-            "clicks": 0.045687984008122705,
-            "created_at": 1610404066,
-            "expires_at": 1644359266,
-            "impressions": 2.207612237118199,
-            "mod_item": "topic/default"
+            "clicks": Decimal(0.045687984008122705),
+            "created_at": Decimal(1610404066),
+            "expires_at": Decimal(1644359266),
+            "impressions": Decimal(2.207612237118199),
+            "mod_item": "topic/default",
         }
 
         clickdata = ClickdataModel.parse_obj(row)

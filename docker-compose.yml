@@ -18,6 +18,7 @@ services:
       - "./app:/opt/project/src:ro" # PyCharm overrides app to /opt/project/src
     depends_on:
       - localstack
+      - memcached
 
   localstack:
     image: localstack/localstack:0.12.1
@@ -38,3 +39,8 @@ services:
       - EXTRA_CORS_ALLOWED_HEADERS=Content-Disposition, Content-Type, x-amz-acl
       - EXTRA_CORS_EXPOSE_HEADERS=ETag
       - HOSTNAME_EXTERNAL=localstack
+
+  memcached:
+    image: library/memcached:1.6
+    ports:
+      - '11211:11211'

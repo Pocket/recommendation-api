@@ -23,8 +23,6 @@ starlette = "*"
 sentry-sdk = "*"
 graphene-pydantic = "==0.1.0"
 aioboto3 = "*"
-# we need to install gunicorn, uvicorn, uvloop, httptools, and fastapi
-# so it starts in the virtualenv instead of the one in the docker image
 gunicorn = "*"
 uvicorn = "*"
 fastapi = "*"
@@ -35,6 +33,9 @@ xraysink = "*"
 aws-xray-sdk = "*"
 scipy = "*"
 jsonschema = "*"
+aiocache = {extras = ["memcached"], version = "*"}
+# aiocache will automatically use ujson when available. ujson supports decimal types, and json does not.
+ujson = "*"
 
 [requires]
 python_version = "3.8"

@@ -38,7 +38,7 @@ class RecommendationModel(BaseModel):
     publisher: str = None
 
     @staticmethod
-    def candidate_to_recommendation(candidate: dict):
+    def candidate_dict_to_recommendation(candidate: dict):
         """
         Instantiate and populate a RecommendationModel object.
         :param candidate: a dictionary returned from dynamo db
@@ -70,7 +70,7 @@ class RecommendationModel(BaseModel):
         if not response['Items']:
             return []
         # assume 'candidates' below contains publisher
-        return list(map(RecommendationModel.candidate_to_recommendation, response['Items'][0]['candidates']))
+        return list(map(RecommendationModel.candidate_dict_to_recommendation, response['Items'][0]['candidates']))
 
     @staticmethod
     async def get_recommendations_from_experiment(experiment: SlateExperimentModel) -> ['RecommendationModel']:
@@ -79,17 +79,14 @@ class RecommendationModel(BaseModel):
         :param experiment: a SlateExperimentModel instance
         :return: a list of RecommendationModel instances
         """
-        candidate_sets = []
         # for each candidate set id, get the candidate set record from the db
-        for candidate_set_id in experiment.candidate_sets:
-            candidate_sets.append(CandidateSetModel.get(candidate_set_id))
-        candidate_sets = await gather(*candidate_sets)
+        candidate_sets = await gather(*(CandidateSetModel.get(cs_id) for cs_id in experiment.candidate_sets))
 
         recommendations = []
         # get the recommendations
         for candidate_set in candidate_sets:
             for candidate in candidate_set.candidates:
-                recommendations.append(RecommendationModel.candidate_to_recommendation(candidate))
+                recommendations.append(RecommendationModel.candidate_dict_to_recommendation(candidate.dict()))
 
         # apply rankers from the slate experiment on the candidate set's candidates
         for ranker in experiment.rankers:
@@ -122,7 +119,7 @@ class RecommendationModel(BaseModel):
         """
         item_ids = [recommendation.item.item_id for recommendation in recommendations]
         try:
-            click_data = await ClickdataModel.get_clickdata(RecommendationModules.TOPIC, item_ids)
+            click_data = await ClickdataModel.get(RecommendationModules.TOPIC, item_ids)
         except ValueError:
             rec_item_ids = ','.join(item_ids)
             print(f'click data not found for candidates with item ids: {rec_item_ids}')

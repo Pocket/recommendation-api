@@ -11,6 +11,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from xraysink.asgi.middleware import xray_middleware
 from xraysink.context import AsyncContext
 
+from app.cache import initialize_caches
 from app.config import ENV, ENV_PROD, ENV_DEV, service, sentry as sentry_config
 from app.graphql.graphql import schema
 from app.graphql.user_middleware import UserMiddleware
@@ -34,6 +35,7 @@ sentry_sdk.integrations.logging.ignore_logger("graphql.execution.utils")
 # Standard asyncio X-Ray configuration, customise as you choose
 xray_recorder.configure(context=AsyncContext(), service=service.get('domain'), plugins=['ecsplugin'])
 
+
 app = FastAPI()
 app.add_middleware(BaseHTTPMiddleware, dispatch=xray_middleware)
 app.add_middleware(SentryAsgiMiddleware)
@@ -43,7 +45,6 @@ app.add_route("/", GraphQLAppWithMiddleware(
     schema=schema,
     executor_class=AsyncioExecutor,
     middleware=[GraphQLSentryMiddleware(), UserMiddleware()]))
-
 
 @app.get("/health-check")
 async def read_root(response: Response):
@@ -67,6 +68,14 @@ class MissingCandidateSetException(ValueError):
     This allows Sentry to group these exceptions, and trigger an alarm based on them.
     """
     pass
+
+
+@app.on_event("startup")
+async def initialize_caches_startup_event():
+    # aiocache needs to be on the same event loop as FastAPI.
+    # Currently initialize_caches() isn't asynchronous, but we put initialize_caches() in a startup event, just in case
+    # it will need to be in the future.
+    initialize_caches()
 
 
 @app.on_event("startup")
