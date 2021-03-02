@@ -16,7 +16,7 @@ type Query {
         "The {Slate.id} of the slate to return"
         slateId: String!,
         "Maximum number of recommendations to return in {Slate.recommendations}, defaults to all"
-        recommendationCount: Int
+        recommendationCount: Int = 10
     ): Slate
 
     """
@@ -34,9 +34,9 @@ type Query {
         "The {Layout.id} of the layout to return"
         layoutId: String!,
         "Maximum number of slates to return in {Layout.slates}, defaults to all"
-        slateCount: Int,
+        slateCount: Int = 8,
         "Maximum number of recommendations to return in {Slate.recommendations}, defaults to all"
-        recommendationCount: Int
+        recommendationCount: Int = 10
     ): Layout
 }
 

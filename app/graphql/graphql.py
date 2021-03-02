@@ -21,14 +21,14 @@ class Query(ObjectType):
                                                                                      "results to return"))
     list_topics = List(Topic)
     get_slate = Field(Slate, slate_id=String(required=True, description="Slate id to get a specific slate"),
-                      recommendation_count=Int(default_value=None,
-                                               description="Number of recommendations to return, defaults to all"))
+                      recommendation_count=Int(default_value=10,
+                                               description="Number of recommendations to return, defaults to 10"))
     list_slates = Field(List(Slate), recommendation_count=Int(default_value=0,
                                                               description="Number of recommendations to return, defaults to 0"))
     get_layout = Field(Layout, layout_id=String(required=True, description="Layout id to get a specific layout"),
-                       slate_count=Int(default_value=None, description="Number of slates to return, defaults to all"),
-                       recommendation_count=Int(default_value=None,
-                                                description="Maximum number of recommendations to return, defaults to all"))
+                       slate_count=Int(default_value=8, description="Number of slates to return, defaults to 8"),
+                       recommendation_count=Int(default_value=10,
+                                                description="Maximum number of recommendations to return, defaults to 10"))
 
     async def resolve_get_topic_recommendations(self, info, slug: str, algorithmic_count: int,
                                                 curated_count: int) -> TopicRecommendationsModel:
