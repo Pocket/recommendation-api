@@ -14,8 +14,8 @@ T = TypeVar('T', bound='ExperimentModel')
 
 class ExperimentModel(metaclass=ABCMeta):
     """
-    This is a base class for Slate experiments and Layout experiments. As of writing, these implementations are nearly
-    identical - slate experiments have candidate sets (an array of strings) while layout experiments have slates (also
+    This is a base class for Slate experiments and SlateLineup experiments. As of writing, these implementations are nearly
+    identical - slate experiments have candidate sets (an array of strings) while slate_lineup experiments have slates (also
     an array of strings). This base class seemed the most appropriate abstraction at the time, but may require
     revisiting if experiments diverge further.
     """
