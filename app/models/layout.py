@@ -20,8 +20,8 @@ class LayoutModel(BaseModel):
 
     @staticmethod
     @xray_recorder.capture_async('models_layout_get_layout')
-    async def get_layout(layout_id: str, user_id: str = None, recommendation_count: int = None,
-                         slate_count: int = None) -> 'LayoutModel':
+    async def get_layout(layout_id: str, user_id: Optional[str] = None, recommendation_count: Optional[int] = None,
+                         slate_count: Optional[int] = None) -> 'LayoutModel':
         """
         Retrieves a layout based on the given `layout_id`
 
