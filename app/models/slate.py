@@ -38,7 +38,7 @@ class SlateModel(BaseModel):
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_all')
-    async def get_all(recommendation_count: int = 0) -> List['SlateModel']:
+    async def get_all(recommendation_count: Optional[int] = 0) -> List['SlateModel']:
         """
         Retrieves all slates from the database
         :param recommendation_count: int, None = include unlimited recs, 0 = no recs, > 0 include this many recs
