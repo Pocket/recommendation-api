@@ -43,8 +43,8 @@ class LayoutModel(BaseModel):
         )
 
     @staticmethod
-    async def __get_slates_from_experiment(experiment: LayoutExperimentModel, recommendation_count: int = None,
-                                           slate_count: int = None) -> List[SlateModel]:
+    async def __get_slates_from_experiment(experiment: LayoutExperimentModel, recommendation_count: Optional[int] = None,
+                                           slate_count: Optinoal[int] = None) -> List[SlateModel]:
         """
         Retrieves an experiment ID and a list of SlateModel objects
 
