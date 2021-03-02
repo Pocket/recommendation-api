@@ -17,8 +17,8 @@ from app.graphql.graphql import schema
 from app.graphql.user_middleware import UserMiddleware
 from app.graphql_app import GraphQLAppWithMiddleware, GraphQLSentryMiddleware
 from app.models.candidate_set import CandidateSetModel
-from app.models.layout_experiment import LayoutExperimentModel
-from app.models.layout_config import LayoutConfigModel
+from app.models.slate_lineup_experiment import SlateLineupExperimentModel
+from app.models.slate_lineup_config import SlateLineupConfigModel
 from app.models.slate_config import SlateConfigModel
 from app.health_status import get_health_status, set_health_status, HealthStatus
 
@@ -56,7 +56,7 @@ async def read_root(response: Response):
 
 class MissingSlateException(ValueError):
     """
-    Raise when a slate is referenced in a layout, but does not exist in slate_configs.json.
+    Raise when a slate is referenced in a slate_lineup, but does not exist in slate_configs.json.
     This allows Sentry to group these exceptions, and trigger an alarm based on them.
     """
     pass
@@ -83,10 +83,10 @@ async def load_slate_configs():
     # parse json into objects
     slate_configs = SlateConfigModel.load_slate_configs()
     SlateConfigModel.SLATE_CONFIGS_BY_ID = {s.id: s for s in slate_configs}
-    layout_configs = LayoutConfigModel.load_layout_configs()
-    LayoutConfigModel.LAYOUT_CONFIGS_BY_ID = {lc.id: lc for lc in layout_configs}
+    slate_lineup_configs = SlateLineupConfigModel.load_slate_lineup_configs()
+    SlateLineupConfigModel.SLATE_LINEUP_CONFIGS_BY_ID = {lc.id: lc for lc in slate_lineup_configs}
 
-    # Validate layout and slate configs on prod and dev, not locally.
+    # Validate slate_lineup and slate configs on prod and dev, not locally.
     if ENV in {ENV_PROD, ENV_DEV}:
         # wow i do not love this nested loop soup, BUT it does give us nice full context for the error message
         for slate_config in slate_configs:
@@ -100,14 +100,14 @@ async def load_slate_configs():
                         logging.error(message)
                         sentry_sdk.capture_exception(MissingCandidateSetException(message))
 
-        for layout_config in layout_configs:
-            for experiment in layout_config.experiments:
+        for slate_lineup_config in slate_lineup_configs:
+            for experiment in slate_lineup_config.experiments:
                 for slate in experiment.slates:
                     logging.info(f"Validating slate id {slate}")
-                    if not LayoutExperimentModel.slate_id_exists(slate):
+                    if not SlateLineupExperimentModel.slate_id_exists(slate):
                         set_health_status(HealthStatus.UNHEALTHY)
                         raise MissingSlateException(
-                            f'slate {layout_config.id}|{experiment.description}|{slate} was not found'
+                            f'slate {slate_lineup_config.id}|{experiment.description}|{slate} was not found'
                             f'in json/slate_configs.json - application start failed')
 
     set_health_status(HealthStatus.HEALTHY)

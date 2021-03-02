@@ -4,9 +4,9 @@ from app.models.experiment import ExperimentModel
 from app.models.slate_config import SlateConfigModel
 
 
-class LayoutExperimentModel(ExperimentModel):
+class SlateLineupExperimentModel(ExperimentModel):
     """
-    Models a layout experiment
+    Models a slate_lineup experiment
     """
     def __init__(self, experiment_id: str, description: str, rankers: List[str],slates: List[str],
                  weight: float = ExperimentModel.DEFAULT_WEIGHT):
@@ -19,12 +19,12 @@ class LayoutExperimentModel(ExperimentModel):
         self.slates = slates
 
     @staticmethod
-    def load_from_dict(experiment_dict: dict) -> 'LayoutExperimentModel':
+    def load_from_dict(experiment_dict: dict) -> 'SlateLineupExperimentModel':
         """
         Creates an experiment object from a json-derived dictionary
 
         :param experiment_dict: a dictionary derived from parsing json
-        :return: a LayoutExperimentModel object
+        :return: a SlateLineupExperimentModel object
         """
         # generate an id for the experiment
         experiment_id = ExperimentModel.generate_experiment_id(experiment_dict)
@@ -32,7 +32,7 @@ class LayoutExperimentModel(ExperimentModel):
         # determine the weight
         weight = experiment_dict.get('weight', ExperimentModel.DEFAULT_WEIGHT)
 
-        return LayoutExperimentModel(experiment_id, experiment_dict["description"], experiment_dict["rankers"],
+        return SlateLineupExperimentModel(experiment_id, experiment_dict["description"], experiment_dict["rankers"],
                                      experiment_dict["slates"], weight)
 
     @staticmethod

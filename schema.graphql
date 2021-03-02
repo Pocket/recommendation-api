@@ -2,12 +2,12 @@ type Query {
     """
     Get the recomendations for a specific topic
     """
-    getTopicRecommendations(slug: String!, algorithmicCount: Int = 20, curatedCount: Int = 5): TopicRecommendations  @deprecated(reason: "Use `getLayout` with a specific layout instead.")
+    getTopicRecommendations(slug: String!, algorithmicCount: Int = 20, curatedCount: Int = 5): TopicRecommendations  @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
 
     """
     List all available topics that we have recomendarions for.
     """
-    listTopics: [Topic!]! @deprecated(reason: "Use `getLayout` with a specific layout instead.")
+    listTopics: [Topic!]! @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
 
     """
     Request a specific `Slate` by id
@@ -15,7 +15,7 @@ type Query {
     getSlate(
         "The {Slate.id} of the slate to return"
         slateId: String!,
-        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to all"
+        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
         recommendationCount: Int = 10
     ): Slate
 
@@ -28,21 +28,21 @@ type Query {
     ): [Slate!]!
 
     """
-    Request a specific `Layout` by id
+    Request a specific `SlateLineup` by id
     """
-    getLayout(
-        "The {Layout.id} of the layout to return"
-        layoutId: String!,
-        "Maximum number of slates to return in {Layout.slates}, defaults to all"
+    getSlateLineup(
+        "The {SlateLineup.id} of the SlateLineup to return"
+        slateLineupId: String!,
+        "Maximum number of slates to return in {SlateLineup.slates}, defaults to 8"
         slateCount: Int = 8,
-        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to all"
+        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
         recommendationCount: Int = 10
-    ): Layout
+    ): SlateLineup
 }
 
 """
 Represents a type of page for /explore
-Deprecated for Layouts
+Deprecated for SlateLineups
 """
 enum PageType {
     editorial_collection
@@ -51,7 +51,7 @@ enum PageType {
 
 """
 Represents a topic for /explore
-Deprecated for Layouts
+Deprecated for SlateLineups
 """
 type Topic {
     """
@@ -122,7 +122,7 @@ type Topic {
 
 """
 Represents a set of recomednations for /explore
-Deprecated for Layouts
+Deprecated for SlateLineups
 """
 type TopicRecommendations {
     """
@@ -179,7 +179,7 @@ type Slate {
     id: String!
 
     """
-    A guid that is unique to every API request that returned slates, such as `getRecommendationLayout` or `getSlate`.
+    A guid that is unique to every API request that returned slates, such as `getSlateLineup` or `getSlate`.
     The API will provide a new request id every time apps hit the API.
     """
     requestID: String!
@@ -206,13 +206,13 @@ type Slate {
     recommendations: [Recommendation!]!
 }
 
-type Layout {
+type SlateLineup {
     """
-    A unique slug/id that describes a layout. The Data & Learning team will provide apps what id to use here for specific cases.
+    A unique slug/id that describes a SlateLineup. The Data & Learning team will provide apps what id to use here for specific cases.
     """
     id: ID!
     """
-    A guid that is unique to every API request that returned slates, such as `getRecommendationLayout` or `getSlate`.
+    A guid that is unique to every API request that returned slates, such as `getRecommendationSlateLineup` or `getSlate`.
     The API will provide a new request id every time apps hit the API.
     """
     requestID: String!
