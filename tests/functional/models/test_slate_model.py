@@ -6,7 +6,7 @@ from app.models.slate_config import SlateConfigModel
 from app.models.slate_experiment import SlateExperimentModel
 from app.models.slate import SlateModel
 
-slate_config_id = 'test-layout-config-id'
+slate_config_id = 'test-slate_lineup-config-id'
 slate_experiment = SlateExperimentModel('test-ex', 'test-ex-desc', ['top15', 'thompson-sampling'],
                                         ['test-candidate-id'])
 slate_config_model = SlateConfigModel(slate_config_id, 'test-this-slate', 'test-desc', [slate_experiment])

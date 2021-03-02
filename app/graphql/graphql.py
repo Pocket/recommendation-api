@@ -4,11 +4,11 @@ from graphene_federation import build_schema
 from app.models.topic import TopicModel
 from app.models.topic_recommendations import TopicRecommendationsModel
 from app.models.slate import SlateModel
-from app.models.layout import LayoutModel
+from app.models.slate_lineup import SlateLineupModel
 from app.graphql.topic import Topic
 from app.graphql.topic_recommendations import TopicRecommendations
 from app.graphql.slate import Slate
-from app.graphql.layout import Layout
+from app.graphql.slate_lineup import SlateLineup
 
 
 class Query(ObjectType):
@@ -22,7 +22,7 @@ class Query(ObjectType):
     list_topics = List(Topic)
     get_slate = Field(Slate, slate_id=String(required=True, description="Slate id to get a specific slate"))
     list_slates = List(Slate)
-    get_layout = Field(Layout, layout_id=String(required=True, description="Layout id to get a specific layout"))
+    get_slate_lineup = Field(SlateLineup, slate_lineup_id=String(required=True, description="SlateLineup id to get a specific slate lineup"))
 
     async def resolve_get_topic_recommendations(self, info, slug: str, algorithmic_count: int,
                                                 curated_count: int) -> TopicRecommendationsModel:
@@ -38,8 +38,8 @@ class Query(ObjectType):
     async def resolve_list_slates(self, info) -> [SlateModel]:
         return await SlateModel.get_all()
 
-    async def resolve_get_layout(self, info, layout_id: str) -> LayoutModel:
-        return await LayoutModel.get_layout(layout_id=layout_id, user_id=info.context.get('user_id'))
+    async def resolve_get_slate_lineup(self, info, slate_lineup_id: str) -> SlateLineupModel:
+        return await SlateLineupModel.get_slate_lineup(slate_lineup_id=slate_lineup_id, user_id=info.context.get('user_id'))
 
 
 ##

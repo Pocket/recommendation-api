@@ -18,10 +18,10 @@
   },
   {
     "id": "3b064b50-5592-4030-b19a-9f05468fbbcd",
-    "description": "Perf test layout",
+    "description": "Perf test slate_lineup",
     "experiments": [
       {
-        "description": "Layout test 1",
+        "description": "SlateLineup test 1",
         "rankers": [ ],
         "slates": [
           "de254c5d-57a7-4553-850f-153ee385014d",
@@ -34,7 +34,7 @@
         ]
       },
       {
-        "description": "Layout test 2",
+        "description": "SlateLineup test 2",
         "rankers": [ ],
         "slates": [
           "de254c5d-57a7-4553-850f-153ee385014d",
@@ -51,7 +51,7 @@
   },
   {
    "id": "9c3018a8-8aa9-4f91-81e9-ebcd95fc82da",
-   "description": "Explore Home Layout",
+   "description": "Explore Home SlateLineup",
    "experiments": [
      {
        "description": "Explore Home - No syndicated in top 5 results, live syndicated allowed below",
@@ -65,10 +65,10 @@
   },
   {
    "id": "c18b41d8-8100-4037-aa64-416994e1d4cf",
-   "description": "Explore Business Topic Layout",
+   "description": "Explore Business Topic SlateLineup",
    "experiments": [
      {
-       "description": "Explore Topic Layout",
+       "description": "Explore Topic SlateLineup",
        "rankers": [ ],
        "slates": [
          "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
@@ -79,10 +79,10 @@
  },
  {
    "id": "ff23f296-6c5e-4f53-a46a-3feb5006f261",
-   "description": "Explore Career Topic Layout",
+   "description": "Explore Career Topic SlateLineup",
    "experiments": [
      {
-       "description": "Explore Topic Layout",
+       "description": "Explore Topic SlateLineup",
        "rankers": [ ],
        "slates": [
          "e6c8db8d-cae7-4947-a57e-872dec639472",
@@ -93,10 +93,10 @@
  },
  {
    "id": "7bf5c80a-ffd1-436a-9dea-4f9badea463a",
-   "description": "Explore Education Topic Layout",
+   "description": "Explore Education Topic SlateLineup",
    "experiments": [
      {
-       "description": "Explore Topic Layout",
+       "description": "Explore Topic SlateLineup",
        "rankers": [ ],
        "slates": [
          "8aaac382-9c27-42ab-9470-ac1dfc666262",
@@ -107,10 +107,10 @@
  },
  {
    "id": "cd1f803f-30bd-424b-9d75-6e8d3c8e8450",
-   "description": "Explore Entertainment Topic Layout",
+   "description": "Explore Entertainment Topic SlateLineup",
    "experiments": [
      {
-       "description": "Explore Topic Layout",
+       "description": "Explore Topic SlateLineup",
        "rankers": [ ],
        "slates": [
          "ce96db55-f32e-48f1-929f-216eb2e8c082",
@@ -121,10 +121,10 @@
  },
  {
    "id": "c057d284-31e6-4ba0-ae09-3478f3d40ec7",
-   "description": "Explore Food Topic Layout",
+   "description": "Explore Food Topic SlateLineup",
    "experiments": [
      {
-       "description": "Explore Topic Layout",
+       "description": "Explore Topic SlateLineup",
        "rankers": [ ],
        "slates": [
          "884414d5-502d-4e1a-8e70-1dc8eb4a345a",
@@ -135,10 +135,10 @@
  },
  {
    "id": "b966a787-d9f2-432a-bd30-741d1ac797d1",
-   "description": "Explore Gaming Topic Layout",
+   "description": "Explore Gaming Topic SlateLineup",
    "experiments": [
      {
-       "description": "Explore Topic Layout",
+       "description": "Explore Topic SlateLineup",
        "rankers": [ ],
        "slates": [
          "44dff273-3604-40e9-a0b5-bf3852581990",
@@ -149,10 +149,10 @@
  },
  {
    "id": "1abc55f1-75b1-44cb-b5bd-65c4282b158d",
-   "description": "Explore Health Topic Layout",
+   "description": "Explore Health Topic SlateLineup",
    "experiments": [
      {
-       "description": "Explore Topic Layout",
+       "description": "Explore Topic SlateLineup",
        "rankers": [ ],
        "slates": [
          "494eaa68-f048-4f52-bb9a-5e7d2526f5cb",
@@ -163,10 +163,10 @@
  },
  {
    "id": "d273a8e2-ab17-43e8-809d-0abde4d617d7",
-   "description": "Explore Parenting Topic Layout",
+   "description": "Explore Parenting Topic SlateLineup",
    "experiments": [
      {
-       "description": "Explore Topic Layout",
+       "description": "Explore Topic SlateLineup",
        "rankers": [ ],
        "slates": [
          "e6600ffe-b65a-42d3-b570-f460f3d7326e",
@@ -177,10 +177,10 @@
  },
  {
    "id": "62585952-3eb8-4380-be06-266eca903cbc",
-   "description": "Explore Personal Finance Topic Layout",
+   "description": "Explore Personal Finance Topic SlateLineup",
    "experiments": [
      {
-       "description": "Explore Topic Layout",
+       "description": "Explore Topic SlateLineup",
        "rankers": [ ],
        "slates": [
          "72ce0827-9dbc-470f-9722-39476daaeb0f",
@@ -191,10 +191,10 @@
  },
  {
    "id": "72c3878f-c48b-413c-aff8-90d7a0d79d32",
-   "description": "Explore Politics Topic Layout",
+   "description": "Explore Politics Topic SlateLineup",
    "experiments": [
      {
-       "description": "Explore Topic Layout",
+       "description": "Explore Topic SlateLineup",
        "rankers": [ ],
        "slates": [
          "9901851d-ea76-4667-8dc7-0c1677ecb910",
@@ -205,10 +205,10 @@
  },
  {
    "id": "c2829dc4-6a86-4c87-aa3e-f75f67ae8230",
-   "description": "Explore Science Topic Layout",
+   "description": "Explore Science Topic SlateLineup",
    "experiments": [
      {
-       "description": "Explore Topic Layout",
+       "description": "Explore Topic SlateLineup",
        "rankers": [ ],
        "slates": [
          "ab6048ca-5c61-4e87-aefd-7a612b60ab7b",
@@ -219,10 +219,10 @@
  },
  {
    "id": "63f24663-0e80-4c08-82aa-3fb0e06c4979",
-   "description": "Explore Self-Improvement Topic Layout",
+   "description": "Explore Self-Improvement Topic SlateLineup",
    "experiments": [
      {
-       "description": "Explore Topic Layout",
+       "description": "Explore Topic SlateLineup",
        "rankers": [ ],
        "slates": [
          "47688fcf-2bbb-4e0e-a02e-1f68c248a67e",
@@ -233,10 +233,10 @@
  },
  {
    "id": "695e39f3-62e8-4430-8d12-e8b457ac7751",
-   "description": "Explore Sports Topic Layout",
+   "description": "Explore Sports Topic SlateLineup",
    "experiments": [
      {
-       "description": "Explore Topic Layout",
+       "description": "Explore Topic SlateLineup",
        "rankers": [ ],
        "slates": [
          "8a495385-9972-4d0e-b93e-4234f4897939",
@@ -247,10 +247,10 @@
  },
  {
    "id": "dc010ef1-1f34-473a-a4b5-4cc155e18a4a",
-   "description": "Explore Technology Topic Layout",
+   "description": "Explore Technology Topic SlateLineup",
    "experiments": [
      {
-       "description": "Explore Topic Layout",
+       "description": "Explore Topic SlateLineup",
        "rankers": [ ],
        "slates": [
          "fa61096a-b681-4251-b299-2fda06c49ebf",
@@ -261,10 +261,10 @@
  },
  {
    "id": "f16f670d-14f7-425d-a310-0bb8c267dba2",
-   "description": "Explore Travel Topic Layout",
+   "description": "Explore Travel Topic SlateLineup",
    "experiments": [
      {
-       "description": "Explore Topic Layout",
+       "description": "Explore Topic SlateLineup",
        "rankers": [ ],
        "slates": [
          "d024ce9c-ed96-453f-a81e-8a0b850681e7",
