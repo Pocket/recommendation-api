@@ -2,7 +2,7 @@ import uuid
 
 from aws_xray_sdk.core import xray_recorder
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 from app.models.layout_config import LayoutConfigModel
 from app.models.layout_experiment import LayoutExperimentModel
@@ -44,7 +44,7 @@ class LayoutModel(BaseModel):
 
     @staticmethod
     async def __get_slates_from_experiment(experiment: LayoutExperimentModel, recommendation_count: Optional[int] = None,
-                                           slate_count: Optinoal[int] = None) -> List[SlateModel]:
+                                           slate_count: Optional[int] = None) -> List[SlateModel]:
         """
         Retrieves an experiment ID and a list of SlateModel objects
 

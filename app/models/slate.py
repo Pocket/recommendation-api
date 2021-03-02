@@ -3,7 +3,7 @@ import uuid
 from asyncio import gather
 from aws_xray_sdk.core import xray_recorder
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 from app.models.recommendation import RecommendationModel
 from app.models.slate_config import SlateConfigModel
@@ -50,7 +50,7 @@ class SlateModel(BaseModel):
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_slates_from_slate_configs')
     async def get_slates_from_slate_configs(slate_configs: List['SlateConfigModel'],
-                                            recommendation_count: int = None) -> List['SlateModel']:
+                                            recommendation_count: Optional[int] = None) -> List['SlateModel']:
         """
 
         :param slate_configs:
@@ -73,7 +73,7 @@ class SlateModel(BaseModel):
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_slate_from_slate_config')
     async def __get_slate_from_slate_config(slate_config: 'SlateConfigModel',
-                                            recommendation_count: int = None) -> 'SlateModel':
+                                            recommendation_count: Optional[int] = None) -> 'SlateModel':
         """
         Returns a slate model based on the supplied config
 
