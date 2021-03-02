@@ -31,11 +31,11 @@ config:
 
 scenarios:
 
-  - name: "getSlateLineup Perf test layout"
+  - name: "getSlateLineup Perf test SlateLineup"
     flow:
       - post:
           url: "/"
-          body: '{"query":"query get_layout{ getSlateLineup(slateLinueupId: \"3b064b50-5592-4030-b19a-9f05468fbbcd\") { id slates {id recommendations { itemId publisher recSrc feedId} } } }"}'
+          body: '{"query":"query get_slate_lineup{ getSlateLineup(slateLinueupId: \"3b064b50-5592-4030-b19a-9f05468fbbcd\") { id slates {id recommendations { itemId publisher recSrc feedId} } } }"}'
           headers:
              Content-Type: application/json
           expect:
@@ -46,7 +46,7 @@ scenarios:
 #    flow:
 #      - post:
 #          url: "/"
-#          body: '{"query":"query get_layout{ getSlateLineup(slateLinueupId: \"ff23f296-6c5e-4f53-a46a-3feb5006f261\") { id slates {id recommendations { itemId publisher recSrc feedId} } } }"}'
+#          body: '{"query":"query get_slate_lineup{ getSlateLineup(slateLinueupId: \"ff23f296-6c5e-4f53-a46a-3feb5006f261\") { id slates {id recommendations { itemId publisher recSrc feedId} } } }"}'
 #          headers:
 #             Content-Type: application/json
 #          expect:
@@ -57,7 +57,7 @@ scenarios:
 #    flow:
 #      - post:
 #          url: "/"
-#          body: '{"query":"query get_layout{ getSlateLineup(slateLinueupId: \"72c3878f-c48b-413c-aff8-90d7a0d79d32\") { id slates {id recommendations { itemId publisher recSrc feedId} } } }"}'
+#          body: '{"query":"query get_slate_lineup{ getSlateLineup(slateLinueupId: \"72c3878f-c48b-413c-aff8-90d7a0d79d32\") { id slates {id recommendations { itemId publisher recSrc feedId} } } }"}'
 #          headers:
 #             Content-Type: application/json
 #          expect:

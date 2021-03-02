@@ -2,12 +2,12 @@ type Query {
     """
     Get the recomendations for a specific topic
     """
-    getTopicRecommendations(slug: String!, algorithmicCount: Int = 20, curatedCount: Int = 5): TopicRecommendations  @deprecated(reason: "Use `getSlateLineup` with a specific layout instead.")
+    getTopicRecommendations(slug: String!, algorithmicCount: Int = 20, curatedCount: Int = 5): TopicRecommendations  @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
 
     """
     List all available topics that we have recomendarions for.
     """
-    listTopics: [Topic!]! @deprecated(reason: "Use `getSlateLineup` with a specific layout instead.")
+    listTopics: [Topic!]! @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
 
     """
     Request a specific `Slate` by id
@@ -198,7 +198,7 @@ type Slate {
 
 type SlateLineup {
     """
-    A unique slug/id that describes a layout. The Data & Learning team will provide apps what id to use here for specific cases.
+    A unique slug/id that describes a SlateLineup. The Data & Learning team will provide apps what id to use here for specific cases.
     """
     id: ID!
     """
