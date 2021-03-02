@@ -67,6 +67,7 @@ class ClickdataModel(BaseModel):
             ttl=app.config.elasticache['clickdata_ttl'],
             alias=app.cache.clickdata_alias)(ClickdataModel._query_clickdata)
 
+        # multi_cache will get clickdata from cache when available, and call _query_clickdata with all missing keys.
         results = await multi_cache(clickdata_keys)
 
         # Map app.cache's NoneValue to None. aiocache treats None as a cache miss, so we need a special token for this.
