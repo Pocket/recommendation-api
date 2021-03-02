@@ -12,17 +12,32 @@ type Query {
     """
     Request a specific `Slate` by id
     """
-    getSlate(slateId: String!): Slate
+    getSlate(
+        "The {Slate.id} of the slate to return"
+        slateId: String!,
+        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
+        recommendationCount: Int = 10
+    ): Slate
 
     """
     List all available slates
     """
-    listSlates: [Slate!]!
+    listSlates(
+        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 0"
+        recommendationCount: Int = 0
+    ): [Slate!]!
 
     """
     Request a specific `SlateLineup` by id
     """
-    getSlateLineup(slateLineupId: String): SlateLineup
+    getSlateLineup(
+        "The {SlateLineup.id} of the SlateLineup to return"
+        slateLineupId: String!,
+        "Maximum number of slates to return in {SlateLineup.slates}, defaults to 8"
+        slateCount: Int = 8,
+        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
+        recommendationCount: Int = 10
+    ): SlateLineup
 }
 
 """
@@ -174,11 +189,6 @@ type Slate {
     Production apps typically won't request a specific one, but can for QA or during a/b testing.
     """
     experimentID: String!
-
-    """
-    TODO: What is this?
-    """
-    pageviewGUID: String
 
     """
     The name to show to the user for this set of recomendations
