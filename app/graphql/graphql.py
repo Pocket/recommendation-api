@@ -28,7 +28,7 @@ class Query(ObjectType):
     get_layout = Field(Layout, layout_id=String(required=True, description="Layout id to get a specific layout"),
                        slate_count=Int(default_value=None, description="Number of slates to return, defaults to all"),
                        recommendation_count=Int(default_value=None,
-                                                description="Number of recommendations to return, defaults to all"))
+                                                description="Maximum number of recommendations to return, defaults to all"))
 
     async def resolve_get_topic_recommendations(self, info, slug: str, algorithmic_count: int,
                                                 curated_count: int) -> TopicRecommendationsModel:
