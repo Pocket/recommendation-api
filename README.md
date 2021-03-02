@@ -2,10 +2,10 @@
 
 We use this app for serving customers recommendations of topics they might like.
 
-See the [Service Directory](https://getpocket.atlassian.net/wiki/spaces/PE/pages/1626177549/RecommendationAPI)
+[Pocket only] See the [Service Directory](https://getpocket.atlassian.net/wiki/spaces/PE/pages/1626177549/RecommendationAPI)
 for information on contacts, architecture, and usage.
 
-## Development Setup
+## Development Setup & Running Tests
 
 For complete instructions, see [docs/development.md](/docs/development.md).
 
