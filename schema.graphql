@@ -22,7 +22,7 @@ type Query {
     """
     Request a specific `SlateLineup` by id
     """
-    getSlateLineup(slateLinueupId: String): SlateLineup
+    getSlateLineup(slateLineupId: String): SlateLineup
 }
 
 """
