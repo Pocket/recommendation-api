@@ -24,7 +24,7 @@ class SlateModel(BaseModel):
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_slate')
-    async def get_slate(slate_id: str, user_id: str = None, recommendation_count=None) -> 'SlateModel':
+    async def get_slate(slate_id: str, user_id: str = None, recommendation_count: Optional[int] = None) -> 'SlateModel':
         """
         Retrieves a SlateModel from the database
 
