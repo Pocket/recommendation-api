@@ -6,7 +6,7 @@ We use this app for serving customers recommendations of topics they might like.
 
 For complete instructions, see [docs/development.md](/docs/development.md).
 
-TL;DR: 
+TL; DR: 
 1. `docker-compose build`
 2. `docker-compose up`
 3. Visit http://localhost:8000
