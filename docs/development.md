@@ -21,10 +21,9 @@ You will see:
     - a panel (center) where results of queries will appear when you write a query and click the "play" button on the top bar.
     - a panel (right) for clicking around to explore our GraphQL query model.
 
-![GraphQL playground](/docs/images/graphql_playground.png)
-
-
 1. This is an API on the GraphQL protocol. When you visit localhost:8000, you will have:
+
+![GraphQL playground](/docs/images/graphql_playground.png)
 
 ## Adding Python dependencies using Pipenv
 Run `pipenv install <package>` to add a package to Pipfile and Pipfile.lock,
