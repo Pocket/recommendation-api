@@ -36,7 +36,7 @@ def guid_unique(config_dict, guid_attr="id"):
 if __name__ == "__main__":
     from collections import Counter
     print("Validating layout_configs.json")
-    layouts = parse_to_dict("layout_configs.json", "layout_config.schema.json")
+    layouts = parse_to_dict("slate_lineup_configs.json", "slate_lineup_config.schema.json")
     guid_unique(layouts)
 
     print("Validating slate_config.json")
@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
     slates = {r['id']:r for r in slates}
     for layout in layouts:
-        print(f"Layout: {layout['id']} {layout['description']}")
+        print(f"Lineup: {layout['id']} {layout['description']}")
         for experiment in layout['experiments']:
             print(f"- Experiment: {experiment['description']}")
             for slate_id in experiment['slates']:
