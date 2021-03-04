@@ -1,41 +1,5 @@
 [
   {
-    "id": "this-is-a-test-dont-use-it",
-    "displayName": "Test Slate",
-    "description": "Daniel and Jonathan manually put this in the DB. Fun times.",
-    "experiments": [
-      {
-        "description": "idk shrug",
-        "candidateSets": [
-          "1234-5678-ABCD-CEDF"
-        ],
-        "rankers": [
-          "top30",
-          "thompson-sampling",
-          "pubspread"
-        ]
-      }
-    ]
-  },
-  {
-    "id": "this-is-a-test-dont-use-it-too",
-    "displayName": "Test Slate",
-    "description": "Daniel and Jonathan manually put this in the DB. Fun times.",
-    "experiments": [
-      {
-        "description": "idk shrug",
-        "candidateSets": [
-          "1234-5678-ABCD-CEDF"
-        ],
-        "rankers": [
-          "top30",
-          "thompson-sampling",
-          "pubspread"
-        ]
-      }
-    ]
-  },
-  {
     "id": "de254c5d-57a7-4553-850f-153ee385014d",
     "displayName": "Curated Not New Tab",
     "description": "Curated items that are over a week old",
@@ -64,36 +28,7 @@
       }
     ]
   },
-      {
-    "id": "0737b00e-a21e-4875-a4c7-3e14926d4acf",
-    "displayName": "All Curated New Tab",
-    "description": "Curated items with syndicated that are at most a week old",
-    "experiments": [
-      {
-        "description": "default",
-        "candidateSets": [
-          "35018233-48cd-4ec4-bcfd-7b1b1ccf30de"
-        ],
-        "rankers": [
-          "top30",
-          "thompson-sampling",
-          "pubspread"
-        ]
-      },
-      {
-        "description": "ts15",
-        "candidateSets": [
-          "35018233-48cd-4ec4-bcfd-7b1b1ccf30de"
-        ],
-        "rankers": [
-          "top15",
-          "thompson-sampling",
-          "pubspread"
-        ]
-      }
-    ]
-  },
-    {
+  {
     "id": "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
     "displayName": "Curated Without Syndicated New Tab",
     "description": "Curated items without syndicated that are at most a week old",
@@ -142,35 +77,6 @@
         "description": "ts15",
         "candidateSets": [
           "35018233-48cd-4ec4-bcfd-7b1b1ccf30de"
-        ],
-        "rankers": [
-          "top15",
-          "thompson-sampling",
-          "pubspread"
-        ]
-      }
-    ]
-  },
-  {
-    "id": "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
-    "displayName": "Curated Without Syndicated New Tab",
-    "description": "Curated items without syndicated that are at most a week old",
-    "experiments": [
-      {
-        "description": "default",
-        "candidateSets": [
-          "493a5556-9800-449f-8f8c-c27bb6c8c810"
-        ],
-        "rankers": [
-          "top30",
-          "thompson-sampling",
-          "pubspread"
-        ]
-      },
-      {
-        "description": "ts15",
-        "candidateSets": [
-          "493a5556-9800-449f-8f8c-c27bb6c8c810"
         ],
         "rankers": [
           "top15",
@@ -198,7 +104,7 @@
       }
     ]
   },
-    {
+  {
     "id": "505c0126-d54d-42ef-8fe7-0f6a6f24e3a5",
     "displayName": "Curated Business Slate",
     "description": "Curated by our editors Stories to fuel your mind",
@@ -234,7 +140,7 @@
       }
     ]
   },
-    {
+  {
     "id": "b4032752-155b-4f09-ac1e-f5337df19e88",
     "displayName": "Curated Career Slate",
     "description": "Curated by our editors Stories to fuel your mind",
@@ -716,6 +622,76 @@
           "top30",
           "thompson-sampling",
           "pubspread"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "0f322865-64e6-472d-8147-b3d6637a7d67",
+    "displayName": "Pocket Collections",
+    "description": "Curated by our editors Stories to fuel your mind",
+    "experiments": [
+      {
+        "description": "All collections",
+        "candidateSets": [
+          "303174fc-a9ff-4a51-984a-e09ce7120d18"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "626397d3-fa4e-4299-8d07-cbeaa269ebc1",
+    "displayName": "Short Reads",
+    "description": "Curated by our editors Stories to fuel your mind",
+    "experiments": [
+      {
+        "description": "No syndicated short reads",
+        "candidateSets": [
+          "7ef90242-ff7a-44ac-8a32-53193e4a23eb"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "8fa462a6-81d1-47ee-8de3-1e5e0030e6d6",
+    "displayName": "Long Reads",
+    "description": "Curated by our editors Stories to fuel your mind",
+    "experiments": [
+      {
+        "description": "No syndicated long reads",
+        "candidateSets": [
+          "dacc55ea-db8d-4858-a51d-e1c78298337e"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "2f2a3568-901f-4655-8735-daf67e8ecc5d",
+    "displayName": "Best of Pocket",
+    "description": "Curated by our editors Stories to fuel your mind",
+    "experiments": [
+      {
+        "description": "Syndicated by total score",
+        "candidateSets": [
+          "a8425a46-187a-4cdb-8157-5d2f308c52cd"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling"
         ]
       }
     ]

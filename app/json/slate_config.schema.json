@@ -18,12 +18,13 @@
       "id": {
         "$id": "#/properties/id",
         "type": "string",
+        "format": "uuid",
         "title": "The ID Schema",
         "default": "",
         "examples": [
           "c410516f-18b3-46a1-b356-c7c003de2b53"
         ],
-        "pattern": "^(.+)$"
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$"
       },
       "displayName": {
         "$id": "#/properties/displayName",
@@ -78,12 +79,13 @@
               "items": {
                 "$id": "#/properties/experiments/properties/candidateSets/items",
                 "type": "string",
+                "format": "uuid",
                 "title": "The Experiment Candidate Set Items Schema",
                 "default": "",
                 "examples": [
                   "39d0dc54-f6f8-4f13-bea4-4320b3bd8217"
                 ],
-                "pattern": "^([A-Za-z0-9\\-]+)$"
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$"
               }
             },
             "rankers": {
