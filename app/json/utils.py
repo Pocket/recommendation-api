@@ -23,3 +23,36 @@ def parse_to_dict(json_file: str, schema_file: str) -> dict:
     validate(parsed_json, parsed_schema)
 
     return parsed_json
+
+
+def guid_unique(config_dict, guid_attr="id"):
+    guids = [r[guid_attr] for r in config_dict]
+    c = Counter(guids)
+    for guid, count in c.items():
+        if count > 1:
+            raise AssertionError(f"{guid} is used {count} times")
+
+
+if __name__ == "__main__":
+    from collections import Counter
+    print("Validating layout_configs.json")
+    layouts = parse_to_dict("layout_configs.json", "layout_config.schema.json")
+    guid_unique(layouts)
+
+    print("Validating slate_config.json")
+    slates = parse_to_dict("slate_configs.json", "slate_config.schema.json")
+    guid_unique(slates)
+
+    slates = {r['id']:r for r in slates}
+    for layout in layouts:
+        print(f"Layout: {layout['id']} {layout['description']}")
+        for experiment in layout['experiments']:
+            print(f"- Experiment: {experiment['description']}")
+            for slate_id in experiment['slates']:
+                print(f"-- Slate: {slate_id} {slates[slate_id]['displayName']}")
+                for slate_experiment in slates[slate_id]["experiments"]:
+                    print(f"--- Experiment: {slate_experiment['description']}")
+                    for candidate_set in slate_experiment['candidateSets']:
+                        print(f"---- {candidate_set}")
+        print()
+
