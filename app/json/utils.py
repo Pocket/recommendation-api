@@ -43,7 +43,7 @@ if __name__ == "__main__":
     slates = parse_to_dict("slate_configs.json", "slate_config.schema.json")
     guid_unique(slates)
 
-    slates = {r['id']:r for r in slates}
+    slates = {r['id']: r for r in slates}
     for layout in layouts:
         print(f"Lineup: {layout['id']} {layout['description']}")
         for experiment in layout['experiments']:
@@ -53,6 +53,6 @@ if __name__ == "__main__":
                 for slate_experiment in slates[slate_id]["experiments"]:
                     print(f"--- Experiment: {slate_experiment['description']}")
                     for candidate_set in slate_experiment['candidateSets']:
-                        print(f"---- {candidate_set}")
+                        print(f"---- Candidate Set: {candidate_set}")
         print()
 
