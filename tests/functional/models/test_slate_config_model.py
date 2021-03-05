@@ -16,3 +16,7 @@ class TestSlateConfigModel(unittest.TestCase):
         # (this is some wild list comprehension syntax - gets all experiments in all slates)
         experiments = [ex for s in slate_configs for ex in s.experiments]
         self.assertEqual(4, len(experiments))
+
+    def test_load_invalid_slate(self):
+        with self.assertRaises(ValueError):
+            SlateConfigModel.load_slate_configs(os.path.join(ROOT_DIR, 'tests/assets/json/invalid_slate_configs.json'))
