@@ -24,6 +24,6 @@ class TestJsonSerializerWithNoneToken:
             ('<NONE>', NoneValue),
             ('{"foo":"bar"}', {"foo": "bar"}),
         ])
-    def test_loads(self, value: Any, expected: str):
+    def test_loads(self, value: str, expected: Any):
         serializer = JsonSerializerWithNoneToken()
         assert expected == serializer.loads(value)
