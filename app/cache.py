@@ -25,7 +25,7 @@ class JsonSerializerWithNoneToken(JsonSerializer):
         """
         :return: '<NONE>' if value is None, otherwise dumps value to json.
         """
-        if value is None:
+        if value is None or value == NoneValue:
             return self._NONE_STRING
         else:
             return super().dumps(value)
