@@ -18,7 +18,7 @@ from app.graphql.user_middleware import UserMiddleware
 from app.graphql_app import GraphQLAppWithMiddleware, GraphQLSentryMiddleware
 from app.models.candidate_set import CandidateSetModel
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
-from app.models.slate_lineup_config import SlateLineupConfigModel
+from app.models.slate_lineup_config import SlateLineupConfigModel, validate_unique_guids
 from app.models.slate_config import SlateConfigModel
 from app.health_status import get_health_status, set_health_status, HealthStatus
 
@@ -85,6 +85,9 @@ async def load_slate_configs():
     SlateConfigModel.SLATE_CONFIGS_BY_ID = {s.id: s for s in slate_configs}
     slate_lineup_configs = SlateLineupConfigModel.load_slate_lineup_configs()
     SlateLineupConfigModel.SLATE_LINEUP_CONFIGS_BY_ID = {lc.id: lc for lc in slate_lineup_configs}
+
+    # Check for GUID re-use
+    validate_unique_guids(slate_lineup_configs, slate_configs)
 
     # Validate slate_lineup and slate configs on prod and dev, not locally.
     if ENV in {ENV_PROD, ENV_DEV}:

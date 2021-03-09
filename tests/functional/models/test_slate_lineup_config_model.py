@@ -16,3 +16,7 @@ class TestSlateLineupConfigModel(unittest.TestCase):
         # (this is some wild list comprehension syntax - gets all experiments in all slate_lineups)
         experiments = [ex for lc in slate_lineup_configs for ex in lc.experiments]
         self.assertEqual(4, len(experiments))
+
+    def test_invalid_slates(self):
+        with self.assertRaises(ValueError):
+            SlateLineupConfigModel.load_slate_lineup_configs(os.path.join(ROOT_DIR, 'tests/assets/json/invalid_slate_lineup_configs.json'))

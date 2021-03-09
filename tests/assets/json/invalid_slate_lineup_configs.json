@@ -26,7 +26,7 @@
    ]
  },
   {
-   "id": "34a35300-63c0-4ecc-8f11-4779b7dc1379",
+   "id": "34a35300-73c0-4ecc-8f11-4779b7dc1379",
    "description": "iOS discover",
    "experiments": [
      {
@@ -39,7 +39,7 @@
    ]
  },
   {
-   "id": "34a35300-53c0-4ecc-8f11-4779b7dc1379",
+   "id": "34a35300-73c0-4ecc-8f11-4779b7dc1379",
    "description": "firefoxOS discover",
    "experiments": [
      {
