@@ -1,3 +1,4 @@
+from collections import Counter
 import os
 
 from typing import List
@@ -39,6 +40,7 @@ class SlateConfigModel:
         """
         return SlateConfigModel(slate_dict["id"], slate_dict["displayName"], slate_dict["description"])
 
+
     @staticmethod
     def load_slate_configs(
             slate_file=os.path.join(JSON_DIR, 'slate_configs.json'),
@@ -68,6 +70,8 @@ class SlateConfigModel:
 
             slates_objs.append(slate)
 
+        validate_slate_config(slates_objs)
+
         return slates_objs
 
     @staticmethod
@@ -84,3 +88,13 @@ class SlateConfigModel:
             raise ValueError(f'slate id {slate_id} was not found in the slate configs')
 
         return slate_config
+
+
+def validate_slate_config(slate_configs: List[SlateConfigModel]) -> None:
+    """
+    Validates that a GUID is not re-used in a slate config. Raises a `ValueError` if it is.
+    """
+    slate_ids = Counter([r.id for r in slate_configs])
+    dupes = [guid for guid, count in slate_ids.items() if count > 1]
+    if dupes:
+        raise ValueError(f"Slate GUIDs appears more than once in slate config: {dupes}")
