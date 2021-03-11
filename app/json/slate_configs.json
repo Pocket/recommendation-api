@@ -684,7 +684,7 @@
     "description": "There’s nothing better for your health, wallet, or personal sense of accomplishment than learning how to cook. We’ve pulled together the best resources to help you establish confidence in the kitchen, from proper preparation and creative shortcuts to mastering simple but brilliant techniques. Grab your knives (carefully!) and let’s get started.",
     "experiments": [
       {
-        "description": "All collections",
+        "description": "How to start cooking",
         "candidateSets": [
           "d89008c0-730f-569c-95d8-6241d43317c3"
         ],
