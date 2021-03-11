@@ -81,6 +81,19 @@
      }
    ]
   },
+    {
+   "id": "53ace46e-fd12-4744-9647-fa633a9a044c",
+   "description": "Coronavirus SlateLineup",
+   "experiments": [
+     {
+       "description": "Coronavirus essential reads - Stay informed with this curated guide to the global outbreak.",
+       "rankers": [ ],
+       "slates": [
+         "796ca16f-4cd4-4dcb-84d5-477715c41668"
+       ]
+     }
+   ]
+  },
   {
    "id": "c18b41d8-8100-4037-aa64-416994e1d4cf",
    "description": "Explore Business Topic SlateLineup",

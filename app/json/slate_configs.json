@@ -87,6 +87,24 @@
     ]
   },
   {
+    "id": "796ca16f-4cd4-4dcb-84d5-477715c41668",
+    "displayName": "Coronavirus Slate",
+    "description": "Stay informed with this curated guide to the global outbreak.",
+    "experiments": [
+      {
+        "description": "curated coronavirus items",
+        "candidateSets": [
+          "c29fbf48-0093-49d2-ae55-4e01a3cf800e"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      }
+    ]
+  },
+  {
     "id": "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
     "displayName": "Algorithmic Business Slate",
     "description": "Popular with Pocket readers  Stories from across the web",
