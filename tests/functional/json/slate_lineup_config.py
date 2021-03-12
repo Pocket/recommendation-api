@@ -34,6 +34,9 @@ def test_slate_exists():
 def test_explore_topic_slates():
     """
     Test that all Explore Topic lineups have a curated and algorithmic slate, in this order.
+
+    The Web repo currently relies on this ordering in src/Discover/RecommendationAPIClient.php:getTopicRecommendations
+    to return curated and algorithmic slates via the legacy v3/discover/topics endpoint.
     """
     slate_configs_by_id = {s.id: s for s in SlateConfigModel.load_slate_configs()}
     slate_lineup_configs = SlateLineupConfigModel.load_slate_lineup_configs()
@@ -45,8 +48,10 @@ def test_explore_topic_slates():
             for experiment in slate_lineup_config.experiments:
                 slates = [slate_configs_by_id[slate_id] for slate_id in experiment.slates]
 
+                # Assert that the first two slates are topic slates
                 assert topic_name in slates[0].displayName
                 assert topic_name in slates[1].displayName
 
+                # Assert that slates are ordered curated, algorithmic.
                 assert "Curated" in slates[0].displayName
                 assert "Algorithmic" in slates[1].displayName
