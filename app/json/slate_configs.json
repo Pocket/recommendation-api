@@ -87,6 +87,24 @@
     ]
   },
   {
+    "id": "796ca16f-4cd4-4dcb-84d5-477715c41668",
+    "displayName": "Coronavirus Slate",
+    "description": "Stay informed with this curated guide to the global outbreak.",
+    "experiments": [
+      {
+        "description": "curated coronavirus items",
+        "candidateSets": [
+          "c29fbf48-0093-49d2-ae55-4e01a3cf800e"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      }
+    ]
+  },
+  {
     "id": "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
     "displayName": "Algorithmic Business Slate",
     "description": "Popular with Pocket readers  Stories from across the web",
@@ -635,6 +653,40 @@
         "description": "All collections",
         "candidateSets": [
           "303174fc-a9ff-4a51-984a-e09ce7120d18"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "4d95bade-8a43-4700-9879-3a73ba1da640",
+    "displayName": "10 Incredible Long-Reads That’ll Transport You to Another Time and Place",
+    "description": "There’s nothing like getting lost in a fascinating story — and now is a better time than any to dive into another world.",
+    "experiments": [
+      {
+        "description": "10 incredible long reads collection",
+        "candidateSets": [
+          "860ba820-9ef2-589b-bba8-a2b639e67cb6"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "8944f662-cfc7-4fcb-a510-55a8589b08e7",
+    "displayName": "How to start cooking",
+    "description": "There’s nothing better for your health, wallet, or personal sense of accomplishment than learning how to cook. We’ve pulled together the best resources to help you establish confidence in the kitchen, from proper preparation and creative shortcuts to mastering simple but brilliant techniques. Grab your knives (carefully!) and let’s get started.",
+    "experiments": [
+      {
+        "description": "How to start cooking",
+        "candidateSets": [
+          "d89008c0-730f-569c-95d8-6241d43317c3"
         ],
         "rankers": [
           "top30",

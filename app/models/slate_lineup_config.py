@@ -1,5 +1,5 @@
+from collections import Counter
 import os
-import random
 
 from typing import List
 
@@ -68,6 +68,8 @@ class SlateLineupConfigModel:
 
             slate_lineups_objs.append(slate_lineup)
 
+        validate_lineup_config(slate_lineups_objs)
+
         return slate_lineups_objs
 
     @staticmethod
@@ -116,3 +118,24 @@ class SlateLineupConfigModel:
             slate_configs = get_ranker(ranker)(slate_configs)
 
         return slate_configs
+
+
+def validate_lineup_config(lineup_configs: List[SlateLineupConfigModel]) -> None:
+    """
+    Validates that a GUID is not re-used in a slate config. Raises a `ValueError` if it is.
+    """
+    slate_ids = Counter([r.id for r in lineup_configs])
+    dupes = [guid for guid, count in slate_ids.items() if count > 1]
+    if dupes:
+        raise ValueError(f"Slate GUIDs appears more than once in slate config: {dupes}")
+
+
+def validate_unique_guids(lineup_configs: List[SlateLineupConfigModel], slate_configs: List[SlateConfigModel]) -> None:
+    """
+    Validate that GUIDs are unique across lineups and slates. Raises a `ValueError` if they are not.
+    """
+    lineup_guids = {r.id for r in lineup_configs}
+    slate_guids = {r.id for r in slate_configs}
+    guid_overlap = lineup_guids.intersection(slate_guids)
+    if guid_overlap:
+        raise ValueError(f"Lineup and Slates share GUIDS: {guid_overlap}")
