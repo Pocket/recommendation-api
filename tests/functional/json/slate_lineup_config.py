@@ -41,9 +41,12 @@ def test_explore_topic_slates():
     slate_configs_by_id = {s.id: s for s in SlateConfigModel.load_slate_configs()}
     slate_lineup_configs = SlateLineupConfigModel.load_slate_lineup_configs()
 
+    match_count = 0
+
     for slate_lineup_config in slate_lineup_configs:
         match = re.match(r'^Explore (.*?) Topic SlateLineup$', slate_lineup_config.description)
         if match:
+            match_count += 1
             topic_name = match.group(1)
             for experiment in slate_lineup_config.experiments:
                 slates = [slate_configs_by_id[slate_id] for slate_id in experiment.slates]
@@ -55,3 +58,5 @@ def test_explore_topic_slates():
                 # Assert that slates are ordered curated, algorithmic.
                 assert "Curated" in slates[0].displayName
                 assert "Algorithmic" in slates[1].displayName
+
+    assert match_count == 15
