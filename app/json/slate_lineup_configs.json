@@ -16,7 +16,7 @@
       }
     ]
   },
-    {
+  {
     "id": "2a817ad0-cbba-4330-9559-291468145588",
     "description": "Web Home Test #1",
     "experiments": [
@@ -77,6 +77,19 @@
         "slates": [
           "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
           "0737b00e-a21e-4875-a4c7-3e14926d4acf"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "53ace46e-fd12-4744-9647-fa633a9a044c",
+    "description": "Coronavirus SlateLineup",
+    "experiments": [
+      {
+        "description": "Coronavirus essential reads - Stay informed with this curated guide to the global outbreak.",
+        "rankers": [],
+        "slates": [
+          "796ca16f-4cd4-4dcb-84d5-477715c41668"
         ]
       }
     ]
@@ -248,19 +261,6 @@
         ]
       }
     ]
-  },
-    {
-   "id": "53ace46e-fd12-4744-9647-fa633a9a044c",
-   "description": "Coronavirus SlateLineup",
-   "experiments": [
-     {
-       "description": "Coronavirus essential reads - Stay informed with this curated guide to the global outbreak.",
-       "rankers": [ ],
-       "slates": [
-         "796ca16f-4cd4-4dcb-84d5-477715c41668"
-       ]
-     }
-   ]
   },
   {
     "id": "695e39f3-62e8-4430-8d12-e8b457ac7751",
