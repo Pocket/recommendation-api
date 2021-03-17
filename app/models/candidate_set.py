@@ -169,7 +169,7 @@ class DynamoDBCandidateSet(CandidateSetModel):
 
 @xray_recorder.capture_async('models.candidate_set.candidate_set_factory')
 async def candidate_set_factory(candidate_set_id: str, user_id: str) -> Union[DynamoDBCandidateSet, RecItCandidateSet]:
-    if candidate_set_id.startswith(RecItCandidateSet.PREFIX):
+    if candidate_set_id.startswith(RECIT_PREFIX):
         return await RecItCandidateSet.get(candidate_set_id, user_id)
     else:
         return await DynamoDBCandidateSet.get(candidate_set_id)
