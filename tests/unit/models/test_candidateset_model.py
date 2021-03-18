@@ -1,11 +1,12 @@
 import unittest
 import json
-from app.models.candidate_set import RecItCandidateSet, candidate_set_factory
-
+import os
+from app.models.candidate_set import RecItCandidateSet
+from app.config import ROOT_DIR
 
 class TestCandidateSetModel(unittest.TestCase):
     def test_recit_parse(self):
-        with open("../../assets/json/recit_response.json") as f:
+        with open(os.path.join(ROOT_DIR, "tests/assets/json/recit_response.json")) as f:
             recit_json = json.load(f)
         candidate_set = RecItCandidateSet.parse_recit_response("test-id", recit_json)
         self.assertEqual(len(candidate_set.candidates), len(recit_json['items']))
