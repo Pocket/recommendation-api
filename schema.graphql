@@ -146,6 +146,11 @@ type Recommendation @key(fields: "item { itemId }") {
     id: ID
 
     """
+    A generated id from the Data and Learning team that represents the Recomendation - Deprecated
+    """
+    feedItemId: ID @deprecated(reason: "Use `id`")
+
+    """
     The ID of the item this recomendation represents
     TODO: Use apollo federation to turn this into an Item type.
     """
