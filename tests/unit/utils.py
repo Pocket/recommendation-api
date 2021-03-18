@@ -12,7 +12,7 @@ def generate_recommendations(item_ids: List[int or str]) -> List[RecommendationM
             item=ItemModel(item_id=item_id),
             rec_src='bowling',
             feed_id=random.randint(0, 101),
-            feed_item_id=random.randint(0, 101)
+            id=random.randint(0, 101)
         )
         recs.append(rec)
 
