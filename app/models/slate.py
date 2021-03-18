@@ -34,23 +34,22 @@ class SlateModel(BaseModel):
         :return: a SlateModel object
         """
         slate_config = SlateConfigModel.find_by_id(slate_id)
-        return await SlateModel.__get_slate_from_slate_config(slate_config, user_id, recommendation_count=recommendation_count)
+        return await SlateModel.__get_slate_from_slate_config(slate_config, recommendation_count=recommendation_count)
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_all')
-    async def get_all(user_id:str, recommendation_count: Optional[int] = 10) -> List['SlateModel']:
+    async def get_all(recommendation_count: Optional[int] = 10) -> List['SlateModel']:
         """
         Retrieves all slates from the database
         :param recommendation_count: int, 0 = no recs, > 0 include this many recs
         :return: a list fo SlateModel objects
         """
         slate_configs = SlateConfigModel.SLATE_CONFIGS_BY_ID.values()
-        return await SlateModel.get_slates_from_slate_configs(slate_configs, user_id, recommendation_count=recommendation_count)
+        return await SlateModel.get_slates_from_slate_configs(slate_configs, recommendation_count=recommendation_count)
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_slates_from_slate_configs')
     async def get_slates_from_slate_configs(slate_configs: List['SlateConfigModel'],
-                                            user_id: str,
                                             recommendation_count: Optional[int] = 10) -> List['SlateModel']:
         """
 
@@ -63,7 +62,6 @@ class SlateModel(BaseModel):
         # for each slate, get random experiment
         for slate_config in slate_configs:
             slate_model = SlateModel.__get_slate_from_slate_config(slate_config,
-                                                                   user_id,
                                                                    recommendation_count=recommendation_count)
             slate_models.append(slate_model)
 
@@ -75,7 +73,6 @@ class SlateModel(BaseModel):
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_slate_from_slate_config')
     async def __get_slate_from_slate_config(slate_config: 'SlateConfigModel',
-                                            user_id: str,
                                             recommendation_count: Optional[int] = 10) -> 'SlateModel':
         """
         Returns a slate model based on the supplied config
@@ -91,7 +88,7 @@ class SlateModel(BaseModel):
         # If we have a > 0 recommendation count lets get some recommendations
         if recommendation_count > 0:
             experiment = SlateExperimentModel.choose_experiment(slate_config.experiments)
-            recommendations = await RecommendationModel.get_recommendations_from_experiment(experiment, user_id)
+            recommendations = await RecommendationModel.get_recommendations_from_experiment(experiment)
             recommendations = recommendations[:recommendation_count]
 
         return SlateModel(
