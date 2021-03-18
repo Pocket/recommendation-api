@@ -1,5 +1,5 @@
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
-from app.models.candidate_set import DynamoDBCandidateSet
+from app.models.candidate_set import CandidateSetModel
 from app.models.recommendation import RecommendationModel
 
 
@@ -18,7 +18,7 @@ class TestCandidateSetsModel(TestDynamoDBBase):
             ]
         })
 
-        executed = await DynamoDBCandidateSet.verify_candidate_set(cs_id='asdasd-12sd1asd3-5512')
+        executed = await CandidateSetModel.verify_candidate_set(cs_id='asdasd-12sd1asd3-5512')
         assert executed == True
 
     async def test_get_candidate_set(self):
@@ -35,7 +35,7 @@ class TestCandidateSetsModel(TestDynamoDBBase):
             ]
         })
 
-        candidate_set = await DynamoDBCandidateSet.get(cs_id='asdasd-12sd1asd3-5512')
+        candidate_set = await CandidateSetModel.get(cs_id='asdasd-12sd1asd3-5512')
         assert candidate_set.id == 'asdasd-12sd1asd3-5512'
         assert len(candidate_set.candidates) == 1
         candidate = candidate_set.candidates[0]
@@ -56,7 +56,7 @@ class TestCandidateSetsModel(TestDynamoDBBase):
         })
 
         # Get and cache the candidate set.
-        candidate_set = await DynamoDBCandidateSet.get(cs_id='asdasd-12sd1asd3-5512')
+        candidate_set = await CandidateSetModel.get(cs_id='asdasd-12sd1asd3-5512')
         assert candidate_set.version == 1
         assert candidate_set.candidates[0].item_id == 3208490410
 
@@ -67,13 +67,13 @@ class TestCandidateSetsModel(TestDynamoDBBase):
             ExpressionAttributeValues={':v': 2})
 
         # Assert version has not changed, because we're getting the candidate set from cache.
-        candidate_set = await DynamoDBCandidateSet.get(cs_id='asdasd-12sd1asd3-5512')
+        candidate_set = await CandidateSetModel.get(cs_id='asdasd-12sd1asd3-5512')
         assert candidate_set.version == 1
         assert candidate_set.candidates[0].item_id == 3208490410
 
         await super().clear_caches()
 
         # Assert version changed, because the cache has been cleared.
-        candidate_set = await DynamoDBCandidateSet.get(cs_id='asdasd-12sd1asd3-5512')
+        candidate_set = await CandidateSetModel.get(cs_id='asdasd-12sd1asd3-5512')
         assert candidate_set.version == 2
         assert candidate_set.candidates[0].item_id == 3208490410

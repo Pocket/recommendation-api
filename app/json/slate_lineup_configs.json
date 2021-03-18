@@ -66,38 +66,6 @@
         ]
       }
     ]
-  },{
-    "id": "63df08d9-fe0e-4084-8241-9e1c08e27951",
-    "description": "Perf test slate_lineup personalized",
-    "experiments": [
-      {
-        "description": "SlateLineup test 1",
-        "rankers": [ ],
-        "slates": [
-          "ad73c061-5ac5-458f-8691-ab071f7eadd7",
-          "de254c5d-57a7-4553-850f-153ee385014d",
-          "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
-          "0c09627b-a409-4768-b87d-7e1d29259785",
-          "b4032752-155b-4f09-ac1e-f5337df19e88",
-          "72ce0827-9dbc-470f-9722-39476daaeb0f",
-          "ea40bef5-4406-488d-ad9d-915dfa1f0794"
-        ]
-      },
-      {
-        "description": "SlateLineup test 2",
-        "rankers": [ ],
-        "slates": [
-          "ad73c061-5ac5-458f-8691-ab071f7eadd7",
-          "de254c5d-57a7-4553-850f-153ee385014d",
-          "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
-          "e6600ffe-b65a-42d3-b570-f460f3d7326e",
-          "72ce0827-9dbc-470f-9722-39476daaeb0f",
-          "9bece73b-4d54-43a6-bb10-d7b02abcd181",
-          "e0d7063a-9421-4148-b548-446e9fbc8566",
-          "9389d944-fdcf-4394-9ca3-4604c0af4fac"
-        ]
-      }
-    ]
   },
   {
     "id": "9c3018a8-8aa9-4f91-81e9-ebcd95fc82da",
