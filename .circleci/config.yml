@@ -427,7 +427,7 @@ workflows:
           sentry_org: pocket
           workspace-path: /tmp/workspace
           requires:
-            - build_docker_prod
+            - deploy_ecs_prod
 
       # Notify sentry of dev deployment
       - pocket/sentry_release_notification:
@@ -440,4 +440,4 @@ workflows:
           sentry_org: pocket
           workspace-path: /tmp/workspace
           requires:
-            - build_docker_dev
+            - deploy_ecs_dev
