@@ -17,7 +17,6 @@ class SlateModel(BaseModel):
     id: str
     requestId: str = None
     experimentId: str = None
-    pageviewGuid: str = None
     display_name: str = None
     description: str = None
     recommendations: List[RecommendationModel] = None
