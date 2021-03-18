@@ -17,13 +17,8 @@ def chunks(index, n=100):
         yield index[i: i + n]
 
 
-class RecommendationModules(Enum):
-    HOME = 'home'
-    TOPIC = 'topic'
-
-
-def make_key(module: RecommendationModules, key: str):
-    return "%s/%s" % (module.value, key)
+def make_key(slate_id: str, key: str):
+    return "%s/%s" % (slate_id, key)
 
 
 class ClickdataModel(BaseModel):
@@ -35,7 +30,7 @@ class ClickdataModel(BaseModel):
 
     @staticmethod
     @xray_recorder.capture_async('models.clickdata.get')
-    async def get(module: RecommendationModules, item_list: List[str]) -> Dict[str, 'ClickdataModel']:
+    async def get(slate_id: str, item_list: List[str]) -> Dict[str, 'ClickdataModel']:
         """
         Retrieves click data for the given items in the given module (home/topic)
 
@@ -44,10 +39,10 @@ class ClickdataModel(BaseModel):
         :return: dictionary of ClickdataModel objects with keys of their respective `mod_item` values
         """
         # Keys are namespaced by the module we are getting data from
-        keys = {make_key(module, item) for item in item_list}
+        keys = {make_key(slate_id, item) for item in item_list}
 
         # Always get the default key, it is used for items that don't have any clickstream data
-        keys.add(make_key(module, "default"))
+        keys.add(make_key(slate_id, "default"))
         keys = list(keys)
 
         clickdata = await ClickdataModel._query_cached_clickdata(keys)
@@ -55,7 +50,7 @@ class ClickdataModel(BaseModel):
         clickdata = {k.split("/")[1]: ClickdataModel.parse_obj(v) for k, v in clickdata.items() if v is not None}
 
         if not clickdata:
-            raise ValueError(f"No results from DynamoDB: module {module.value}")
+            raise ValueError(f"No results from DynamoDB: slate_id {slate_id}")
 
         return clickdata
 
