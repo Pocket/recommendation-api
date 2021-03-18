@@ -14,8 +14,8 @@ class SlateLineupModel(BaseModel):
     Models a slate_lineup.
     """
     id: str
-    requestID: str = None
-    experimentID: str = None
+    requestId: str = None
+    experimentId: str = None
     slates: List[SlateModel]
 
     @staticmethod

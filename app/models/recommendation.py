@@ -30,7 +30,7 @@ class RecommendationModel(BaseModel):
     A recommendation models a single article. The properties here are the bare minimum necessary to represent an
     article. The `item` property contains all article details, e.g. title, excerpt, image, etc.
     """
-    feed_item_id: str = None
+    id: str = None
     feed_id: int = None
     item_id: str
     item: ItemModel
@@ -50,7 +50,7 @@ class RecommendationModel(BaseModel):
             item_id=candidate.get('item_id'),
             item=ItemModel(item_id=candidate.get('item_id'))
         )
-        recommendation.feed_item_id = recommendation.rec_src + '/' + recommendation.item.item_id
+        recommendation.id = recommendation.rec_src + '/' + recommendation.item.item_id
         return recommendation
 
     @staticmethod
