@@ -39,9 +39,9 @@ class SlateLineupModel(BaseModel):
 
         return SlateLineupModel(
             id=slate_lineup_id,
-            experimentID=experiment.id,
+            experimentId=experiment.id,
             slates=slates,
-            requestID=str(uuid.uuid4()),
+            requestId=str(uuid.uuid4()),
         )
 
     @staticmethod
