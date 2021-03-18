@@ -182,13 +182,13 @@ type Slate {
     A guid that is unique to every API request that returned slates, such as `getSlateLineup` or `getSlate`.
     The API will provide a new request id every time apps hit the API.
     """
-    requestId: String!
+    requestId: ID!
 
     """
     A unique guid/slug, provided by the Data & Learning team that can identify a specific experiment.
     Production apps typically won't request a specific one, but can for QA or during a/b testing.
     """
-    experimentId: String!
+    experimentId: ID!
 
     """
     The name to show to the user for this set of recomendations
@@ -215,13 +215,13 @@ type SlateLineup {
     A guid that is unique to every API request that returned slates, such as `getRecommendationSlateLineup` or `getSlate`.
     The API will provide a new request id every time apps hit the API.
     """
-    requestId: String!
+    requestId: ID!
 
     """
     A unique guid/slug, provided by the Data & Learning team that can identify a specific experiment.
     Production apps typically won't request a specific one, but can for QA or during a/b testing.
     """
-    experimentId: String!
+    experimentId: ID!
 
     """
     An ordered list of slates for the client to display
