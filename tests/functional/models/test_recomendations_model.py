@@ -70,12 +70,14 @@ class TestRecommendationsModel(TestDynamoDBBase):
                 item=ItemModel(item_id=986),
                 feed_id=6,
                 feed_item_id='RecommendationAPI/986',
+                id='RecommendationAPI/986',
                 publisher='test.yes'
             ),
             RecommendationModel(
                 item_id=93,
                 item=ItemModel(item_id=93),
                 feed_item_id='RecommendationAPI/93',
+                id='RecommendationAPI/93',
                 publisher='test.yes'
             ),
         ]

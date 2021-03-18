@@ -3,8 +3,9 @@ version: 2.1
 orbs:
   aws-cli: circleci/aws-cli@1.2.1
   aws-ecr: circleci/aws-ecr@6.10.0
-  aws-ecs: circleci/aws-ecs@1.2.0
+  aws-ecs: circleci/aws-ecs@2.0.0
   pocket: pocket/circleci-orbs@1.0.0
+  queue: eddiewebb/queue@1.5.0
 
 jobs:
 
@@ -261,6 +262,13 @@ not_dev: &not_dev
       ignore:
         - dev
 
+only_dev_main: &only_dev_main
+  filters:
+    branches:
+      only:
+        - dev
+        - main
+
 not_dev_main: &not_dev_main
   filters:
     branches:
@@ -333,7 +341,14 @@ workflows:
           ecr_url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
           push: true
 
+      - queue/block_workflow:
+          <<: *only_dev_main
+          context: pocket
+          name: wait_for_deploy_queue
+          time: '30'
+
       - aws-ecs/deploy-service-update:
+          <<: *only_dev
           context: pocket
           name: deploy_ecs_dev
           family: 'RecommendationAPI-Dev'
@@ -344,11 +359,14 @@ workflows:
           codedeploy-load-balanced-container-name: app
           codedeploy-load-balanced-container-port: 8000
           container-image-name-updates: 'container=app,image-and-tag=410318598490.dkr.ecr.us-east-1.amazonaws.com/recommendationapi-dev-app:$CIRCLE_SHA1'
-          aws-access-key-id: $Dev_AWS_ACCESS_KEY
-          aws-secret-access-key: $Dev_AWS_SECRET_ACCESS_KEY
-          aws-region: $Dev_AWS_DEFAULT_REGION
+          aws-access-key-id: Dev_AWS_ACCESS_KEY
+          aws-secret-access-key: Dev_AWS_SECRET_ACCESS_KEY
+          aws-region: Dev_AWS_DEFAULT_REGION
+          verify-revision-is-deployed: true
+          verification-timeout: '30'
           requires:
             - build_docker_dev
+            - wait_for_deploy_queue
 
       # Bu›ild & Deploy the Prod Docker Image
       - docker_build:
@@ -362,6 +380,7 @@ workflows:
           push: true
 
       - aws-ecs/deploy-service-update:
+          <<: *only_main
           name: deploy_ecs_prod
           context: pocket
           family: 'RecommendationAPI-Prod'
@@ -372,11 +391,14 @@ workflows:
           codedeploy-load-balanced-container-name: app
           codedeploy-load-balanced-container-port: 8000
           container-image-name-updates: 'container=app,image-and-tag=996905175585.dkr.ecr.us-east-1.amazonaws.com/recommendationapi-prod-app:$CIRCLE_SHA1'
-          aws-access-key-id: $Prod_AWS_ACCESS_KEY
-          aws-secret-access-key: $Prod_AWS_SECRET_ACCESS_KEY
-          aws-region: $Prod_AWS_DEFAULT_REGION
+          aws-access-key-id: Prod_AWS_ACCESS_KEY
+          aws-secret-access-key: Prod_AWS_SECRET_ACCESS_KEY
+          aws-region: Prod_AWS_DEFAULT_REGION
+          verify-revision-is-deployed: true
+          verification-timeout: '30'
           requires:
             - build_docker_prod
+            - wait_for_deploy_queue
 
       - pocket/setup_deploy_params:
           <<: *only_main
@@ -407,7 +429,7 @@ workflows:
           sentry_org: pocket
           workspace-path: /tmp/workspace
           requires:
-            - build_docker_prod
+            - deploy_ecs_prod
 
       # Notify sentry of dev deployment
       - pocket/sentry_release_notification:
@@ -420,4 +442,4 @@ workflows:
           sentry_org: pocket
           workspace-path: /tmp/workspace
           requires:
-            - build_docker_dev
+            - deploy_ecs_dev
