@@ -348,6 +348,7 @@ workflows:
           time: '30'
 
       - aws-ecs/deploy-service-update:
+          <<: *only_dev
           context: pocket
           name: deploy_ecs_dev
           family: 'RecommendationAPI-Dev'
@@ -379,6 +380,7 @@ workflows:
           push: true
 
       - aws-ecs/deploy-service-update:
+          <<: *only_main
           name: deploy_ecs_prod
           context: pocket
           family: 'RecommendationAPI-Prod'
