@@ -41,7 +41,8 @@
         "rankers": [
           "top30",
           "thompson-sampling",
-          "pubspread"
+          "pubspread",
+          "top5"
         ]
       },
       {
@@ -52,7 +53,8 @@
         "rankers": [
           "top15",
           "thompson-sampling",
-          "pubspread"
+          "pubspread",
+          "top5"
         ]
       }
     ]

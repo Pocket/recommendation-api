@@ -10,6 +10,17 @@ from app.models.recommendation import RecommendationModel
 from app.config import ROOT_DIR
 
 
+
+def top5(items: List[Any]) -> List[Any]:
+    """
+    Gets the first 5 recommendations from the list of recommendations.
+
+    :param items: a list of recommendations in the desired order (pre-publisher spread)
+    :return: first 5 recommendations from the list of recommendations
+    """
+    return items[:5]
+
+
 def top15(items: List[Any]) -> List[Any]:
     """
     Gets the first 15 recommendations from the list of recommendations.
