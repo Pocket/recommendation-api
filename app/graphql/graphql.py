@@ -32,11 +32,6 @@ class Query(ObjectType):
                              recommendation_count=Int(default_value=10,
                                                       description="Maximum number of recommendations to return, defaults to 10"))
 
-    async def resolve_get_topic_recommendations(self, info, slug: str, algorithmic_count: int,
-                                                curated_count: int) -> TopicRecommendationsModel:
-        return await TopicRecommendationsModel.get_recommendations(slug=slug, algorithmic_count=algorithmic_count,
-                                                                   curated_count=curated_count)
-
     async def resolve_list_topics(self, info) -> [TopicModel]:
         return await TopicModel.get_all()
 

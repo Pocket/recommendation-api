@@ -10,7 +10,7 @@ from app.config import dynamodb as dynamodb_config
 # Needs to exist for pydantic to resolve the model field "item: ItemModel" in the RecommendationModel
 from app.graphql.item import Item
 from app.models.candidate_set import CandidateSetModel
-from app.models.clickdata import ClickdataModel, RecommendationModules
+from app.models.clickdata import ClickdataModel
 from app.models.item import ItemModel
 from app.models.slate_experiment import SlateExperimentModel
 from app.rankers import get_ranker
@@ -73,9 +73,10 @@ class RecommendationModel(BaseModel):
         return list(map(RecommendationModel.candidate_dict_to_recommendation, response['Items'][0]['candidates']))
 
     @staticmethod
-    async def get_recommendations_from_experiment(experiment: SlateExperimentModel) -> ['RecommendationModel']:
+    async def get_recommendations_from_experiment(slate_id, experiment: SlateExperimentModel) -> ['RecommendationModel']:
         """
         Retrieves a list of RecommendationModel objects for on the given slate experiment.
+        :param slate_id:
         :param experiment: a SlateExperimentModel instance
         :return: a list of RecommendationModel instances
         """
@@ -92,14 +93,14 @@ class RecommendationModel(BaseModel):
         for ranker in experiment.rankers:
             if ranker == 'thompson-sampling':
                 # thompson sampling takes two specific arguments so it needs to be handled differently
-                recommendations = await RecommendationModel.__thompson_sample(recommendations)
+                recommendations = await RecommendationModel.__thompson_sample(slate_id, recommendations)
                 continue
             recommendations = get_ranker(ranker)(recommendations)
 
         return recommendations
 
     @staticmethod
-    async def __thompson_sample(recommendations: ['RecommendationModel']) -> ['RecommendationModel']:
+    async def __thompson_sample(slate_id, recommendations: ['RecommendationModel']) -> ['RecommendationModel']:
         """
         Special processing for handling the thompson sampling ranker. Retrieves click data for the items being ranked
         and uses that for thompson sampling algorithm with beta distirbutions.
@@ -114,12 +115,13 @@ class RecommendationModel(BaseModel):
         This allows us to balance the need to explore new items' performance, and rank highly items
         that have already demonstrated high performance (in terms of CTR).
 
+        :param slate_id:
         :param recommendations: a list of RecommendationModel instances
         :return: a list of RecommendationModel instances
         """
         item_ids = [recommendation.item.item_id for recommendation in recommendations]
         try:
-            click_data = await ClickdataModel.get(RecommendationModules.TOPIC, item_ids)
+            click_data = await ClickdataModel.get(slate_id, item_ids)
         except ValueError:
             rec_item_ids = ','.join(item_ids)
             print(f'click data not found for candidates with item ids: {rec_item_ids}')
