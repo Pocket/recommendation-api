@@ -15,9 +15,8 @@ class SlateModel(BaseModel):
     Models a slate
     """
     id: str
-    requestID: str = None
-    experimentID: str = None
-    pageviewGUID: str = None
+    requestId: str = None
+    experimentId: str = None
     display_name: str = None
     description: str = None
     recommendations: List[RecommendationModel] = None
@@ -93,9 +92,9 @@ class SlateModel(BaseModel):
 
         return SlateModel(
             id=slate_config.id,
-            experimentID=experiment.id if experiment else None,
+            experimentId=experiment.id if experiment else None,
             description=slate_config.description,
             display_name=slate_config.displayName,
             recommendations=recommendations,
-            requestID=str(uuid.uuid4()),
+            requestId=str(uuid.uuid4()),
         )
