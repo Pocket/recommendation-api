@@ -4,7 +4,7 @@
       "PutRequest": {
         "Item": {
           "mod_item": {
-            "S": "topic/default"
+            "S": "de254c5d-57a7-4553-850f-153ee385014d/default"
           },
           "clicks": {
             "N": "0.045687984008122705"
@@ -25,7 +25,7 @@
       "PutRequest": {
         "Item": {
           "mod_item": {
-            "S": "a187ffb4-5c6f-4079-bad9-92442e97bdd1"
+            "S": "de254c5d-57a7-4553-850f-153ee385014d/3241253231"
           },
           "clicks": {
             "N": "99"
