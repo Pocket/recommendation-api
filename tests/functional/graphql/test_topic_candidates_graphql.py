@@ -44,7 +44,7 @@ class TestGraphQLCandidates(TestDynamoDBBase):
 
         executed = self.client.execute(''' {
             getSlateLineup(slateLineupId: "dc010ef1-1f34-473a-a4b5-4cc155e18a4a") {
-                experimentID
+                experimentId
                 slates {
                     displayName
                 }
