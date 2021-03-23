@@ -40,7 +40,7 @@ class TestSlateLineupModel(TestDynamoDBBase):
 
         assert slate_lineup.id == slate_lineup_config_id
         assert slate_lineup.slates[0].id == slate_config_id
-        assert len(slate_lineup.requestID) == 36  # length of uuid4
+        assert len(slate_lineup.requestId) == 36  # length of uuid4
         assert slate_lineup.slates[0].recommendations[0].item.item_id == '3208490410'
 
     @patch('app.models.slate_lineup_config.SlateLineupConfigModel.find_by_id', return_value=slate_lineup_config_model)
