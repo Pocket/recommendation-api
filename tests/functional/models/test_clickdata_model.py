@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
-from app.models.clickdata import ClickdataModel, RecommendationModules
+from app.models.clickdata import ClickdataModel
 
 
 class TestClickdataModel(TestDynamoDBBase):
@@ -9,7 +9,7 @@ class TestClickdataModel(TestDynamoDBBase):
     async def test_get_clickdata_by_item(self):
         await self._put_clickdata_fixtures()
 
-        clickdata = await ClickdataModel.get(RecommendationModules.HOME, ["666666", "333333"])
+        clickdata = await ClickdataModel.get("1234-ABCD", ["666666", "333333"])
         assert len(clickdata) == 3
         assert "default" in clickdata
         assert "666666" in clickdata
@@ -23,7 +23,7 @@ class TestClickdataModel(TestDynamoDBBase):
         # - 666666, 333333, and "default" all exist in the database
         # - 111111 doesn't exist, but will be created later
         # - foobar doesn't exist, and will not be created
-        clickdata = await ClickdataModel.get(RecommendationModules.HOME, ["111111", "666666", "333333", "foobar"])
+        clickdata = await ClickdataModel.get("1234-ABCD", ["111111", "666666", "333333", "foobar"])
         assert len(clickdata) == 3
         assert clickdata["default"].clicks == 200
         assert clickdata["333333"].clicks == 33
@@ -32,15 +32,15 @@ class TestClickdataModel(TestDynamoDBBase):
         # "111111" does not exist yet, and is therefore not returned
         assert "111111" not in clickdata
 
-        # Change clicks from 66 to 67 for "home/666666"
+        # Change clicks from 66 to 67 for "1234-ABCD/666666"
         self.clickdataTable.update_item(
-            Key={"mod_item": "home/666666"},
+            Key={"mod_item": "1234-ABCD/666666"},
             UpdateExpression="set clicks=:c, impressions=:i",
             ExpressionAttributeValues={':c': Decimal(67), ':i': Decimal(1000)})
 
         # Insert a new item, that wasn't there before.
         self.clickdataTable.put_item(Item={
-            "mod_item": "home/111111",
+            "mod_item": "1234-ABCD/111111",
             "clicks": "1",
             "impressions": "5",
             "created_at": "0",
@@ -48,7 +48,7 @@ class TestClickdataModel(TestDynamoDBBase):
         })
 
         # The clickvalue in the database has changed. Assert that we're getting the same click value from cache.
-        clickdata = await ClickdataModel.get(RecommendationModules.HOME, ["111111", "666666", "333333"])
+        clickdata = await ClickdataModel.get("1234-ABCD", ["111111", "666666", "333333"])
         assert len(clickdata) == 3
         assert clickdata["default"].clicks == 200
         assert clickdata["333333"].clicks == 33
@@ -60,7 +60,7 @@ class TestClickdataModel(TestDynamoDBBase):
         await super().clear_caches()
 
         # The cache has been cleared. Assert that we're getting the new click values from the database.
-        clickdata = await ClickdataModel.get(RecommendationModules.HOME, ["111111", "666666", "333333"])
+        clickdata = await ClickdataModel.get("1234-ABCD", ["111111", "666666", "333333"])
         assert len(clickdata) == 4
         assert clickdata["default"].clicks == 200
         assert clickdata["333333"].clicks == 33
@@ -70,7 +70,7 @@ class TestClickdataModel(TestDynamoDBBase):
 
     async def _put_clickdata_fixtures(self):
         self.clickdataTable.put_item(Item={
-            "mod_item": "home/default",
+            "mod_item": "1234-ABCD/default",
             "clicks": "200",
             "impressions": "5000",
             "created_at": "0",
@@ -78,7 +78,7 @@ class TestClickdataModel(TestDynamoDBBase):
         })
 
         self.clickdataTable.put_item(Item={
-            "mod_item": "home/999999",
+            "mod_item": "1234-ABCD/999999",
             "clicks": "99",
             "impressions": "999",
             "created_at": "0",
@@ -86,7 +86,7 @@ class TestClickdataModel(TestDynamoDBBase):
         })
 
         self.clickdataTable.put_item(Item={
-            "mod_item": "home/666666",
+            "mod_item": "1234-ABCD/666666",
             "clicks": "66",
             "impressions": "999",
             "created_at": "0",
@@ -94,7 +94,7 @@ class TestClickdataModel(TestDynamoDBBase):
         })
 
         self.clickdataTable.put_item(Item={
-            "mod_item": "home/333333",
+            "mod_item": "1234-ABCD/333333",
             "clicks": "33",
             "impressions": "999",
             "created_at": "0",
