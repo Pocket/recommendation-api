@@ -4,7 +4,7 @@ from aws_xray_sdk.core import xray_recorder
 from pydantic import BaseModel
 from typing import List
 
-from app.models.clickdata import ClickdataModel, RecommendationModules
+from app.models.clickdata import ClickdataModel
 from app.models.recommendation import RecommendationModel, RecommendationType
 from app.models.topic import TopicModel, PageType
 from app.rankers.algorithms import spread_publishers, thompson_sampling
@@ -65,7 +65,7 @@ class TopicRecommendationsModel(BaseModel):
         #     topic_recommendations.curated_recommendations, RecommendationModules.TOPIC)
 
         topic_recommendations.algorithmic_recommendations = await TopicRecommendationsModelUtils.thompson_sampling(
-            topic_recommendations.algorithmic_recommendations, RecommendationModules.TOPIC)
+            topic_recommendations.algorithmic_recommendations)
 
         # spread out publishers in algorithmic recommendations so articles from the same publisher are not right next
         # to each other. (curated recommendations are expected to be intentionally ordered.)
@@ -121,8 +121,7 @@ class TopicRecommendationsModelUtils:
 
     @staticmethod
     @xray_recorder.capture('models_topic_thompson_sample')
-    async def thompson_sampling(recs: List[RecommendationModel],
-                                module: RecommendationModules) -> List[RecommendationModel]:
+    async def thompson_sampling(recs: List[RecommendationModel]) -> List[RecommendationModel]:
         """
         Re-rank items using Thompson sampling which combines exploitation of known item CTR
         with exploration of new items with unknown CTR modeled by a prior
@@ -139,7 +138,9 @@ class TopicRecommendationsModelUtils:
         item_list = [item.item.item_id for item in recs]
         try:
             # returns a dict with item_id as key and dynamodb row modeled as ClickDataModel
-            clk_data = await ClickdataModel.get(module, item_list)
+            # HACK: Hardcode slate_id to "topic". This endpoint is unused and can be removed once the Web repo no longer
+            # references it behind a feature flag.
+            clk_data = await ClickdataModel.get("topic", item_list)
         except ValueError:
             # indicates no results were returned
             clk_data = {}
