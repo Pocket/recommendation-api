@@ -104,3 +104,15 @@ class SlateModel(BaseModel):
             recommendations=recommendations,
             requestId=str(uuid.uuid4()),
         )
+
+
+async def deduplicate_recommendations_across_slates(slates: List[SlateModel]) -> List[SlateModel]:
+    seen_item_ids = set()
+
+    for slate in slates:
+        # Remove recommendations that exist in previous slates
+        slate.recommendations = [r for r in slate.recommendations if r.item_id not in seen_item_ids]
+        # Add all item ids from slate to seen_item_ids
+        seen_item_ids |= {r.item_id for r in slate.recommendations}
+
+    return slates
