@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from app.config import dynamodb as dynamodb_config
 # Needs to exist for pydantic to resolve the model field "item: ItemModel" in the RecommendationModel
 from app.graphql.item import Item
-from app.models.candidate_set import CandidateSetModel
+from app.models.candidate_set import candidate_set_factory
 from app.models.clickdata import ClickdataModel
 from app.models.item import ItemModel
 from app.models.slate_experiment import SlateExperimentModel
@@ -76,15 +76,16 @@ class RecommendationModel(BaseModel):
 
     @staticmethod
     async def get_recommendations_from_experiment(
-            slate_id: str, experiment: SlateExperimentModel) -> ['RecommendationModel']:
+            slate_id: str, experiment: SlateExperimentModel, user_id: str) -> ['RecommendationModel']:
         """
         Retrieves a list of RecommendationModel objects for on the given slate experiment.
         :param slate_id: The id of the slate to which this experiment belongs
         :param experiment: a SlateExperimentModel instance
+        :param user_id: ID of the user to generate recommendations for
         :return: a list of RecommendationModel instances
         """
         # for each candidate set id, get the candidate set record from the db
-        candidate_sets = await gather(*(CandidateSetModel.get(cs_id) for cs_id in experiment.candidate_sets))
+        candidate_sets = await gather(*(candidate_set_factory(cs_id).get(cs_id, user_id) for cs_id in experiment.candidate_sets))
 
         recommendations = []
         # get the recommendations

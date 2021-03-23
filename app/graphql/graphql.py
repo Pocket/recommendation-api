@@ -45,7 +45,7 @@ class Query(ObjectType):
                                           recommendation_count=recommendation_count)
 
     async def resolve_list_slates(self, info, recommendation_count: int) -> [SlateModel]:
-        return await SlateModel.get_all(recommendation_count=recommendation_count)
+        return await SlateModel.get_all(user_id=info.context.get('user_id'), recommendation_count=recommendation_count)
 
     async def resolve_get_slate_lineup(self, info, slate_lineup_id: str, recommendation_count: int = 10,
                                        slate_count: int = 8) -> SlateLineupModel:
