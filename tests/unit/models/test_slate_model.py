@@ -1,90 +1,53 @@
 import json
 import unittest
+from typing import List
 
-from app.models.slate_experiment import SlateExperimentModel
+from app.models.slate import SlateModel, deduplicate_recommendations_across_slates
+from app.models.recommendation import RecommendationModel
 
 
-class TestSlateExperimentModel(unittest.TestCase):
-    # test instantiation
+class TestSlateModel(unittest.IsolatedAsyncioTestCase):
 
-    def test_no_weight(self):
-        ex = SlateExperimentModel(experiment_id='c3h5n3o9', description='d', candidate_sets=['a'], rankers=['top15'])
-        self.assertEqual(ex.weight, SlateExperimentModel.DEFAULT_WEIGHT)
+    async def test_deduplicate_slates_without_empty_input(self):
+        slate = self.__get_slate_model([])
 
-    def test_no_candidate_sets(self):
-        with self.assertRaises(ValueError) as context:
-            SlateExperimentModel(experiment_id='c3h5n3o9', description='desc', candidate_sets=[], rankers=['top15'])
+        deduped_slate = await deduplicate_recommendations_across_slates([slate])
 
-        self.assertTrue('no candidate sets provided for experiment' in str(context.exception))
+        assert len(deduped_slate[0].recommendations) == 0
 
-    def test_no_rankers(self):
-        sem = SlateExperimentModel(experiment_id='c3h5n3o9', description='desc', candidate_sets=['a', 'b'], rankers=[],
-                                   weight=0)
+    async def test_deduplicate_slates_without_dupes(self):
+        slate0 = self.__get_slate_model(['1', '2'])
+        slate1 = self.__get_slate_model(['3', '4'])
 
-        self.assertEqual(len(sem.rankers), 0)
+        deduped_slate_0, deduped_slate_1 = await deduplicate_recommendations_across_slates([slate0, slate1])
 
-    def test_invalid_ranker(self):
-        with self.assertRaises(KeyError) as context:
-            SlateExperimentModel(experiment_id='c3h5n3o9', description='desc', candidate_sets=['a', 'b'],
-                                 rankers=['invalid'], weight=0)
+        assert len(deduped_slate_0.recommendations) == 2
+        assert len(deduped_slate_1.recommendations) == 2
 
-        self.assertTrue('invalid is not a valid ranker' in str(context.exception))
+        assert deduped_slate_0.recommendations[0].item_id == '1'
+        assert deduped_slate_0.recommendations[1].item_id == '2'
+        assert deduped_slate_1.recommendations[0].item_id == '3'
+        assert deduped_slate_1.recommendations[1].item_id == '4'
 
-    def test_valid_instantiation(self):
-        ex_id = 'c3h5n3o9'
-        desc = 'd'
-        cs = ['a', 'b']
-        rs = ['top15', 'pubspread']
-        w = 0.2
+    async def test_deduplicate_slates(self):
+        slate0 = self.__get_slate_model(['1', '2'])
+        slate1 = self.__get_slate_model(['2', '3'])
+        slate2 = self.__get_slate_model(['2', '3', '4'])
 
-        experiment = SlateExperimentModel(experiment_id=ex_id, description=desc, candidate_sets=cs, rankers=rs, weight=w)
+        deduped_slate_0, deduped_slate_1, deduped_slate_2 =\
+            await deduplicate_recommendations_across_slates([slate0, slate1, slate2])
 
-        self.assertEqual(experiment.id, ex_id)
-        self.assertEqual(experiment.description, desc)
-        self.assertEqual(experiment.candidate_sets, cs)
-        self.assertEqual(experiment.rankers, rs)
-        self.assertEqual(experiment.weight, w)
+        assert len(deduped_slate_0.recommendations) == 2
+        assert len(deduped_slate_1.recommendations) == 1
+        assert len(deduped_slate_2.recommendations) == 1
 
-    # test loading from json
+        assert deduped_slate_0.recommendations[0].item_id == '1'
+        assert deduped_slate_0.recommendations[1].item_id == '2'
+        assert deduped_slate_1.recommendations[0].item_id == '3'
+        assert deduped_slate_2.recommendations[0].item_id == '4'
 
-    def test_load_from_json_without_weight(self):
-        json_str = """
-            {
-               "description": "TS window 30",
-               "candidateSets": [
-                 "39d0dc54-f6f8-4f13-bea4-4320b3bd8217",
-                 "df8a86c1-8b40-48bf-b85d-c144ed96c3fc"
-               ],
-               "rankers": [
-                 "top30",
-                 "thompson-sampling",
-                 "pubspread"
-               ]
-            }
-            """
-        ex = SlateExperimentModel.load_from_dict(json.loads(json_str))
-
-        self.assertEqual(ex.description, "TS window 30")
-        self.assertEqual(ex.weight, SlateExperimentModel.DEFAULT_WEIGHT)
-        self.assertEqual(len(ex.candidate_sets), 2)
-        self.assertEqual(len(ex.rankers), 3)
-
-    def test_load_from_json_with_weight(self):
-        json_str = """
-                {
-               "description": "TS window 15",
-               "candidateSets": [
-                 "39d0dc54-f6f8-4f13-bea4-4320b3bd8217",
-                 "df8a86c1-8b40-48bf-b85d-c144ed96c3fc",
-                 "df8a86c1-8b40-48bf-b85d-c144ed96c3fd"
-               ],
-               "rankers": [],
-               "weight": 0.3
-             }
-            """
-        ex = SlateExperimentModel.load_from_dict(json.loads(json_str))
-
-        self.assertEqual(ex.description, "TS window 15")
-        self.assertEqual(ex.weight, 0.3)
-        self.assertEqual(len(ex.candidate_sets), 3)
-        self.assertEqual(len(ex.rankers), 0)
+    def __get_slate_model(self, item_ids: List[str]) -> SlateModel:
+        recommendations = [
+            RecommendationModel.candidate_dict_to_recommendation({'item_id': item_id}) for item_id in item_ids
+        ]
+        return SlateModel(id=1, recommendations=recommendations)
