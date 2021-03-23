@@ -17,8 +17,15 @@ def _chunks(index, n=100):
         yield index[i: i + n]
 
 
-def _make_key(slate_id: str, key: str) -> str:
-    return "%s/%s" % (slate_id, key)
+def _make_key(slate_id: str, item_id: str) -> str:
+    """
+    Generate the primary key for the clickdata database
+
+    :param slate_id: Slate for which to get clickdata
+    :param item_id: Item for which to get clickdata, or "default" for module clickdata prior
+    :return: Clickdata DynamoDB identifier
+    """
+    return "%s/%s" % (slate_id, item_id)
 
 
 class ClickdataModel(BaseModel):
