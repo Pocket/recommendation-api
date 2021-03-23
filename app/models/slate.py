@@ -87,7 +87,7 @@ class SlateModel(BaseModel):
         # If we have a > 0 recommendation count lets get some recommendations
         if recommendation_count > 0:
             experiment = SlateExperimentModel.choose_experiment(slate_config.experiments)
-            recommendations = await RecommendationModel.get_recommendations_from_experiment(experiment)
+            recommendations = await RecommendationModel.get_recommendations_from_experiment(slate_config.id, experiment)
             recommendations = recommendations[:recommendation_count]
 
         return SlateModel(
