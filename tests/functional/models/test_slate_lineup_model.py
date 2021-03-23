@@ -154,6 +154,5 @@ class TestSlateLineupModel(TestDynamoDBBase):
         assert len(slate_lineup.slates[0].recommendations) == 2
         assert len(slate_lineup.slates[1].recommendations) == 1
 
-        assert slate_lineup.slates[0].recommendations[0].item_id == '10'
-        assert slate_lineup.slates[0].recommendations[0].item_id == '11'
+        assert {'10', '11'} == {recommendation.item_id for recommendation in slate_lineup.slates[0].recommendations}
         assert slate_lineup.slates[1].recommendations[0].item_id == '12'
