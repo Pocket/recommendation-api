@@ -6,7 +6,7 @@ from typing import List, Optional
 
 from app.models.slate_lineup_config import SlateLineupConfigModel
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
-from app.models.slate import SlateModel
+from app.models.slate import SlateModel, deduplicate_recommendations_across_slates
 
 
 class SlateLineupModel(BaseModel):
@@ -67,4 +67,8 @@ class SlateLineupModel(BaseModel):
         # Client requested only a certain number of slates, so after it was ranked, split the list to the count
         slate_configs = slate_configs[:slate_count]
 
-        return await SlateModel.get_slates_from_slate_configs(slate_configs, user_id, recommendation_count=recommendation_count)
+        slates = await SlateModel.get_slates_from_slate_configs(slate_configs, user_id, recommendation_count=recommendation_count)
+
+        slates = await deduplicate_recommendations_across_slates(slates)
+
+        return slates
