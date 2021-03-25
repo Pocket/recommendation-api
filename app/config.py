@@ -36,3 +36,7 @@ elasticache = {
     # Expire time in seconds for candidate sets
     'candidate_set_ttl': int(os.getenv('MEMCACHED_CANDIDATE_SET_TTL', 900)),
 }
+
+recit = {
+    'endpoint_url': os.getenv('RECIT_ENDPOINT_URL', 'http://recit.readitlater.com')
+}

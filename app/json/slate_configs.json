@@ -104,6 +104,23 @@
     ]
   },
   {
+    "id": "ad73c061-5ac5-458f-8691-ab071f7eadd7",
+    "displayName": "Best Of Personalized",
+    "description": "Best of Personalized",
+    "experiments": [
+      {
+        "description": "recit-personalized",
+        "candidateSets": [
+          "recit-personalized/bestof"
+        ],
+        "rankers": [
+          "top15",
+          "thompson-sampling"
+        ]
+      }
+    ]
+  },
+  {
     "id": "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
     "displayName": "Algorithmic Business Slate",
     "description": "Popular with Pocket readers  Stories from across the web",
