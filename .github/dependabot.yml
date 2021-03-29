@@ -32,7 +32,7 @@ updates:
 
 
   # Maintain dependencies for pip
-  - package-ecosystem: 'pipenv'
+  - package-ecosystem: 'pip'
     directory: '/'
     schedule:
       interval: 'daily'
