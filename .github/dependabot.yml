@@ -8,7 +8,7 @@ updates:
     directory: '.aws'
     # Check the npm registry for updates every day (weekdays)
     schedule:
-      interval: 'monthly'
+      interval: 'daily'
     commit-message:
       prefix: '[DEPBOT-0101]'
 
@@ -18,7 +18,7 @@ updates:
     directory: '/'
     # Check for updates once a week
     schedule:
-      interval: 'monthly'
+      interval: 'daily'
     commit-message:
       prefix: '[DEPBOT-0102]'
 
@@ -26,7 +26,7 @@ updates:
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
-      interval: 'monthly'
+      interval: 'daily'
     commit-message:
       prefix: '[DEPBOT-0103]'
 
@@ -35,6 +35,6 @@ updates:
   - package-ecosystem: 'pip'
     directory: '/'
     schedule:
-      interval: 'monthly'
+      interval: 'daily'
     commit-message:
       prefix: '[DEPBOT-0104]'
