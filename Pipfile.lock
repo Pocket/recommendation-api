@@ -591,11 +591,11 @@
         },
         "aws-secretsmanager-caching": {
             "hashes": [
-                "sha256:1f47b2e2553b02e027b748fd92e77466968f5b9e5e61c7dc16951318752f3be4",
-                "sha256:a065d2d9fc1beaa87da4c2aa3f6afa5050e9de24f9b09f9d1035e3bd889e12d9"
+                "sha256:5cee2762bb89b72f3e5123feee8e45fbe44ffe163bfca08b28f27b2e2b7772e1",
+                "sha256:6afb0233b6ae0183b518138e79b3a53f26432f3a71b03df99801e02e2456adc0"
             ],
             "index": "pypi",
-            "version": "==1.1.1.4"
+            "version": "==1.1.1.5"
         },
         "boto3-stubs": {
             "extras": [
