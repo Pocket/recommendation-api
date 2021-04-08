@@ -145,6 +145,22 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         # this needs to be a set since order isn't guaranteed in single trial
         assert {item.item_id for item in sampled_recs} == {"999", "333"}
 
+    def test_invalid_prior(self):
+        recs = generate_recommendations(['999'])
+        click_data = {
+            'default': ClickdataModel.parse_obj({
+                'mod_item': 'home/default',
+                'clicks': '99',
+                'impressions': '-14',
+                'created_at': '0',
+                'expires_at': '0'
+            }),
+        }
+
+        sampled_recs = thompson_sampling(recs, click_data)
+        # this needs to be a set since order isn't guaranteed in single trial
+        assert {item.item_id for item in sampled_recs} == {"999"}
+
     # Moved from a previous thompson sampling test file
     def test_rank_by_ctr_over_n_trials(self, ntrials=99):
         """
