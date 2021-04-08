@@ -1,3 +1,4 @@
+import logging
 import json
 
 from aws_xray_sdk.core import xray_recorder
@@ -46,6 +47,10 @@ def blocklist(recs: List['RecommendationModel'], blocklist: List[str] = None) ->
         return [rec for rec in recs if rec.item.item_id not in blocklist]
 
 
+DEFAULT_ALPHA_PRIOR = 0.02
+DEFAULT_BETA_PRIOR = 1.0
+
+
 def thompson_sampling(
         recs: List['RecommendationModel'],
         clk_data: Dict[(int or str), 'ClickdataModel']) -> List['RecommendationModel']:
@@ -66,18 +71,15 @@ def thompson_sampling(
     if not recs:
         return recs
 
-    if clk_data:
-        try:
-            # 'default' is a special key we can use for anything that is missing.
-            # The values here aren't actually clicks or impressions,
-            # but instead direct alpha and beta parameters for the module CTR prior
-            alpha_prior, beta_prior = clk_data['default'].clicks, clk_data['default'].impressions
-        except KeyError:
-            # indicates no default was found indicating MLE for module prior failed to converge
-            alpha_prior, beta_prior = 0.02, 1.0
-    else:
-        # indicates no click data
-        alpha_prior, beta_prior = 0.02, 1.0
+    alpha_prior, beta_prior = DEFAULT_ALPHA_PRIOR, DEFAULT_BETA_PRIOR
+    if clk_data and 'default' in clk_data:
+        # 'default' is a special key we can use for anything that is missing.
+        # The values here aren't actually clicks or impressions,
+        # but instead direct alpha and beta parameters for the module CTR prior
+        alpha_prior, beta_prior = clk_data['default'].clicks, clk_data['default'].impressions
+        if alpha_prior < 0 or beta_prior < 0:
+            logging.error("Alpha (%s) or Beta (%s) prior < 0 for module %s", alpha_prior, beta_prior, clk_data['default'].mod_item)
+            alpha_prior, beta_prior = DEFAULT_ALPHA_PRIOR, DEFAULT_BETA_PRIOR
 
     scores = []
     # create prior distribution for CTR from parameters in click data table
