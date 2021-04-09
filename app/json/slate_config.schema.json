@@ -102,6 +102,7 @@
                 "type": "string",
                 "enum": [
                   "pubspread",
+                  "top5",
                   "top15",
                   "top30",
                   "thompson-sampling"
