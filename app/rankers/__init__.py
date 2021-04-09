@@ -17,6 +17,7 @@ def get_all_rankers():
     # when rankers are needed which means the `RecommendationModel` will fully be initialized before
     # `algorithms` attempt to import `RecommendationModel` - Getting us out of the circular import problem.
     from app.rankers.algorithms import (
+        top5,
         top15,
         top30,
         thompson_sampling,
@@ -24,6 +25,7 @@ def get_all_rankers():
     )
 
     return {
+        'top5': top5,
         'top15': top15,
         'top30': top30,
         'thompson-sampling': thompson_sampling,

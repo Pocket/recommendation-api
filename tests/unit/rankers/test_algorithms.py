@@ -2,7 +2,7 @@ import unittest
 
 from tests.unit.utils import generate_recommendations
 from app.models.clickdata import ClickdataModel
-from app.rankers.algorithms import spread_publishers, top15, top30, thompson_sampling, blocklist
+from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist
 from operator import itemgetter
 
 
@@ -84,6 +84,18 @@ class TestAlgorithmsSpreadPublishers(unittest.TestCase):
 
         # ensure the elements aren't reordered at all (as we don't have enough publisher variance)
         assert [x.item.item_id for x in reordered] == ['1', '2', '3', '4', '5', '6', '7', '8']
+
+
+class TestAlgorithmsTop5(unittest.TestCase):
+    def test_get_top_5_items(self):
+        recs = generate_recommendations([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
+        top_5 = top5(recs)
+        assert [x.item.item_id for x in top_5] == ['1', '2', '3', '4', '5']
+
+    def test_get_all_items_when_less_than_5(self):
+        recs = generate_recommendations([1, 2])
+        top_5 = top5(recs)
+        assert [x.item.item_id for x in top_5] == ['1', '2']
 
 
 class TestAlgorithmsTop15(unittest.TestCase):
