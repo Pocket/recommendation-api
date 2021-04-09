@@ -2,7 +2,7 @@ import unittest
 
 from tests.unit.utils import generate_recommendations
 from app.models.clickdata import ClickdataModel
-from app.rankers.algorithms import spread_publishers, top15, top30, thompson_sampling, blocklist
+from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist
 from operator import itemgetter
 
 
@@ -86,6 +86,18 @@ class TestAlgorithmsSpreadPublishers(unittest.TestCase):
         assert [x.item.item_id for x in reordered] == ['1', '2', '3', '4', '5', '6', '7', '8']
 
 
+class TestAlgorithmsTop5(unittest.TestCase):
+    def test_get_top_5_items(self):
+        recs = generate_recommendations([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
+        top_5 = top5(recs)
+        assert [x.item.item_id for x in top_5] == ['1', '2', '3', '4', '5']
+
+    def test_get_all_items_when_less_than_5(self):
+        recs = generate_recommendations([1, 2])
+        top_5 = top5(recs)
+        assert [x.item.item_id for x in top_5] == ['1', '2']
+
+
 class TestAlgorithmsTop15(unittest.TestCase):
     def test_get_top_15_items(self):
         recs = generate_recommendations([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
@@ -144,6 +156,22 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         sampled_recs = thompson_sampling(recs, click_data)
         # this needs to be a set since order isn't guaranteed in single trial
         assert {item.item_id for item in sampled_recs} == {"999", "333"}
+
+    def test_invalid_prior(self):
+        recs = generate_recommendations(['999'])
+        click_data = {
+            'default': ClickdataModel.parse_obj({
+                'mod_item': 'home/default',
+                'clicks': '99',
+                'impressions': '-14',
+                'created_at': '0',
+                'expires_at': '0'
+            }),
+        }
+
+        sampled_recs = thompson_sampling(recs, click_data)
+        # this needs to be a set since order isn't guaranteed in single trial
+        assert {item.item_id for item in sampled_recs} == {"999"}
 
     # Moved from a previous thompson sampling test file
     def test_rank_by_ctr_over_n_trials(self, ntrials=99):
