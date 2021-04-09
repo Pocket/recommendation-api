@@ -58,6 +58,37 @@
     ]
   },
   {
+    "id": "48e766be-5e96-46fb-acbf-55fee3ae8a28",
+    "displayName": "Editors' Picks",
+    "description": "Top 5 curated items without syndicated that are at most a week old",
+    "experiments": [
+      {
+        "description": "default",
+        "candidateSets": [
+          "493a5556-9800-449f-8f8c-c27bb6c8c810"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread",
+          "top5"
+        ]
+      },
+      {
+        "description": "ts15",
+        "candidateSets": [
+          "493a5556-9800-449f-8f8c-c27bb6c8c810"
+        ],
+        "rankers": [
+          "top15",
+          "thompson-sampling",
+          "pubspread",
+          "top5"
+        ]
+      }
+    ]
+  },
+  {
     "id": "0737b00e-a21e-4875-a4c7-3e14926d4acf",
     "displayName": "All Curated New Tab",
     "description": "Curated items with syndicated that are at most a week old",
