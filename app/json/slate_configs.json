@@ -103,17 +103,6 @@
           "thompson-sampling",
           "pubspread"
         ]
-      },
-      {
-        "description": "ts15",
-        "candidateSets": [
-          "35018233-48cd-4ec4-bcfd-7b1b1ccf30de"
-        ],
-        "rankers": [
-          "top15",
-          "thompson-sampling",
-          "pubspread"
-        ]
       }
     ]
   },
