@@ -170,7 +170,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -206,7 +205,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -242,7 +240,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -278,7 +275,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -314,7 +310,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -350,7 +345,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -386,7 +380,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -422,7 +415,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -458,7 +450,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -494,7 +485,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -530,7 +520,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -566,7 +555,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -602,7 +590,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -638,7 +625,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -674,7 +660,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
           "pubspread"
         ]
       }
