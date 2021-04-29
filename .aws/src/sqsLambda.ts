@@ -33,7 +33,7 @@ export class SqsLambda extends Resource {
       lambda: {
         runtime: LAMBDA_RUNTIMES.PYTHON38,
         handler: 'aws_lambda.sqs_handler.handler',
-        timeout: 30,
+        timeout: 120,
         executionPolicyStatements: [
           {
             effect: 'Allow',
