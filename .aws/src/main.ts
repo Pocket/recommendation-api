@@ -81,8 +81,12 @@ class RecommendationAPI extends TerraformStack {
       containerConfigs: [
         {
           name: 'app',
-          hostPort: 8000,
-          containerPort: 8000,
+          portMappings: [
+            {
+              hostPort: 8000,
+              containerPort: 8000,
+            }
+          ],
           healthCheck: {
             command: ["CMD-SHELL", "curl -f http://localhost:8000/health-check || exit 1" ],
             interval: 15,
@@ -130,9 +134,13 @@ class RecommendationAPI extends TerraformStack {
         {
           name: 'xray-daemon',
           containerImage: 'amazon/aws-xray-daemon',
-          hostPort: 2000,
-          containerPort: 2000,
-          protocol: 'udp',
+          portMappings: [
+            {
+              hostPort: 2000,
+              containerPort: 2000,
+              protocol: 'udp',
+            },
+          ],
           command: ['--region', 'us-east-1', '--local-mode'],
         }
       ],
