@@ -2,9 +2,8 @@ import {Resource} from "cdktf";
 import {Construct} from "constructs";
 import {config} from "./config";
 import {
-  ApplicationElasticacheCluster,
-  ApplicationElasticacheEngine,
-  PocketVPC,
+    ApplicationMemcache,
+    PocketVPC,
 } from "@pocket/terraform-modules";
 
 export class Elasticache extends Resource {
@@ -25,14 +24,13 @@ export class Elasticache extends Resource {
     private static createElasticache(scope: Construct): string[] {
         const pocketVPC = new PocketVPC(scope, 'pocket-shared-vpc');
 
-        const elasticache = new ApplicationElasticacheCluster(scope, 'memcached', {
+        const elasticache = new ApplicationMemcache(scope, 'memcached', {
             //Usually we would set the security group ids of the service that needs to hit this.
             //However we don't have the necessary security group because it gets created in PocketALBApplication
             //So instead we set it to null and allow anything within the vpc to access it.
             //This is not ideal..
             //Ideally we need to be able to add security groups to the ALB application.
             allowedIngressSecurityGroupIds: undefined,
-            engine: ApplicationElasticacheEngine.MEMCACHED,
             node: {
                 count: config.cacheNodes,
                 size: config.cacheSize,
