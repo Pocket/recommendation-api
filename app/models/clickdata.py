@@ -2,7 +2,7 @@ import aioboto3
 from aiocache import caches, decorators
 from pydantic import BaseModel
 from aws_xray_sdk.core import xray_recorder
-from typing import List, Dict
+from typing import List, Dict, Callable
 from enum import Enum
 
 import app.config
@@ -28,8 +28,8 @@ def _make_key(slate_id: str, item_id: str) -> str:
     return "%s/%s" % (slate_id, item_id)
 
 
-class ClickdataModel(BaseModel):
-    mod_item: str = None
+class ClickdataBaseModel(BaseModel):
+    row_key: str = None
     clicks: float = None
     impressions: float = None
     created_at: int = None
@@ -37,7 +37,7 @@ class ClickdataModel(BaseModel):
 
     @staticmethod
     @xray_recorder.capture_async('models.clickdata.get')
-    async def get(slate_id: str, item_list: List[str]) -> Dict[str, 'ClickdataModel']:
+    async def get(slate_id: str, item_list: List[str], make_key: Callable[[str, str], str]) -> Dict[str, 'ClickdataModel']:
         """
         Retrieves click data for the given items in the given module (home/topic)
 
@@ -52,9 +52,9 @@ class ClickdataModel(BaseModel):
         keys.add(_make_key(slate_id, "default"))
         keys = list(keys)
 
-        clickdata = await ClickdataModel._query_cached_clickdata(keys)
+        clickdata = await ClickdataBaseModel._query_cached_clickdata(keys)
         # Remove "<modules>/" prefix and remove None values
-        clickdata = {k.split("/")[1]: ClickdataModel.parse_obj(v) for k, v in clickdata.items() if v is not None}
+        clickdata = {k.split("/")[1]: ClickdataBaseModel.parse_obj(v) for k, v in clickdata.items() if v is not None}
 
         if not clickdata:
             raise ValueError(f"No results from DynamoDB: slate_id {slate_id}")
@@ -63,11 +63,11 @@ class ClickdataModel(BaseModel):
 
     @staticmethod
     @xray_recorder.capture_async('models.clickdata._query_cached_clickdata')
-    async def _query_cached_clickdata(clickdata_keys: List) -> Dict[str, 'ClickdataModel']:
+    async def _query_cached_clickdata(clickdata_keys: List) -> Dict[str, 'ClickdataBaseModel']:
         multi_cache = decorators.multi_cached(
             "clickdata_keys",
             ttl=app.config.elasticache['clickdata_ttl'],
-            alias=app.cache.clickdata_alias)(ClickdataModel._query_clickdata)
+            alias=app.cache.clickdata_alias)(ClickdataBaseModel._query_clickdata)
 
         # multi_cache will get clickdata from cache when available, and call _query_clickdata with all missing keys.
         results = await multi_cache(clickdata_keys)
@@ -91,3 +91,6 @@ class ClickdataModel(BaseModel):
 
         clickdata = {row["mod_item"]: row for row in responses["Responses"][table]}
         return {k: clickdata.get(k) for k in clickdata_keys}
+
+
+class RecommendationClickData(ClickdataBaseModel)

@@ -19,6 +19,7 @@ dynamodb = {
     'recommendation_api_metadata_table': os.getenv('RECOMMENDATION_API_METADATA_TABLE', 'recommendation_api_metadata'),
     'recommendation_api_candidates_table': os.getenv('RECOMMENDATION_API_CANDIDATES_TABLE', 'recommendation_api_candidates'),
     'recommendation_api_clickdata_table': os.getenv('RECOMMENDATION_API_CLICKDATA_TABLE', 'recommendation_api_clickdata'),
+    'recommendation_api_slate_clickdata_table': os.getenv('RECOMMENDATION_API_SLATE_CLICKDATA_TABLE', 'recommendation_api_slate_clickdata'),
     'recommendation_api_candidate_sets_table': os.getenv('RECOMMENDATION_API_CANDIDATE_SETS_TABLE', 'recommendation_api_candidate_sets')
 }
 
