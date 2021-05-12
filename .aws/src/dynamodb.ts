@@ -9,6 +9,7 @@ export class DynamoDB extends Resource {
   public readonly candidatesTable: ApplicationDynamoDBTable
   public readonly metadataTable: ApplicationDynamoDBTable
   public readonly clickdataTable: DataAwsDynamodbTable
+  public readonly slateClickdataTable: DataAwsDynamodbTable
   public readonly candidateSetsTable: ApplicationDynamoDBTable;
 
   constructor(scope: Construct, name: string) {
@@ -16,6 +17,7 @@ export class DynamoDB extends Resource {
     this.candidatesTable = this.setupCandidatesTable();
     this.metadataTable = this.setupTopicsMetadataTable();
     this.clickdataTable = this.getClickdataTable();
+    this.slateClickdataTable = this.getSlateClickdataTable();
     this.candidateSetsTable = this.setupCandidateSetsTable();
   }
 
@@ -158,6 +160,12 @@ export class DynamoDB extends Resource {
   private getClickdataTable() {
     return new DataAwsDynamodbTable(this, `clickdata`, {
       name: config.clickdataDynamodbName,
+    });
+  }
+
+  private getSlateClickdataTable() {
+    return new DataAwsDynamodbTable(this, `slate_clickdata`, {
+      name: config.slateClickdataDynamodbName,
     });
   }
 }
