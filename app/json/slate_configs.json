@@ -1,7 +1,7 @@
 [
   {
     "id": "de254c5d-57a7-4553-850f-153ee385014d",
-    "displayName": "Curated Not New Tab",
+    "displayName": "Editors' Picks",
     "description": "Curated items that are over a week old",
     "experiments": [
       {
@@ -31,7 +31,7 @@
   {
     "id": "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
     "displayName": "Editors' Picks",
-    "description": "Curated items without syndicated that are at most a week old",
+    "description": "Curated items excluding syndicated that are at most a week old",
     "experiments": [
       {
         "description": "default",
@@ -60,7 +60,7 @@
   {
     "id": "48e766be-5e96-46fb-acbf-55fee3ae8a28",
     "displayName": "Editors' Picks",
-    "description": "Top 5 curated items without syndicated that are at most a week old",
+    "description": "Top 5 curated items excluding syndicated that are at most a week old",
     "experiments": [
       {
         "description": "default",
@@ -90,8 +90,8 @@
   },
   {
     "id": "0737b00e-a21e-4875-a4c7-3e14926d4acf",
-    "displayName": "All Curated New Tab",
-    "description": "Curated items with syndicated that are at most a week old",
+    "displayName": "Editors' Picks",
+    "description": "Curated items including syndicated that are at most a week old",
     "experiments": [
       {
         "description": "default",
@@ -108,8 +108,8 @@
   },
   {
     "id": "796ca16f-4cd4-4dcb-84d5-477715c41668",
-    "displayName": "Coronavirus Slate",
-    "description": "Stay informed with this curated guide to the global outbreak.",
+    "displayName": "Stay informed with this curated guide to the global outbreak.",
+    "description": "Coronavirus Slate",
     "experiments": [
       {
         "description": "curated coronavirus items",
@@ -125,7 +125,7 @@
   },
   {
     "id": "ad73c061-5ac5-458f-8691-ab071f7eadd7",
-    "displayName": "Best Of Personalized",
+    "displayName": "Personalized picks popular with pocket readers",
     "description": "Best of Personalized",
     "experiments": [
       {
@@ -142,8 +142,8 @@
   },
   {
     "id": "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
-    "displayName": "Algorithmic Business Slate",
-    "description": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "description": "Algorithmic Business Slate",
     "experiments": [
       {
         "description": "algorithmic business items",
@@ -160,8 +160,8 @@
   },
   {
     "id": "505c0126-d54d-42ef-8fe7-0f6a6f24e3a5",
-    "displayName": "Curated Business Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Business Slate",
     "experiments": [
       {
         "description": "curated business items",
@@ -177,8 +177,8 @@
   },
   {
     "id": "af2cc2c0-1286-47a3-b8ce-187b905f94af",
-    "displayName": "Curated Not New Tab Business Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Not New Tab Business Slate",
     "experiments": [
       {
         "description": "curated not new tab business items",
@@ -195,8 +195,8 @@
   },
   {
     "id": "e6c8db8d-cae7-4947-a57e-872dec639472",
-    "displayName": "Algorithmic Career Slate",
-    "description": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "description": "Algorithmic Career Slate",
     "experiments": [
       {
         "description": "algorithmic career items",
@@ -213,8 +213,8 @@
   },
   {
     "id": "b4032752-155b-4f09-ac1e-f5337df19e88",
-    "displayName": "Curated Career Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Career Slate",
     "experiments": [
       {
         "description": "curated career items",
@@ -230,8 +230,8 @@
   },
   {
     "id": "00f0c593-3c99-4d5a-9297-c66f8b00be01",
-    "displayName": "Curated Not New Tab Career Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Not New Tab Career Slate",
     "experiments": [
       {
         "description": "curated not new tab career items",
@@ -248,8 +248,8 @@
   },
   {
     "id": "8aaac382-9c27-42ab-9470-ac1dfc666262",
-    "displayName": "Algorithmic Education Slate",
-    "description": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "description": "Algorithmic Education Slate",
     "experiments": [
       {
         "description": "algorithmic education items",
@@ -266,8 +266,8 @@
   },
   {
     "id": "b0de37c0-81ef-4063-a432-1bb64270b039",
-    "displayName": "Curated Education Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Education Slate",
     "experiments": [
       {
         "description": "curated education items",
@@ -283,8 +283,8 @@
   },
   {
     "id": "856eb5f8-da7f-43ae-ac5e-25da402af0ae",
-    "displayName": "Curated Not New Tab Education Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Not New Tab Education Slate",
     "experiments": [
       {
         "description": "curated not new tab education items",
@@ -301,8 +301,8 @@
   },
   {
     "id": "ce96db55-f32e-48f1-929f-216eb2e8c082",
-    "displayName": "Algorithmic Entertainment Slate",
-    "description": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "description": "Algorithmic Entertainment Slate",
     "experiments": [
       {
         "description": "algorithmic entertainment items",
@@ -319,8 +319,8 @@
   },
   {
     "id": "e9df8a81-19af-48e2-a90f-05e9a37491ca",
-    "displayName": "Curated Entertainment Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Entertainment Slate",
     "experiments": [
       {
         "description": "curated entertainment items",
@@ -336,8 +336,8 @@
   },
   {
     "id": "cceefa28-906e-47c5-b704-8c5b824ecd1b",
-    "displayName": "Curated Not New Tab Entertainment Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Not New Tab Entertainment Slate",
     "experiments": [
       {
         "description": "curated not new tab entertainment items",
@@ -354,8 +354,8 @@
   },
   {
     "id": "884414d5-502d-4e1a-8e70-1dc8eb4a345a",
-    "displayName": "Algorithmic Food Slate",
-    "description": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "description": "Algorithmic Food Slate",
     "experiments": [
       {
         "description": "algorithmic food items",
@@ -372,8 +372,8 @@
   },
   {
     "id": "1a634351-361b-4115-a9d5-b79131b1f95a",
-    "displayName": "Curated Food Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Food Slate",
     "experiments": [
       {
         "description": "curated food items",
@@ -389,8 +389,8 @@
   },
   {
     "id": "651d27ab-a898-4173-9700-dd1726fbaaa4",
-    "displayName": "Curated Not New Tab Food Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Not New Tab Food Slate",
     "experiments": [
       {
         "description": "curated not new tab food items",
@@ -407,8 +407,8 @@
   },
   {
     "id": "44dff273-3604-40e9-a0b5-bf3852581990",
-    "displayName": "Algorithmic Gaming Slate",
-    "description": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "description": "Algorithmic Gaming Slate",
     "experiments": [
       {
         "description": "algorithmic gaming items",
@@ -425,8 +425,8 @@
   },
   {
     "id": "4cc738f7-25a9-4511-9cc3-68a8f9be91f8",
-    "displayName": "Curated Gaming Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Gaming Slate",
     "experiments": [
       {
         "description": "curated gaming items",
@@ -442,8 +442,8 @@
   },
   {
     "id": "951ae6c3-4438-458b-9936-7f3b8ff0f178",
-    "displayName": "Curated Not New Tab Gaming Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Not New Tab Gaming Slate",
     "experiments": [
       {
         "description": "curated not new tab gaming items",
@@ -460,8 +460,8 @@
   },
   {
     "id": "494eaa68-f048-4f52-bb9a-5e7d2526f5cb",
-    "displayName": "Algorithmic Health Slate",
-    "description": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "description": "Algorithmic Health Slate",
     "experiments": [
       {
         "description": "algorithmic health items",
@@ -478,8 +478,8 @@
   },
   {
     "id": "7cb4f497-fd05-42c5-9f78-3650e9ddba21",
-    "displayName": "Curated Health Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Health Slate",
     "experiments": [
       {
         "description": "curated health items",
@@ -495,8 +495,8 @@
   },
   {
     "id": "47023d21-0aa6-4f98-9077-eac21fad44f1",
-    "displayName": "Curated Not New Tab Health Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Not New Tab Health Slate",
     "experiments": [
       {
         "description": "curated not new tab health items",
@@ -513,8 +513,8 @@
   },
   {
     "id": "e6600ffe-b65a-42d3-b570-f460f3d7326e",
-    "displayName": "Algorithmic Parenting Slate",
-    "description": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "description": "Algorithmic Parenting Slate",
     "experiments": [
       {
         "description": "algorithmic parenting items",
@@ -531,8 +531,8 @@
   },
   {
     "id": "90adee1c-7794-4f41-9645-2ff9cf91113c",
-    "displayName": "Curated Parenting Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Parenting Slate",
     "experiments": [
       {
         "description": "curated parenting items",
@@ -548,8 +548,8 @@
   },
   {
     "id": "1a8de2be-db03-4a2f-901a-7c4c1cbd156a",
-    "displayName": "Curated Not New Tab Parenting Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Not New Tab Parenting Slate",
     "experiments": [
       {
         "description": "curated not new tab parenting items",
@@ -566,8 +566,8 @@
   },
   {
     "id": "72ce0827-9dbc-470f-9722-39476daaeb0f",
-    "displayName": "Algorithmic Personal Finance Slate",
-    "description": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "description": "Algorithmic Personal Finance Slate",
     "experiments": [
       {
         "description": "algorithmic personal finance items",
@@ -584,8 +584,8 @@
   },
   {
     "id": "0c09627b-a409-4768-b87d-7e1d29259785",
-    "displayName": "Curated Personal Finance Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Personal Finance Slate",
     "experiments": [
       {
         "description": "curated personal finance items",
@@ -601,8 +601,8 @@
   },
   {
     "id": "f4b58337-4ab6-4563-9503-c384e773946f",
-    "displayName": "Curated Not New Tab Personal Finance Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Not New Tab Personal Finance Slate",
     "experiments": [
       {
         "description": "curated not new tab personal finance items",
@@ -619,8 +619,8 @@
   },
   {
     "id": "9901851d-ea76-4667-8dc7-0c1677ecb910",
-    "displayName": "Algorithmic Politics Slate",
-    "description": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "description": "Algorithmic Politics Slate",
     "experiments": [
       {
         "description": "algorithmic politics items",
@@ -637,8 +637,8 @@
   },
   {
     "id": "9bece73b-4d54-43a6-bb10-d7b02abcd181",
-    "displayName": "Curated Politics Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Politics Slate",
     "experiments": [
       {
         "description": "curated politics items",
@@ -654,8 +654,8 @@
   },
   {
     "id": "f8c945b0-52fa-4203-bb31-6747245fe021",
-    "displayName": "Curated Not New Tab Politics Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Not New Tab Politics Slate",
     "experiments": [
       {
         "description": "curated not new tab politics items",
@@ -672,8 +672,8 @@
   },
   {
     "id": "ab6048ca-5c61-4e87-aefd-7a612b60ab7b",
-    "displayName": "Algorithmic Science Slate",
-    "description": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "description": "Algorithmic Science Slate",
     "experiments": [
       {
         "description": "algorithmic science items",
@@ -690,8 +690,8 @@
   },
   {
     "id": "b64c873e-7f05-496e-8be4-bfae929c8a04",
-    "displayName": "Curated Science Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Science Slate",
     "experiments": [
       {
         "description": "curated science items",
@@ -707,8 +707,8 @@
   },
   {
     "id": "b548b456-70c4-474d-a723-80d040d00fec",
-    "displayName": "Curated Not New Tab Science Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Not New Tab Science Slate",
     "experiments": [
       {
         "description": "curated not new tab science items",
@@ -725,8 +725,8 @@
   },
   {
     "id": "47688fcf-2bbb-4e0e-a02e-1f68c248a67e",
-    "displayName": "Algorithmic Self-Improvement Slate",
-    "description": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "description": "Algorithmic Self-Improvement Slate",
     "experiments": [
       {
         "description": "algorithmic self-improvement items",
@@ -743,8 +743,8 @@
   },
   {
     "id": "6d1273a5-055e-4de0-8a5b-5f2b79d37e5c",
-    "displayName": "Curated Self-Improvement Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Self-Improvement Slate",
     "experiments": [
       {
         "description": "curated self-improvement items",
@@ -760,8 +760,8 @@
   },
   {
     "id": "5674f085-07b6-43c3-bcde-2774db3f6384",
-    "displayName": "Curated Not New Tab Self Improvement Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Not New Tab Self Improvement Slate",
     "experiments": [
       {
         "description": "curated not new tab self improvement items",
@@ -778,8 +778,8 @@
   },
   {
     "id": "8a495385-9972-4d0e-b93e-4234f4897939",
-    "displayName": "Algorithmic Sports Slate",
-    "description": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "description": "Algorithmic Sports Slate",
     "experiments": [
       {
         "description": "algorithmic sports items",
@@ -796,8 +796,8 @@
   },
   {
     "id": "ea40bef5-4406-488d-ad9d-915dfa1f0794",
-    "displayName": "Curated Sports Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Sports Slate",
     "experiments": [
       {
         "description": "curated sports items",
@@ -813,8 +813,8 @@
   },
   {
     "id": "e6c00454-4a00-47c1-8f22-906122c261ed",
-    "displayName": "Curated Not New Tab Sports Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Not New Tab Sports Slate",
     "experiments": [
       {
         "description": "curated not new tab sports items",
@@ -831,8 +831,8 @@
   },
   {
     "id": "fa61096a-b681-4251-b299-2fda06c49ebf",
-    "displayName": "Algorithmic Technology Slate",
-    "description": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "description": "Algorithmic Technology Slate",
     "experiments": [
       {
         "description": "algorithmic technology items",
@@ -849,8 +849,8 @@
   },
   {
     "id": "e0d7063a-9421-4148-b548-446e9fbc8566",
-    "displayName": "Curated Technology Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Technology Slate",
     "experiments": [
       {
         "description": "curated technology items",
@@ -866,8 +866,8 @@
   },
   {
     "id": "ed9604ce-b752-48bd-b8c5-3a8cf6b54ced",
-    "displayName": "Curated Not New Tab Technology Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Not New Tab Technology Slate",
     "experiments": [
       {
         "description": "curated not new tab technology items",
@@ -884,8 +884,8 @@
   },
   {
     "id": "d024ce9c-ed96-453f-a81e-8a0b850681e7",
-    "displayName": "Algorithmic Travel Slate",
-    "description": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "description": "Algorithmic Travel Slate",
     "experiments": [
       {
         "description": "algorithmic travel items",
@@ -902,8 +902,8 @@
   },
   {
     "id": "9389d944-fdcf-4394-9ca3-4604c0af4fac",
-    "displayName": "Curated Travel Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Travel Slate",
     "experiments": [
       {
         "description": "curated travel items",
@@ -919,8 +919,8 @@
   },
   {
     "id": "4345efa7-2c89-4884-b836-3260757a3a97",
-    "displayName": "Curated Not New Tab Travel Slate",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated Not New Tab Travel Slate",
     "experiments": [
       {
         "description": "curated not new tab travel items",
@@ -937,8 +937,8 @@
   },
   {
     "id": "0f322865-64e6-472d-8147-b3d6637a7d67",
-    "displayName": "Pocket Collections",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated collections by our editors Stories to fuel your mind",
+    "description": "Pocket Collections",
     "experiments": [
       {
         "description": "All collections",
@@ -954,8 +954,8 @@
   },
   {
     "id": "4d95bade-8a43-4700-9879-3a73ba1da640",
-    "displayName": "10 Incredible Long-Reads That’ll Transport You to Another Time and Place",
-    "description": "There’s nothing like getting lost in a fascinating story — and now is a better time than any to dive into another world.",
+    "displayName": "There’s nothing like getting lost in a fascinating story — and now is a better time than any to dive into another world.",
+    "description": "10 Incredible Long-Reads That’ll Transport You to Another Time and Place",
     "experiments": [
       {
         "description": "10 incredible long reads collection",
@@ -971,8 +971,8 @@
   },
   {
     "id": "8944f662-cfc7-4fcb-a510-55a8589b08e7",
-    "displayName": "How to start cooking",
-    "description": "There’s nothing better for your health, wallet, or personal sense of accomplishment than learning how to cook. We’ve pulled together the best resources to help you establish confidence in the kitchen, from proper preparation and creative shortcuts to mastering simple but brilliant techniques. Grab your knives (carefully!) and let’s get started.",
+    "displayName": "There’s nothing better for your health, wallet, or personal sense of accomplishment than learning how to cook. We’ve pulled together the best resources to help you establish confidence in the kitchen, from proper preparation and creative shortcuts to mastering simple but brilliant techniques. Grab your knives (carefully!) and let’s get started.",
+    "description": "How to start cooking collection items",
     "experiments": [
       {
         "description": "How to start cooking",
@@ -989,7 +989,7 @@
   {
     "id": "626397d3-fa4e-4299-8d07-cbeaa269ebc1",
     "displayName": "Ten Minutes or Less",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated short reads excluding syndicated",
     "experiments": [
       {
         "description": "No syndicated short reads",
@@ -1007,7 +1007,7 @@
   {
     "id": "8fa462a6-81d1-47ee-8de3-1e5e0030e6d6",
     "displayName": "Long Reads Worth the Time",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "description": "Curated long reads excluding syndicated",
     "experiments": [
       {
         "description": "No syndicated long reads",
@@ -1041,8 +1041,8 @@
   },
     {
     "id": "042a8b55-4999-4acb-a6fe-1a344f90cc3c",
-    "displayName": "German Curated Recommendations",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Curated by our editors Stories to fuel your mind",
+    "description": "German Curated Recommendations",
     "experiments": [
       {
         "description": "German Curated Recommendations by Approval Time",
