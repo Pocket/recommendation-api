@@ -35,6 +35,10 @@ class ClickdataBaseModel(BaseModel):
     created_at: int = None
     expires_at: int = None
 
+    # parameters:
+    # - dynamodb table name
+    # - primary key name
+
     @staticmethod
     @xray_recorder.capture_async('models.clickdata.get')
     async def get(slate_id: str, item_list: List[str], make_key: Callable[[str, str], str]) -> Dict[str, 'ClickdataModel']:
@@ -93,4 +97,10 @@ class ClickdataBaseModel(BaseModel):
         return {k: clickdata.get(k) for k in clickdata_keys}
 
 
-class RecommendationClickData(ClickdataBaseModel)
+class ClickdataModel(ClickdataBaseModel):
+    pass
+
+
+class SlateClickdataModel(ClickdataBaseModel):
+    dynamodb_table: str = app.config.dynamodb['recommendation_api_slate_clickdata_table']
+    pass
