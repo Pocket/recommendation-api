@@ -101,27 +101,35 @@ class RecommendationAPI extends TerraformStack {
             },
             {
               name: 'AWS_DYNAMODB_ENDPOINT_URL',
-              value: `https://dynamodb.${region.name}.amazonaws.com`
+              value: `https://dynamodb.${region.name}.amazonaws.com`,
             },
             {
               name: 'RECOMMENDATION_API_METADATA_TABLE',
-              value: dynamodb.metadataTable.dynamodb.name
+              value: dynamodb.metadataTable.dynamodb.name,
             },
             {
               name: 'RECOMMENDATION_API_CANDIDATES_TABLE',
-              value: dynamodb.candidatesTable.dynamodb.name
+              value: dynamodb.candidatesTable.dynamodb.name,
             },
             {
               name: 'RECOMMENDATION_API_CLICKDATA_TABLE',
-              value: dynamodb.clickdataTable.name
+              value: dynamodb.clickdataTable.name,
+            },
+            {
+              name: 'RECOMMENDATION_API_CLICKDATA_PK',
+              value: dynamodb.clickdataTable.hashKey,
             },
             {
               name: 'RECOMMENDATION_API_SLATE_CLICKDATA_TABLE',
-              value: dynamodb.slateClickdataTable.name
+              value: dynamodb.slateClickdataTable.name,
+            },
+            {
+              name: 'RECOMMENDATION_API_SLATE_CLICKDATA_PK',
+              value: dynamodb.slateClickdataTable.hashKey,
             },
             {
               name: 'RECOMMENDATION_API_CANDIDATE_SETS_TABLE',
-              value: dynamodb.candidateSetsTable.dynamodb.name
+              value: dynamodb.candidateSetsTable.dynamodb.name,
             },
             {
               name: 'MEMCACHED_SERVERS',
@@ -132,8 +140,8 @@ class RecommendationAPI extends TerraformStack {
             {
               name: 'SENTRY_DSN',
               valueFrom: `arn:aws:ssm:${region.name}:${caller.accountId}:parameter/${config.name}/${config.environment}/SENTRY_DSN`
-            }
-          ]
+            },
+          ],
         },
         {
           name: 'xray-daemon',
