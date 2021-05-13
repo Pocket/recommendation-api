@@ -125,7 +125,7 @@ class RecommendationModel(BaseModel):
         """
         item_ids = [recommendation.item.item_id for recommendation in recommendations]
         try:
-            click_data = await ClickdataModel.get(slate_id, item_ids)
+            click_data = await ClickdataModel().get(slate_id, item_ids)
         except ValueError:
             rec_item_ids = ','.join(item_ids)
             print(f'click data not found for candidates with item ids: {rec_item_ids}')

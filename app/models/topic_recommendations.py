@@ -140,7 +140,7 @@ class TopicRecommendationsModelUtils:
             # returns a dict with item_id as key and dynamodb row modeled as ClickDataModel
             # HACK: Hardcode slate_id to "topic". This endpoint is unused and can be removed once the Web repo no longer
             # references it behind a feature flag.
-            clk_data = await ClickdataModel.get("topic", item_list)
+            clk_data = await ClickdataModel().get("topic", item_list)
         except ValueError:
             # indicates no results were returned
             clk_data = {}
