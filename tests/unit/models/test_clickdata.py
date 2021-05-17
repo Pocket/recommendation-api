@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from app.models.clickdata import ClickdataModel
+from app.models.clickdata.recommendation_clickdata_model import RecommendationClickdataModel
 
 
 class TestClickdata:
@@ -14,7 +14,7 @@ class TestClickdata:
             "mod_item": "topic/default",
         }
 
-        clickdata = ClickdataModel.parse_obj(row)
+        clickdata = RecommendationClickdataModel.parse_obj(row)
         assert clickdata.clicks == 0.045687984008122705
         assert clickdata.impressions == 2.207612237118199
         assert clickdata.mod_item == "topic/default"

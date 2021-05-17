@@ -1,7 +1,7 @@
 import unittest
 
 from tests.unit.utils import generate_recommendations
-from app.models.clickdata import ClickdataModel
+from app.models.clickdata.recommendation_clickdata_model import RecommendationClickdataModel
 from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist
 from operator import itemgetter
 
@@ -144,7 +144,7 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         recs = generate_recommendations(['333', '999'])
 
         click_data = {
-            '999': ClickdataModel.parse_obj({
+            '999': RecommendationClickdataModel.parse_obj({
                 'mod_item': 'home/999',
                 'clicks': '99',
                 'impressions': '999',
@@ -160,7 +160,7 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
     def test_invalid_prior(self):
         recs = generate_recommendations(['999'])
         click_data = {
-            'default': ClickdataModel.parse_obj({
+            'default': RecommendationClickdataModel.parse_obj({
                 'mod_item': 'home/default',
                 'clicks': '99',
                 'impressions': '-14',
@@ -185,21 +185,21 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         recs = generate_recommendations(["333333", "666666", "999999", "222222"])
 
         click_data = {
-            '999999': ClickdataModel.parse_obj({
+            '999999': RecommendationClickdataModel.parse_obj({
                 'mod_item': 'home/999999',
                 'clicks': '99',
                 'impressions': '999',
                 'created_at': '0',
                 'expires_at': '0'
             }),
-            '666666': ClickdataModel.parse_obj({
+            '666666': RecommendationClickdataModel.parse_obj({
                 'mod_item': 'home/666666',
                 'clicks': '66',
                 'impressions': '999',
                 'created_at': '0',
                 'expires_at': '0'
             }),
-            '333333': ClickdataModel.parse_obj({
+            '333333': RecommendationClickdataModel.parse_obj({
                 'mod_item': 'home/333333',
                 'clicks': '33',
                 'impressions': '999',

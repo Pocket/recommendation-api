@@ -3,7 +3,7 @@ import json
 
 from aws_xray_sdk.core import xray_recorder
 from typing import List, Dict, Any
-from app.models.clickdata import ClickdataModel
+from app.models.clickdata.recommendation_clickdata_model import RecommendationClickdataModel
 from operator import itemgetter
 from scipy.stats import beta
 
@@ -63,7 +63,7 @@ DEFAULT_BETA_PRIOR = 1.0
 
 def thompson_sampling(
         recs: List['RecommendationModel'],
-        clk_data: Dict[(int or str), 'ClickdataModel']) -> List['RecommendationModel']:
+        clk_data: Dict[(int or str), 'RecommendationClickdataModel']) -> List['RecommendationModel']:
     """
     Re-rank items using Thompson sampling which combines exploitation of known item CTR
     with exploration of new items with unknown CTR modeled by a prior

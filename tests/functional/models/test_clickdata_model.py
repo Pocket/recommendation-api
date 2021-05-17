@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
-from app.models.clickdata import ClickdataModel
+from app.models.clickdata.recommendation_clickdata_model import RecommendationClickdataModel
 
 
 class TestClickdataModel(TestDynamoDBBase):
@@ -9,7 +9,7 @@ class TestClickdataModel(TestDynamoDBBase):
     async def test_get_clickdata_by_item(self):
         await self._put_clickdata_fixtures()
 
-        clickdata = await ClickdataModel().get("1234-ABCD", ["666666", "333333"])
+        clickdata = await RecommendationClickdataModel().get("1234-ABCD", ["666666", "333333"])
         assert len(clickdata) == 3
         assert "default" in clickdata
         assert "666666" in clickdata
@@ -23,7 +23,7 @@ class TestClickdataModel(TestDynamoDBBase):
         # - 666666, 333333, and "default" all exist in the database
         # - 111111 doesn't exist, but will be created later
         # - foobar doesn't exist, and will not be created
-        clickdata = await ClickdataModel().get("1234-ABCD", ["111111", "666666", "333333", "foobar"])
+        clickdata = await RecommendationClickdataModel().get("1234-ABCD", ["111111", "666666", "333333", "foobar"])
         assert len(clickdata) == 3
         assert clickdata["default"].clicks == 200
         assert clickdata["333333"].clicks == 33
@@ -48,7 +48,7 @@ class TestClickdataModel(TestDynamoDBBase):
         })
 
         # The clickvalue in the database has changed. Assert that we're getting the same click value from cache.
-        clickdata = await ClickdataModel().get("1234-ABCD", ["111111", "666666", "333333"])
+        clickdata = await RecommendationClickdataModel().get("1234-ABCD", ["111111", "666666", "333333"])
         assert len(clickdata) == 3
         assert clickdata["default"].clicks == 200
         assert clickdata["333333"].clicks == 33
@@ -60,7 +60,7 @@ class TestClickdataModel(TestDynamoDBBase):
         await super().clear_caches()
 
         # The cache has been cleared. Assert that we're getting the new click values from the database.
-        clickdata = await ClickdataModel().get("1234-ABCD", ["111111", "666666", "333333"])
+        clickdata = await RecommendationClickdataModel().get("1234-ABCD", ["111111", "666666", "333333"])
         assert len(clickdata) == 4
         assert clickdata["default"].clicks == 200
         assert clickdata["333333"].clicks == 33

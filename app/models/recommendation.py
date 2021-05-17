@@ -10,7 +10,7 @@ from app.config import dynamodb as dynamodb_config
 # Needs to exist for pydantic to resolve the model field "item: ItemModel" in the RecommendationModel
 from app.graphql.item import Item
 from app.models.candidate_set import candidate_set_factory
-from app.models.clickdata import ClickdataModel
+from app.models.clickdata.recommendation_clickdata_model import RecommendationClickdataModel
 from app.models.item import ItemModel
 from app.models.slate_experiment import SlateExperimentModel
 from app.rankers import get_ranker
@@ -125,7 +125,7 @@ class RecommendationModel(BaseModel):
         """
         item_ids = [recommendation.item.item_id for recommendation in recommendations]
         try:
-            click_data = await ClickdataModel().get(slate_id, item_ids)
+            click_data = await RecommendationClickdataModel().get(slate_id, item_ids)
         except ValueError:
             rec_item_ids = ','.join(item_ids)
             print(f'click data not found for candidates with item ids: {rec_item_ids}')
