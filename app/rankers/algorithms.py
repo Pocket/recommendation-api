@@ -1,17 +1,19 @@
 import logging
 import json
+from typing import Any, Dict, List, Union
 
 from aws_xray_sdk.core import xray_recorder
-from typing import List, Dict, Any
-from app.models.clickdata.recommendation_clickdata_model import RecommendationClickdataModel
+from app.models.clickdata.base_model import ClickdataBaseModel
 from operator import itemgetter
 from scipy.stats import beta
 
-from app.models.recommendation import RecommendationModel
 from app.config import ROOT_DIR
 
 
-def top5(items: List[Any]) -> List[Any]:
+RankableListType = List[Union['SlateModel', 'RecommendationModel']]
+
+
+def top5(items: RankableListType) -> RankableListType:
     """
     Gets the first 5 recommendations from the list of recommendations.
 
@@ -21,7 +23,7 @@ def top5(items: List[Any]) -> List[Any]:
     return items[:5]
 
 
-def top15(items: List[Any]) -> List[Any]:
+def top15(items: RankableListType) -> RankableListType:
     """
     Gets the first 15 recommendations from the list of recommendations.
 
@@ -31,7 +33,7 @@ def top15(items: List[Any]) -> List[Any]:
     return items[:15]
 
 
-def top30(items: List[Any]) -> List[Any]:
+def top30(items: RankableListType) -> RankableListType:
     """
     Gets the first 30 recommendations from the list of recommendations.
 
@@ -41,7 +43,7 @@ def top30(items: List[Any]) -> List[Any]:
     return items[:30]
 
 
-def blocklist(recs: List['RecommendationModel'], blocklist: List[str] = None) -> List['RecommendationModel']:
+def blocklist(recs: RankableListType, blocklist: List[str] = None) -> RankableListType:
     """
     this filters recommendations by item_id using the blocklist available
     in ./app/resources/blocklists.json
@@ -62,8 +64,8 @@ DEFAULT_BETA_PRIOR = 1.0
 
 
 def thompson_sampling(
-        recs: List['RecommendationModel'],
-        clk_data: Dict[(int or str), 'RecommendationClickdataModel']) -> List['RecommendationModel']:
+        recs: RankableListType,
+        clk_data: Dict[(int or str), 'ClickdataBaseModel']) -> RankableListType:
     """
     Re-rank items using Thompson sampling which combines exploitation of known item CTR
     with exploration of new items with unknown CTR modeled by a prior
@@ -112,7 +114,7 @@ def thompson_sampling(
 
 
 @xray_recorder.capture('rankers_algorithms_spread_publishers')
-def spread_publishers(recs: List['RecommendationModel'], spread: int = 3) -> List['RecommendationModel']:
+def spread_publishers(recs: RankableListType, spread: int = 3) -> RankableListType:
     """
     Makes sure stories from the same publisher/domain are not listed sequentially, and have a configurable number
     of stories in-between them.
