@@ -113,6 +113,63 @@
           }
         }
       }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "date_key": {
+            "S": "2021-05-12"
+          },
+          "dbt_unloaded_at": {
+            "S": "2021-05-13 18:29:57.000 Z"
+          },
+          "dydb_ingested_at": {
+            "S": "2021-05-13 18:30:03"
+          },
+          "slate_id": {
+            "S": "2e3ddc90-8def-46d7-b85f-da7525c66fb1"
+          },
+          "slate_lineup_id": {
+            "S": "af3a5196-be16-4bf7-b131-70981e43b132"
+          },
+          "slates_pk": {
+            "S": "2e3ddc90-8def-46d7-b85f-da7525c66fb1/af3a5196-be16-4bf7-b131-70981e43b132"
+          },
+          "training_14_day_impressions": {
+            "N": "0"
+          },
+          "training_14_day_opens": {
+            "N": "0"
+          },
+          "training_1_day_impressions": {
+            "N": "0"
+          },
+          "training_1_day_opens": {
+            "N": "0"
+          },
+          "training_21_day_impressions": {
+            "N": "10166"
+          },
+          "training_21_day_opens": {
+            "N": "104"
+          },
+          "training_28_day_impressions": {
+            "N": "113186"
+          },
+          "training_28_day_opens": {
+            "N": "2349"
+          },
+          "training_7_day_impressions": {
+            "N": "0"
+          },
+          "training_7_day_opens": {
+            "N": "0"
+          },
+          "version": {
+            "N": "1"
+          }
+        }
+      }
     }
   ]
 }
