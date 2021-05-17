@@ -1,0 +1,27 @@
+{
+  "TableName": "MODELD-Local-SlateMetrics",
+  "KeySchema": [
+    {
+      "AttributeName": "slates_pk",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "date_key",
+      "KeyType": "RANGE"
+    }
+  ],
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "slates_pk",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "date_key",
+      "AttributeType": "S"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5
+  }
+}
