@@ -33,7 +33,9 @@ class SlateModel(BaseModel):
         :return: a SlateModel object
         """
         slate_config = SlateConfigModel.find_by_id(slate_id)
-        return await SlateModel.__get_slate_from_slate_config(slate_config, user_id, recommendation_count=recommendation_count)
+        return await SlateModel.__get_slate_from_slate_config(
+            slate_config, user_id,
+            recommendation_count=recommendation_count)
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_all')
@@ -45,7 +47,9 @@ class SlateModel(BaseModel):
         :return: a list fo SlateModel objects
         """
         slate_configs = SlateConfigModel.SLATE_CONFIGS_BY_ID.values()
-        return await SlateModel.get_slates_from_slate_configs(slate_configs, user_id, recommendation_count=recommendation_count)
+        return await SlateModel.get_slates_from_slate_configs(
+            slate_configs, user_id,
+            recommendation_count=recommendation_count)
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_slates_from_slate_configs')
@@ -55,6 +59,7 @@ class SlateModel(BaseModel):
         """
 
         :param slate_configs:
+        :param user_id: Identifies user to deliver personalized recommendations
         :param recommendation_count: int, 0 = no recs, > 0 include this many recs
         :return: a list of SlateModel objects
         """
@@ -62,9 +67,10 @@ class SlateModel(BaseModel):
 
         # for each slate, get random experiment
         for slate_config in slate_configs:
-            slate_model = SlateModel.__get_slate_from_slate_config(slate_config,
-                                                                   user_id,
-                                                                   recommendation_count=recommendation_count)
+            slate_model = SlateModel.__get_slate_from_slate_config(
+                slate_config,
+                user_id,
+                recommendation_count=recommendation_count)
             slate_models.append(slate_model)
 
         slate_models = await gather(*slate_models)

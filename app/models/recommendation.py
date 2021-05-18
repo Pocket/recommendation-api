@@ -85,7 +85,8 @@ class RecommendationModel(BaseModel):
         :return: a list of RecommendationModel instances
         """
         # for each candidate set id, get the candidate set record from the db
-        candidate_sets = await gather(*(candidate_set_factory(cs_id).get(cs_id, user_id) for cs_id in experiment.candidate_sets))
+        candidate_sets = await gather(
+            *(candidate_set_factory(cs_id).get(cs_id, user_id) for cs_id in experiment.candidate_sets))
 
         recommendations = []
         # get the recommendations

@@ -67,7 +67,8 @@ class SlateLineupModel(BaseModel):
         # Client requested only a certain number of slates, so after it was ranked, split the list to the count
         slate_configs = slate_configs[:slate_count]
 
-        slates = await SlateModel.get_slates_from_slate_configs(slate_configs, user_id, recommendation_count=recommendation_count)
+        slates = await SlateModel.get_slates_from_slate_configs(
+            slate_configs, user_id, recommendation_count=recommendation_count)
 
         slates = await deduplicate_recommendations_across_slates(slates)
 
