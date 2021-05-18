@@ -4,9 +4,11 @@ from aws_xray_sdk.core import xray_recorder
 from pydantic import BaseModel
 from typing import List, Optional
 
+from app.models.clickdata.slate_clickdata_model import SlateClickdataModel
 from app.models.slate_lineup_config import SlateLineupConfigModel
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate import SlateModel, deduplicate_recommendations_across_slates
+from app.rankers import get_ranker
 
 
 class SlateLineupModel(BaseModel):
@@ -36,6 +38,16 @@ class SlateLineupModel(BaseModel):
                                                                      user_id,
                                                                      recommendation_count=recommendation_count,
                                                                      slate_count=slate_count)
+
+        for ranker in experiment.rankers:
+            ranker_kwargs = {}
+            if ranker == 'thompson-sampling':
+                # thompson sampling requires clickdata for slates
+                ranker_kwargs = {
+                    'clickdata': await SlateClickdataModel().get(slate_lineup_id, [slate.id for slate in slates])
+                }
+
+            slates = get_ranker(ranker)(slates, **ranker_kwargs)
 
         return SlateLineupModel(
             id=slate_lineup_id,
