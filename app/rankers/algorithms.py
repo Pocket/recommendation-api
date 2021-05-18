@@ -11,6 +11,7 @@ from app.config import ROOT_DIR
 
 
 RankableListType = List[Union['SlateModel', 'RecommendationModel']]
+RecommendationListType = List['RecommendationModel']
 
 
 def top5(items: RankableListType) -> RankableListType:
@@ -43,7 +44,7 @@ def top30(items: RankableListType) -> RankableListType:
     return items[:30]
 
 
-def blocklist(recs: RankableListType, blocklist: List[str] = None) -> RankableListType:
+def blocklist(recs: RecommendationListType, blocklist: List[str] = None) -> RecommendationListType:
     """
     this filters recommendations by item_id using the blocklist available
     in ./app/resources/blocklists.json
@@ -114,7 +115,7 @@ def thompson_sampling(
 
 
 @xray_recorder.capture('rankers_algorithms_spread_publishers')
-def spread_publishers(recs: RankableListType, spread: int = 3) -> RankableListType:
+def spread_publishers(recs: RecommendationListType, spread: int = 3) -> RecommendationListType:
     """
     Makes sure stories from the same publisher/domain are not listed sequentially, and have a configurable number
     of stories in-between them.
