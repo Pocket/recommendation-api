@@ -1,3 +1,4 @@
+import logging
 import aioboto3
 
 from asyncio import gather
@@ -108,7 +109,7 @@ class RecommendationModel(BaseModel):
     async def __thompson_sample(slate_id: str, recommendations: ['RecommendationModel']) -> ['RecommendationModel']:
         """
         Special processing for handling the thompson sampling ranker. Retrieves click data for the items being ranked
-        and uses that for thompson sampling algorithm with beta distirbutions.
+        and uses that for thompson sampling algorithm with beta distributions.
 
         Thompson sampling is a probabilistic approach to estimating the CTR of an item.  It combines historical data
         about item CTR on a specific recommendation surface with per-item click and impression data to form
@@ -128,7 +129,6 @@ class RecommendationModel(BaseModel):
         try:
             click_data = await RecommendationClickdataModel().get(slate_id, item_ids)
         except ValueError:
-            rec_item_ids = ','.join(item_ids)
-            print(f'click data not found for candidates with item ids: {rec_item_ids}')
+            logging.warning(f'click data not found for candidates with item ids: {item_ids}')
             click_data = {}
         return get_ranker('thompson-sampling')(recommendations, click_data)
