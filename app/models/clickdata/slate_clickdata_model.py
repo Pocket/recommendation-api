@@ -11,11 +11,11 @@ class SlateClickdataModel(ClickdataBaseModel):
     _primary_key_name: str = app.config.dynamodb['slate_clickdata']['pk']
 
     @xray_recorder.capture_async('models.SlateClickdataModel.get')
-    async def get(self, lineup_id: str, slate_ids: List[str]) -> Dict[str, 'ClickdataBaseModel']:
+    async def get(self, slate_lineup_id: str, slate_ids: List[str]) -> Dict[str, 'ClickdataBaseModel']:
         """
         Get aggregated clickdata for slates in a given lineup.
 
-        :param lineup_id:
+        :param slate_lineup_id:
         :param slate_ids:
         """
-        return await super().get(lineup_id, slate_ids)
+        return await super().get(slate_lineup_id, slate_ids)
