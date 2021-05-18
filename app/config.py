@@ -25,8 +25,8 @@ dynamodb = {
         'pk': os.getenv('RECOMMENDATION_API_CLICKDATA_PK', 'mod_item'),
     },
     'slate_clickdata': {
-        'table': os.getenv('RECOMMENDATION_API_CLICKDATA_TABLE', 'recommendation_api_slate_clickdata'),
-        'pk': os.getenv('RECOMMENDATION_API_CLICKDATA_PK', 'pk_slate'),
+        'table': os.getenv('RECOMMENDATION_API_CLICKDATA_TABLE', 'MODELD-Local-SlateMetrics'),
+        'pk': os.getenv('RECOMMENDATION_API_CLICKDATA_PK', 'slates_pk'),
     },
     'recommendation_api_candidate_sets_table': os.getenv('RECOMMENDATION_API_CANDIDATE_SETS_TABLE', 'recommendation_api_candidate_sets')
 }
