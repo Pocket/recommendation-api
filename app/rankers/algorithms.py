@@ -66,7 +66,7 @@ DEFAULT_BETA_PRIOR = 1.0
 
 def thompson_sampling(
         recs: RankableListType,
-        clk_data: Dict[(int or str), 'ClickdataBaseModel']) -> RankableListType:
+        clickdata: Dict[(int or str), 'ClickdataBaseModel']) -> RankableListType:
     """
     Re-rank items using Thompson sampling which combines exploitation of known item CTR
     with exploration of new items with unknown CTR modeled by a prior
@@ -76,7 +76,7 @@ def thompson_sampling(
     items to our repertoire.
 
     :param recs: a list of recommendations in the desired order (pre-publisher spread)
-    :param clk_data: a dict with item_id as key and dynamodb row modeled as ClickDataModel
+    :param clickdata: a dict with item_id as key and dynamodb row modeled as ClickDataModel
     :return: a re-ordered version of recs satisfying the spread as best as possible
     """
 
@@ -85,13 +85,13 @@ def thompson_sampling(
         return recs
 
     alpha_prior, beta_prior = DEFAULT_ALPHA_PRIOR, DEFAULT_BETA_PRIOR
-    if clk_data and 'default' in clk_data:
+    if clickdata and 'default' in clickdata:
         # 'default' is a special key we can use for anything that is missing.
         # The values here aren't actually clicks or impressions,
         # but instead direct alpha and beta parameters for the module CTR prior
-        alpha_prior, beta_prior = clk_data['default'].clicks, clk_data['default'].impressions
+        alpha_prior, beta_prior = clickdata['default'].clicks, clickdata['default'].impressions
         if alpha_prior < 0 or beta_prior < 0:
-            logging.error("Alpha (%s) or Beta (%s) prior < 0 for module %s", alpha_prior, beta_prior, clk_data['default'].mod_item)
+            logging.error("Alpha (%s) or Beta (%s) prior < 0 for module %s", alpha_prior, beta_prior, clickdata['default'].mod_item)
             alpha_prior, beta_prior = DEFAULT_ALPHA_PRIOR, DEFAULT_BETA_PRIOR
 
     scores = []
@@ -99,7 +99,7 @@ def thompson_sampling(
     prior = beta(alpha_prior, beta_prior)
     for rec in recs:
         resolved_id = rec.item.item_id
-        d = clk_data.get(resolved_id)
+        d = clickdata.get(resolved_id)
         if d:
             clicks = max(d.clicks + alpha_prior, 1e-18)
             # posterior combines click data with prior (also a beta distribution)
