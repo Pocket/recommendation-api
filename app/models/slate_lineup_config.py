@@ -5,6 +5,7 @@ from typing import List
 
 from app.config import JSON_DIR
 from app.json.utils import parse_to_dict
+from app.models.clickdata.slate_clickdata_model import SlateClickdataModel
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate_config import SlateConfigModel
 from app.rankers import get_ranker
@@ -94,10 +95,12 @@ class SlateLineupConfigModel:
         return SlateLineupExperimentModel.choose_experiment(slate_lineup_config.experiments)
 
     @staticmethod
-    def get_slate_configs_from_experiment(experiment: SlateLineupExperimentModel) -> List[SlateConfigModel]:
+    async def get_slate_configs_from_experiment(
+            slate_lineup_id: str, experiment: SlateLineupExperimentModel) -> List[SlateConfigModel]:
         """
         Gets a slate config from the list of slate configs
 
+        :param slate_lineup_id:
         :param experiment: SlateLineupExperimentModel object
         :return: a list of SlateConfigModel objects
         """
@@ -112,10 +115,17 @@ class SlateLineupConfigModel:
         # each experiment in the slate_lineup has 0 - x number of rankers which will
         # change the order of the slate_configs within the slate_lineup's experiment
         for ranker in experiment.rankers:
+            ranker_kwargs = {}
+            if ranker == 'thompson-sampling':
+                # thompson sampling requires a clickdata for slates
+                ranker_kwargs = {
+                    'clickdata': await SlateClickdataModel().get(slate_lineup_id, [s.id for s in slate_configs])
+                }
+
             # slate configs get ranked and re-assigned for every ranker within the experiment
             # for example we might first take the top 15 slate configs(that is one ranker)
             # and then randomize those 15 (which would be the second ranker)
-            slate_configs = get_ranker(ranker)(slate_configs)
+            slate_configs = get_ranker(ranker)(slate_configs, **ranker_kwargs)
 
         return slate_configs
 

@@ -9,7 +9,6 @@ from scipy.stats import beta
 
 from app.config import ROOT_DIR
 
-
 RankableListType = List[Union['SlateModel', 'RecommendationModel']]
 RecommendationListType = List['RecommendationModel']
 
@@ -89,21 +88,30 @@ def thompson_sampling(
         # 'default' is a special key we can use for anything that is missing.
         # The values here aren't actually clicks or impressions,
         # but instead direct alpha and beta parameters for the module CTR prior
-        alpha_prior, beta_prior = clickdata['default'].clicks, clickdata['default'].impressions
+        alpha_prior = clickdata['default'].training_7_day_opens
+        beta_prior = clickdata['default'].training_7_day_impressions
         if alpha_prior < 0 or beta_prior < 0:
-            logging.error("Alpha (%s) or Beta (%s) prior < 0 for module %s", alpha_prior, beta_prior, clickdata['default'].mod_item)
+            logging.error(
+                f"Alpha {alpha_prior} or Beta {beta_prior} prior < 0 for module {clickdata['default'].mod_item}")
             alpha_prior, beta_prior = DEFAULT_ALPHA_PRIOR, DEFAULT_BETA_PRIOR
 
     scores = []
     # create prior distribution for CTR from parameters in click data table
     prior = beta(alpha_prior, beta_prior)
     for rec in recs:
-        resolved_id = rec.item.item_id
-        d = clickdata.get(resolved_id)
+        try:
+            # Recommendation is keyed on item_id.
+            clickdata_id = rec.item.item_id
+        except AttributeError:
+            # Slates are keyed on their id.
+            clickdata_id = rec.id
+
+        d = clickdata.get(clickdata_id)
         if d:
-            clicks = max(d.clicks + alpha_prior, 1e-18)
+            # TODO: Decide how many days we want to look back.
+            clicks = max(d.training_7_day_opens + alpha_prior, 1e-18)
             # posterior combines click data with prior (also a beta distribution)
-            no_clicks = max(d.impressions - d.clicks + beta_prior, 1e-18)
+            no_clicks = max(d.training_7_day_impressions - d.training_7_day_opens + beta_prior, 1e-18)
             # sample from posterior for CTR given click data
             score = beta.rvs(clicks, no_clicks)
             scores.append((rec, score))
