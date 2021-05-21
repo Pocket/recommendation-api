@@ -286,7 +286,9 @@
     "experiments": [
       {
         "description": "Explore Topic SlateLineup",
-        "rankers": [],
+        "rankers": [
+          "thompson-sampling"
+        ],
         "slates": [
           "6d1273a5-055e-4de0-8a5b-5f2b79d37e5c",
           "47688fcf-2bbb-4e0e-a02e-1f68c248a67e"
