@@ -19,7 +19,7 @@
             "S": "af3a5196-be16-4bf7-b131-70981e43b132"
           },
           "slates_pk": {
-            "S": "0f322865-64e6-472d-8147-b3d6637a7d67/af3a5196-be16-4bf7-b131-70981e43b132"
+            "S": "6d1273a5-055e-4de0-8a5b-5f2b79d37e5c/63f24663-0e80-4c08-82aa-3fb0e06c4979"
           },
           "training_14_day_impressions": {
             "N": "0"
@@ -76,7 +76,7 @@
             "S": "af3a5196-be16-4bf7-b131-70981e43b132"
           },
           "slates_pk": {
-            "S": "0f322865-64e6-472d-8147-b3d6637a7d67/af3a5196-be16-4bf7-b131-70981e43b132"
+            "S": "47688fcf-2bbb-4e0e-a02e-1f68c248a67e/63f24663-0e80-4c08-82aa-3fb0e06c4979"
           },
           "training_14_day_impressions": {
             "N": "2000"
@@ -133,7 +133,7 @@
             "S": "af3a5196-be16-4bf7-b131-70981e43b132"
           },
           "slates_pk": {
-            "S": "2e3ddc90-8def-46d7-b85f-da7525c66fb1/af3a5196-be16-4bf7-b131-70981e43b132"
+            "S": "default/63f24663-0e80-4c08-82aa-3fb0e06c4979"
           },
           "training_14_day_impressions": {
             "N": "0"

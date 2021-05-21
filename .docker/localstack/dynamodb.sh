@@ -2,6 +2,7 @@
 set -x
 
 TABLE_DEFINITIONS=(
+  'MODELD-Local-SlateMetrics'
   'recommendation_api_metadata'
   'recommendation_api_candidates'
   'recommendation_api_clickdata'
