@@ -112,19 +112,19 @@ class RecommendationAPI extends TerraformStack {
               value: dynamodb.candidatesTable.dynamodb.name,
             },
             {
-              name: 'RECOMMENDATION_API_CLICKDATA_TABLE',
-              value: dynamodb.clickdataTable.name,
+              name: 'MODELD_RECOMMENDATION_METRICS_TABLE',
+              value: dynamodb.recommendationClickdataTable.name,
             },
             {
-              name: 'RECOMMENDATION_API_CLICKDATA_PK',
-              value: dynamodb.clickdataTable.hashKey,
+              name: 'MODELD_RECOMMENDATION_METRICS_PK',
+              value: dynamodb.recommendationClickdataTable.hashKey,
             },
             {
-              name: 'RECOMMENDATION_API_SLATE_CLICKDATA_TABLE',
+              name: 'MODELD_SLATE_METRICS_TABLE',
               value: dynamodb.slateClickdataTable.name,
             },
             {
-              name: 'RECOMMENDATION_API_SLATE_CLICKDATA_PK',
+              name: 'MODELD_SLATE_METRICS_PK',
               value: dynamodb.slateClickdataTable.hashKey,
             },
             {
@@ -204,12 +204,12 @@ class RecommendationAPI extends TerraformStack {
             resources: [
               dynamodb.candidatesTable.dynamodb.arn,
               dynamodb.metadataTable.dynamodb.arn,
-              dynamodb.clickdataTable.arn,
+              dynamodb.recommendationClickdataTable.arn,
               dynamodb.slateClickdataTable.arn,
               dynamodb.candidateSetsTable.dynamodb.arn,
               `${dynamodb.candidatesTable.dynamodb.arn}/*`,
               `${dynamodb.metadataTable.dynamodb.arn}/*`,
-              `${dynamodb.clickdataTable.arn}/*`,
+              `${dynamodb.recommendationClickdataTable.arn}/*`,
               `${dynamodb.slateClickdataTable.arn}/*`,
               `${dynamodb.candidateSetsTable.dynamodb.arn}/*`
             ],

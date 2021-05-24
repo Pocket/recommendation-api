@@ -66,7 +66,7 @@ class RecommendationModel(BaseModel):
         :return: list of RecommendationModel objects
         """
         async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
-            table = await dynamodb.Table(dynamodb_config['recommendation_api_candidates_table'])
+            table = await dynamodb.Table(dynamodb_config['candidates']['table'])
             key_condition = Key('topic_id-type').eq(topic_id + '|' + recommendation_type.value)
             response = await table.query(IndexName='topic_id-type', Limit=1, KeyConditionExpression=key_condition,
                                          ScanIndexForward=False)

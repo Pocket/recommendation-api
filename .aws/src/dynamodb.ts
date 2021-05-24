@@ -8,7 +8,7 @@ export class DynamoDB extends Resource {
 
   public readonly candidatesTable: ApplicationDynamoDBTable
   public readonly metadataTable: ApplicationDynamoDBTable
-  public readonly clickdataTable: DataAwsDynamodbTable
+  public readonly recommendationClickdataTable: DataAwsDynamodbTable
   public readonly slateClickdataTable: DataAwsDynamodbTable
   public readonly candidateSetsTable: ApplicationDynamoDBTable;
 
@@ -16,7 +16,7 @@ export class DynamoDB extends Resource {
     super(scope, name);
     this.candidatesTable = this.setupCandidatesTable();
     this.metadataTable = this.setupTopicsMetadataTable();
-    this.clickdataTable = this.getClickdataTable();
+    this.recommendationClickdataTable = this.getRecommendationClickdataTable();
     this.slateClickdataTable = this.getSlateClickdataTable();
     this.candidateSetsTable = this.setupCandidateSetsTable();
   }
@@ -157,8 +157,8 @@ export class DynamoDB extends Resource {
     });
   }
 
-  private getClickdataTable() {
-    return new DataAwsDynamodbTable(this, `clickdata`, {
+  private getRecommendationClickdataTable() {
+    return new DataAwsDynamodbTable(this, `rec_clickdata`, {
       name: config.clickdataDynamodbName,
     });
   }
