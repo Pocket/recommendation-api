@@ -159,7 +159,7 @@ export class DynamoDB extends Resource {
 
   private getRecommendationClickdataTable() {
     return new DataAwsDynamodbTable(this, `rec_clickdata`, {
-      name: config.clickdataDynamodbName,
+      name: config.recommendationMetricsDynamodbName,
     });
   }
 
