@@ -1,3 +1,4 @@
+import logging
 from typing import List, Dict
 
 import aioboto3
@@ -60,7 +61,7 @@ class ClickdataBaseModel(BaseModel):
         clickdata = {k.split("/")[0]: ClickdataBaseModel.parse_obj(v) for k, v in clickdata.items() if v is not None}
 
         if not clickdata:
-            raise ValueError(f"No results from DynamoDB: {module_id}")
+            logging.error(f"No clickdata results for module {module_id} with keys={keys}")
 
         return clickdata
 
@@ -81,6 +82,8 @@ class ClickdataBaseModel(BaseModel):
 
     @xray_recorder.capture_async('models.clickdata._query_clickdata')
     async def _query_clickdata(self, clickdata_keys: List):
+        clickdata = {}
+
         async with aioboto3.resource('dynamodb', endpoint_url=self._dynamodb_endpoint) as dynamodb:
             for keychunk in _chunks(clickdata_keys):
                 request = {
@@ -90,10 +93,14 @@ class ClickdataBaseModel(BaseModel):
                 }
                 responses = await dynamodb.batch_get_item(RequestItems=request)
 
-                table = await dynamodb.Table(self._dynamodb_table)
-                all_rows = await table.scan()
+                # TODO: Write a unit test when there are more than 100  rows. It seems this will fail because it's only
+                for row in responses["Responses"][self._dynamodb_table]:
+                    pk = row[self._primary_key_name]
+                    clickdata[pk] = row
 
-        clickdata = {row[self._primary_key_name]: row for row in responses["Responses"][self._dynamodb_table]}
+                if not responses["Responses"][self._dynamodb_table]:
+                    logging.error(f"DynamoDB returned no clickdata for query {request}")
+
         return {k: clickdata.get(k) for k in clickdata_keys}
 
     def _make_key(self, module: str, item_id: str) -> str:
