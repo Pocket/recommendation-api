@@ -2,11 +2,11 @@
 set -x
 
 TABLE_DEFINITIONS=(
-  'MODELD-Local-SlateMetrics'
   'recommendation_api_metadata'
   'recommendation_api_candidates'
-  'recommendation_api_clickdata'
   'recommendation_api_candidate_sets'
+  'MODELD-Local-RecMetrics'
+  'MODELD-Local-SlateMetrics'
 )
 
 for json_file in "${TABLE_DEFINITIONS[@]}"; do

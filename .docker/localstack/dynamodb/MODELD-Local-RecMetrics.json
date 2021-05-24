@@ -1,5 +1,5 @@
 {
-  "TableName": "recommendation_api_clickdata",
+  "TableName": "MODELD-Local-RecMetrics",
   "KeySchema": [
     {
       "AttributeName": "mod_item",
