@@ -41,9 +41,9 @@ elasticache = {
     # Convert comma-separated string MEMCACHED_SERVERS to list.
     'servers': os.getenv('MEMCACHED_SERVERS', '001.example.com:11211,002.example.com:11211').split(','),
     # Expire time in seconds for clickdata
-    'clickdata_ttl': int(os.getenv('MEMCACHED_CLICKDATA_TTL', 900)),
+    'clickdata_ttl': int(os.getenv('MEMCACHED_CLICKDATA_TTL', 3)), # TODO: Undo debug change. Reset this to 900.
     # Expire time in seconds for candidate sets
-    'candidate_set_ttl': int(os.getenv('MEMCACHED_CANDIDATE_SET_TTL', 900)),
+    'candidate_set_ttl': int(os.getenv('MEMCACHED_CANDIDATE_SET_TTL', 3)), # TODO: Undo debug change. Reset this to 900.
 }
 
 recit = {
