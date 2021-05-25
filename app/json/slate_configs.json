@@ -124,6 +124,24 @@
     ]
   },
   {
+    "id": "631d8077-1462-4397-ad0a-aa340c27570a",
+    "displayName": "Editors' Picks, Just For You",
+    "description": "Curated Personalized",
+    "experiments": [
+      {
+        "description": "recit-personalized curated",
+        "candidateSets": [
+          "recit-personalized/curated"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      }
+    ]
+  },
+  {
     "id": "ad73c061-5ac5-458f-8691-ab071f7eadd7",
     "displayName": "Best Of Personalized",
     "description": "Best of Personalized",
