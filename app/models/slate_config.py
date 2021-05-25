@@ -25,10 +25,11 @@ class SlateConfigModel:
     # store loaded slate configs (loaded at app startup)
     SLATE_CONFIGS_BY_ID = {}
 
-    def __init__(self, slate_id: str, display_name: str, description: str, experiments=None):
+    def __init__(self, slate_id: str, display_name: str, description: str, curatorTopicLabel=None, experiments=None):
         self.id = slate_id
         self.displayName = display_name
         self.description = description
+        self.curatorTopicLabel = curatorTopicLabel
         self.experiments = experiments or []
 
     @staticmethod
@@ -38,7 +39,8 @@ class SlateConfigModel:
         :param slate_dict: dictionary created from parsing json
         :return: SlateConfigModel instance
         """
-        return SlateConfigModel(slate_dict["id"], slate_dict["displayName"], slate_dict["description"])
+        return SlateConfigModel(slate_dict["id"], slate_dict["displayName"], slate_dict["description"],
+                                slate_dict.get("curatorTopicLabel"))
 
 
     @staticmethod

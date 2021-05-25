@@ -1,10 +1,43 @@
 import unittest
 
-from tests.unit.utils import generate_recommendations
+from unittest.mock import patch
+
+from tests.unit.utils import generate_recommendations, generate_curated_configs
 from app.models.clickdata import ClickdataModel
-from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist
+from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist, \
+    personalize_topic_slates
 from operator import itemgetter
 
+full_topic_profile = [
+    ['Technology', 0.4916270776467738],
+    ['Science', 0.4845668326438052],
+    ['Self Improvement', 0.4463882336654731],
+    ['Career', 0.41259960307038374],
+    ['Education', 0.4110607340266076],
+    ['Health & Fitness', 0.31604288482458914],
+    ['Personal Finance', 0.28910082153539796],
+    ['Parenting', 0.2833301590363405],
+    ['Business', 0.27844981711121575],
+    ['Gaming', 0.27776708204470507],
+    ['Politics', 0.2743746579183603],
+    ['COVID-19', 0.25085116435066945],
+    ['Food', 0.2216703950294493],
+    ['Travel', 0.22115116728502504],
+    ['Entertainment', 0.20847503562410932],
+    ['Sports', 0.10392396923948377]
+]
+
+partial_topic_profile = [
+    ["Science", 0.4804642592376828 ],
+    ["Technology", 0.4215351739562764 ],
+    ["Self Improvement", 0.4131880414914616 ],
+    ["Education", 0.40942187714103623 ],
+    ["Career", 0.36788070441792387 ],
+    ["Politics", 0.3082215581232689 ],
+    ["Personal Finance", 0.29735881866754704],
+    ["Health & Fitness", 0.29727509873834246 ],
+    ["Gaming", 0.2748425948728629 ],
+    ["COVID-19", 0.2557075404515359 ] ]
 
 class TestAlgorithmsSpreadPublishers(unittest.TestCase):
     def test_spread_publishers_single_reorder(self):
@@ -232,3 +265,45 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         assert int(ranks['666666']) != ranks['666666']
         assert int(ranks['333333']) != ranks['333333']
         assert int(ranks['222222']) != ranks['222222']
+
+
+class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
+
+    @patch('app.rankers.algorithms.get_personalized_topics', return_value=partial_topic_profile)
+    async def test_partial_recit_response(self):
+
+        input_configs = generate_curated_configs()
+        ordered_input_ids = [c.id for c in input_configs]
+        input_topics = [c.curatorTopicLabel for c in input_configs]
+        personalized_topics = [t[0] for t in partial_topic_profile if t[0] in input_topics]
+
+        output_configs = await personalize_topic_slates(input_configs, "1234")
+        ordered_output_ids = [c.id for c in output_configs]
+        ordered_output_topics = [c.curatorTopicLabel for c in output_configs]
+
+        # COVID-19 is not in input_configs
+        # test re-ranking
+        assert ordered_output_topics[:len(personalized_topics)] == personalized_topics
+        # test that all input slates are in output
+        assert set(ordered_input_ids) == set(ordered_output_ids)
+
+    @patch('app.rankers.algorithms.get_personalized_topics', return_value=full_topic_profile)
+    async def test_rerank(self):
+
+        input_configs = generate_curated_configs()
+        ordered_input_ids = [c.id for c in input_configs]
+        input_topics = [c.curatorTopicLabel for c in input_configs]
+        personalized_topics = [t[0] for t in full_topic_profile if t[0] in input_topics]
+
+        output_configs = await personalize_topic_slates(input_configs, "5678")
+        ordered_output_ids = [c.id for c in output_configs]
+        ordered_output_topics = [c.curatorTopicLabel for c in output_configs]
+
+        assert ordered_output_topics[:len(full_topic_profile)-1] == personalized_topics
+        # test that all input slates are in output
+        assert set(ordered_input_ids) == set(ordered_output_ids)
+
+
+
+
+

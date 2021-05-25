@@ -1,5 +1,6 @@
 import logging
 import json
+import aiohttp
 
 from aws_xray_sdk.core import xray_recorder
 from typing import List, Dict, Any
@@ -8,7 +9,11 @@ from operator import itemgetter
 from scipy.stats import beta
 
 from app.models.recommendation import RecommendationModel
-from app.config import ROOT_DIR
+from app.models.slate_config import SlateConfigModel
+from app.config import ROOT_DIR, recit as recit_config
+
+DEFAULT_ALPHA_PRIOR = 0.02
+DEFAULT_BETA_PRIOR = 1.0
 
 
 def top5(items: List[Any]) -> List[Any]:
@@ -55,10 +60,6 @@ def blocklist(recs: List['RecommendationModel'], blocklist: List[str] = None) ->
         return [rec for rec in recs if str(rec.item.item_id) not in blocklists["items"]]
     else:
         return [rec for rec in recs if rec.item.item_id not in blocklist]
-
-
-DEFAULT_ALPHA_PRIOR = 0.02
-DEFAULT_BETA_PRIOR = 1.0
 
 
 def thompson_sampling(
@@ -109,6 +110,54 @@ def thompson_sampling(
 
     scores.sort(key=itemgetter(1), reverse=True)
     return [x[0] for x in scores]
+
+
+@xray_recorder.capture_async('algorithms.get_personalized_topics')
+async def get_personalized_topics(user_id: str) -> List:
+    """
+    A request including the user_id is issued to RecIt which returns a list of ranked curator topic labels
+    personalized to the user_id.  The output will be a list of reordered topic labels based on affinity to items
+    in the user's saved list.
+    :param user_id: str identifying user
+    :return: List with elements [<curatorTopicLabel>, score]
+    """
+    if not user_id:
+        raise ValueError("user_id must be provided for personalized slate lineups")
+
+    # TODO: There should really just be one session shared, not sure how to do this in gunicorn thou
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f'{recit_config["endpoint_url"]}/v1/user_profile/{user_id}?predict_topics=true',
+                               params={"user_id": user_id}) as resp:
+            if resp.status == 200:
+                j1 = await resp.json()
+                return j1.get("curator_topics")
+            else:
+                logging.warning("RecIt error with status (%s): %s", resp.status, resp.content)
+                return []
+
+
+async def personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
+                             user_id: str) -> List['SlateConfigModel']:
+    """
+    This routine takes a list of slates as input in which must include slates with an associated curator topic
+    label.  It uses the topic_profile that is supplied by RecIt to re-rank the slates according to affinity
+    with items in the user's list.
+    :param input_slate_configs: SlateConfigModel list that includes slates with curatorTopicLabels
+    :param user_id: str indicating user profile for personalization
+    :return: SlateLineupExperimentModel with reordered slates
+    """
+
+    if not user_id:
+        raise ValueError("user_id must be provided for personalized slate lineups")
+
+    slate_topic_map = {i.curatorTopicLabel: i for i in input_slate_configs}
+
+    output_configs = [slate_topic_map[pt[0]] for pt in await get_personalized_topics(user_id)]
+    output_ids = {c.id for c in output_configs}
+    # append any input slates that don't have a curatorTopicLabel set
+    output_configs.extend([c for c in input_slate_configs if c.id not in output_ids])
+
+    return output_configs
 
 
 @xray_recorder.capture('rankers_algorithms_spread_publishers')

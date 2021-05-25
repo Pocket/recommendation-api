@@ -36,6 +36,16 @@
         ],
         "pattern": "^(.+)$"
       },
+      "curatorTopicLabel": {
+        "$id": "#/properties/displayName",
+        "type": "string",
+        "title": "The Curator Topic Label Schema",
+        "default": "",
+        "examples": [
+          "Self Improvement"
+        ],
+        "pattern": "^(.+)$"
+      },
       "description": {
         "$id": "#/properties/description",
         "type": "string",
