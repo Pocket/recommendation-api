@@ -62,7 +62,7 @@ class SlateLineupModel(BaseModel):
             return []
 
         # get the requested slate_lineup from the config using the slate_lineup_id
-        slate_configs = SlateLineupConfigModel.get_slate_configs_from_experiment(experiment)
+        slate_configs = SlateLineupConfigModel.get_slate_configs_from_experiment(experiment, user_id)
 
         # Client requested only a certain number of slates, so after it was ranked, split the list to the count
         slate_configs = slate_configs[:slate_count]

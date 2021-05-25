@@ -94,11 +94,13 @@ class SlateLineupConfigModel:
         return SlateLineupExperimentModel.choose_experiment(slate_lineup_config.experiments)
 
     @staticmethod
-    def get_slate_configs_from_experiment(experiment: SlateLineupExperimentModel) -> List[SlateConfigModel]:
+    def get_slate_configs_from_experiment(experiment: SlateLineupExperimentModel,
+                                          user_id: str = None) -> List[SlateConfigModel]:
         """
         Gets a slate config from the list of slate configs
 
         :param experiment: SlateLineupExperimentModel object
+        :param user_id: user_id for personalized rankers
         :return: a list of SlateConfigModel objects
         """
         # get slate_ids from the experiment
@@ -112,10 +114,16 @@ class SlateLineupConfigModel:
         # each experiment in the slate_lineup has 0 - x number of rankers which will
         # change the order of the slate_configs within the slate_lineup's experiment
         for ranker in experiment.rankers:
+            ranker_kwargs = {}
+            if ranker == "personalized-topics":
+                # personalized topics requires a user_id
+                ranker_kwargs = {
+                    'user_id': user_id
+                }
             # slate configs get ranked and re-assigned for every ranker within the experiment
             # for example we might first take the top 15 slate configs(that is one ranker)
             # and then randomize those 15 (which would be the second ranker)
-            slate_configs = get_ranker(ranker)(slate_configs)
+            slate_configs = get_ranker(ranker)(slate_configs, **ranker_kwargs)
 
         return slate_configs
 
