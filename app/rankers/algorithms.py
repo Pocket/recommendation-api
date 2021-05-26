@@ -1,6 +1,5 @@
 import logging
 import json
-import aiohttp
 
 from aws_xray_sdk.core import xray_recorder
 from typing import List, Dict, Any
@@ -114,7 +113,7 @@ def thompson_sampling(
 
 
 async def personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
-                             user_id: str) -> List['SlateConfigModel']:
+                                   personalized_topics: PersonalizedTopicList) -> List['SlateConfigModel']:
     """
     This routine takes a list of slates as input in which must include slates with an associated curator topic
     label.  It uses the topic_profile that is supplied by RecIt to re-rank the slates according to affinity
@@ -123,18 +122,8 @@ async def personalize_topic_slates(input_slate_configs: List['SlateConfigModel']
     :param user_id: str indicating user profile for personalization
     :return: SlateLineupExperimentModel with reordered slates
     """
-
-    if not user_id:
-        raise ValueError("user_id must be provided for personalized slate lineups")
-
-    slate_topic_map = {i.curatorTopicLabel: i for i in input_slate_configs}
-
-    output_configs = [slate_topic_map[pt[0]] for pt in await PersonalizedTopicList.get(user_id)]
-    output_ids = {c.id for c in output_configs}
-    # append any input slates that don't have a curatorTopicLabel set
-    output_configs.extend([c for c in input_slate_configs if c.id not in output_ids])
-
-    return output_configs
+    topic_to_score_map = {t.curator_topic_label: t.score for t in personalized_topics.curator_topics}
+    return sorted(input_slate_configs, key=lambda s: topic_to_score_map.get(s.curator_topic_label, 0), reverse=True)
 
 
 @xray_recorder.capture('rankers_algorithms_spread_publishers')
