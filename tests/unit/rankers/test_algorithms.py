@@ -274,12 +274,12 @@ class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
 
         input_configs = generate_curated_configs()
         ordered_input_ids = [c.id for c in input_configs]
-        input_topics = [c.curatorTopicLabel for c in input_configs]
+        input_topics = [c.curator_topic_label for c in input_configs]
         personalized_topics = [t[0] for t in partial_topic_profile if t[0] in input_topics]
 
         output_configs = await personalize_topic_slates(input_configs, "1234")
         ordered_output_ids = [c.id for c in output_configs]
-        ordered_output_topics = [c.curatorTopicLabel for c in output_configs]
+        ordered_output_topics = [c.curator_topic_label for c in output_configs]
 
         # COVID-19 is not in input_configs
         # test re-ranking
@@ -292,12 +292,12 @@ class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
 
         input_configs = generate_curated_configs()
         ordered_input_ids = [c.id for c in input_configs]
-        input_topics = [c.curatorTopicLabel for c in input_configs]
+        input_topics = [c.curator_topic_label for c in input_configs]
         personalized_topics = [t[0] for t in full_topic_profile if t[0] in input_topics]
 
         output_configs = await personalize_topic_slates(input_configs, "5678")
         ordered_output_ids = [c.id for c in output_configs]
-        ordered_output_topics = [c.curatorTopicLabel for c in output_configs]
+        ordered_output_topics = [c.curator_topic_label for c in output_configs]
 
         assert ordered_output_topics[:len(full_topic_profile)-1] == personalized_topics
         # test that all input slates are in output

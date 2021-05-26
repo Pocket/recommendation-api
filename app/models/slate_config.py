@@ -1,7 +1,7 @@
 from collections import Counter
 import os
 
-from typing import List
+from typing import List, Optional
 
 from app.config import JSON_DIR
 from app.json.utils import parse_to_dict
@@ -25,11 +25,11 @@ class SlateConfigModel:
     # store loaded slate configs (loaded at app startup)
     SLATE_CONFIGS_BY_ID = {}
 
-    def __init__(self, slate_id: str, display_name: str, description: str, curatorTopicLabel=None, experiments=None):
+    def __init__(self, slate_id: str, display_name: str, description: str, curator_topic_label=None, experiments=None):
         self.id = slate_id
         self.displayName = display_name
         self.description = description
-        self.curatorTopicLabel = curatorTopicLabel
+        self.curator_topic_label = Optional[curator_topic_label]
         self.experiments = experiments or []
 
     @staticmethod

@@ -15,6 +15,7 @@ pytest-mock = "*"
 aws_secretsmanager_caching = "*"
 # We define the essential stubs
 boto3-stubs = {extras = ["essential"], version = "==1.16.15.0"}
+responses = "*"
 
 [packages]
 graphene = "*"
@@ -25,7 +26,10 @@ graphene-pydantic = "==0.1.0"
 aioboto3 = "*"
 gunicorn = "*"
 uvicorn = "*"
-fastapi = "*"
+# Locking fastapi to prevent a conflict with pydantic:
+#   pydantic<2.0.0,>=1.6.2 (from fastapi==0.65.1)
+#   pydantic<=1.6,>=1.0 (from graphene-pydantic==0.1.0)
+fastapi = "==0.64.0"
 uvloop = "*"
 httptools = "*"
 gql = "*"

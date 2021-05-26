@@ -1,102 +1,52 @@
-from decimal import Decimal
+import json
+import os
+import unittest
 
-from tests.functional.test_dynamodb_base import TestDynamoDBBase
-from app.models.clickdata import ClickdataModel
+import aiohttp
+import responses
+import requests.exceptions
+
+import app.config
+from app.models.personalized_topics import PersonalizedTopics
 
 
-class TestClickdataModel(TestDynamoDBBase):
+class TestClickdataModel(unittest.IsolatedAsyncioTestCase):
 
-    async def test_get_clickdata_by_item(self):
-        await self._put_clickdata_fixtures()
+    async def _read_json_asset(self, filename: str):
+        with open(os.path.join(app.config.ROOT_DIR, 'tests/assets/json/', filename)) as f:
+            return json.load(f)
 
-        clickdata = await ClickdataModel.get("1234-ABCD", ["666666", "333333"])
-        assert len(clickdata) == 3
-        assert "default" in clickdata
-        assert "666666" in clickdata
-        assert "333333" in clickdata
-        assert "999999" not in clickdata
+    async def test_parse_obj(self):
+        fixture = await self._read_json_asset("recit_full_user_profile.json")
+        personalized_topics = PersonalizedTopics.parse_from_response(fixture)
 
-    async def test_get_cached_clickdata_by_item(self):
-        await self._put_clickdata_fixtures()
+        assert len(personalized_topics.curator_topics) == 16
+        assert personalized_topics.curator_topics[0].curator_topic_label == 'Technology'
 
-        # Get and cache clickdata.
-        # - 666666, 333333, and "default" all exist in the database
-        # - 111111 doesn't exist, but will be created later
-        # - foobar doesn't exist, and will not be created
-        clickdata = await ClickdataModel.get("1234-ABCD", ["111111", "666666", "333333", "foobar"])
-        assert len(clickdata) == 3
-        assert clickdata["default"].clicks == 200
-        assert clickdata["333333"].clicks == 33
-        assert clickdata["666666"].clicks == 66
-        assert "foobar" not in clickdata
-        # "111111" does not exist yet, and is therefore not returned
-        assert "111111" not in clickdata
+    @responses.activate
+    async def test_get(self):
+        user_id = '123'
+        url = f'{app.config.recit["endpoint_url"]}/v1/user_profile/{user_id}?predict_topics=true'
+        fixture = await self._read_json_asset("recit_full_user_profile.json")
+        responses.add(responses.GET, url, status=200, json=fixture)
 
-        # Change clicks from 66 to 67 for "1234-ABCD/666666"
-        self.clickdataTable.update_item(
-            Key={"mod_item": "1234-ABCD/666666"},
-            UpdateExpression="set clicks=:c, impressions=:i",
-            ExpressionAttributeValues={':c': Decimal(67), ':i': Decimal(1000)})
+        personalized_topics = await PersonalizedTopics.get(user_id)
+        assert len(personalized_topics.curator_topics) == 16
 
-        # Insert a new item, that wasn't there before.
-        self.clickdataTable.put_item(Item={
-            "mod_item": "1234-ABCD/111111",
-            "clicks": "1",
-            "impressions": "5",
-            "created_at": "0",
-            "expires_at": "0"
-        })
+    @responses.activate
+    async def test_get_404(self):
+        user_id = '123'
+        url = f'{app.config.recit["endpoint_url"]}/v1/user_profile/{user_id}?predict_topics=true'
+        responses.add(responses.GET, url, status=404)
 
-        # The clickvalue in the database has changed. Assert that we're getting the same click value from cache.
-        clickdata = await ClickdataModel.get("1234-ABCD", ["111111", "666666", "333333"])
-        assert len(clickdata) == 3
-        assert clickdata["default"].clicks == 200
-        assert clickdata["333333"].clicks == 33
-        assert clickdata["666666"].clicks == 66
-        assert "foobar" not in clickdata
-        # "111111" exists in the database, but not in the cache.
-        assert "111111" not in clickdata
+        personalized_topics = await PersonalizedTopics.get(user_id)
+        assert len(personalized_topics.curator_topics) == 0
 
-        await super().clear_caches()
+    @responses.activate
+    async def test_get_500(self):
+        user_id = '123'
+        url = f'{app.config.recit["endpoint_url"]}/v1/user_profile/{user_id}?predict_topics=true'
+        responses.add(responses.GET, url, status=500)
 
-        # The cache has been cleared. Assert that we're getting the new click values from the database.
-        clickdata = await ClickdataModel.get("1234-ABCD", ["111111", "666666", "333333"])
-        assert len(clickdata) == 4
-        assert clickdata["default"].clicks == 200
-        assert clickdata["333333"].clicks == 33
-        assert clickdata["666666"].clicks == 67
-        assert "foobar" not in clickdata
-        assert clickdata["111111"].clicks == 1
-
-    async def _put_clickdata_fixtures(self):
-        self.clickdataTable.put_item(Item={
-            "mod_item": "1234-ABCD/default",
-            "clicks": "200",
-            "impressions": "5000",
-            "created_at": "0",
-            "expires_at": "0"
-        })
-
-        self.clickdataTable.put_item(Item={
-            "mod_item": "1234-ABCD/999999",
-            "clicks": "99",
-            "impressions": "999",
-            "created_at": "0",
-            "expires_at": "0"
-        })
-
-        self.clickdataTable.put_item(Item={
-            "mod_item": "1234-ABCD/666666",
-            "clicks": "66",
-            "impressions": "999",
-            "created_at": "0",
-            "expires_at": "0"
-        })
-
-        self.clickdataTable.put_item(Item={
-            "mod_item": "1234-ABCD/333333",
-            "clicks": "33",
-            "impressions": "999",
-            "created_at": "0",
-            "expires_at": "0"
-        })
+        with self.assertRaises(Exception):
+            await PersonalizedTopics.get(user_id)
