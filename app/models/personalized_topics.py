@@ -9,13 +9,18 @@ import app.config
 import app.cache
 
 
+class PersonalizedTopicElement(BaseModel):
+    curator_topic_label: str
+    score: float
+
 class PersonalizedTopicList(BaseModel):
-    curator_topic_label: str = None
-    score: float = None
+    curator_topics: List[PersonalizedTopicElement]
+    user_id: str = None
+
 
     @staticmethod
-    @xray_recorder.capture_async('algorithms.get_personalized_topics')
-    async def get(user_id: str) -> List['PersonalizedTopic']:
+    @xray_recorder.capture_async('models.personalized_topic_list.get')
+    async def get(user_id: str) -> 'PersonalizedTopicList':
         """
         A request including the user_id is issued to RecIt which returns a list of ranked curator topic labels
         personalized to the user_id.  The output will be a list of reordered topic labels based on affinity to items
@@ -32,7 +37,16 @@ class PersonalizedTopicList(BaseModel):
                                    params={"user_id": user_id}) as resp:
                 if resp.status == 200:
                     j1 = await resp.json()
-                    return j1.get("curator_topics")
+                    return PersonalizedTopicList.parse_recit_response(user_id, j1)
                 else:
                     logging.warning("RecIt error with status (%s): %s", resp.status, resp.content)
                     return []
+
+
+    @staticmethod
+    def parse_recit_response(user_id: str, response: Dict, usr) -> "PersonalizedTopicList":
+        """Transforms a RecIt response to a PersonalizedTopicList."""
+        # this list should be ordered by score descending and order must be preserved for ranking
+        personalized_topics = [PersonalizedTopicElement(curator_topic_label=x[0], score=x[1])
+                               for x in response["curator_topics"]]
+        return PersonalizedTopicList(curator_topics=personalized_topics, user_id=user_id)
