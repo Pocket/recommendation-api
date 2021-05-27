@@ -5,10 +5,10 @@ import unittest
 from aioresponses import aioresponses
 
 import app.config
-from app.models.personalized_topics import PersonalizedTopics
+from app.models.personalized_topic_list import PersonalizedTopicList
 
 
-class TestClickdataModel(unittest.IsolatedAsyncioTestCase):
+class TestPersonalizedTopics(unittest.IsolatedAsyncioTestCase):
 
     async def _read_json_asset(self, filename: str):
         with open(os.path.join(app.config.ROOT_DIR, 'tests/assets/json/', filename)) as f:
@@ -16,7 +16,7 @@ class TestClickdataModel(unittest.IsolatedAsyncioTestCase):
 
     async def test_parse_obj(self):
         fixture = await self._read_json_asset("recit_full_user_profile.json")
-        personalized_topics = PersonalizedTopics.parse_from_response(fixture)
+        personalized_topics = PersonalizedTopicList.parse_recit_response("1234", fixture)
 
         assert len(personalized_topics.curator_topics) == 16
         assert personalized_topics.curator_topics[0].curator_topic_label == 'Technology'
@@ -29,7 +29,7 @@ class TestClickdataModel(unittest.IsolatedAsyncioTestCase):
 
         mocked.get(url, status=200, payload=fixture)
 
-        personalized_topics = await PersonalizedTopics.get(user_id)
+        personalized_topics = await PersonalizedTopicList.get(user_id)
         assert len(personalized_topics.curator_topics) == 16
 
     @aioresponses()
@@ -39,7 +39,7 @@ class TestClickdataModel(unittest.IsolatedAsyncioTestCase):
 
         mocked.get(url, status=404)
 
-        personalized_topics = await PersonalizedTopics.get(user_id)
+        personalized_topics = await PersonalizedTopicList.get(user_id)
         assert len(personalized_topics.curator_topics) == 0
 
     @aioresponses()
@@ -50,4 +50,4 @@ class TestClickdataModel(unittest.IsolatedAsyncioTestCase):
         mocked.get(url, status=500)
 
         with self.assertRaises(Exception):
-            await PersonalizedTopics.get(user_id)
+            await PersonalizedTopicList.get(user_id)

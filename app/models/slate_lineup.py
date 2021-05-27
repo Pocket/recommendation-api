@@ -20,7 +20,8 @@ class SlateLineupModel(BaseModel):
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_lineup_get_slate_lineup')
-    async def get_slate_lineup(slate_lineup_id: str, user_id: str = None, recommendation_count: Optional[int] = 10,
+    async def get_slate_lineup(slate_lineup_id: str, user_id: Optional[str] = None,
+                               recommendation_count: Optional[int] = 10,
                                slate_count: Optional[int] = 8) -> 'SlateLineupModel':
         """
         Retrieves a slate_lineup based on the given `slate_lineup_id`
@@ -33,7 +34,7 @@ class SlateLineupModel(BaseModel):
         """
         experiment = SlateLineupConfigModel.get_experiment_from_slate_lineup(slate_lineup_id)
         slates = await SlateLineupModel.__get_slates_from_experiment(experiment,
-                                                                     user_id,
+                                                                     user_id=user_id,
                                                                      recommendation_count=recommendation_count,
                                                                      slate_count=slate_count)
 
@@ -62,7 +63,7 @@ class SlateLineupModel(BaseModel):
             return []
 
         # get the requested slate_lineup from the config using the slate_lineup_id
-        slate_configs = SlateLineupConfigModel.get_slate_configs_from_experiment(experiment, user_id)
+        slate_configs = await SlateLineupConfigModel.get_slate_configs_from_experiment(experiment, user_id)
 
         # Client requested only a certain number of slates, so after it was ranked, split the list to the count
         slate_configs = slate_configs[:slate_count]

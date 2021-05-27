@@ -9,7 +9,7 @@ from scipy.stats import beta
 
 from app.models.recommendation import RecommendationModel
 from app.models.slate_config import SlateConfigModel
-from app.models.personalized_topics import PersonalizedTopicList
+from app.models.personalized_topic_list import PersonalizedTopicList
 from app.config import ROOT_DIR, recit as recit_config
 
 DEFAULT_ALPHA_PRIOR = 0.02

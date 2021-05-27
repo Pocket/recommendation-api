@@ -8,7 +8,7 @@ from app.json.utils import parse_to_dict
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate_config import SlateConfigModel
 from app.rankers import get_ranker
-from app.models.personalized_topics import PersonalizedTopicList
+from app.models.personalized_topic_list import PersonalizedTopicList
 
 
 class SlateLineupConfigModel:
