@@ -1,6 +1,5 @@
 import logging
 import json
-import aiohttp
 
 from aws_xray_sdk.core import xray_recorder
 from typing import List, Dict, Any
@@ -8,9 +7,9 @@ from app.models.clickdata import ClickdataModel
 from operator import itemgetter
 from scipy.stats import beta
 
-from app.models.personalized_topics import PersonalizedTopics
 from app.models.recommendation import RecommendationModel
 from app.models.slate_config import SlateConfigModel
+from app.models.personalized_topics import PersonalizedTopicList
 from app.config import ROOT_DIR, recit as recit_config
 
 DEFAULT_ALPHA_PRIOR = 0.02
@@ -114,7 +113,7 @@ def thompson_sampling(
 
 
 async def personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
-                             personalized_topics: PersonalizedTopics) -> List['SlateConfigModel']:
+                                   personalized_topics: PersonalizedTopicList) -> List['SlateConfigModel']:
     """
     This routine takes a list of slates as input in which must include slates with an associated curator topic
     label.  It uses the topic_profile that is supplied by RecIt to re-rank the slates according to affinity

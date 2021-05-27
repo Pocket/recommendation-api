@@ -1,37 +1,24 @@
 import aiohttp
 import logging
-from aiocache import caches, decorators
 from pydantic import BaseModel
 from aws_xray_sdk.core import xray_recorder
-from typing import List
+from typing import List, Dict
 
 import app.config
-import app.cache
 
 
-class PersonalizedTopicsEntry(BaseModel):
-    curator_topic_label: str = None
-    score: float = None
-
-    @staticmethod
-    def parse_from_list(tuple: list):
-        return PersonalizedTopicsEntry.parse_obj({
-            "curator_topic_label": tuple[0],
-            "score": tuple[1],
-        })
+class PersonalizedTopicElement(BaseModel):
+    curator_topic_label: str
+    score: float
 
 
-class PersonalizedTopics(BaseModel):
-    curator_topics: List[PersonalizedTopicsEntry]
+class PersonalizedTopicList(BaseModel):
+    curator_topics: List[PersonalizedTopicElement]
+    user_id: str = None
 
     @staticmethod
-    def parse_from_response(response: dict):
-        curator_topics = [PersonalizedTopicsEntry.parse_from_list(l) for l in response["curator_topics"]]
-        return PersonalizedTopics(curator_topics=curator_topics)
-
-    @staticmethod
-    @xray_recorder.capture_async('algorithms.get_personalized_topics')
-    async def get(user_id: str) -> 'PersonalizedTopics':
+    @xray_recorder.capture_async('models.personalized_topic_list.get')
+    async def get(user_id: str) -> 'PersonalizedTopicList':
         """
         A request including the user_id is issued to RecIt which returns a list of ranked curator topic labels
         personalized to the user_id.  The output will be a list of reordered topic labels based on affinity to items
@@ -46,14 +33,21 @@ class PersonalizedTopics(BaseModel):
         async with aiohttp.ClientSession() as session:
             url = f'{app.config.recit["endpoint_url"]}/v1/user_profile/{user_id}?predict_topics=true'
             async with session.get(url) as resp:
-                personalized_topics = {"curator_topics": []}
                 if resp.status == 200:
-                    response = await resp.json()
-                    return PersonalizedTopics.parse_from_response(response)
+                    j1 = await resp.json()
+                    return PersonalizedTopicList.parse_recit_response(user_id, j1)
                 elif resp.status == 404:
                     logging.info(f"RecIt /v1/user_profile does not have a user profile for user id {user_id}")
                     # Return empty list when user does not exist in RecIt.
-                    return PersonalizedTopics(curator_topics=[])
+                    return PersonalizedTopicList(curator_topics=[], user_id=user_id)
                 else:
                     # Unexpected response code
                     raise Exception(f"RecIt responded with {resp.status} for {url}")
+
+    @staticmethod
+    def parse_recit_response(user_id: str, response: Dict) -> "PersonalizedTopicList":
+        """Transforms a RecIt response to a PersonalizedTopicList."""
+        # this list should be ordered by score descending and order must be preserved for ranking
+        personalized_topics = [PersonalizedTopicElement(curator_topic_label=x[0], score=x[1])
+                               for x in response["curator_topics"]]
+        return PersonalizedTopicList(curator_topics=personalized_topics, user_id=user_id)
