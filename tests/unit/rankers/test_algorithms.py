@@ -246,6 +246,11 @@ class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
             return json.load(f)
 
     async def test_partial_recit_response(self):
+        """
+        Test that topics are ranked correctly if RecIt returns a subset of
+        the topics in the slate lineup config. Topics that are not present
+        in RecIt's response should be ranked at the bottom.
+        """
 
         partial_topic_profile = self._read_json_asset("recit_partial_user_profile.json")
 
