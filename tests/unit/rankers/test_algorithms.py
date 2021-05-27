@@ -270,6 +270,10 @@ class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
         assert set(ordered_input_ids) == set(ordered_output_ids)
 
     async def test_full_rerank(self):
+        """
+        Test the case where all topics from the slate lineup config are present in
+        the personalized topics list.
+        """
 
         full_topic_profile = self._read_json_asset("recit_partial_user_profile.json")
         input_configs = generate_curated_configs()
