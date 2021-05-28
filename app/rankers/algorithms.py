@@ -119,7 +119,7 @@ async def personalize_topic_slates(input_slate_configs: List['SlateConfigModel']
     label.  It uses the topic_profile that is supplied by RecIt to re-rank the slates according to affinity
     with items in the user's list.
     :param input_slate_configs: SlateConfigModel list that includes slates with curatorTopicLabels
-    :param user_id: str indicating user profile for personalization
+    :param personalized_topics: response from RecIt listing topics ordered by affinity to user
     :return: SlateLineupExperimentModel with reordered slates
     """
     topic_to_score_map = {t.curator_topic_label: t.score for t in personalized_topics.curator_topics}
