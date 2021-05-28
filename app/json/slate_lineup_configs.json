@@ -1,5 +1,22 @@
 [
   {
+    "id": "20481076-2261-4916-801a-fd186986367b",
+    "description": "Android Discover Tab Personalized Curated",
+    "experiments": [
+      {
+        "description": "Initial layout",
+        "rankers": [],
+        "slates": [
+          "631d8077-1462-4397-ad0a-aa340c27570a",
+          "0f322865-64e6-472d-8147-b3d6637a7d67",
+          "626397d3-fa4e-4299-8d07-cbeaa269ebc1",
+          "8fa462a6-81d1-47ee-8de3-1e5e0030e6d6",
+          "2f2a3568-901f-4655-8735-daf67e8ecc5d"
+        ]
+      }
+    ]
+  },
+  {
     "id": "af3a5196-be16-4bf7-b131-70981e43b132",
     "description": "Android Discover Tab Test #1",
     "experiments": [
@@ -332,6 +349,46 @@
         "slates": [
           "9389d944-fdcf-4394-9ca3-4604c0af4fac",
           "d024ce9c-ed96-453f-a81e-8a0b850681e7"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "507d215c-4776-4f8e-af49-2ed6f3309aff",
+    "description": "German Discover",
+    "experiments": [
+      {
+        "description": "German Discover SlateLineup",
+        "rankers": [],
+        "slates": [
+          "042a8b55-4999-4acb-a6fe-1a344f90cc3c"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "55f5ed88-c7d9-48f9-bcf1-7ad214684ee9",
+    "description": "Web Home - Curated Topic Slates Not Live on New Tab",
+    "experiments": [
+      {
+        "description": "default layout",
+        "rankers": [],
+        "slates": [
+          "af2cc2c0-1286-47a3-b8ce-187b905f94af",
+          "00f0c593-3c99-4d5a-9297-c66f8b00be01",
+          "856eb5f8-da7f-43ae-ac5e-25da402af0ae",
+          "cceefa28-906e-47c5-b704-8c5b824ecd1b",
+          "651d27ab-a898-4173-9700-dd1726fbaaa4",
+          "951ae6c3-4438-458b-9936-7f3b8ff0f178",
+          "47023d21-0aa6-4f98-9077-eac21fad44f1",
+          "1a8de2be-db03-4a2f-901a-7c4c1cbd156a",
+          "f4b58337-4ab6-4563-9503-c384e773946f",
+          "f8c945b0-52fa-4203-bb31-6747245fe021",
+          "b548b456-70c4-474d-a723-80d040d00fec",
+          "5674f085-07b6-43c3-bcde-2774db3f6384",
+          "e6c00454-4a00-47c1-8f22-906122c261ed",
+          "ed9604ce-b752-48bd-b8c5-3a8cf6b54ced",
+          "4345efa7-2c89-4884-b836-3260757a3a97"
         ]
       }
     ]
