@@ -2,7 +2,7 @@ import logging
 import json
 
 from aws_xray_sdk.core import xray_recorder
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from app.models.clickdata import ClickdataModel
 from operator import itemgetter
 from scipy.stats import beta
@@ -112,18 +112,27 @@ def thompson_sampling(
     return [x[0] for x in scores]
 
 
-async def personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
-                                   personalized_topics: PersonalizedTopicList) -> List['SlateConfigModel']:
+def personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
+                             personalized_topics: PersonalizedTopicList,
+                             topic_limit: Optional[int] = None) -> List['SlateConfigModel']:
     """
     This routine takes a list of slates as input in which must include slates with an associated curator topic
     label.  It uses the topic_profile that is supplied by RecIt to re-rank the slates according to affinity
     with items in the user's list.
     :param input_slate_configs: SlateConfigModel list that includes slates with curatorTopicLabels
     :param personalized_topics: response from RecIt listing topics ordered by affinity to user
+    :param topic_limit: desired number of topics to return, if this is set the number of slates returned is truncated.
+                        otherwise all personalized topics among the input slate configs are returned
     :return: SlateLineupExperimentModel with reordered slates
     """
     topic_to_score_map = {t.curator_topic_label: t.score for t in personalized_topics.curator_topics}
-    return sorted(input_slate_configs, key=lambda s: topic_to_score_map.get(s.curator_topic_label, 0), reverse=True)
+    # filter non-topic slates
+    input_slate_configs = list(filter(lambda s: s.curatorTopicLabel in topic_to_score_map, input_slate_configs))
+    if not input_slate_configs:
+        raise ValueError(f"Input lineup to personalize_topic_slates includes no topic slates")
+    # re-rank topic slates
+    input_slate_configs.sort(key=lambda s: topic_to_score_map.get(s.curator_topic_label), reverse=True)
+    return (input_slate_configs[:topic_limit] if topic_limit else input_slate_configs)
 
 
 @xray_recorder.capture('rankers_algorithms_spread_publishers')
