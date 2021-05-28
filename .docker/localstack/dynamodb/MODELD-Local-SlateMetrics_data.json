@@ -21,34 +21,34 @@
           "slates_pk": {
             "S": "6d1273a5-055e-4de0-8a5b-5f2b79d37e5c/63f24663-0e80-4c08-82aa-3fb0e06c4979"
           },
-          "training_14_day_impressions": {
+          "trailing_14_day_impressions": {
             "N": "0"
           },
-          "training_14_day_opens": {
+          "trailing_14_day_opens": {
             "N": "0"
           },
-          "training_1_day_impressions": {
+          "trailing_1_day_impressions": {
             "N": "0"
           },
-          "training_1_day_opens": {
+          "trailing_1_day_opens": {
             "N": "0"
           },
-          "training_21_day_impressions": {
+          "trailing_21_day_impressions": {
             "N": "154128"
           },
-          "training_21_day_opens": {
+          "trailing_21_day_opens": {
             "N": "1888"
           },
-          "training_28_day_impressions": {
+          "trailing_28_day_impressions": {
             "N": "307286"
           },
-          "training_28_day_opens": {
+          "trailing_28_day_opens": {
             "N": "3886"
           },
-          "training_7_day_impressions": {
+          "trailing_7_day_impressions": {
             "N": "0"
           },
-          "training_7_day_opens": {
+          "trailing_7_day_opens": {
             "N": "0"
           },
           "version": {
@@ -78,34 +78,34 @@
           "slates_pk": {
             "S": "47688fcf-2bbb-4e0e-a02e-1f68c248a67e/63f24663-0e80-4c08-82aa-3fb0e06c4979"
           },
-          "training_14_day_impressions": {
+          "trailing_14_day_impressions": {
             "N": "2000"
           },
-          "training_14_day_opens": {
+          "trailing_14_day_opens": {
             "N": "100"
           },
-          "training_1_day_impressions": {
+          "trailing_1_day_impressions": {
             "N": "0"
           },
-          "training_1_day_opens": {
+          "trailing_1_day_opens": {
             "N": "0"
           },
-          "training_21_day_impressions": {
+          "trailing_21_day_impressions": {
             "N": "154128"
           },
-          "training_21_day_opens": {
+          "trailing_21_day_opens": {
             "N": "1888"
           },
-          "training_28_day_impressions": {
+          "trailing_28_day_impressions": {
             "N": "307286"
           },
-          "training_28_day_opens": {
+          "trailing_28_day_opens": {
             "N": "3886"
           },
-          "training_7_day_impressions": {
+          "trailing_7_day_impressions": {
             "N": "0"
           },
-          "training_7_day_opens": {
+          "trailing_7_day_opens": {
             "N": "0"
           },
           "version": {
@@ -135,34 +135,34 @@
           "slates_pk": {
             "S": "default/63f24663-0e80-4c08-82aa-3fb0e06c4979"
           },
-          "training_14_day_impressions": {
+          "trailing_14_day_impressions": {
             "N": "0"
           },
-          "training_14_day_opens": {
+          "trailing_14_day_opens": {
             "N": "0"
           },
-          "training_1_day_impressions": {
+          "trailing_1_day_impressions": {
             "N": "0"
           },
-          "training_1_day_opens": {
+          "trailing_1_day_opens": {
             "N": "0"
           },
-          "training_21_day_impressions": {
+          "trailing_21_day_impressions": {
             "N": "10166"
           },
-          "training_21_day_opens": {
+          "trailing_21_day_opens": {
             "N": "104"
           },
-          "training_28_day_impressions": {
+          "trailing_28_day_impressions": {
             "N": "113186"
           },
-          "training_28_day_opens": {
+          "trailing_28_day_opens": {
             "N": "2349"
           },
-          "training_7_day_impressions": {
+          "trailing_7_day_impressions": {
             "N": "0"
           },
-          "training_7_day_opens": {
+          "trailing_7_day_opens": {
             "N": "0"
           },
           "version": {

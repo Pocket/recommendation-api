@@ -21,34 +21,34 @@
           "slate_id": {
             "S": "2e3ddc90-8def-46d7-b85f-da7525c66fb1"
           },
-          "training_14_day_impressions": {
+          "trailing_14_day_impressions": {
             "N": "107"
           },
-          "training_14_day_opens": {
+          "trailing_14_day_opens": {
             "N": "7"
           },
-          "training_1_day_impressions": {
+          "trailing_1_day_impressions": {
             "N": "3"
           },
-          "training_1_day_opens": {
+          "trailing_1_day_opens": {
             "N": "0"
           },
-          "training_21_day_impressions": {
+          "trailing_21_day_impressions": {
             "N": "207"
           },
-          "training_21_day_opens": {
+          "trailing_21_day_opens": {
             "N": "6"
           },
-          "training_28_day_impressions": {
+          "trailing_28_day_impressions": {
             "N": "307"
           },
-          "training_28_day_opens": {
+          "trailing_28_day_opens": {
             "N": "8"
           },
-          "training_7_day_impressions": {
+          "trailing_7_day_impressions": {
             "N": "17"
           },
-          "training_7_day_opens": {
+          "trailing_7_day_opens": {
             "N": "5"
           },
           "version": {

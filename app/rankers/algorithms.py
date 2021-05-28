@@ -88,8 +88,8 @@ def thompson_sampling(
         # 'default' is a special key we can use for anything that is missing.
         # The values here aren't actually clicks or impressions,
         # but instead direct alpha and beta parameters for the module CTR prior
-        alpha_prior = metrics['default'].training_7_day_opens
-        beta_prior = metrics['default'].training_7_day_impressions
+        alpha_prior = metrics['default'].trailing_7_day_opens
+        beta_prior = metrics['default'].trailing_7_day_impressions
         if alpha_prior < 0 or beta_prior < 0:
             logging.error(
                 f"Alpha {alpha_prior} or Beta {beta_prior} prior < 0 for module {metrics['default'].id}")
@@ -109,9 +109,9 @@ def thompson_sampling(
         d = metrics.get(clickdata_id)
         if d:
             # TODO: Decide how many days we want to look back.
-            clicks = max(d.training_7_day_opens + alpha_prior, 1e-18)
+            clicks = max(d.trailing_7_day_opens + alpha_prior, 1e-18)
             # posterior combines click data with prior (also a beta distribution)
-            no_clicks = max(d.training_7_day_impressions - d.training_7_day_opens + beta_prior, 1e-18)
+            no_clicks = max(d.trailing_7_day_impressions - d.trailing_7_day_opens + beta_prior, 1e-18)
             # sample from posterior for CTR given click data
             score = beta.rvs(clicks, no_clicks)
             scores.append((rec, score))

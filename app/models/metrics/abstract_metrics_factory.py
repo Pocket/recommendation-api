@@ -25,8 +25,8 @@ class AbstractMetricsFactory(ABC):
     _dynamodb_endpoint: str = app.config.dynamodb['endpoint_url']
     _dynamodb_table: str = None
     _primary_key_name: str = None
-    _opens_key: str = 'training_7_day_opens'
-    _impressions_key: str = 'training_7_day_impressions'
+    _opens_key: str = 'trailing_7_day_opens'
+    _impressions_key: str = 'trailing_7_day_impressions'
 
     async def get(self, module_id: str, ids: List[str]) -> Dict[str, 'MetricsModel']:
         """

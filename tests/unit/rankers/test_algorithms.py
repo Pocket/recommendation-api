@@ -146,8 +146,8 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         metrics = {
             '999': MetricsModel(
                 id='home/999',
-                training_7_day_opens=99,
-                training_7_day_impressions=999,
+                trailing_7_day_opens=99,
+                trailing_7_day_impressions=999,
                 created_at=0,
                 expires_at=0
             ),
@@ -162,8 +162,8 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         metrics = {
             'default': MetricsModel(
                 id='home/default',
-                training_7_day_opens=99,
-                training_7_day_impressions=-14,
+                trailing_7_day_opens=99,
+                trailing_7_day_impressions=-14,
                 created_at=0,
                 expires_at=0,
             ),
@@ -187,22 +187,22 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         metrics = {
             '999999': MetricsModel(
                 id='home/999999',
-                training_7_day_opens=99,
-                training_7_day_impressions=999,
+                trailing_7_day_opens=99,
+                trailing_7_day_impressions=999,
                 created_at=0,
                 expires_at=0
             ),
             '666666': MetricsModel(
                 id='home/666666',
-                training_7_day_opens=66,
-                training_7_day_impressions=999,
+                trailing_7_day_opens=66,
+                trailing_7_day_impressions=999,
                 created_at=0,
                 expires_at=0
             ),
             '333333': MetricsModel(
                 id='home/333333',
-                training_7_day_opens=33,
-                training_7_day_impressions=999,
+                trailing_7_day_opens=33,
+                trailing_7_day_impressions=999,
                 created_at=0,
                 expires_at=0
             )
