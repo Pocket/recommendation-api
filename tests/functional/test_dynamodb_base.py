@@ -15,7 +15,7 @@ class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
     TABLE_NAMES: Tuple[str] = (
         'recommendation_api_metadata',
         'recommendation_api_candidates',
-        'recommendation_api_clickdata',
+        'recommendation_api_candidate_sets',
         'MODELD-Local-RecMetrics',
         'MODELD-Local-SlateMetrics',
     )
