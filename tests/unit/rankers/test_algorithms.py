@@ -1,7 +1,7 @@
 import unittest
 
 from tests.unit.utils import generate_recommendations
-from app.models.metrics.recommendation_metrics_model import RecommendationMetricsModel
+from app.models.metrics.metrics_model import MetricsModel
 from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist
 from operator import itemgetter
 
@@ -144,7 +144,7 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         recs = generate_recommendations(['333', '999'])
 
         metrics = {
-            '999': RecommendationMetricsModel(
+            '999': MetricsModel(
                 id='home/999',
                 training_7_day_opens=99,
                 training_7_day_impressions=999,
@@ -160,7 +160,7 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
     def test_invalid_prior(self):
         recs = generate_recommendations(['999'])
         metrics = {
-            'default': RecommendationMetricsModel(
+            'default': MetricsModel(
                 id='home/default',
                 training_7_day_opens=99,
                 training_7_day_impressions=-14,
@@ -185,21 +185,21 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         recs = generate_recommendations(["333333", "666666", "999999", "222222"])
 
         metrics = {
-            '999999': RecommendationMetricsModel(
+            '999999': MetricsModel(
                 id='home/999999',
                 training_7_day_opens=99,
                 training_7_day_impressions=999,
                 created_at=0,
                 expires_at=0
             ),
-            '666666': RecommendationMetricsModel(
+            '666666': MetricsModel(
                 id='home/666666',
                 training_7_day_opens=66,
                 training_7_day_impressions=999,
                 created_at=0,
                 expires_at=0
             ),
-            '333333': RecommendationMetricsModel(
+            '333333': MetricsModel(
                 id='home/333333',
                 training_7_day_opens=33,
                 training_7_day_impressions=999,

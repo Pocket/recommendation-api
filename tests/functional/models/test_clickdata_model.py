@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
-from app.models.metrics.recommendation_metrics_model import RecommendationMetricsModel
+from app.models.metrics.recommendation_metrics_factory import RecommendationMetricsFactory
 
 
 class TestRecommendationMetricsModel(TestDynamoDBBase):
@@ -9,7 +9,7 @@ class TestRecommendationMetricsModel(TestDynamoDBBase):
     async def test_get_metrics_by_item(self):
         await self._put_metrics_fixtures()
 
-        metrics = await RecommendationMetricsModel().get("1234-ABCD", ["666666", "333333"])
+        metrics = await RecommendationMetricsFactory().get("1234-ABCD", ["666666", "333333"])
         assert len(metrics) == 3
         assert "default" in metrics
         assert "666666" in metrics
@@ -23,7 +23,7 @@ class TestRecommendationMetricsModel(TestDynamoDBBase):
         # - 666666, 333333, and "default" all exist in the database
         # - 111111 doesn't exist, but will be created later
         # - foobar doesn't exist, and will not be created
-        metrics = await RecommendationMetricsModel().get("1234-ABCD", ["111111", "666666", "333333", "foobar"])
+        metrics = await RecommendationMetricsFactory().get("1234-ABCD", ["111111", "666666", "333333", "foobar"])
         assert len(metrics) == 3
         assert metrics["default"].clicks == 200
         assert metrics["333333"].clicks == 33
@@ -48,7 +48,7 @@ class TestRecommendationMetricsModel(TestDynamoDBBase):
         })
 
         # The click value in the database has changed. Assert that we're getting the same click value from cache.
-        metrics = await RecommendationMetricsModel().get("1234-ABCD", ["111111", "666666", "333333"])
+        metrics = await RecommendationMetricsFactory().get("1234-ABCD", ["111111", "666666", "333333"])
         assert len(metrics) == 3
         assert metrics["default"].clicks == 200
         assert metrics["333333"].clicks == 33
@@ -60,7 +60,7 @@ class TestRecommendationMetricsModel(TestDynamoDBBase):
         await super().clear_caches()
 
         # The cache has been cleared. Assert that we're getting the new click values from the database.
-        metrics = await RecommendationMetricsModel().get("1234-ABCD", ["111111", "666666", "333333"])
+        metrics = await RecommendationMetricsFactory().get("1234-ABCD", ["111111", "666666", "333333"])
         assert len(metrics) == 4
         assert metrics["default"].clicks == 200
         assert metrics["333333"].clicks == 33

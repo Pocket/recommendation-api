@@ -1,10 +1,11 @@
+from abc import ABC # ABC stands for Abstract Base Class
 import logging
 from typing import List, Dict, Optional
 
 import aioboto3
 from aiocache import decorators
 from aws_xray_sdk.core import xray_recorder
-from pydantic import BaseModel
+from app.models.metrics.metrics_model import MetricsModel
 
 import app.cache
 import app.config
@@ -20,24 +21,14 @@ def _chunks(index, n=_DYNAMODB_BATCH_GET_ITEM_LIMIT):
         yield index[i: i + n]
 
 
-class MetricsBaseModel(BaseModel):
-    id: str = None
-    clicks: float = None
-    impressions: float = None
-    # TODO: Add 1, 14, 28 day metrics.
-    # TODO: Change "training" to "trailing" once DynamoDB is updated.
-    training_7_day_opens: float = None
-    training_7_day_impressions: float = None
-    created_at: int = None
-    expires_at: int = None
-
+class AbstractMetricsFactory(ABC):
     _dynamodb_endpoint: str = app.config.dynamodb['endpoint_url']
     _dynamodb_table: str = None
     _primary_key_name: str = None
     _opens_key: str = 'training_7_day_opens'
     _impressions_key: str = 'training_7_day_impressions'
 
-    async def get(self, module_id: str, ids: List[str]) -> Dict[str, 'MetricsBaseModel']:
+    async def get(self, module_id: str, ids: List[str]) -> Dict[str, 'MetricsModel']:
         """
         Get engagement metrics for recommendations or slates.
         - recommendations: The module is a slate that contains the recommendation.
@@ -73,7 +64,7 @@ class MetricsBaseModel(BaseModel):
         :param value: dictionary containing all required keys for MetricsBaseModel
         :return: Parsed MetricsBaseModel
         """
-        return MetricsBaseModel.parse_obj({**value, 'id': value[self._primary_key_name]})
+        return MetricsModel.parse_obj({**value, 'id': value[self._primary_key_name]})
 
     @xray_recorder.capture_async('models.metrics.MetricsBaseModel._query_cached_metrics')
     async def _query_cached_metrics(self, metrics_keys: List) -> Dict[str, Optional[Dict]]:

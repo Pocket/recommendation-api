@@ -4,11 +4,9 @@ from aws_xray_sdk.core import xray_recorder
 from pydantic import BaseModel
 from typing import List, Optional
 
-from app.models.metrics.slate_metrics_model import SlateMetricsModel
 from app.models.slate_lineup_config import SlateLineupConfigModel
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate import SlateModel, deduplicate_recommendations_across_slates
-from app.rankers import get_ranker
 
 
 class SlateLineupModel(BaseModel):

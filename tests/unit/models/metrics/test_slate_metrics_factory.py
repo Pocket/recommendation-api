@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from app.models.metrics.slate_metrics_model import SlateMetricsModel
+from app.models.metrics.slate_metrics_factory import SlateMetricsFactory
 
 
 class TestSlateMetrics:
@@ -11,10 +11,10 @@ class TestSlateMetrics:
             "created_at": Decimal(1610404066),
             "expires_at": Decimal(1644359266),
             "impressions": Decimal(2.207612237118199),
-            "slates_pk": "topic/default",
+            "slates_pk": "slate-id-123/lineup-id-123",
         }
 
-        metrics = SlateMetricsModel().parse_from_record(row)
+        metrics = SlateMetricsFactory().parse_from_record(row)
         assert metrics.clicks == 0.045687984008122705
         assert metrics.impressions == 2.207612237118199
-        assert metrics.id == "topic/default"
+        assert metrics.id == "slate-id-123/lineup-id-123"
