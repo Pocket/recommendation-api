@@ -4,10 +4,10 @@ from tests.functional.test_dynamodb_base import TestDynamoDBBase
 from app.models.metrics.recommendation_metrics_model import RecommendationMetricsModel
 
 
-class TestClickdataModel(TestDynamoDBBase):
+class TestRecommendationMetricsModel(TestDynamoDBBase):
 
     async def test_get_metrics_by_item(self):
-        await self._put_clickdata_fixtures()
+        await self._put_metrics_fixtures()
 
         metrics = await RecommendationMetricsModel().get("1234-ABCD", ["666666", "333333"])
         assert len(metrics) == 3
@@ -17,7 +17,7 @@ class TestClickdataModel(TestDynamoDBBase):
         assert "999999" not in metrics
 
     async def test_get_cached_metrics_by_item(self):
-        await self._put_clickdata_fixtures()
+        await self._put_metrics_fixtures()
 
         # Get and cache metrics.
         # - 666666, 333333, and "default" all exist in the database
@@ -34,13 +34,13 @@ class TestClickdataModel(TestDynamoDBBase):
 
         # Change clicks from 66 to 67 for "1234-ABCD/666666"
         self.recommendationMetricsTable.update_item(
-            Key={"mod_item": "1234-ABCD/666666"},
+            Key={"recommendations_pk": "666666/1234-ABCD"},
             UpdateExpression="set clicks=:c, impressions=:i",
             ExpressionAttributeValues={':c': Decimal(67), ':i': Decimal(1000)})
 
         # Insert a new item, that wasn't there before.
         self.recommendationMetricsTable.put_item(Item={
-            "mod_item": "1234-ABCD/111111",
+            "recommendations_pk": "111111/1234-ABCD",
             "clicks": "1",
             "impressions": "5",
             "created_at": "0",
@@ -68,9 +68,9 @@ class TestClickdataModel(TestDynamoDBBase):
         assert "foobar" not in metrics
         assert metrics["111111"].clicks == 1
 
-    async def _put_clickdata_fixtures(self):
+    async def _put_metrics_fixtures(self):
         self.recommendationMetricsTable.put_item(Item={
-            "mod_item": "1234-ABCD/default",  # TODO: Should this be /1234-ABCD? The doc only mention rollups per item.
+            "recommendations_pk": "default/1234-ABCD",  # TODO: Should this be /1234-ABCD? The doc only mention rollups per item.
             "clicks": "200",
             "impressions": "5000",
             "created_at": "0",
@@ -78,7 +78,7 @@ class TestClickdataModel(TestDynamoDBBase):
         })
 
         self.recommendationMetricsTable.put_item(Item={
-            "mod_item": "999999/1234-ABCD",
+            "recommendations_pk": "999999/1234-ABCD",
             "clicks": "99",
             "impressions": "999",
             "created_at": "0",
@@ -86,7 +86,7 @@ class TestClickdataModel(TestDynamoDBBase):
         })
 
         self.recommendationMetricsTable.put_item(Item={
-            "mod_item": "666666/1234-ABCD",
+            "recommendations_pk": "666666/1234-ABCD",
             "clicks": "66",
             "impressions": "999",
             "created_at": "0",
@@ -94,7 +94,7 @@ class TestClickdataModel(TestDynamoDBBase):
         })
 
         self.recommendationMetricsTable.put_item(Item={
-            "mod_item": "333333/1234-ABCD",
+            "recommendations_pk": "333333/1234-ABCD",
             "clicks": "33",
             "impressions": "999",
             "created_at": "0",

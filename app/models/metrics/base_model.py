@@ -1,5 +1,5 @@
 import logging
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 import aioboto3
 from aiocache import decorators
@@ -21,7 +21,7 @@ def _chunks(index, n=_DYNAMODB_BATCH_GET_ITEM_LIMIT):
 
 
 class MetricsBaseModel(BaseModel):
-    mod_item: str = None
+    id: str = None
     clicks: float = None
     impressions: float = None
     # TODO: Add 1, 14, 28 day metrics.
@@ -58,6 +58,11 @@ class MetricsBaseModel(BaseModel):
 
         metrics = await self._query_cached_metrics(keys)
         # Remove "/<modules>" suffix and remove None values
+        # TODO: It might be cleaner if this method just returns List[MetricsBaseModel], and callers create the dict
+        # of their choosing.
+        for k, metric in metrics.items():
+            if metric is not None:
+                metric['id'] = metric[self._primary_key_name]
         metrics = {k.split("/")[0]: MetricsBaseModel.parse_obj(v) for k, v in metrics.items() if v is not None}
 
         if not metrics:
@@ -66,10 +71,10 @@ class MetricsBaseModel(BaseModel):
         return metrics
 
     @xray_recorder.capture_async('models.metrics.MetricsBaseModel._query_cached_metrics')
-    async def _query_cached_metrics(self, metrics_keys: List) -> Dict[str, 'MetricsBaseModel']:
+    async def _query_cached_metrics(self, metrics_keys: List) -> Dict[str, Optional[Dict]]:
         multi_cache_wrapper = decorators.multi_cached(
-            "metrics_keys",
-            app.config.elasticache['metrics_ttl'],
+            keys_from_attr="metrics_keys",
+            ttl=app.config.elasticache['metrics_ttl'],
             alias=app.cache.metrics_alias)
 
         multi_cache = multi_cache_wrapper(self._query_metrics)

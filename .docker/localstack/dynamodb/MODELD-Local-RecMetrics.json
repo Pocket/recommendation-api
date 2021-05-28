@@ -2,13 +2,13 @@
   "TableName": "MODELD-Local-RecMetrics",
   "KeySchema": [
     {
-      "AttributeName": "mod_item",
+      "AttributeName": "recommendations_pk",
       "KeyType": "HASH"
     }
   ],
   "AttributeDefinitions": [
     {
-      "AttributeName": "mod_item",
+      "AttributeName": "recommendations_pk",
       "AttributeType": "S"
     }
   ],
