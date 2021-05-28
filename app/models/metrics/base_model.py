@@ -60,15 +60,20 @@ class MetricsBaseModel(BaseModel):
         # Remove "/<modules>" suffix and remove None values
         # TODO: It might be cleaner if this method just returns List[MetricsBaseModel], and callers create the dict
         # of their choosing.
-        for k, metric in metrics.items():
-            if metric is not None:
-                metric['id'] = metric[self._primary_key_name]
-        metrics = {k.split("/")[0]: MetricsBaseModel.parse_obj(v) for k, v in metrics.items() if v is not None}
+        metrics = {k.split("/")[0]: self.parse_from_record(v) for k, v in metrics.items() if v is not None}
 
         if not metrics:
             logging.error(f"No metrics for module {module_id} with keys={keys}")
 
         return metrics
+
+    def parse_from_record(self, value: Dict):
+        """
+        Similar to Pydantic's parse_obj function, but sets the id field using the primary key.
+        :param value: dictionary containing all required keys for MetricsBaseModel
+        :return: Parsed MetricsBaseModel
+        """
+        return MetricsBaseModel.parse_obj({**value, 'id': value[self._primary_key_name]})
 
     @xray_recorder.capture_async('models.metrics.MetricsBaseModel._query_cached_metrics')
     async def _query_cached_metrics(self, metrics_keys: List) -> Dict[str, Optional[Dict]]:

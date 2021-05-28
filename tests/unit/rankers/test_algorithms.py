@@ -145,7 +145,7 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
 
         metrics = {
             '999': RecommendationMetricsModel(
-                mod_item='home/999',
+                id='home/999',
                 training_7_day_opens=99,
                 training_7_day_impressions=999,
                 created_at=0,
@@ -161,7 +161,7 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         recs = generate_recommendations(['999'])
         metrics = {
             'default': RecommendationMetricsModel(
-                mod_item='home/default',
+                id='home/default',
                 training_7_day_opens=99,
                 training_7_day_impressions=-14,
                 created_at=0,
@@ -186,21 +186,21 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
 
         metrics = {
             '999999': RecommendationMetricsModel(
-                mod_item='home/999999',
+                id='home/999999',
                 training_7_day_opens=99,
                 training_7_day_impressions=999,
                 created_at=0,
                 expires_at=0
             ),
             '666666': RecommendationMetricsModel(
-                mod_item='home/666666',
+                id='home/666666',
                 training_7_day_opens=66,
                 training_7_day_impressions=999,
                 created_at=0,
                 expires_at=0
             ),
             '333333': RecommendationMetricsModel(
-                mod_item='home/333333',
+                id='home/333333',
                 training_7_day_opens=33,
                 training_7_day_impressions=999,
                 created_at=0,

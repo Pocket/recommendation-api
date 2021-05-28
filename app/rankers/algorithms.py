@@ -92,7 +92,7 @@ def thompson_sampling(
         beta_prior = metrics['default'].training_7_day_impressions
         if alpha_prior < 0 or beta_prior < 0:
             logging.error(
-                f"Alpha {alpha_prior} or Beta {beta_prior} prior < 0 for module {metrics['default'].mod_item}")
+                f"Alpha {alpha_prior} or Beta {beta_prior} prior < 0 for module {metrics['default'].id}")
             alpha_prior, beta_prior = DEFAULT_ALPHA_PRIOR, DEFAULT_BETA_PRIOR
 
     scores = []

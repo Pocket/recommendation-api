@@ -11,10 +11,10 @@ class TestSlateMetrics:
             "created_at": Decimal(1610404066),
             "expires_at": Decimal(1644359266),
             "impressions": Decimal(2.207612237118199),
-            "mod_item": "topic/default",
+            "slates_pk": "topic/default",
         }
 
-        metrics = SlateMetricsModel.parse_obj(row)
+        metrics = SlateMetricsModel().parse_from_record(row)
         assert metrics.clicks == 0.045687984008122705
         assert metrics.impressions == 2.207612237118199
-        assert metrics.mod_item == "topic/default"
+        assert metrics.id == "topic/default"
