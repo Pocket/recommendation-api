@@ -26,11 +26,11 @@ dynamodb = {
     'candidate_sets': {
         'table': os.getenv('RECOMMENDATION_API_CANDIDATE_SETS_TABLE', 'recommendation_api_candidate_sets'),
     },
-    'recommendation_clickdata': {
+    'recommendation_metrics': {
         'table': os.getenv('MODELD_RECOMMENDATION_METRICS_TABLE', 'MODELD-Local-RecMetrics'),
         'pk': os.getenv('MODELD_RECOMMENDATION_METRICS_PK', 'recommendations_pk'),
     },
-    'slate_clickdata': {
+    'slate_metrics': {
         'table': os.getenv('MODELD_SLATE_METRICS_TABLE', 'MODELD-Local-SlateMetrics'),
         'pk': os.getenv('MODELD_SLATE_METRICS_PK', 'slates_pk'),
     },
@@ -45,8 +45,8 @@ sentry = {
 elasticache = {
     # Convert comma-separated string MEMCACHED_SERVERS to list.
     'servers': os.getenv('MEMCACHED_SERVERS', '001.example.com:11211,002.example.com:11211').split(','),
-    # Expire time in seconds for clickdata
-    'clickdata_ttl': int(os.getenv('MEMCACHED_CLICKDATA_TTL', 3)), # TODO: Undo debug change. Reset this to 900.
+    # Expire time in seconds for engagement metrics
+    'metrics_ttl': int(os.getenv('MEMCACHED_METRICS_TTL', 3)), # TODO: Undo debug change. Reset this to 900.
     # Expire time in seconds for candidate sets
     'candidate_set_ttl': int(os.getenv('MEMCACHED_CANDIDATE_SET_TTL', 3)), # TODO: Undo debug change. Reset this to 900.
 }

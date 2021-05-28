@@ -113,19 +113,19 @@ class RecommendationAPI extends TerraformStack {
             },
             {
               name: 'MODELD_RECOMMENDATION_METRICS_TABLE',
-              value: dynamodb.recommendationClickdataTable.name,
+              value: dynamodb.recommendationMetricsTable.name,
             },
             {
               name: 'MODELD_RECOMMENDATION_METRICS_PK',
-              value: dynamodb.recommendationClickdataTable.hashKey,
+              value: dynamodb.recommendationMetricsTable.hashKey,
             },
             {
               name: 'MODELD_SLATE_METRICS_TABLE',
-              value: dynamodb.slateClickdataTable.name,
+              value: dynamodb.slateMetricsTable.name,
             },
             {
               name: 'MODELD_SLATE_METRICS_PK',
-              value: dynamodb.slateClickdataTable.hashKey,
+              value: dynamodb.slateMetricsTable.hashKey,
             },
             {
               name: 'RECOMMENDATION_API_CANDIDATE_SETS_TABLE',
@@ -204,13 +204,13 @@ class RecommendationAPI extends TerraformStack {
             resources: [
               dynamodb.candidatesTable.dynamodb.arn,
               dynamodb.metadataTable.dynamodb.arn,
-              dynamodb.recommendationClickdataTable.arn,
-              dynamodb.slateClickdataTable.arn,
+              dynamodb.recommendationMetricsTable.arn,
+              dynamodb.slateMetricsTable.arn,
               dynamodb.candidateSetsTable.dynamodb.arn,
               `${dynamodb.candidatesTable.dynamodb.arn}/*`,
               `${dynamodb.metadataTable.dynamodb.arn}/*`,
-              `${dynamodb.recommendationClickdataTable.arn}/*`,
-              `${dynamodb.slateClickdataTable.arn}/*`,
+              `${dynamodb.recommendationMetricsTable.arn}/*`,
+              `${dynamodb.slateMetricsTable.arn}/*`,
               `${dynamodb.candidateSetsTable.dynamodb.arn}/*`
             ],
             effect: 'Allow'

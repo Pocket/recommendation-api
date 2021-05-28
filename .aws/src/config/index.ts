@@ -25,7 +25,7 @@ export const config = {
   environment,
   domain,
   recommendationMetricsDynamodbName: `MODELD-${environment}-RecMetrics`,
-  slateClickdataDynamodbName: `MODELD-${environment}-SlateMetrics`,
+  slateMetricsDynamodbName: `MODELD-${environment}-SlateMetrics`,
   cacheNodes,
   cacheSize,
   stateMachines: [

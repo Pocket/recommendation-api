@@ -20,7 +20,7 @@ def _chunks(index, n=_DYNAMODB_BATCH_GET_ITEM_LIMIT):
         yield index[i: i + n]
 
 
-class ClickdataBaseModel(BaseModel):
+class MetricsBaseModel(BaseModel):
     mod_item: str = None
     clicks: float = None
     impressions: float = None
@@ -37,9 +37,9 @@ class ClickdataBaseModel(BaseModel):
     _opens_key: str = 'training_7_day_opens'
     _impressions_key: str = 'training_7_day_impressions'
 
-    async def get(self, module_id: str, ids: List[str]) -> Dict[str, 'ClickdataBaseModel']:
+    async def get(self, module_id: str, ids: List[str]) -> Dict[str, 'MetricsBaseModel']:
         """
-        Get clickdata for recommendations or slates that.
+        Get engagement metrics for recommendations or slates.
         - recommendations: The module is a slate that contains the recommendation.
                            The primary key is <slate id>/<item id>.
         - slates: The module is the slate lineup that contains the slate.
@@ -52,40 +52,40 @@ class ClickdataBaseModel(BaseModel):
         # Keys are namespaced by the module we are getting data from
         keys = {self._make_key(module_id, i) for i in ids}
 
-        # Always get the default key, it is used for items that don't have any clickstream data
+        # Always get the default key, it is used for items that don't have any metrics
         keys.add(self._make_key(module_id, "default"))
         keys = list(keys)
 
-        clickdata = await self._query_cached_clickdata(keys)
+        metrics = await self._query_cached_metrics(keys)
         # Remove "/<modules>" suffix and remove None values
-        clickdata = {k.split("/")[0]: ClickdataBaseModel.parse_obj(v) for k, v in clickdata.items() if v is not None}
+        metrics = {k.split("/")[0]: MetricsBaseModel.parse_obj(v) for k, v in metrics.items() if v is not None}
 
-        if not clickdata:
-            logging.error(f"No clickdata results for module {module_id} with keys={keys}")
+        if not metrics:
+            logging.error(f"No metrics for module {module_id} with keys={keys}")
 
-        return clickdata
+        return metrics
 
-    @xray_recorder.capture_async('models.clickdata._query_cached_clickdata')
-    async def _query_cached_clickdata(self, clickdata_keys: List) -> Dict[str, 'ClickdataBaseModel']:
+    @xray_recorder.capture_async('models.metrics.MetricsBaseModel._query_cached_metrics')
+    async def _query_cached_metrics(self, metrics_keys: List) -> Dict[str, 'MetricsBaseModel']:
         multi_cache_wrapper = decorators.multi_cached(
-            "clickdata_keys",
-            ttl=1, #app.config.elasticache['clickdata_ttl'],
-            alias=app.cache.clickdata_alias)
+            "metrics_keys",
+            app.config.elasticache['metrics_ttl'],
+            alias=app.cache.metrics_alias)
 
-        multi_cache = multi_cache_wrapper(self._query_clickdata)
+        multi_cache = multi_cache_wrapper(self._query_metrics)
 
-        # multi_cache will get clickdata from cache when available, and call _query_clickdata with all missing keys.
-        results = await multi_cache(clickdata_keys=clickdata_keys)
+        # multi_cache will get metrics from cache when available, and call _query_metrics with all missing keys.
+        results = await multi_cache(metrics_keys=metrics_keys)
 
         # Map app.cache's NoneValue to None. aiocache treats None as a cache miss, so we need a special token for this.
         return {k: None if v == app.cache.NoneValue else v for k, v in results.items()}
 
-    @xray_recorder.capture_async('models.clickdata._query_clickdata')
-    async def _query_clickdata(self, clickdata_keys: List):
-        clickdata = {}
+    @xray_recorder.capture_async('models.MetricsBaseModel._query_metrics')
+    async def _query_metrics(self, metrics_keys: List):
+        metrics = {}
 
         async with aioboto3.resource('dynamodb', endpoint_url=self._dynamodb_endpoint) as dynamodb:
-            for keychunk in _chunks(clickdata_keys):
+            for keychunk in _chunks(metrics_keys):
                 request = {
                     self._dynamodb_table: {
                         "Keys": [{self._primary_key_name: c} for c in keychunk]
@@ -94,21 +94,22 @@ class ClickdataBaseModel(BaseModel):
                 responses = await dynamodb.batch_get_item(RequestItems=request)
 
                 # TODO: Write a unit test when there are more than 100  rows. It seems this will fail because it's only
+                #
                 for row in responses["Responses"][self._dynamodb_table]:
                     pk = row[self._primary_key_name]
-                    clickdata[pk] = row
+                    metrics[pk] = row
 
                 if not responses["Responses"][self._dynamodb_table]:
-                    logging.error(f"DynamoDB returned no clickdata for query {request}")
+                    logging.error(f"DynamoDB returned no metrics for query {request}")
 
-        return {k: clickdata.get(k) for k in clickdata_keys}
+        return {k: metrics.get(k) for k in metrics_keys}
 
     def _make_key(self, module: str, item_id: str) -> str:
         """
-        Generate the primary key for the clickdata database
+        Generate the primary key for the metrics database
 
-        :param module: Prefix for which to get clickdata
-        :param item_id: Item for which to get clickdata, or "default" for module clickdata prior
-        :return: Clickdata DynamoDB identifier
+        :param module: Prefix for which to get metrics
+        :param item_id: Item for which to get metrics, or "default" for module prior
+        :return: DynamoDB primary key value
         """
         return "%s/%s" % (item_id, module)

@@ -8,16 +8,16 @@ export class DynamoDB extends Resource {
 
   public readonly candidatesTable: ApplicationDynamoDBTable
   public readonly metadataTable: ApplicationDynamoDBTable
-  public readonly recommendationClickdataTable: DataAwsDynamodbTable
-  public readonly slateClickdataTable: DataAwsDynamodbTable
+  public readonly recommendationMetricsTable: DataAwsDynamodbTable
+  public readonly slateMetricsTable: DataAwsDynamodbTable
   public readonly candidateSetsTable: ApplicationDynamoDBTable;
 
   constructor(scope: Construct, name: string) {
     super(scope, name);
     this.candidatesTable = this.setupCandidatesTable();
     this.metadataTable = this.setupTopicsMetadataTable();
-    this.recommendationClickdataTable = this.getRecommendationClickdataTable();
-    this.slateClickdataTable = this.getSlateClickdataTable();
+    this.recommendationMetricsTable = this.getRecommendationMetricsTable();
+    this.slateMetricsTable = this.getSlateMetricsTable();
     this.candidateSetsTable = this.setupCandidateSetsTable();
   }
 
@@ -157,15 +157,15 @@ export class DynamoDB extends Resource {
     });
   }
 
-  private getRecommendationClickdataTable() {
-    return new DataAwsDynamodbTable(this, `rec_clickdata`, {
+  private getRecommendationMetricsTable() {
+    return new DataAwsDynamodbTable(this, `rec_metrics`, {
       name: config.recommendationMetricsDynamodbName,
     });
   }
 
-  private getSlateClickdataTable() {
-    return new DataAwsDynamodbTable(this, `slate_clickdata`, {
-      name: config.slateClickdataDynamodbName,
+  private getSlateMetricsTable() {
+    return new DataAwsDynamodbTable(this, `slate_metrics`, {
+      name: config.slateMetricsDynamodbName,
     });
   }
 }

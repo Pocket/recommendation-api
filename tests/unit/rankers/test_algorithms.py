@@ -1,7 +1,7 @@
 import unittest
 
 from tests.unit.utils import generate_recommendations
-from app.models.clickdata.recommendation_clickdata_model import RecommendationClickdataModel
+from app.models.metrics.recommendation_clickdata_model import RecommendationClickdataModel
 from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist
 from operator import itemgetter
 

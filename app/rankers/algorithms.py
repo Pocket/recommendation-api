@@ -3,7 +3,7 @@ import json
 from typing import Any, Dict, List, Union
 
 from aws_xray_sdk.core import xray_recorder
-from app.models.clickdata.base_model import ClickdataBaseModel
+from app.models.metrics.base_model import MetricsBaseModel
 from operator import itemgetter
 from scipy.stats import beta
 
@@ -65,7 +65,7 @@ DEFAULT_BETA_PRIOR = 1.0
 
 def thompson_sampling(
         recs: RankableListType,
-        clickdata: Dict[(int or str), 'ClickdataBaseModel']) -> RankableListType:
+        metrics: Dict[(int or str), 'MetricsBaseModel']) -> RankableListType:
     """
     Re-rank items using Thompson sampling which combines exploitation of known item CTR
     with exploration of new items with unknown CTR modeled by a prior
@@ -75,7 +75,7 @@ def thompson_sampling(
     items to our repertoire.
 
     :param recs: a list of recommendations in the desired order (pre-publisher spread)
-    :param clickdata: a dict with item_id as key and dynamodb row modeled as ClickDataModel
+    :param metrics: a dict with item_id as key and dynamodb row modeled as ClickDataModel
     :return: a re-ordered version of recs satisfying the spread as best as possible
     """
 
@@ -84,15 +84,15 @@ def thompson_sampling(
         return recs
 
     alpha_prior, beta_prior = DEFAULT_ALPHA_PRIOR, DEFAULT_BETA_PRIOR
-    if clickdata and 'default' in clickdata:
+    if metrics and 'default' in metrics:
         # 'default' is a special key we can use for anything that is missing.
         # The values here aren't actually clicks or impressions,
         # but instead direct alpha and beta parameters for the module CTR prior
-        alpha_prior = clickdata['default'].training_7_day_opens
-        beta_prior = clickdata['default'].training_7_day_impressions
+        alpha_prior = metrics['default'].training_7_day_opens
+        beta_prior = metrics['default'].training_7_day_impressions
         if alpha_prior < 0 or beta_prior < 0:
             logging.error(
-                f"Alpha {alpha_prior} or Beta {beta_prior} prior < 0 for module {clickdata['default'].mod_item}")
+                f"Alpha {alpha_prior} or Beta {beta_prior} prior < 0 for module {metrics['default'].mod_item}")
             alpha_prior, beta_prior = DEFAULT_ALPHA_PRIOR, DEFAULT_BETA_PRIOR
 
     scores = []
@@ -106,7 +106,7 @@ def thompson_sampling(
             # Slates are keyed on their id.
             clickdata_id = rec.id
 
-        d = clickdata.get(clickdata_id)
+        d = metrics.get(clickdata_id)
         if d:
             # TODO: Decide how many days we want to look back.
             clicks = max(d.training_7_day_opens + alpha_prior, 1e-18)

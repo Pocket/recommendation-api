@@ -5,7 +5,7 @@ from typing import List
 
 from app.config import JSON_DIR
 from app.json.utils import parse_to_dict
-from app.models.clickdata.slate_clickdata_model import SlateClickdataModel
+from app.models.metrics.slate_metrics_model import SlateMetricsModel
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate_config import SlateConfigModel
 from app.rankers import get_ranker
@@ -117,9 +117,9 @@ class SlateLineupConfigModel:
         for ranker in experiment.rankers:
             ranker_kwargs = {}
             if ranker == 'thompson-sampling':
-                # thompson sampling requires a clickdata for slates
+                # thompson sampling requires slate metrics
                 ranker_kwargs = {
-                    'clickdata': await SlateClickdataModel().get(slate_lineup_id, [s.id for s in slate_configs])
+                    'metrics': await SlateMetricsModel().get(slate_lineup_id, [s.id for s in slate_configs])
                 }
 
             # slate configs get ranked and re-assigned for every ranker within the experiment
