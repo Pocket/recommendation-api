@@ -105,7 +105,9 @@
     "experiments": [
       {
         "description": "Explore Home - No syndicated in top 5 results, live syndicated allowed below",
-        "rankers": [],
+        "rankers": [
+          "thompson-sampling"
+        ],
         "slates": [
           "48e766be-5e96-46fb-acbf-55fee3ae8a28",
           "0737b00e-a21e-4875-a4c7-3e14926d4acf"
