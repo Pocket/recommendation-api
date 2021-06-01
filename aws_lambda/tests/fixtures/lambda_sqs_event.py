@@ -1,4 +1,5 @@
 import json
+import time
 from copy import deepcopy
 
 
@@ -6,7 +7,14 @@ body = {
   "id": "1234-5678-ABCD-CEDF",
   "version": 1,
   "expires_at": 1644006655,
-  "candidates": [{"item_id": 3242933715, "publisher": "TheAtlantic", "feed_id": 1}]
+  "candidates": [
+    {
+      "item_id": 3242933715,
+      "publisher": "TheAtlantic",
+      "feed_id": 1,
+      "expires_at": int(time.time() + 3600),  # Expires in 1 hour from now
+    }
+  ]
 }
 
 body2 = deepcopy(body)

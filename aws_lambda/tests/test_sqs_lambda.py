@@ -105,3 +105,21 @@ def test_get_dynamodb_item_validation():
         test_case = deepcopy(body)
         test_case['candidates'][0]['publisher'] = 1234
         sqs_handler.get_dynamodb_item(test_case)
+
+    # If a candidate has expires_at not set, it raises AssertionError
+    with pytest.raises(AssertionError):
+        test_case = deepcopy(body)
+        del test_case['candidates'][0]['expires_at']
+        sqs_handler.get_dynamodb_item(test_case)
+
+    # If a candidate has expires_at that is not an int, it raises AssertionError
+    with pytest.raises(AssertionError):
+        test_case = deepcopy(body)
+        test_case['candidates'][0]['expires_at'] = str(int(time.time() + 120))  # Unix time as a string
+        sqs_handler.get_dynamodb_item(test_case)
+
+    # If a candidate has expires_at in the past, it raises AssertionError
+    with pytest.raises(AssertionError):
+        test_case = deepcopy(body)
+        test_case['candidates'][0]['expires_at'] = time.time() - 1.0  # 1 second in the past
+        sqs_handler.get_dynamodb_item(test_case)

@@ -64,6 +64,10 @@ def _validate_candidate_set(candidate_set: Dict[str, Any]):
     _validate_dict_value_type(candidate_set, 'id', str)
     _validate_dict_value_type(candidate_set, 'version', int)
     _validate_dict_value_type(candidate_set, 'candidates', list)
+    _validate_dict_value_type(candidate_set, 'expires_at', int)
+
+    # Check that expires_at is greater than now, such that the item doesn't get deleted immediately.
+    assert candidate_set['expires_at'] > time.time(), f"expires_at is in the past in {candidate_set}"
 
     for candidate in candidate_set['candidates']:
         _validate_candidate(candidate)
