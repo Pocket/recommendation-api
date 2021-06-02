@@ -20,7 +20,7 @@ class CuratorTopic(Enum):
     PARENTING = 'Parenting'
     PERSONAL_FINANCE = 'Personal Finance'
     POLITICS = 'Politics'
-    SCIENCE = 'science'
+    SCIENCE = 'Science'
     SELF_IMPROVEMENT = 'Self Improvement'
     SPORTS = 'Sports'
     TECHNOLOGY = 'Technology'
@@ -51,8 +51,7 @@ class SlateConfigModel:
         self.displayName = display_name
         self.description = description
         self.experiments = experiments or []
-        if curator_topic_label:
-            self.curator_topic_label = curator_topic_label
+        self.curator_topic_label = curator_topic_label
 
     @staticmethod
     def load_from_dict(slate_dict: dict) -> 'SlateConfigModel':

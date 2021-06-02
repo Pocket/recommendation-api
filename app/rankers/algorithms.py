@@ -127,12 +127,12 @@ def personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
     """
     topic_to_score_map = {t.curator_topic_label: t.score for t in personalized_topics.curator_topics}
     # filter non-topic slates
-    input_slate_configs = list(filter(lambda s: s.curatorTopicLabel in topic_to_score_map, input_slate_configs))
-    if not input_slate_configs:
+    personalized_configs = list(filter(lambda s: s.curatorTopicLabel in topic_to_score_map, input_slate_configs))
+    if not personalized_configs:
         raise ValueError(f"Input lineup to personalize_topic_slates includes no topic slates")
     # re-rank topic slates
-    input_slate_configs.sort(key=lambda s: topic_to_score_map.get(s.curator_topic_label), reverse=True)
-    return (input_slate_configs[:topic_limit] if topic_limit else input_slate_configs)
+    personalized_configs.sort(key=lambda s: topic_to_score_map.get(s.curator_topic_label), reverse=True)
+    return (personalized_configs[:topic_limit] if topic_limit else personalized_configs)
 
 
 @xray_recorder.capture('rankers_algorithms_spread_publishers')
