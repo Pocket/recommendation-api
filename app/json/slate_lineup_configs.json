@@ -40,7 +40,9 @@
     "experiments": [
       {
         "description": "SlateLineup test 1",
-        "rankers": [],
+        "rankers": [
+          "thompson-sampling"
+        ],
         "slates": [
           "de254c5d-57a7-4553-850f-153ee385014d",
           "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
