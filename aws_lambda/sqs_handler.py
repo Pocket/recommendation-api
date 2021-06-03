@@ -19,7 +19,10 @@ sentry_sdk.init(
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-MINIMUM_EXPIRES_AT_FROM_NOW = 3600  # expires_at cannot be less that this many seconds from now.
+# expires_at cannot be less that this many seconds from now. It's currently arbitrarily set to 1 day, which is much
+# less than the expiration duration used in practice of 1 month. This is intended as a sanity check to ensure that
+# expires_at isn't accidentally set to the current time, or X hours from now, instead of X days from now.
+MINIMUM_EXPIRES_AT_FROM_NOW = 86400
 
 
 def handler(event: Dict[str, Any], context=None):
