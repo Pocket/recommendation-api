@@ -372,7 +372,9 @@
     "experiments": [
       {
         "description": "default layout",
-        "rankers": [],
+        "rankers": [
+          "personalized-topics"
+        ],
         "slates": [
           "af2cc2c0-1286-47a3-b8ce-187b905f94af",
           "00f0c593-3c99-4d5a-9297-c66f8b00be01",
