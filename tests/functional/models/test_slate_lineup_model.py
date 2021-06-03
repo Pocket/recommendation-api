@@ -12,13 +12,14 @@ from app.models.slate_lineup_config import SlateLineupConfigModel
 slate_config_id = 'test-slate-config-id'
 slate_experiment = SlateExperimentModel('test-ex', 'test-ex-desc', ['top15', 'thompson-sampling'],
                                         ['test-candidate-id'])
-slate_config_model = SlateConfigModel(slate_config_id, 'test-this-slate', 'test-desc', [slate_experiment])
+slate_config_model = SlateConfigModel(slate_config_id, 'test-this-slate', 'test-desc', experiments=[slate_experiment])
 
 # Second slate
 slate_config_id_2 = 'test-slate-config-id-2'
 slate_experiment_2 = SlateExperimentModel('test-ex-2', 'test-ex-desc-2', ['top15', 'thompson-sampling'],
                                         ['test-candidate-id-2'])
-slate_config_model_2 = SlateConfigModel(slate_config_id_2, 'test-this-slate-2', 'test-desc-2', [slate_experiment_2])
+slate_config_model_2 = SlateConfigModel(slate_config_id_2, 'test-this-slate-2', 'test-desc-2',
+                                        experiments=[slate_experiment_2])
 
 # Lineup with one slate
 slate_lineup_config_id = 'test-slate_lineup-config-id'
