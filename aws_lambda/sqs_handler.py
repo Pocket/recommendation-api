@@ -19,6 +19,9 @@ sentry_sdk.init(
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+MINIMUM_EXPIRES_AT_FROM_NOW = 3600  # expires_at cannot be less that this many seconds from now.
+
+
 def handler(event: Dict[str, Any], context=None):
     """
     Handles SQS message containing a candidate set.
@@ -67,7 +70,9 @@ def _validate_candidate_set(candidate_set: Dict[str, Any]):
     _validate_dict_value_type(candidate_set, 'expires_at', int)
 
     # Check that expires_at is greater than now, such that the item doesn't get deleted immediately.
-    assert candidate_set['expires_at'] > time.time(), f"expires_at is in the past in {candidate_set}"
+    min_expires_at = time.time() + MINIMUM_EXPIRES_AT_FROM_NOW
+    assert candidate_set['expires_at'] >= min_expires_at,\
+        f"expires_at {candidate_set['expires_at']} should be at least {min_expires_at} in {candidate_set}"
 
     for candidate in candidate_set['candidates']:
         _validate_candidate(candidate)

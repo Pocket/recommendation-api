@@ -1,6 +1,7 @@
 import json
 import time
 from copy import deepcopy
+from aws_lambda.sqs_handler import MINIMUM_EXPIRES_AT_FROM_NOW
 
 
 body = {
@@ -12,7 +13,7 @@ body = {
       "item_id": 3242933715,
       "publisher": "TheAtlantic",
       "feed_id": 1,
-      "expires_at": int(time.time() + 3600),  # Expires in 1 hour from now
+      "expires_at": int(time.time() + MINIMUM_EXPIRES_AT_FROM_NOW + 3600),  # Expires 1 hour after minimum
     }
   ]
 }
