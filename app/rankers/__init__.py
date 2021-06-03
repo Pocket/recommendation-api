@@ -21,7 +21,8 @@ def get_all_rankers():
         top15,
         top30,
         thompson_sampling,
-        spread_publishers
+        spread_publishers,
+        personalize_topic_slates
     )
 
     return {
@@ -29,5 +30,6 @@ def get_all_rankers():
         'top15': top15,
         'top30': top30,
         'thompson-sampling': thompson_sampling,
+        'personalized-topics': personalize_topic_slates,
         'pubspread': spread_publishers
     }
