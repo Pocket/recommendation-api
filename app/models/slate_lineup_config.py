@@ -119,7 +119,7 @@ class SlateLineupConfigModel:
             ranker_kwargs = {}
             if ranker == "personalized-topics":
                 ranker_kwargs = {
-                    "personalized_topics": await PersonalizedTopicList().get(user_id)
+                    "personalized_topics": await PersonalizedTopicList.get(user_id)
                 }
             # slate configs get ranked and re-assigned for every ranker within the experiment
             # for example we might first take the top 15 slate configs(that is one ranker)
