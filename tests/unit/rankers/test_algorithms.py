@@ -261,6 +261,7 @@ class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
 
         output_configs = await personalize_topic_slates(input_configs, partial_topic_profile)
         ordered_output_topics = [c.curator_topic_label for c in output_configs]
+        raise ValueError("This shouldn't continue")
 
         # all topics are in input_configs, some are missing in recit_response
         # output should filter topics absent in recit response
