@@ -1,6 +1,8 @@
 import aioboto3
 
 from asyncio import gather
+
+import logging
 from aws_xray_sdk.core import xray_recorder
 from boto3.dynamodb.conditions import Key
 from enum import Enum
@@ -128,6 +130,6 @@ class RecommendationModel(BaseModel):
             click_data = await ClickdataModel.get(slate_id, item_ids)
         except ValueError:
             rec_item_ids = ','.join(item_ids)
-            print(f'click data not found for candidates with item ids: {rec_item_ids}')
+            logging.warn(f'No click data found for {slate_id = } {rec_item_ids = }')
             click_data = {}
         return get_ranker('thompson-sampling')(recommendations, click_data)

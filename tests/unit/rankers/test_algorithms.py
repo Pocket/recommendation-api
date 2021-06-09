@@ -2,11 +2,11 @@ import unittest
 import os
 import json
 
-from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_uncurated_configs
+from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_uncurated_configs, generate_hybrid_configs
 from app.models.clickdata import ClickdataModel
 from app.config import ROOT_DIR
-from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist, \
-    personalize_topic_slates
+from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist, personalize_topic_slates
+from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
 from operator import itemgetter
 
 
@@ -243,69 +243,57 @@ class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
     @staticmethod
     def _read_json_asset(filename: str):
         with open(os.path.join(ROOT_DIR, 'tests/assets/json/', filename)) as f:
-            return json.load(f)
+            response = json.load(f)
+        personalized_topics = [PersonalizedTopicElement(curator_topic_label=x[0], score=x[1])
+                               for x in response["curator_topics"]]
+        return PersonalizedTopicList(curator_topics=personalized_topics, user_id="3636")
 
-    async def test_partial_recit_response(self):
-        """
-        Test that topics are ranked correctly if RecIt returns a subset of
-        the topics in the slate lineup config. Topics that are not present
-        in RecIt's response should not be returned.
-        """
 
-        partial_topic_profile = self._read_json_asset("recit_partial_user_profile.json")
-
-        input_configs = generate_curated_configs()
-        personalized_topics = [t[0] for t in partial_topic_profile]
-        missing_topics = [s.curatorTopicLabel for s in input_configs
-                          if s.curator_topic_label not in personalized_topics]
-
-        output_configs = await personalize_topic_slates(input_configs, partial_topic_profile)
-        ordered_output_topics = [c.curator_topic_label for c in output_configs]
-
-        # all topics are in input_configs, some are missing in recit_response
-        # output should filter topics absent in recit response
-        # test re-ranking
-        assert ordered_output_topics == personalized_topics
-        # test that all input slates are not in output
-        for m in missing_topics:
-            assert m not in ordered_output_topics
-
-    async def test_full_rerank(self):
-        """
-        Test the case where all topics from the slate lineup config are present in
-        the personalized topics list.
-        """
-
-        full_topic_profile = self._read_json_asset("recit_partial_user_profile.json")
-        input_configs = generate_curated_configs()
-        ordered_input_ids = [c.id for c in input_configs]
-        input_topics = [c.curator_topic_label for c in input_configs]
-        personalized_topics = [t[0] for t in full_topic_profile if t[0] in input_topics]
-
-        output_configs = await personalize_topic_slates(input_configs, full_topic_profile)
-        ordered_output_ids = [c.id for c in output_configs]
-        ordered_output_topics = [c.curator_topic_label for c in output_configs]
-
-        assert ordered_output_topics == personalized_topics
-        # test that all input slates are in output
-        assert set(ordered_input_ids) == set(ordered_output_ids)
-
-    async def test_return_topic_limit(self):
-        full_topic_profile = self._read_json_asset("recit_partial_user_profile.json")
+    def test_personalize_topic_limit(self):
+        full_topic_profile = self._read_json_asset("recit_full_user_profile.json")
         input_configs = generate_curated_configs()
         input_topics = [c.curator_topic_label for c in input_configs]
         # these are already sorted by RecIt
-        personalized_topics = [t[0] for t in full_topic_profile if t[0] in input_topics]
+        personalized_topics = [t.curator_topic_label
+                               for t in full_topic_profile.curator_topics
+                               if t.curator_topic_label in input_topics]
 
         for test_limit in [1, 3, 5]:
-            output_configs = await personalize_topic_slates(input_configs, full_topic_profile, test_limit)
+            output_configs = personalize_topic_slates(input_configs, full_topic_profile, test_limit)
             ordered_output_topics = [c.curator_topic_label for c in output_configs]
-
+            print(len(output_configs), test_limit)
             assert len(output_configs) == test_limit
             assert ordered_output_topics == personalized_topics[:test_limit]
 
-    async def test_no_topic_slates(self):
-        full_topic_profile = self._read_json_asset("recit_partial_user_profile.json")
+    def test_android_discover(self):
+        ''' this test is the case where one topic slate is returned from a
+        lineup with a mix of curated and uncurated slates
+        '''
+        full_topic_profile = self._read_json_asset("recit_full_user_profile.json")
+        input_configs = generate_hybrid_configs()
+        input_topics = [c.curator_topic_label for c in input_configs]
+        # these are already sorted by RecIt
+        personalizable_slates = [t.curator_topic_label
+                                 for t in full_topic_profile.curator_topics
+                                 if t.curator_topic_label in input_topics]
+        other_slates = [t.id for t in input_configs
+                        if t.curator_topic_label not in personalizable_slates]
+
+        for topic_limit in range(1, 9):
+            # one non-topic slate should be at start of lineup
+            output_configs = personalize_topic_slates(input_configs, full_topic_profile, topic_limit)
+            ordered_output_topics = [c.curator_topic_label for c in output_configs]
+            assert len(output_configs) == len(other_slates) + topic_limit
+            # first config is not personalziable and should be same as input
+            assert input_configs[0] == output_configs[0]
+            # returned topic slate should be highest ranked
+            assert ordered_output_topics[1:1+topic_limit] == personalizable_slates[:topic_limit]
+            # last two output slates are also not personalizable
+            assert input_configs[-2:] == output_configs[-2:]
+
+
+    def test_no_topic_slates(self):
+        full_topic_profile = self._read_json_asset("recit_full_user_profile.json")
         input_configs = generate_uncurated_configs()
 
-        self.assertRaises(ValueError, await personalize_topic_slates(input_configs, full_topic_profile))
+        self.assertRaises(ValueError, personalize_topic_slates, input_configs, full_topic_profile)

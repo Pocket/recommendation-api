@@ -44,10 +44,18 @@ def generate_curated_configs() -> List[SlateConfigModel]:
 
 def generate_uncurated_configs() -> List[SlateConfigModel]:
 
+    slate_configs = SlateConfigModel.load_slate_configs()
     # two algorithmic topic slates
     input_slates = ["d024ce9c-ed96-453f-a81e-8a0b850681e7", "fa61096a-b681-4251-b299-2fda06c49ebf"]
-    input_configs = []
-    for slate_id in input_slates:
-        input_configs.append(SlateConfigModel.find_by_id(slate_id))
+    input_configs = [c for c in slate_configs if c.id in input_slates]
 
+    return input_configs
+
+def generate_hybrid_configs() -> List[SlateConfigModel]:
+    slate_configs = SlateConfigModel.load_slate_configs()
+    # this config has editor's picks first without a topic label
+    # all curated topics and then two algorithmic topic slate configs
+    input_configs = [c for c in slate_configs if c.id == "2e3ddc90-8def-46d7-b85f-da7525c66fb1"]
+    input_configs += generate_curated_configs()
+    input_configs += generate_uncurated_configs()
     return input_configs
