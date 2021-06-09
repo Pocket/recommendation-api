@@ -132,11 +132,13 @@ def personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
     topic_to_score_map = {t.curator_topic_label: t.score for t in personalized_topics.curator_topics}
     # filter non-topic slates
     personalizable_configs = list(filter(lambda s: s.curator_topic_label in topic_to_score_map, input_slate_configs))
-    print(personalizable_configs)
+    logging.debug(personalizable_configs)
+
     if not personalizable_configs:
         raise ValueError(f"Input lineup to personalize_topic_slates includes no topic slates")
     elif topic_limit and len(personalizable_configs) < topic_limit:
         raise ValueError(f"Input lineup to personalize_topic_slates includes fewer topic slates than requested")
+
     # re-rank topic slates
     personalizable_configs.sort(key=lambda s: topic_to_score_map.get(s.curator_topic_label), reverse=True)
 
@@ -151,33 +153,10 @@ def personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
                 added_topic_slates += 1
                 personalized_index += 1
         else:
-            print(f"adding topic slate {added_topic_slates}")
+            logging.debug(f"adding topic slate {added_topic_slates}")
             output_configs.append(config)
+
     return output_configs
-
-
-def rerank_topic_slates(input_slate_configs: List['SlateConfigModel'],
-                             personalized_topics: PersonalizedTopicList,
-                             topic_limit: Optional[int] = None) -> List['SlateConfigModel']:
-    """
-    This routine takes a list of slates as input in which must include slates with an associated curator topic
-    label.  It uses the topic_profile that is supplied by RecIt to re-rank the slates according to affinity
-    with items in the user's list.
-    This version doesn't handle non-topic slates within the lineup, and they are filtered from the output.
-    :param input_slate_configs: SlateConfigModel list that includes slates with curatorTopicLabels
-    :param personalized_topics: response from RecIt listing topics ordered by affinity to user
-    :param topic_limit: desired number of topics to return, if this is set the number of slates returned is truncated.
-                        otherwise all personalized topics among the input slate configs are returned
-    :return: SlateLineupExperimentModel with reordered slates
-    """
-    topic_to_score_map = {t.curator_topic_label: t.score for t in personalized_topics.curator_topics}
-    # filter non-topic slates
-    personalized_configs = list(filter(lambda s: s.curator_topic_label in topic_to_score_map, input_slate_configs))
-    if not personalized_configs:
-        raise ValueError(f"Input lineup to personalize_topic_slates includes no topic slates")
-    # re-rank topic slates
-    personalized_configs.sort(key=lambda s: topic_to_score_map.get(s.curator_topic_label), reverse=True)
-    return (personalized_configs[:topic_limit] if topic_limit else personalized_configs)
 
 
 @xray_recorder.capture('rankers_algorithms_spread_publishers')
