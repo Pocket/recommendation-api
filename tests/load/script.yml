@@ -35,7 +35,7 @@ scenarios:
     flow:
       - post:
           url: "/"
-          body: '{"query":"query get_slate_lineup{ getSlateLineup(slateLinueupId: \"3b064b50-5592-4030-b19a-9f05468fbbcd\") { id slates {id recommendations { itemId publisher recSrc feedId} } } }"}'
+          body: '{"query":"query get_slate_lineup{ getSlateLineup(slateLineupId: \"3b064b50-5592-4030-b19a-9f05468fbbcd\") { id slates {id recommendations { itemId publisher recSrc feedId} } } }"}'
           headers:
              Content-Type: application/json
           expect:
