@@ -234,7 +234,7 @@ class RecommendationAPI extends TerraformStack {
           actions: config.environment == 'Dev' ? [] : [pagerDuty.snsCriticalAlarmTopic.arn]
         },
         httpRequestCount: {
-          threshold: 5000,
+          threshold: 10000,
           evaluationPeriods: 2,
           period: 300,
           // We raise a non-critical alarm on request count, because a higher-than-expected
