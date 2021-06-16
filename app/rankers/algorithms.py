@@ -43,6 +43,17 @@ def top30(items: RankableListType) -> RankableListType:
     return items[:30]
 
 
+def topN(items: RankableListType, n: int = 45) -> RankableListType:
+    """
+    Gets the first N recommendations from the list of recommendations.
+
+    :param items: a list of recommendations in the desired order (pre-publisher spread)
+    :param n: int, number of recommendations to be returned
+    :return: first n recommendations from the list of recommendations
+    """
+    return items[:n]
+
+
 def blocklist(recs: RecommendationListType, blocklist: List[str] = None) -> RecommendationListType:
     """
     this filters recommendations by item_id using the blocklist available

@@ -172,6 +172,28 @@
           "top30",
           "pubspread"
         ]
+      },
+      {
+        "description": "curated business items, thompson-sampling30",
+        "candidateSets": [
+          "c7a0201d-0e36-4b3e-b09a-70dd239f057b"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated business items, thompson-samplingN",
+        "candidateSets": [
+          "c7a0201d-0e36-4b3e-b09a-70dd239f057b"
+        ],
+        "rankers": [
+          "topN",
+          "thompson-sampling",
+          "pubspread"
+        ]
       }
     ]
   },
@@ -223,6 +245,28 @@
         ],
         "rankers": [
           "top30",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated career items, thomspon-sampling30",
+        "candidateSets": [
+          "f693a2e2-9ed0-49d4-a739-2b25b41da5e3"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated career items, thomspon-samplingN",
+        "candidateSets": [
+          "f693a2e2-9ed0-49d4-a739-2b25b41da5e3"
+        ],
+        "rankers": [
+          "topN",
+          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -278,6 +322,28 @@
           "top30",
           "pubspread"
         ]
+      },
+      {
+        "description": "curated education items, thomspon-sampling30",
+        "candidateSets": [
+          "b85a946e-a093-4f14-8d7d-412b34f1206b"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated education items, thomspon-samplingN",
+        "candidateSets": [
+          "b85a946e-a093-4f14-8d7d-412b34f1206b"
+        ],
+        "rankers": [
+          "topN",
+          "thompson-sampling",
+          "pubspread"
+        ]
       }
     ]
   },
@@ -329,6 +395,28 @@
         ],
         "rankers": [
           "top30",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated entertainment items, thompson-sampling30",
+        "candidateSets": [
+          "ad9b3930-9f16-43dc-ae5c-eb14766c1ec9"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated entertainment items, thompson-samplingN",
+        "candidateSets": [
+          "ad9b3930-9f16-43dc-ae5c-eb14766c1ec9"
+        ],
+        "rankers": [
+          "topN",
+          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -384,6 +472,28 @@
           "top30",
           "pubspread"
         ]
+      },
+      {
+        "description": "curated food items, thompson-sampling30",
+        "candidateSets": [
+          "2da138a0-74c1-405e-9191-1317cc59ceed"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated food items, thompson-samplingN",
+        "candidateSets": [
+          "2da138a0-74c1-405e-9191-1317cc59ceed"
+        ],
+        "rankers": [
+          "topN",
+          "thompson-sampling",
+          "pubspread"
+        ]
       }
     ]
   },
@@ -435,6 +545,28 @@
         ],
         "rankers": [
           "top30",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated gaming items, thompson-sampling30",
+        "candidateSets": [
+          "2bf336d5-1645-4b71-8444-2e5271d7e32c"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated gaming items, thompson-samplingN",
+        "candidateSets": [
+          "2bf336d5-1645-4b71-8444-2e5271d7e32c"
+        ],
+        "rankers": [
+          "topN",
+          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -490,6 +622,28 @@
           "top30",
           "pubspread"
         ]
+      },
+      {
+        "description": "curated health items, thompson-sampling30",
+        "candidateSets": [
+          "5681d1c4-7e50-4e35-a54b-643a3bd14769"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated health items, thompson-samplingN",
+        "candidateSets": [
+          "5681d1c4-7e50-4e35-a54b-643a3bd14769"
+        ],
+        "rankers": [
+          "topN",
+          "thompson-sampling",
+          "pubspread"
+        ]
       }
     ]
   },
@@ -541,6 +695,28 @@
         ],
         "rankers": [
           "top30",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated parenting items, thompson-sampling30",
+        "candidateSets": [
+          "fb1e0d23-28e0-448d-82a8-a7cb0a6c1ad1"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated parenting items, thompson-samplingN",
+        "candidateSets": [
+          "fb1e0d23-28e0-448d-82a8-a7cb0a6c1ad1"
+        ],
+        "rankers": [
+          "topN",
+          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -596,6 +772,28 @@
           "top30",
           "pubspread"
         ]
+      },
+      {
+        "description": "curated personal finance items, thompson-sampling30",
+        "candidateSets": [
+          "5abdc94e-76d5-4f59-8e8d-22c8ee084a2d"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated personal finance items, thompson-samplingN",
+        "candidateSets": [
+          "5abdc94e-76d5-4f59-8e8d-22c8ee084a2d"
+        ],
+        "rankers": [
+          "topN",
+          "thompson-sampling",
+          "pubspread"
+        ]
       }
     ]
   },
@@ -647,6 +845,28 @@
         ],
         "rankers": [
           "top30",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated politics items, thompson-sampling30",
+        "candidateSets": [
+          "d893eb54-f3ce-43df-a0c9-76cd8fd53d4b"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated politics items, thompson-samplingN",
+        "candidateSets": [
+          "d893eb54-f3ce-43df-a0c9-76cd8fd53d4b"
+        ],
+        "rankers": [
+          "topN",
+          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -702,6 +922,28 @@
           "top30",
           "pubspread"
         ]
+      },
+      {
+        "description": "curated science items, thompson-sampling30",
+        "candidateSets": [
+          "81754b9d-ff5b-454f-ba97-9ce72d9fc747"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated science items, thompson-samplingN",
+        "candidateSets": [
+          "81754b9d-ff5b-454f-ba97-9ce72d9fc747"
+        ],
+        "rankers": [
+          "topN",
+          "thompson-sampling",
+          "pubspread"
+        ]
       }
     ]
   },
@@ -753,6 +995,28 @@
         ],
         "rankers": [
           "top30",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated self-improvement items, thompson-sampling30",
+        "candidateSets": [
+          "5857f00b-634f-441d-9fe9-e892a5743f48"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated self-improvement items, thompson-samplingN",
+        "candidateSets": [
+          "5857f00b-634f-441d-9fe9-e892a5743f48"
+        ],
+        "rankers": [
+          "topN",
+          "thompson-sampling",
           "pubspread"
         ]
       }
@@ -808,6 +1072,28 @@
           "top30",
           "pubspread"
         ]
+      },
+      {
+        "description": "curated sports items, thompson-sampling30",
+        "candidateSets": [
+          "81ee1a0f-19a2-4a26-8223-75baffab5af0"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated sports items, thompson-samplingN",
+        "candidateSets": [
+          "81ee1a0f-19a2-4a26-8223-75baffab5af0"
+        ],
+        "rankers": [
+          "topN",
+          "thompson-sampling",
+          "pubspread"
+        ]
       }
     ]
   },
@@ -861,6 +1147,28 @@
           "top30",
           "pubspread"
         ]
+      },
+      {
+        "description": "curated technology items, thompson-sampling30",
+        "candidateSets": [
+          "e78cc946-c042-4607-abb1-b25f759df059"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated technology items, thompson-samplingN",
+        "candidateSets": [
+          "e78cc946-c042-4607-abb1-b25f759df059"
+        ],
+        "rankers": [
+          "topN",
+          "thompson-sampling",
+          "pubspread"
+        ]
       }
     ]
   },
@@ -912,6 +1220,28 @@
         ],
         "rankers": [
           "top30",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated travel items, thompson-sampling30",
+        "candidateSets": [
+          "e10b7582-73e8-40b2-bba9-84e27b8de046"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated travel items, thompson-samplingN",
+        "candidateSets": [
+          "e10b7582-73e8-40b2-bba9-84e27b8de046"
+        ],
+        "rankers": [
+          "topN",
+          "thompson-sampling",
           "pubspread"
         ]
       }
