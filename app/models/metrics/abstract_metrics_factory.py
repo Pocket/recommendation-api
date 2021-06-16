@@ -38,12 +38,8 @@ class AbstractMetricsFactory(ABC):
         :param ids: Used in the second part of the primary key.
         :return: dictionary of ClickdataModel objects keyed on item (i.e. not including the prefix)
         """
-        # Keys are namespaced by the module we are getting data from
-        keys = {self._make_key(module_id, i) for i in ids}
-
-        # Always get the default key, it is used for items that don't have any metrics
-        keys.add(self._make_key(module_id, "default"))
-        keys = list(keys)
+        # Keys are namespaced by the module we are getting data from. First put them in a set to ensure unique keys.
+        keys = list({self._make_key(module_id, i) for i in ids})
 
         metrics = await self._query_cached_metrics(keys)
         # Remove "/<modules>" suffix and remove None values
@@ -98,6 +94,9 @@ class AbstractMetricsFactory(ABC):
                     pk = row[self._primary_key_name]
                     metrics[pk] = row
 
+                # TODO: We are somewhat confident that every slate and lineup has at least some metrics available by
+                #  now. If this error does not occur in practice, it would be better to change it to an exception.
+                # We're logging an error here because the full request context is available.
                 if not responses["Responses"][self._dynamodb_table]:
                     logging.error(f"DynamoDB returned no metrics for query {request}")
 
@@ -108,7 +107,7 @@ class AbstractMetricsFactory(ABC):
         Generate the primary key for the metrics database
 
         :param module: Prefix for which to get metrics
-        :param item_id: Item for which to get metrics, or "default" for module prior
+        :param item_id: Item for which to get metrics
         :return: DynamoDB primary key value
         """
         return "%s/%s" % (item_id, module)

@@ -96,17 +96,11 @@ def thompson_sampling(
     if not recs:
         return recs
 
+    # Currently we are using the hardcoded priors below.
+    # TODO: We should return to having slate/lineup-specific priors. We could load slate-priors from
+    #  MODELD-Prod-SlateMetrics, although that might require an additional database lookup. We might choose to use a
+    #  'default' key that aggregates engagement data in the same table, such that no additional lookups are required.
     alpha_prior, beta_prior = DEFAULT_ALPHA_PRIOR, DEFAULT_BETA_PRIOR
-    if metrics and 'default' in metrics:
-        # 'default' is a special key we can use for anything that is missing.
-        # The values here aren't actually clicks or impressions,
-        # but instead direct alpha and beta parameters for the module CTR prior
-        alpha_prior = metrics['default'].trailing_28_day_opens
-        beta_prior = metrics['default'].trailing_28_day_impressions
-        if alpha_prior < 0 or beta_prior < 0:
-            logging.error(
-                f"Alpha {alpha_prior} or Beta {beta_prior} prior < 0 for module {metrics['default'].id}")
-            alpha_prior, beta_prior = DEFAULT_ALPHA_PRIOR, DEFAULT_BETA_PRIOR
 
     scores = []
     # create prior distribution for CTR from parameters in click data table
