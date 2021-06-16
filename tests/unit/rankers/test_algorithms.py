@@ -150,8 +150,14 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         metrics = {
             '999': MetricsModel(
                 id='home/999',
-                trailing_7_day_opens=99,
-                trailing_7_day_impressions=999,
+                trailing_1_day_opens=0,
+                trailing_1_day_impressions=0,
+                trailing_7_day_opens=0,
+                trailing_7_day_impressions=0,
+                trailing_14_day_opens=0,
+                trailing_14_day_impressions=0,
+                trailing_28_day_opens=99,
+                trailing_28_day_impressions=999,
                 created_at=0,
                 expires_at=0
             ),
@@ -166,8 +172,14 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         metrics = {
             'default': MetricsModel(
                 id='home/default',
-                trailing_7_day_opens=99,
-                trailing_7_day_impressions=-14,
+                trailing_1_day_opens=0,
+                trailing_1_day_impressions=0,
+                trailing_7_day_opens=0,
+                trailing_7_day_impressions=0,
+                trailing_14_day_opens=0,
+                trailing_14_day_impressions=0,
+                trailing_28_day_opens=99,
+                trailing_28_day_impressions=-14,
                 created_at=0,
                 expires_at=0,
             ),
@@ -191,22 +203,40 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         metrics = {
             '999999': MetricsModel(
                 id='home/999999',
-                trailing_7_day_opens=99,
-                trailing_7_day_impressions=999,
+                trailing_1_day_opens=0,
+                trailing_1_day_impressions=0,
+                trailing_7_day_opens=0,
+                trailing_7_day_impressions=0,
+                trailing_14_day_opens=0,
+                trailing_14_day_impressions=0,
+                trailing_28_day_opens=99,
+                trailing_28_day_impressions=999,
                 created_at=0,
                 expires_at=0
             ),
             '666666': MetricsModel(
                 id='home/666666',
-                trailing_7_day_opens=66,
-                trailing_7_day_impressions=999,
+                trailing_1_day_opens=0,
+                trailing_1_day_impressions=0,
+                trailing_7_day_opens=0,
+                trailing_7_day_impressions=0,
+                trailing_14_day_opens=0,
+                trailing_14_day_impressions=0,
+                trailing_28_day_opens=66,
+                trailing_28_day_impressions=999,
                 created_at=0,
                 expires_at=0
             ),
             '333333': MetricsModel(
                 id='home/333333',
-                trailing_7_day_opens=33,
-                trailing_7_day_impressions=999,
+                trailing_1_day_opens=0,
+                trailing_1_day_impressions=0,
+                trailing_7_day_opens=0,
+                trailing_7_day_impressions=0,
+                trailing_14_day_opens=0,
+                trailing_14_day_impressions=0,
+                trailing_28_day_opens=33,
+                trailing_28_day_impressions=999,
                 created_at=0,
                 expires_at=0
             )
