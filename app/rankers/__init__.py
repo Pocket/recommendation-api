@@ -20,7 +20,7 @@ def get_all_rankers():
         top5,
         top15,
         top30,
-        topN,
+        top45,
         thompson_sampling,
         spread_publishers,
         personalize_topic_slates
@@ -30,7 +30,7 @@ def get_all_rankers():
         'top5': top5,
         'top15': top15,
         'top30': top30,
-        'topN': topN,
+        'top45': top45,
         'thompson-sampling': thompson_sampling,
         'personalized-topics': personalize_topic_slates,
         'pubspread': spread_publishers

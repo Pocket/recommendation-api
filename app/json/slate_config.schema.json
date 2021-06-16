@@ -115,7 +115,7 @@
                   "top5",
                   "top15",
                   "top30",
-                  "topN",
+                  "top45",
                   "thompson-sampling"
                 ],
                 "title": "The Experiment Ranker Items Schema",

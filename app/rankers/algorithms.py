@@ -49,7 +49,7 @@ def top30(items: RankableListType) -> RankableListType:
     return items[:30]
 
 
-def topN(items: RankableListType, n: int = 45) -> RankableListType:
+def top45(items: RankableListType, n: int = 45) -> RankableListType:
     """
     Gets the first N recommendations from the list of recommendations.
 
