@@ -52,5 +52,5 @@ elasticache = {
 }
 
 recit = {
-    'endpoint_url': os.getenv('RECIT_ENDPOINT_URL', 'http://recit.readitlater.com')
+    'endpoint_url': os.getenv('RECIT_ENDPOINT_URL', 'https://recit.readitlater.com')
 }

@@ -9,6 +9,7 @@ from app.models.metrics.slate_metrics_factory import SlateMetricsFactory
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate_config import SlateConfigModel
 from app.rankers import get_ranker
+from app.models.personalized_topic_list import PersonalizedTopicList
 
 
 class SlateLineupConfigModel:
@@ -16,7 +17,8 @@ class SlateLineupConfigModel:
     Represents the experiments that we might run when a client requests a slate_lineup of this id. Data for this
     model lives in hard-coded JSON files (which will be incrementally updated through PRs).
 
-    This JSON is parsed at startup, and instances of this model will be persisted in-memory for use by SlateLineup instances.
+    This JSON is parsed at startup, and instances of this model will be persisted in-memory
+    for use by SlateLineup instances.
 
     Accepts on initialization:
     :param slate_lineup_id: str, the slate_lineup for which a request would run one of these experiments
@@ -46,8 +48,8 @@ class SlateLineupConfigModel:
             schema_file=os.path.join(JSON_DIR, 'slate_lineup_config.schema.json')
     ) -> List['SlateLineupConfigModel']:
         """
-        validates slate_lineup_file against schema_file and creates instances of SlateLineupConfigModel for each slate found in
-        the json
+        validates slate_lineup_file against schema_file and creates instances of SlateLineupConfigModel
+        for each slate found in the json
 
         :param slate_lineup_file: path to the json file containing slates
         :param schema_file: path to the json schema file used to validate slate_file
@@ -96,12 +98,14 @@ class SlateLineupConfigModel:
 
     @staticmethod
     async def get_slate_configs_from_experiment(
-            slate_lineup_id: str, experiment: SlateLineupExperimentModel) -> List[SlateConfigModel]:
+            slate_lineup_id: str, experiment: SlateLineupExperimentModel,
+            user_id: str = None) -> List[SlateConfigModel]:
         """
         Gets a slate config from the list of slate configs
 
         :param slate_lineup_id:
         :param experiment: SlateLineupExperimentModel object
+        :param user_id: user_id for personalized rankers
         :return: a list of SlateConfigModel objects
         """
         # get slate_ids from the experiment
@@ -121,7 +125,10 @@ class SlateLineupConfigModel:
                 ranker_kwargs = {
                     'metrics': await SlateMetricsFactory().get(slate_lineup_id, [s.id for s in slate_configs])
                 }
-
+            elif ranker == "personalized-topics":
+                ranker_kwargs = {
+                    "personalized_topics": await PersonalizedTopicList.get(user_id)
+                }
             # slate configs get ranked and re-assigned for every ranker within the experiment
             # for example we might first take the top 15 slate configs(that is one ranker)
             # and then randomize those 15 (which would be the second ranker)

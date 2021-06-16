@@ -1,8 +1,12 @@
 import unittest
+import os
+import json
 
-from tests.unit.utils import generate_recommendations
 from app.models.metrics.metrics_model import MetricsModel
-from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist
+from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_uncurated_configs, generate_hybrid_configs
+from app.config import ROOT_DIR
+from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist, personalize_topic_slates
+from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
 from operator import itemgetter
 
 
@@ -180,7 +184,7 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         aggregating results over multiple trials.  In a single run of the
         ranker results may not be ordered by CTR, but over multiple trials the
         ranks converge to descending by CTR
-        :param ntrails is the number of trials for the aggregation
+        :param ntrials is the number of trials for the aggregation
         """
         recs = generate_recommendations(["333333", "666666", "999999", "222222"])
 
@@ -210,7 +214,7 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
 
         # goal of test is to rank by CTR over ntrials
         # order should be 999999, 666666, 333333
-        ranks = dict()
+        ranks = {}
         for i in range(ntrials):
             sampled_recs = thompson_sampling(recs, metrics)
             c = 1
@@ -232,3 +236,64 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         assert int(ranks['666666']) != ranks['666666']
         assert int(ranks['333333']) != ranks['333333']
         assert int(ranks['222222']) != ranks['222222']
+
+
+class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
+
+    @staticmethod
+    def _read_json_asset(filename: str):
+        with open(os.path.join(ROOT_DIR, 'tests/assets/json/', filename)) as f:
+            response = json.load(f)
+        personalized_topics = [PersonalizedTopicElement(curator_topic_label=x[0], score=x[1])
+                               for x in response["curator_topics"]]
+        return PersonalizedTopicList(curator_topics=personalized_topics, user_id="3636")
+
+
+    def test_personalize_topic_limit(self):
+        full_topic_profile = self._read_json_asset("recit_full_user_profile.json")
+        input_configs = generate_curated_configs()
+        input_topics = [c.curator_topic_label for c in input_configs]
+        # these are already sorted by RecIt
+        personalized_topics = [t.curator_topic_label
+                               for t in full_topic_profile.curator_topics
+                               if t.curator_topic_label in input_topics]
+
+        for test_limit in [1, 3, 5]:
+            output_configs = personalize_topic_slates(input_configs, full_topic_profile, test_limit)
+            ordered_output_topics = [c.curator_topic_label for c in output_configs]
+            print(len(output_configs), test_limit)
+            assert len(output_configs) == test_limit
+            assert ordered_output_topics == personalized_topics[:test_limit]
+
+    def test_android_discover(self):
+        ''' this test is the case where one topic slate is returned from a
+        lineup with a mix of curated and uncurated slates
+        '''
+        full_topic_profile = self._read_json_asset("recit_full_user_profile.json")
+        input_configs = generate_hybrid_configs()
+        input_topics = [c.curator_topic_label for c in input_configs]
+        # these are already sorted by RecIt
+        personalizable_slates = [t.curator_topic_label
+                                 for t in full_topic_profile.curator_topics
+                                 if t.curator_topic_label in input_topics]
+        other_slates = [t.id for t in input_configs
+                        if t.curator_topic_label not in personalizable_slates]
+
+        for topic_limit in range(1, 9):
+            # one non-topic slate should be at start of lineup
+            output_configs = personalize_topic_slates(input_configs, full_topic_profile, topic_limit)
+            ordered_output_topics = [c.curator_topic_label for c in output_configs]
+            assert len(output_configs) == len(other_slates) + topic_limit
+            # first config is not personalziable and should be same as input
+            assert input_configs[0] == output_configs[0]
+            # returned topic slate should be highest ranked
+            assert ordered_output_topics[1:1+topic_limit] == personalizable_slates[:topic_limit]
+            # last two output slates are also not personalizable
+            assert input_configs[-2:] == output_configs[-2:]
+
+
+    def test_no_topic_slates(self):
+        full_topic_profile = self._read_json_asset("recit_full_user_profile.json")
+        input_configs = generate_uncurated_configs()
+
+        self.assertRaises(ValueError, personalize_topic_slates, input_configs, full_topic_profile)

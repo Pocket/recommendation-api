@@ -1,13 +1,19 @@
 import logging
 import json
-from typing import Any, Dict, List, Union
 
 from aws_xray_sdk.core import xray_recorder
 from app.models.metrics.metrics_model import MetricsModel
+
+from app.config import ROOT_DIR
+from typing import List, Dict, Optional, Union
 from operator import itemgetter
 from scipy.stats import beta
 
-from app.config import ROOT_DIR
+from app.models.slate_config import SlateConfigModel
+from app.models.personalized_topic_list import PersonalizedTopicList
+
+DEFAULT_ALPHA_PRIOR = 0.02
+DEFAULT_BETA_PRIOR = 1.0
 
 RankableListType = List[Union['SlateModel', 'RecommendationModel']]
 RecommendationListType = List['RecommendationModel']
@@ -70,10 +76,6 @@ def blocklist(recs: RecommendationListType, blocklist: List[str] = None) -> Reco
         return [rec for rec in recs if rec.item.item_id not in blocklist]
 
 
-DEFAULT_ALPHA_PRIOR = 0.02
-DEFAULT_BETA_PRIOR = 1.0
-
-
 def thompson_sampling(
         recs: RankableListType,
         metrics: Dict[(int or str), 'MetricsModel']) -> RankableListType:
@@ -131,6 +133,53 @@ def thompson_sampling(
 
     scores.sort(key=itemgetter(1), reverse=True)
     return [x[0] for x in scores]
+
+
+def personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
+                             personalized_topics: PersonalizedTopicList,
+                             topic_limit: Optional[int] = 1) -> List['SlateConfigModel']:
+    """
+    This routine takes a list of slates as input in which must include slates with an associated curator topic
+    label.  It uses the topic_profile that is supplied by RecIt to re-rank the slates according to affinity
+    with items in the user's list.
+    This version allows non-topic slates within the lineup.  These are left in order in the output configs
+    list.  Personalizable (topic) slates are re-ordered using their initial slots in the config lineup.
+    If the topic_limit parameter is included this will determine the number of topic slates that
+    remain in the output config list.
+    :param input_slate_configs: SlateConfigModel list that includes slates with curatorTopicLabels
+    :param personalized_topics: response from RecIt listing topics ordered by affinity to user
+    :param topic_limit: desired number of topics to return, if this is set the number of slates returned is truncated.
+                        otherwise all personalized topics among the input slate configs are returned
+    :return: SlateLineupExperimentModel with reordered slates
+    """
+    topic_to_score_map = {t.curator_topic_label: t.score for t in personalized_topics.curator_topics}
+    # filter non-topic slates
+    personalizable_configs = list(filter(lambda s: s.curator_topic_label in topic_to_score_map, input_slate_configs))
+    logging.debug(personalizable_configs)
+
+    if not personalizable_configs:
+        raise ValueError(f"Input lineup to personalize_topic_slates includes no topic slates")
+    elif topic_limit and len(personalizable_configs) < topic_limit:
+        raise ValueError(f"Input lineup to personalize_topic_slates includes fewer topic slates than requested")
+
+    # re-rank topic slates
+    personalizable_configs.sort(key=lambda s: topic_to_score_map.get(s.curator_topic_label), reverse=True)
+
+    output_configs = list()
+    added_topic_slates = 0
+    personalized_index = 0
+    for config in input_slate_configs:
+        if config in personalizable_configs:
+            # if slate is personalizable add highest ranked slate remaining
+            if added_topic_slates < topic_limit:
+                output_configs.append(personalizable_configs[personalized_index])
+                added_topic_slates += 1
+                personalized_index += 1
+        else:
+            logging.debug(f"adding topic slate {added_topic_slates}")
+            output_configs.append(config)
+
+    return output_configs
 
 
 @xray_recorder.capture('rankers_algorithms_spread_publishers')
