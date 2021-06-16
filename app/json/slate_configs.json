@@ -165,12 +165,23 @@
     "description": "Popular with Pocket readers  Stories from across the web",
     "experiments": [
       {
-        "description": "algorithmic business items",
+        "description": "algorithmic business items, thompson-sampling30",
         "candidateSets": [
           "70701fe5-0ee5-44ab-bb84-dd7a5041e365"
         ],
         "rankers": [
           "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "algorithmic business items, thompson-sampling45",
+        "candidateSets": [
+          "70701fe5-0ee5-44ab-bb84-dd7a5041e365"
+        ],
+        "rankers": [
+          "topN",
           "thompson-sampling",
           "pubspread"
         ]
@@ -205,7 +216,7 @@
         ]
       },
       {
-        "description": "curated business items, thompson-samplingN",
+        "description": "curated business items, thompson-sampling45",
         "candidateSets": [
           "c7a0201d-0e36-4b3e-b09a-70dd239f057b"
         ],
@@ -242,12 +253,23 @@
     "description": "Popular with Pocket readers  Stories from across the web",
     "experiments": [
       {
-        "description": "algorithmic career items",
+        "description": "algorithmic career items, thompson-sampling30",
         "candidateSets": [
           "496ae933-d84c-4546-8730-145f0fccf36d"
         ],
         "rankers": [
           "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "algorithmic career items, thompson-sampling45",
+        "candidateSets": [
+          "496ae933-d84c-4546-8730-145f0fccf36d"
+        ],
+        "rankers": [
+          "topN",
           "thompson-sampling",
           "pubspread"
         ]
@@ -282,7 +304,7 @@
         ]
       },
       {
-        "description": "curated career items, thomspon-samplingN",
+        "description": "curated career items, thomspon-sampling45",
         "candidateSets": [
           "f693a2e2-9ed0-49d4-a739-2b25b41da5e3"
         ],
@@ -319,12 +341,23 @@
     "description": "Popular with Pocket readers  Stories from across the web",
     "experiments": [
       {
-        "description": "algorithmic education items",
+        "description": "algorithmic education items, thompson-sampling30",
         "candidateSets": [
           "49f8c31c-bd45-4965-8335-8aab2988b238"
         ],
         "rankers": [
           "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "algorithmic education items, thompson-sampling45",
+        "candidateSets": [
+          "49f8c31c-bd45-4965-8335-8aab2988b238"
+        ],
+        "rankers": [
+          "topN",
           "thompson-sampling",
           "pubspread"
         ]
@@ -359,7 +392,7 @@
         ]
       },
       {
-        "description": "curated education items, thomspon-samplingN",
+        "description": "curated education items, thomspon-sampling45",
         "candidateSets": [
           "b85a946e-a093-4f14-8d7d-412b34f1206b"
         ],
@@ -396,12 +429,23 @@
     "description": "Popular with Pocket readers  Stories from across the web",
     "experiments": [
       {
-        "description": "algorithmic entertainment items",
+        "description": "algorithmic entertainment items, thompson-sampling30",
         "candidateSets": [
           "56053d72-5fd2-4bc3-ae12-5fda3160d96d"
         ],
         "rankers": [
           "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "algorithmic entertainment items, thompson-sampling45",
+        "candidateSets": [
+          "56053d72-5fd2-4bc3-ae12-5fda3160d96d"
+        ],
+        "rankers": [
+          "topN",
           "thompson-sampling",
           "pubspread"
         ]
@@ -436,7 +480,7 @@
         ]
       },
       {
-        "description": "curated entertainment items, thompson-samplingN",
+        "description": "curated entertainment items, thompson-sampling45",
         "candidateSets": [
           "ad9b3930-9f16-43dc-ae5c-eb14766c1ec9"
         ],
@@ -473,12 +517,23 @@
     "description": "Popular with Pocket readers  Stories from across the web",
     "experiments": [
       {
-        "description": "algorithmic food items",
+        "description": "algorithmic food items, thompson-sampling30",
         "candidateSets": [
           "f0cc2cf4-f6db-48b4-bd50-8fd118e5fb92"
         ],
         "rankers": [
           "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "algorithmic food items, thompson-sampling45",
+        "candidateSets": [
+          "f0cc2cf4-f6db-48b4-bd50-8fd118e5fb92"
+        ],
+        "rankers": [
+          "topN",
           "thompson-sampling",
           "pubspread"
         ]
@@ -513,7 +568,7 @@
         ]
       },
       {
-        "description": "curated food items, thompson-samplingN",
+        "description": "curated food items, thompson-sampling45",
         "candidateSets": [
           "2da138a0-74c1-405e-9191-1317cc59ceed"
         ],
@@ -550,12 +605,23 @@
     "description": "Popular with Pocket readers  Stories from across the web",
     "experiments": [
       {
-        "description": "algorithmic gaming items",
+        "description": "algorithmic gaming items, thompson-sampling30",
         "candidateSets": [
           "5aa1e0d8-3f56-4bed-9708-f4eaa9b5bb49"
         ],
         "rankers": [
           "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "algorithmic gaming items, thompson-sampling45",
+        "candidateSets": [
+          "5aa1e0d8-3f56-4bed-9708-f4eaa9b5bb49"
+        ],
+        "rankers": [
+          "topN",
           "thompson-sampling",
           "pubspread"
         ]
@@ -590,7 +656,7 @@
         ]
       },
       {
-        "description": "curated gaming items, thompson-samplingN",
+        "description": "curated gaming items, thompson-sampling45",
         "candidateSets": [
           "2bf336d5-1645-4b71-8444-2e5271d7e32c"
         ],
@@ -627,12 +693,23 @@
     "description": "Popular with Pocket readers  Stories from across the web",
     "experiments": [
       {
-        "description": "algorithmic health items",
+        "description": "algorithmic health items, thompson-sampling30",
         "candidateSets": [
           "60d62ea8-0518-49e4-8531-fecd486d5220"
         ],
         "rankers": [
           "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "algorithmic health items, thompson-sampling45",
+        "candidateSets": [
+          "60d62ea8-0518-49e4-8531-fecd486d5220"
+        ],
+        "rankers": [
+          "topN",
           "thompson-sampling",
           "pubspread"
         ]
@@ -667,7 +744,7 @@
         ]
       },
       {
-        "description": "curated health items, thompson-samplingN",
+        "description": "curated health items, thompson-sampling45",
         "candidateSets": [
           "5681d1c4-7e50-4e35-a54b-643a3bd14769"
         ],
@@ -704,12 +781,23 @@
     "description": "Popular with Pocket readers  Stories from across the web",
     "experiments": [
       {
-        "description": "algorithmic parenting items",
+        "description": "algorithmic parenting items, thompson-sampling30",
         "candidateSets": [
           "117e17b3-23cc-4343-91d7-2e1a37da78b0"
         ],
         "rankers": [
           "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "algorithmic parenting items, thompson-sampling45",
+        "candidateSets": [
+          "117e17b3-23cc-4343-91d7-2e1a37da78b0"
+        ],
+        "rankers": [
+          "topN",
           "thompson-sampling",
           "pubspread"
         ]
@@ -744,7 +832,7 @@
         ]
       },
       {
-        "description": "curated parenting items, thompson-samplingN",
+        "description": "curated parenting items, thompson-sampling45",
         "candidateSets": [
           "fb1e0d23-28e0-448d-82a8-a7cb0a6c1ad1"
         ],
@@ -781,12 +869,23 @@
     "description": "Popular with Pocket readers  Stories from across the web",
     "experiments": [
       {
-        "description": "algorithmic personal finance items",
+        "description": "algorithmic personal finance items, thompson-sampling30",
         "candidateSets": [
           "ea2aa748-4c9f-4d0a-9319-f05b19f54102"
         ],
         "rankers": [
           "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "algorithmic personal finance items, thompson-sampling45",
+        "candidateSets": [
+          "ea2aa748-4c9f-4d0a-9319-f05b19f54102"
+        ],
+        "rankers": [
+          "topN",
           "thompson-sampling",
           "pubspread"
         ]
@@ -821,7 +920,7 @@
         ]
       },
       {
-        "description": "curated personal finance items, thompson-samplingN",
+        "description": "curated personal finance items, thompson-sampling45",
         "candidateSets": [
           "5abdc94e-76d5-4f59-8e8d-22c8ee084a2d"
         ],
@@ -858,12 +957,23 @@
     "description": "Popular with Pocket readers  Stories from across the web",
     "experiments": [
       {
-        "description": "algorithmic politics items",
+        "description": "algorithmic politics items, thompson-sampling30",
         "candidateSets": [
           "6f96238e-df6e-4ef0-8adc-48dc181bbf6a"
         ],
         "rankers": [
           "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "algorithmic politics items, thompson-sampling45",
+        "candidateSets": [
+          "6f96238e-df6e-4ef0-8adc-48dc181bbf6a"
+        ],
+        "rankers": [
+          "topN",
           "thompson-sampling",
           "pubspread"
         ]
@@ -898,7 +1008,7 @@
         ]
       },
       {
-        "description": "curated politics items, thompson-samplingN",
+        "description": "curated politics items, thompson-sampling45",
         "candidateSets": [
           "d893eb54-f3ce-43df-a0c9-76cd8fd53d4b"
         ],
@@ -935,12 +1045,23 @@
     "description": "Popular with Pocket readers  Stories from across the web",
     "experiments": [
       {
-        "description": "algorithmic science items",
+        "description": "algorithmic science items, thompson-sampling30",
         "candidateSets": [
           "70e59f76-d488-48a2-b99d-076f667bb9e4"
         ],
         "rankers": [
           "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "algorithmic science items, thompson-sampling45",
+        "candidateSets": [
+          "70e59f76-d488-48a2-b99d-076f667bb9e4"
+        ],
+        "rankers": [
+          "topN",
           "thompson-sampling",
           "pubspread"
         ]
@@ -975,7 +1096,7 @@
         ]
       },
       {
-        "description": "curated science items, thompson-samplingN",
+        "description": "curated science items, thompson-sampling45",
         "candidateSets": [
           "81754b9d-ff5b-454f-ba97-9ce72d9fc747"
         ],
@@ -1012,12 +1133,23 @@
     "description": "Popular with Pocket readers  Stories from across the web",
     "experiments": [
       {
-        "description": "algorithmic self-improvement items",
+        "description": "algorithmic self-improvement items, thompson-sampling30",
         "candidateSets": [
           "a6696de0-2695-4ab8-b389-6dd82e28ff98"
         ],
         "rankers": [
           "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "algorithmic self-improvement items, thompson-sampling45",
+        "candidateSets": [
+          "a6696de0-2695-4ab8-b389-6dd82e28ff98"
+        ],
+        "rankers": [
+          "topN",
           "thompson-sampling",
           "pubspread"
         ]
@@ -1052,7 +1184,7 @@
         ]
       },
       {
-        "description": "curated self-improvement items, thompson-samplingN",
+        "description": "curated self-improvement items, thompson-sampling45",
         "candidateSets": [
           "5857f00b-634f-441d-9fe9-e892a5743f48"
         ],
@@ -1089,12 +1221,23 @@
     "description": "Popular with Pocket readers  Stories from across the web",
     "experiments": [
       {
-        "description": "algorithmic sports items",
+        "description": "algorithmic sports items, thompson-sampling30",
         "candidateSets": [
           "88424d81-8737-4cab-aa72-64496d015a03"
         ],
         "rankers": [
           "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "algorithmic sports items, thompson-sampling45",
+        "candidateSets": [
+          "88424d81-8737-4cab-aa72-64496d015a03"
+        ],
+        "rankers": [
+          "topN",
           "thompson-sampling",
           "pubspread"
         ]
@@ -1129,7 +1272,7 @@
         ]
       },
       {
-        "description": "curated sports items, thompson-samplingN",
+        "description": "curated sports items, thompson-sampling45",
         "candidateSets": [
           "81ee1a0f-19a2-4a26-8223-75baffab5af0"
         ],
@@ -1166,12 +1309,23 @@
     "description": "Popular with Pocket readers  Stories from across the web",
     "experiments": [
       {
-        "description": "algorithmic technology items",
+        "description": "algorithmic technology items, thompson-sampling30",
         "candidateSets": [
           "46ec119b-2705-4631-8cc2-69092b95b26a"
         ],
         "rankers": [
           "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "algorithmic technology items, thompson-sampling45",
+        "candidateSets": [
+          "46ec119b-2705-4631-8cc2-69092b95b26a"
+        ],
+        "rankers": [
+          "topN",
           "thompson-sampling",
           "pubspread"
         ]
@@ -1206,7 +1360,7 @@
         ]
       },
       {
-        "description": "curated technology items, thompson-samplingN",
+        "description": "curated technology items, thompson-sampling45",
         "candidateSets": [
           "e78cc946-c042-4607-abb1-b25f759df059"
         ],
@@ -1243,12 +1397,23 @@
     "description": "Popular with Pocket readers  Stories from across the web",
     "experiments": [
       {
-        "description": "algorithmic travel items",
+        "description": "algorithmic travel items, thompson-sampling30",
         "candidateSets": [
           "1da85dce-44f5-42ed-9c06-e95ebc797a65"
         ],
         "rankers": [
           "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "algorithmic travel items, thompson-sampling45",
+        "candidateSets": [
+          "1da85dce-44f5-42ed-9c06-e95ebc797a65"
+        ],
+        "rankers": [
+          "topN",
           "thompson-sampling",
           "pubspread"
         ]
@@ -1283,7 +1448,7 @@
         ]
       },
       {
-        "description": "curated travel items, thompson-samplingN",
+        "description": "curated travel items, thompson-sampling45",
         "candidateSets": [
           "e10b7582-73e8-40b2-bba9-84e27b8de046"
         ],
