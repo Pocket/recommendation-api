@@ -46,6 +46,16 @@ def top30(items: List[Any]) -> List[Any]:
     return items[:30]
 
 
+def topN(items: List[Any], n: int = 45) -> List[Any]:
+    """
+    Gets the first N recommendations from the list of recommendations.
+    :param items: a list of recommendations in the desired order (pre-publisher spread)
+    :param n: int, number of recommendations to be returned
+    :return: first n recommendations from the list of recommendations
+    """
+    return items[:n]
+
+
 def blocklist(recs: List['RecommendationModel'], blocklist: List[str] = None) -> List['RecommendationModel']:
     """
     this filters recommendations by item_id using the blocklist available
