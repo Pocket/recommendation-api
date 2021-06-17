@@ -107,10 +107,12 @@ def thompson_sampling(
     prior = beta(alpha_prior, beta_prior)
     for rec in recs:
         try:
-            # Recommendation is keyed on item_id.
+            # Recommendations are keyed on item_id.  Note that the metrics model grabs the item_id
+            # when it parses the clickdata by splitting the primary key in dynamo
             clickdata_id = rec.item.item_id
         except AttributeError:
-            # Slates are keyed on their id.
+            # Slates are keyed on their slate id, in this case the id field of the slate config model
+            # Similarly these are parsed as the prefix of the primary key in the slate metrics table
             clickdata_id = rec.id
 
         d = metrics.get(clickdata_id)
