@@ -214,17 +214,6 @@
           "thompson-sampling",
           "pubspread"
         ]
-      },
-      {
-        "description": "curated business items, thompson-sampling45",
-        "candidateSets": [
-          "c7a0201d-0e36-4b3e-b09a-70dd239f057b"
-        ],
-        "rankers": [
-          "top45",
-          "thompson-sampling",
-          "pubspread"
-        ]
       }
     ]
   },
@@ -299,17 +288,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
-          "pubspread"
-        ]
-      },
-      {
-        "description": "curated career items, thomspon-sampling45",
-        "candidateSets": [
-          "f693a2e2-9ed0-49d4-a739-2b25b41da5e3"
-        ],
-        "rankers": [
-          "top45",
           "thompson-sampling",
           "pubspread"
         ]
@@ -390,17 +368,6 @@
           "thompson-sampling",
           "pubspread"
         ]
-      },
-      {
-        "description": "curated education items, thomspon-sampling45",
-        "candidateSets": [
-          "b85a946e-a093-4f14-8d7d-412b34f1206b"
-        ],
-        "rankers": [
-          "top45",
-          "thompson-sampling",
-          "pubspread"
-        ]
       }
     ]
   },
@@ -475,17 +442,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
-          "pubspread"
-        ]
-      },
-      {
-        "description": "curated entertainment items, thompson-sampling45",
-        "candidateSets": [
-          "ad9b3930-9f16-43dc-ae5c-eb14766c1ec9"
-        ],
-        "rankers": [
-          "top45",
           "thompson-sampling",
           "pubspread"
         ]
@@ -566,17 +522,6 @@
           "thompson-sampling",
           "pubspread"
         ]
-      },
-      {
-        "description": "curated food items, thompson-sampling45",
-        "candidateSets": [
-          "2da138a0-74c1-405e-9191-1317cc59ceed"
-        ],
-        "rankers": [
-          "top45",
-          "thompson-sampling",
-          "pubspread"
-        ]
       }
     ]
   },
@@ -651,17 +596,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
-          "pubspread"
-        ]
-      },
-      {
-        "description": "curated gaming items, thompson-sampling45",
-        "candidateSets": [
-          "2bf336d5-1645-4b71-8444-2e5271d7e32c"
-        ],
-        "rankers": [
-          "top45",
           "thompson-sampling",
           "pubspread"
         ]
@@ -742,17 +676,6 @@
           "thompson-sampling",
           "pubspread"
         ]
-      },
-      {
-        "description": "curated health items, thompson-sampling45",
-        "candidateSets": [
-          "5681d1c4-7e50-4e35-a54b-643a3bd14769"
-        ],
-        "rankers": [
-          "top45",
-          "thompson-sampling",
-          "pubspread"
-        ]
       }
     ]
   },
@@ -790,17 +713,6 @@
           "thompson-sampling",
           "pubspread"
         ]
-      },
-      {
-        "description": "algorithmic parenting items, thompson-sampling45",
-        "candidateSets": [
-          "117e17b3-23cc-4343-91d7-2e1a37da78b0"
-        ],
-        "rankers": [
-          "top45",
-          "thompson-sampling",
-          "pubspread"
-        ]
       }
     ]
   },
@@ -827,17 +739,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
-          "pubspread"
-        ]
-      },
-      {
-        "description": "curated parenting items, thompson-sampling45",
-        "candidateSets": [
-          "fb1e0d23-28e0-448d-82a8-a7cb0a6c1ad1"
-        ],
-        "rankers": [
-          "top45",
           "thompson-sampling",
           "pubspread"
         ]
@@ -918,17 +819,6 @@
           "thompson-sampling",
           "pubspread"
         ]
-      },
-      {
-        "description": "curated personal finance items, thompson-sampling45",
-        "candidateSets": [
-          "5abdc94e-76d5-4f59-8e8d-22c8ee084a2d"
-        ],
-        "rankers": [
-          "top45",
-          "thompson-sampling",
-          "pubspread"
-        ]
       }
     ]
   },
@@ -1003,17 +893,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
-          "pubspread"
-        ]
-      },
-      {
-        "description": "curated politics items, thompson-sampling45",
-        "candidateSets": [
-          "d893eb54-f3ce-43df-a0c9-76cd8fd53d4b"
-        ],
-        "rankers": [
-          "top45",
           "thompson-sampling",
           "pubspread"
         ]
@@ -1094,17 +973,6 @@
           "thompson-sampling",
           "pubspread"
         ]
-      },
-      {
-        "description": "curated science items, thompson-sampling45",
-        "candidateSets": [
-          "81754b9d-ff5b-454f-ba97-9ce72d9fc747"
-        ],
-        "rankers": [
-          "top45",
-          "thompson-sampling",
-          "pubspread"
-        ]
       }
     ]
   },
@@ -1179,17 +1047,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
-          "pubspread"
-        ]
-      },
-      {
-        "description": "curated self-improvement items, thompson-sampling45",
-        "candidateSets": [
-          "5857f00b-634f-441d-9fe9-e892a5743f48"
-        ],
-        "rankers": [
-          "top45",
           "thompson-sampling",
           "pubspread"
         ]
@@ -1270,17 +1127,6 @@
           "thompson-sampling",
           "pubspread"
         ]
-      },
-      {
-        "description": "curated sports items, thompson-sampling45",
-        "candidateSets": [
-          "81ee1a0f-19a2-4a26-8223-75baffab5af0"
-        ],
-        "rankers": [
-          "top45",
-          "thompson-sampling",
-          "pubspread"
-        ]
       }
     ]
   },
@@ -1355,17 +1201,6 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
-          "pubspread"
-        ]
-      },
-      {
-        "description": "curated technology items, thompson-sampling45",
-        "candidateSets": [
-          "e78cc946-c042-4607-abb1-b25f759df059"
-        ],
-        "rankers": [
-          "top45",
           "thompson-sampling",
           "pubspread"
         ]
