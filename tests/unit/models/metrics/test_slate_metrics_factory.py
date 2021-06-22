@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from app.models.metrics.slate_metrics_factory import SlateMetricsFactory
+from app.config import dynamodb as dynamodb_config
 
 
 class TestSlateMetrics:
@@ -20,7 +21,7 @@ class TestSlateMetrics:
             "slates_pk": "slate-id-123/lineup-id-123",
         }
 
-        metrics = SlateMetricsFactory().parse_from_record(row)
+        metrics = SlateMetricsFactory(dynamodb_config["endpoint_url"]).parse_from_record(row)
         assert metrics.trailing_28_day_opens == 0.045687984008122705
         assert metrics.trailing_28_day_impressions == 2.207612237118199
         assert metrics.id == "slate-id-123/lineup-id-123"

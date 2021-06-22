@@ -128,7 +128,7 @@ class RecommendationModel(BaseModel):
         """
         item_ids = [recommendation.item.item_id for recommendation in recommendations]
         try:
-            click_data = await RecommendationMetricsFactory().get(slate_id, item_ids)
+            click_data = await RecommendationMetricsFactory(dynamodb_config["endpoint_url"]).get(slate_id, item_ids)
         except ValueError:
             logging.warning(f'No click data found for {slate_id = } {item_ids = }')
             click_data = {}

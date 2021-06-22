@@ -34,7 +34,8 @@ class SlateModel(BaseModel):
         """
         slate_config = SlateConfigModel.find_by_id(slate_id)
         return await SlateModel.__get_slate_from_slate_config(
-            slate_config, user_id,
+            slate_config,
+            user_id,
             recommendation_count=recommendation_count)
 
     @staticmethod

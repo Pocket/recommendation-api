@@ -15,7 +15,7 @@ from app.models.personalized_topic_list import PersonalizedTopicList
 DEFAULT_ALPHA_PRIOR = 0.02
 DEFAULT_BETA_PRIOR = 1.0
 
-RankableListType = List[Union['SlateModel', 'RecommendationModel']]
+RankableListType = Union[List['SlateModel'], List['RecommendationModel']]
 RecommendationListType = List['RecommendationModel']
 
 
@@ -49,7 +49,7 @@ def top30(items: RankableListType) -> RankableListType:
     return items[:30]
 
 
-def top45(items: RankableListType, n: int = 45) -> RankableListType:
+def top45(items: RankableListType) -> RankableListType:
     """
     Gets the first N recommendations from the list of recommendations.
 
@@ -57,7 +57,7 @@ def top45(items: RankableListType, n: int = 45) -> RankableListType:
     :param n: int, number of recommendations to be returned
     :return: first n recommendations from the list of recommendations
     """
-    return items[:n]
+    return items[:45]
 
 
 def blocklist(recs: RecommendationListType, blocklist: List[str] = None) -> RecommendationListType:

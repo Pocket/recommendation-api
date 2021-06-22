@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from app.models.metrics.recommendation_metrics_factory import RecommendationMetricsFactory
+from app.config import dynamodb as dynamodb_config
 
 
 class TestRecommendationMetrics:
@@ -20,7 +21,7 @@ class TestRecommendationMetrics:
             "recommendations_pk": "item-id-123/slate-id-123",
         }
 
-        metrics = RecommendationMetricsFactory().parse_from_record(row)
+        metrics = RecommendationMetricsFactory(dynamodb_config["endpoint_url"]).parse_from_record(row)
         assert metrics.trailing_28_day_opens == 0.045687984008122705
         assert metrics.trailing_28_day_impressions == 2.207612237118199
         assert metrics.id == "item-id-123/slate-id-123"

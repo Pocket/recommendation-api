@@ -22,9 +22,12 @@ def _chunks(index, n=_DYNAMODB_BATCH_GET_ITEM_LIMIT):
 
 
 class AbstractMetricsFactory(ABC):
-    _dynamodb_endpoint: str = app.config.dynamodb['endpoint_url']
+    _dynamodb_endpoint: str = None
     _dynamodb_table: str = None
     _primary_key_name: str = None
+
+    def __init__(self, dynamodb_endpoint: str):
+        self._dynamodb_endpoint = dynamodb_endpoint
 
     async def get(self, module_id: str, ids: List[str]) -> Dict[str, 'MetricsModel']:
         """
@@ -41,7 +44,7 @@ class AbstractMetricsFactory(ABC):
         # Keys are namespaced by the module we are getting data from. First put them in a set to ensure unique keys.
         keys = list({self._make_key(module_id, i) for i in ids})
 
-        metrics = await self._query_cached_metrics(keys)
+        metrics = await self._query_cached_metrics(keys, app.config.elasticache["metrics_ttl"])
         # Remove "/<modules>" suffix and remove None values
         # TODO: It might be cleaner if this method just returns List[MetricsBaseModel], and callers create the dict
         # of their choosing.
@@ -61,10 +64,10 @@ class AbstractMetricsFactory(ABC):
         return MetricsModel.parse_obj({**value, 'id': value[self._primary_key_name]})
 
     @xray_recorder.capture_async('models.metrics.MetricsBaseModel._query_cached_metrics')
-    async def _query_cached_metrics(self, metrics_keys: List) -> Dict[str, Optional[Dict]]:
+    async def _query_cached_metrics(self, metrics_keys: List, ttl: int) -> Dict[str, Optional[Dict]]:
         multi_cache_wrapper = decorators.multi_cached(
             keys_from_attr="metrics_keys",
-            ttl=app.config.elasticache['metrics_ttl'],
+            ttl=ttl,
             alias=app.cache.metrics_alias)
 
         multi_cache = multi_cache_wrapper(self._query_metrics)
