@@ -197,7 +197,7 @@
   },
   {
     "id": "af2cc2c0-1286-47a3-b8ce-187b905f94af",
-    "displayName": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Business",
     "description": "Curated Not New Tab Business Slate",
     "curatorTopicLabel": "Business",
     "experiments": [
@@ -252,7 +252,7 @@
   },
   {
     "id": "00f0c593-3c99-4d5a-9297-c66f8b00be01",
-    "displayName": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Career",
     "description": "Curated Not New Tab Career Slate",
     "curatorTopicLabel": "Career",
     "experiments": [
@@ -307,7 +307,7 @@
   },
   {
     "id": "856eb5f8-da7f-43ae-ac5e-25da402af0ae",
-    "displayName": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Education",
     "description": "Curated Not New Tab Education Slate",
     "curatorTopicLabel": "Education",
     "experiments": [
@@ -362,7 +362,7 @@
   },
   {
     "id": "cceefa28-906e-47c5-b704-8c5b824ecd1b",
-    "displayName": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Entertainment",
     "description": "Curated Not New Tab Entertainment Slate",
     "curatorTopicLabel": "Entertainment",
     "experiments": [
@@ -417,7 +417,7 @@
   },
   {
     "id": "651d27ab-a898-4173-9700-dd1726fbaaa4",
-    "displayName": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Food",
     "description": "Curated Not New Tab Food Slate",
     "curatorTopicLabel": "Food",
     "experiments": [
@@ -472,7 +472,7 @@
   },
   {
     "id": "951ae6c3-4438-458b-9936-7f3b8ff0f178",
-    "displayName": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Gaming",
     "description": "Curated Not New Tab Gaming Slate",
     "curatorTopicLabel": "Gaming",
     "experiments": [
@@ -527,7 +527,7 @@
   },
   {
     "id": "47023d21-0aa6-4f98-9077-eac21fad44f1",
-    "displayName": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Health & Fitness",
     "description": "Curated Not New Tab Health Slate",
     "curatorTopicLabel": "Health & Fitness",
     "experiments": [
@@ -582,7 +582,7 @@
   },
   {
     "id": "1a8de2be-db03-4a2f-901a-7c4c1cbd156a",
-    "displayName": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Parenting",
     "description": "Curated Not New Tab Parenting Slate",
     "curatorTopicLabel": "Parenting",
     "experiments": [
@@ -637,7 +637,7 @@
   },
   {
     "id": "f4b58337-4ab6-4563-9503-c384e773946f",
-    "displayName": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Personal Finance",
     "description": "Curated Not New Tab Personal Finance Slate",
     "curatorTopicLabel": "Personal Finance",
     "experiments": [
@@ -692,7 +692,7 @@
   },
   {
     "id": "f8c945b0-52fa-4203-bb31-6747245fe021",
-    "displayName": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Politics",
     "description": "Curated Not New Tab Politics Slate",
     "curatorTopicLabel": "Politics",
     "experiments": [
@@ -747,7 +747,7 @@
   },
   {
     "id": "b548b456-70c4-474d-a723-80d040d00fec",
-    "displayName": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Science",
     "description": "Curated Not New Tab Science Slate",
     "curatorTopicLabel": "Science",
     "experiments": [
@@ -802,7 +802,7 @@
   },
   {
     "id": "5674f085-07b6-43c3-bcde-2774db3f6384",
-    "displayName": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Self Improvement",
     "description": "Curated Not New Tab Self Improvement Slate",
     "curatorTopicLabel": "Self Improvement",
     "experiments": [
@@ -857,7 +857,7 @@
   },
   {
     "id": "e6c00454-4a00-47c1-8f22-906122c261ed",
-    "displayName": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Sports",
     "description": "Curated Not New Tab Sports Slate",
     "curatorTopicLabel": "Sports",
     "experiments": [
@@ -912,7 +912,7 @@
   },
   {
     "id": "ed9604ce-b752-48bd-b8c5-3a8cf6b54ced",
-    "displayName": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Technology",
     "description": "Curated Not New Tab Technology Slate",
     "curatorTopicLabel": "Technology",
     "experiments": [
@@ -967,7 +967,7 @@
   },
   {
     "id": "4345efa7-2c89-4884-b836-3260757a3a97",
-    "displayName": "Curated by our editors Stories to fuel your mind",
+    "displayName": "Travel",
     "description": "Curated Not New Tab Travel Slate",
     "curatorTopicLabel": "Travel",
     "experiments": [
@@ -986,7 +986,7 @@
   },
   {
     "id": "0f322865-64e6-472d-8147-b3d6637a7d67",
-    "displayName": "Curated collections by our editors Stories to fuel your mind",
+    "displayName": "Our most-read Collections",
     "description": "Pocket Collections",
     "experiments": [
       {
