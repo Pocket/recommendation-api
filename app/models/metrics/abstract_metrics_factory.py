@@ -55,7 +55,7 @@ class AbstractMetricsFactory(ABC):
 
         return metrics
 
-    def parse_from_record(self, value: Dict):
+    def parse_from_record(self, value: Dict) -> MetricsModel:
         """
         Similar to Pydantic's parse_obj function, but sets the id field using the primary key.
         :param value: dictionary containing all required keys for MetricsBaseModel
@@ -67,6 +67,13 @@ class AbstractMetricsFactory(ABC):
     async def _query_cached_metrics(self, metrics_keys: List, ttl: int) -> Dict[str, Optional[Dict]]:
         """
         Queries metrics from cache if available, falling back to the database if they're unavailable in cache.
+
+        HACK: It would be better if this function could be replaced by aiocache's multi_cached decorator,
+              but the decorator fails in our case, because it's started on import, at which time cache isn't initialized
+              yet by app/cache.py. The cache needs to be initialized in the application event loop, so can't be
+              initialized on import. It might be worth to attempt using the decorator again in the future, because the
+              aiocache documentation seems to be doing something every similar, although not with a custom cache.
+              https://aiocache.readthedocs.io/en/latest/decorators.html#multi-cached
 
         :param metrics_keys: The keys to query
         :param ttl: The time in seconds to keep the data in cache.
