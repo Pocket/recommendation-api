@@ -55,7 +55,7 @@ class AbstractMetricsFactory(ABC):
 
         return metrics
 
-    def parse_from_record(self, value: Dict):
+    def parse_from_record(self, value: Dict) -> MetricsModel:
         """
         Similar to Pydantic's parse_obj function, but sets the id field using the primary key.
         :param value: dictionary containing all required keys for MetricsBaseModel
