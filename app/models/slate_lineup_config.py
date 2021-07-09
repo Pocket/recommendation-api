@@ -1,7 +1,7 @@
 from collections import Counter
 import os
 
-from typing import List
+from typing import Optional, List
 
 from app.config import JSON_DIR
 from app.json.utils import parse_to_dict
@@ -99,7 +99,7 @@ class SlateLineupConfigModel:
     @staticmethod
     async def get_slate_configs_from_experiment(
             slate_lineup_id: str, experiment: SlateLineupExperimentModel,
-            user_id: str = None) -> List[SlateConfigModel]:
+            user_id: Optional[str] = None) -> List[SlateConfigModel]:
         """
         Gets a slate config from the list of slate configs
 
