@@ -65,6 +65,13 @@ class AbstractMetricsFactory(ABC):
 
     @xray_recorder.capture_async('models.metrics.MetricsBaseModel._query_cached_metrics')
     async def _query_cached_metrics(self, metrics_keys: List, ttl: int) -> Dict[str, Optional[Dict]]:
+        """
+        Queries metrics from cache if available, falling back to the database if they're unavailable in cache.
+
+        :param metrics_keys: The keys to query
+        :param ttl: The time in seconds to keep the data in cache.
+        :return: A dictionary where keys are metrics_keys, and values are a metrics dictionary, or None if unavailable.
+        """
         multi_cache_wrapper = decorators.multi_cached(
             keys_from_attr="metrics_keys",
             ttl=ttl,
@@ -79,7 +86,13 @@ class AbstractMetricsFactory(ABC):
         return {k: None if v == app.cache.NoneValue else v for k, v in results.items()}
 
     @xray_recorder.capture_async('models.MetricsBaseModel._query_metrics')
-    async def _query_metrics(self, metrics_keys: List):
+    async def _query_metrics(self, metrics_keys: List) -> Dict[str, Optional[Dict]]:
+        """
+        Queries metrics from the Dynamodb table specified in self._dynamodb_table, using self._primary_key_name.
+
+        :param metrics_keys: Primary keys to match against self._primary_key_name
+        :return: Dictionary where all metrics_keys are present as keys, and values are a metrics dictionary or None.
+        """
         metrics = {}
 
         async with aioboto3.resource('dynamodb', endpoint_url=self._dynamodb_endpoint) as dynamodb:
