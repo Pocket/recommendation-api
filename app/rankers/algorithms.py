@@ -60,7 +60,7 @@ def top45(items: RankableListType) -> RankableListType:
     return items[:45]
 
 
-def blocklist(recs: RecommendationListType, blocklist: List[str] = None) -> RecommendationListType:
+def blocklist(recs: RecommendationListType, blocklist: Optional[List[str]] = None) -> RecommendationListType:
     """
     this filters recommendations by item_id using the blocklist available
     in ./app/resources/blocklists.json
