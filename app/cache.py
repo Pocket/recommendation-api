@@ -58,9 +58,9 @@ def get_cache_config(serializer_class: ClassVar):
 
 
 candidate_set_alias = 'candidate_set_cache'
-clickdata_alias = 'clickdata_cache'
+metrics_alias = 'metrics_cache'
 
 
 def initialize_caches():
     caches.add(candidate_set_alias, get_cache_config(serializer_class=JsonSerializer))
-    caches.add(clickdata_alias, get_cache_config(serializer_class=JsonSerializerWithNoneToken))
+    caches.add(metrics_alias, get_cache_config(serializer_class=JsonSerializerWithNoneToken))

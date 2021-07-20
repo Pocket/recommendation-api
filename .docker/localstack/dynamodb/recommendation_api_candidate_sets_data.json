@@ -746,7 +746,371 @@
             "S": "sfn-3fc5c893-25b3-6ae2-42df-055eda498600_d6e52a89-7ab3-eb2e-8fe1-b3c36f974db8"
           },
           "expires_at": {
-            "N": "1617837105"
+            "N": "1936909266"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "candidates": {
+            "L": [
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "2868239335"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "2826966565"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "3323662104"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "3331740613"
+                  },
+                  "not_syndicated": {
+                    "BOOL": true
+                  },
+                  "publisher": {
+                    "S": "outsideonline.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "3242376659"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "2840735204"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "2762667661"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "2696910975"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "2707965210"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "2960012279"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "3255547942"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "3330359351"
+                  },
+                  "not_syndicated": {
+                    "BOOL": true
+                  },
+                  "publisher": {
+                    "S": "shondaland.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "3330697527"
+                  },
+                  "not_syndicated": {
+                    "BOOL": true
+                  },
+                  "publisher": {
+                    "S": "theatlantic.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "2776760177"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "3082903783"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "3082868520"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "3239410405"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "2655642692"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "2776949605"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "2685661247"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              },
+              {
+                "M": {
+                  "feed_id": {
+                    "N": "1"
+                  },
+                  "item_id": {
+                    "N": "3319573849"
+                  },
+                  "not_syndicated": {
+                    "BOOL": false
+                  },
+                  "publisher": {
+                    "S": "getpocket.com"
+                  }
+                }
+              }
+            ]
+          },
+          "created_at": {
+            "N": "1621375933"
+          },
+          "expires_at": {
+            "N": "1936909266"
+          },
+          "flow": {
+            "S": "CuratedCandidatesFlow"
+          },
+          "id": {
+            "S": "5857f00b-634f-441d-9fe9-e892a5743f48"
+          },
+          "run": {
+            "S": "sfn-58e1539f-742b-945f-fbef-1217c63c5010_b27424d8-a3af-948c-9f48-2be1212e3c9a"
+          },
+          "version": {
+            "N": "1"
           }
         }
       }
