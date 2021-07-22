@@ -33,7 +33,8 @@ class SlateLineupModel(BaseModel):
         :return: SlateLineupModel object
         """
         experiment = SlateLineupConfigModel.get_experiment_from_slate_lineup(slate_lineup_id)
-        slates = await SlateLineupModel.__get_slates_from_experiment(experiment,
+        slates = await SlateLineupModel.__get_slates_from_experiment(slate_lineup_id,
+                                                                     experiment,
                                                                      user_id=user_id,
                                                                      recommendation_count=recommendation_count,
                                                                      slate_count=slate_count)
@@ -46,7 +47,8 @@ class SlateLineupModel(BaseModel):
         )
 
     @staticmethod
-    async def __get_slates_from_experiment(experiment: SlateLineupExperimentModel,
+    async def __get_slates_from_experiment(slate_lineup_id: str,
+                                           experiment: SlateLineupExperimentModel,
                                            user_id: str,
                                            recommendation_count: Optional[int] = 10,
                                            slate_count: Optional[int] = 8) -> List[SlateModel]:
@@ -63,12 +65,14 @@ class SlateLineupModel(BaseModel):
             return []
 
         # get the requested slate_lineup from the config using the slate_lineup_id
-        slate_configs = await SlateLineupConfigModel.get_slate_configs_from_experiment(experiment, user_id)
+        slate_configs = await SlateLineupConfigModel.get_slate_configs_from_experiment(slate_lineup_id, experiment,
+                                                                                       user_id=user_id)
 
         # Client requested only a certain number of slates, so after it was ranked, split the list to the count
         slate_configs = slate_configs[:slate_count]
 
-        slates = await SlateModel.get_slates_from_slate_configs(slate_configs, user_id, recommendation_count=recommendation_count)
+        slates = await SlateModel.get_slates_from_slate_configs(
+            slate_configs, user_id, recommendation_count=recommendation_count)
 
         slates = await deduplicate_recommendations_across_slates(slates)
 

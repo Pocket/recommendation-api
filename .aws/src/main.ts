@@ -101,23 +101,35 @@ class RecommendationAPI extends TerraformStack {
             },
             {
               name: 'AWS_DYNAMODB_ENDPOINT_URL',
-              value: `https://dynamodb.${region.name}.amazonaws.com`
+              value: `https://dynamodb.${region.name}.amazonaws.com`,
             },
             {
               name: 'RECOMMENDATION_API_METADATA_TABLE',
-              value: dynamodb.metadataTable.dynamodb.name
+              value: dynamodb.metadataTable.dynamodb.name,
             },
             {
               name: 'RECOMMENDATION_API_CANDIDATES_TABLE',
-              value: dynamodb.candidatesTable.dynamodb.name
+              value: dynamodb.candidatesTable.dynamodb.name,
             },
             {
-              name: 'RECOMMENDATION_API_CLICKDATA_TABLE',
-              value: dynamodb.clickdataTable.name
+              name: 'MODELD_RECOMMENDATION_METRICS_TABLE',
+              value: dynamodb.recommendationMetricsTable.name,
             },
-              {
+            {
+              name: 'MODELD_RECOMMENDATION_METRICS_PK',
+              value: dynamodb.recommendationMetricsTable.hashKey,
+            },
+            {
+              name: 'MODELD_SLATE_METRICS_TABLE',
+              value: dynamodb.slateMetricsTable.name,
+            },
+            {
+              name: 'MODELD_SLATE_METRICS_PK',
+              value: dynamodb.slateMetricsTable.hashKey,
+            },
+            {
               name: 'RECOMMENDATION_API_CANDIDATE_SETS_TABLE',
-              value: dynamodb.candidateSetsTable.dynamodb.name
+              value: dynamodb.candidateSetsTable.dynamodb.name,
             },
             {
               name: 'MEMCACHED_SERVERS',
@@ -128,8 +140,8 @@ class RecommendationAPI extends TerraformStack {
             {
               name: 'SENTRY_DSN',
               valueFrom: `arn:aws:ssm:${region.name}:${caller.accountId}:parameter/${config.name}/${config.environment}/SENTRY_DSN`
-            }
-          ]
+            },
+          ],
         },
         {
           name: 'xray-daemon',
@@ -192,11 +204,13 @@ class RecommendationAPI extends TerraformStack {
             resources: [
               dynamodb.candidatesTable.dynamodb.arn,
               dynamodb.metadataTable.dynamodb.arn,
-              dynamodb.clickdataTable.arn,
+              dynamodb.recommendationMetricsTable.arn,
+              dynamodb.slateMetricsTable.arn,
               dynamodb.candidateSetsTable.dynamodb.arn,
               `${dynamodb.candidatesTable.dynamodb.arn}/*`,
               `${dynamodb.metadataTable.dynamodb.arn}/*`,
-              `${dynamodb.clickdataTable.arn}/*`,
+              `${dynamodb.recommendationMetricsTable.arn}/*`,
+              `${dynamodb.slateMetricsTable.arn}/*`,
               `${dynamodb.candidateSetsTable.dynamodb.arn}/*`
             ],
             effect: 'Allow'
@@ -234,7 +248,7 @@ class RecommendationAPI extends TerraformStack {
           actions: config.environment == 'Dev' ? [] : [pagerDuty.snsCriticalAlarmTopic.arn]
         },
         httpRequestCount: {
-          threshold: 5000,
+          threshold: 10000,
           evaluationPeriods: 2,
           period: 300,
           // We raise a non-critical alarm on request count, because a higher-than-expected

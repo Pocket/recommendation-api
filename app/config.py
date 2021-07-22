@@ -14,12 +14,26 @@ service = {
     'domain': 'recommendation-api.readitlater.com' if ENV == ENV_PROD else 'recommendation-api.getpocket.dev'
 }
 
+# TODO: Structure each table as an object with table and pk, and drop the recommendation_api_ prefix.
 dynamodb = {
     'endpoint_url': os.getenv('AWS_DYNAMODB_ENDPOINT_URL', None),
-    'recommendation_api_metadata_table': os.getenv('RECOMMENDATION_API_METADATA_TABLE', 'recommendation_api_metadata'),
-    'recommendation_api_candidates_table': os.getenv('RECOMMENDATION_API_CANDIDATES_TABLE', 'recommendation_api_candidates'),
-    'recommendation_api_clickdata_table': os.getenv('RECOMMENDATION_API_CLICKDATA_TABLE', 'recommendation_api_clickdata'),
-    'recommendation_api_candidate_sets_table': os.getenv('RECOMMENDATION_API_CANDIDATE_SETS_TABLE', 'recommendation_api_candidate_sets')
+    'metadata': {
+        'table': os.getenv('RECOMMENDATION_API_METADATA_TABLE', 'recommendation_api_metadata'),
+    },
+    'candidates': {
+        'table': os.getenv('RECOMMENDATION_API_CANDIDATES_TABLE', 'recommendation_api_candidates'),
+    },
+    'candidate_sets': {
+        'table': os.getenv('RECOMMENDATION_API_CANDIDATE_SETS_TABLE', 'recommendation_api_candidate_sets'),
+    },
+    'recommendation_metrics': {
+        'table': os.getenv('MODELD_RECOMMENDATION_METRICS_TABLE', 'MODELD-Local-RecMetrics'),
+        'pk': os.getenv('MODELD_RECOMMENDATION_METRICS_PK', 'recommendations_pk'),
+    },
+    'slate_metrics': {
+        'table': os.getenv('MODELD_SLATE_METRICS_TABLE', 'MODELD-Local-SlateMetrics'),
+        'pk': os.getenv('MODELD_SLATE_METRICS_PK', 'slates_pk'),
+    },
 }
 
 sentry = {
@@ -31,8 +45,8 @@ sentry = {
 elasticache = {
     # Convert comma-separated string MEMCACHED_SERVERS to list.
     'servers': os.getenv('MEMCACHED_SERVERS', '001.example.com:11211,002.example.com:11211').split(','),
-    # Expire time in seconds for clickdata
-    'clickdata_ttl': int(os.getenv('MEMCACHED_CLICKDATA_TTL', 900)),
+    # Expire time in seconds for engagement metrics
+    'metrics_ttl': int(os.getenv('MEMCACHED_METRICS_TTL', 900)),
     # Expire time in seconds for candidate sets
     'candidate_set_ttl': int(os.getenv('MEMCACHED_CANDIDATE_SET_TTL', 900)),
 }

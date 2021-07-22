@@ -11,23 +11,27 @@ TL;DR:
 2. `docker-compose up`
 3. Visit http://localhost:8000
 
-## GraphQL API
-
-To get a list of topics:
-```
-query list {
-    listTopics {
-        slug
-    }
+## Example queries
+To list all slates:
+```graphql
+query list_slates{ 
+  listSlates {
+    id
+  }
 }
 ```
 
-To get topic recommendations: 
-```
-query recs {
-  getTopicRecommendations(slug: "business") {
-    algorithmicRecommendations {feedItemId itemId feedId}
-    curatedRecommendations {feedItemId itemId feedId}
-	}
+To get self-improvement slates with recommendations: 
+```graphql
+query test_query {
+  getSlateLineup(slateLineupId: "63f24663-0e80-4c08-82aa-3fb0e06c4979") {
+      experimentId
+      slates {
+        displayName
+        recommendations {
+          itemId
+        }
+      }
+   }         
 }
 ```

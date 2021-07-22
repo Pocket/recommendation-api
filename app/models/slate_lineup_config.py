@@ -1,10 +1,11 @@
 from collections import Counter
 import os
 
-from typing import List
+from typing import Optional, List
 
 from app.config import JSON_DIR
 from app.json.utils import parse_to_dict
+from app.models.metrics.slate_metrics_factory import SlateMetricsFactory
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate_config import SlateConfigModel
 from app.rankers import get_ranker
@@ -96,11 +97,13 @@ class SlateLineupConfigModel:
         return SlateLineupExperimentModel.choose_experiment(slate_lineup_config.experiments)
 
     @staticmethod
-    async def get_slate_configs_from_experiment(experiment: SlateLineupExperimentModel,
-                                                user_id: str = None) -> List[SlateConfigModel]:
+    async def get_slate_configs_from_experiment(
+            slate_lineup_id: str, experiment: SlateLineupExperimentModel,
+            user_id: Optional[str] = None) -> List[SlateConfigModel]:
         """
         Gets a slate config from the list of slate configs
 
+        :param slate_lineup_id:
         :param experiment: SlateLineupExperimentModel object
         :param user_id: user_id for personalized rankers
         :return: a list of SlateConfigModel objects
@@ -117,7 +120,12 @@ class SlateLineupConfigModel:
         # change the order of the slate_configs within the slate_lineup's experiment
         for ranker in experiment.rankers:
             ranker_kwargs = {}
-            if ranker == "personalized-topics":
+            if ranker == 'thompson-sampling':
+                # thompson sampling requires slate metrics
+                ranker_kwargs = {
+                    'metrics': await SlateMetricsFactory().get(slate_lineup_id, [s.id for s in slate_configs])
+                }
+            elif ranker == "personalized-topics":
                 ranker_kwargs = {
                     "personalized_topics": await PersonalizedTopicList.get(user_id)
                 }
