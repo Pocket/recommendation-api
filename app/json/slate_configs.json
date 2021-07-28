@@ -58,6 +58,35 @@
     ]
   },
   {
+    "id": "9dc26792-10ed-4fbe-a13d-6cce3a89b0a1",
+    "displayName": "Editors' Picks",
+    "description": "QA slate duplicated from 2e3ddc90-8def-46d7-b85f-da7525c66fb1 that is only used for QA purposes",
+    "experiments": [
+      {
+        "description": "default",
+        "candidateSets": [
+          "493a5556-9800-449f-8f8c-c27bb6c8c810"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "ts15",
+        "candidateSets": [
+          "493a5556-9800-449f-8f8c-c27bb6c8c810"
+        ],
+        "rankers": [
+          "top15",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      }
+    ]
+  },
+  {
     "id": "48e766be-5e96-46fb-acbf-55fee3ae8a28",
     "displayName": "Editors' Picks",
     "description": "Top 5 curated items excluding syndicated that are at most a week old",
@@ -823,6 +852,35 @@
     ]
   },
   {
+    "id": "e8251442-ef97-422f-ad65-0f28e6f7a0d6",
+    "displayName": "QA slate duplicated from 0c09627b-a409-4768-b87d-7e1d29259785, that is only used for QA purposes",
+    "description": "Curated Personal Finance Slate",
+    "curatorTopicLabel": "Personal Finance",
+    "experiments": [
+      {
+        "description": "curated personal finance items",
+        "candidateSets": [
+          "5abdc94e-76d5-4f59-8e8d-22c8ee084a2d"
+        ],
+        "rankers": [
+          "top30",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "curated personal finance items, thompson-sampling30",
+        "candidateSets": [
+          "5abdc94e-76d5-4f59-8e8d-22c8ee084a2d"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      }
+    ]
+  },
+  {
     "id": "f4b58337-4ab6-4563-9503-c384e773946f",
     "displayName": "Personal Finance",
     "description": "Curated Not New Tab Personal Finance Slate",
@@ -1318,6 +1376,23 @@
     "id": "0f322865-64e6-472d-8147-b3d6637a7d67",
     "displayName": "Our most-read Collections",
     "description": "Pocket Collections",
+    "experiments": [
+      {
+        "description": "All collections",
+        "candidateSets": [
+          "303174fc-a9ff-4a51-984a-e09ce7120d18"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "b70d65c6-9171-40bf-bddb-5a60d42dd03f",
+    "displayName": "Our most-read Collections",
+    "description": "QA Slate duplicated from 0f322865-64e6-472d-8147-b3d6637a7d67 that is only used for QA purposes",
     "experiments": [
       {
         "description": "All collections",
