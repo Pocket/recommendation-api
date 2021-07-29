@@ -29,6 +29,35 @@
     ]
   },
   {
+    "id": "2389f563-bd42-411d-bca2-0966638053e8",
+    "displayName": "Editors' Picks",
+    "description": "Curated items that are over a week old without syndicated",
+    "experiments": [
+      {
+        "description": "default",
+        "candidateSets": [
+          "7e1f09b7-3e06-4723-a43c-7f6cd2f36749"
+        ],
+        "rankers": [
+          "top30",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      },
+      {
+        "description": "ts15",
+        "candidateSets": [
+          "7e1f09b7-3e06-4723-a43c-7f6cd2f36749"
+        ],
+        "rankers": [
+          "top15",
+          "thompson-sampling",
+          "pubspread"
+        ]
+      }
+    ]
+  },
+  {
     "id": "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
     "displayName": "Editors' Picks",
     "description": "Curated items excluding syndicated that are at most a week old",
