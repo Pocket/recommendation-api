@@ -121,7 +121,7 @@ class AbstractMetricsFactory(ABC):
                 #  now. If this error does not occur in practice, it would be better to change it to an exception.
                 # We're logging an error here because the full request context is available.
                 if not responses["Responses"][self._dynamodb_table]:
-                    logging.error(f"DynamoDB returned no metrics for query {request}")
+                    logging.info(f"DynamoDB returned no metrics for query {request}")
 
         return {k: metrics.get(k) for k in metrics_keys}
 
