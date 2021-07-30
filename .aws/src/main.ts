@@ -6,12 +6,12 @@ import {
   DataAwsKmsAlias,
   DataAwsRegion,
   DataAwsSnsTopic
-} from '../.gen/providers/aws';
+} from '@cdktf/provider-aws';
 import {config} from './config';
 import {DynamoDB} from "./dynamodb";
 import {PocketALBApplication} from "@pocket/terraform-modules";
 import {EventBridgeLambda} from "./eventBridgeLambda";
-import {PocketPagerDuty} from "@pocket/terraform-modules/dist/src/pocket/PocketPagerDuty";
+import {PocketPagerDuty} from "@pocket/terraform-modules";
 import {PagerdutyProvider} from "../.gen/providers/pagerduty";
 import {SqsLambda} from "./sqsLambda";
 import {Elasticache} from "./elasticache";
