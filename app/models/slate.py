@@ -40,15 +40,6 @@ class SlateModel(BaseModel):
         :return: a SlateModel object
         """
 
-        """
-        HACK: For a particular set of QA users, change the slate to a QA slate.
-        This allows us to track the QA user's impression and open events through our engagement pipeline.
-        This code is intended to be temporary. A better long-term solution would be to use Unleash,
-        which is a feature flag service that supports putting specific users into an experiment branch.
-        """
-        if user_id in SlateModel.__QA_USER_IDS:
-            slate_id = SlateModel.__QA_SLATE_MAP.get(slate_id, slate_id)
-
         slate_config = SlateConfigModel.find_by_id(slate_id)
         return await SlateModel.__get_slate_from_slate_config(
             slate_config,
@@ -111,6 +102,16 @@ class SlateModel(BaseModel):
 
         experiment = None
         recommendations = []
+
+
+        """
+        HACK: For a particular set of QA users, change the slate to a QA slate.
+        This allows us to track the QA user's impression and open events through our engagement pipeline.
+        This code is intended to be temporary. A better long-term solution would be to use Unleash,
+        which is a feature flag service that supports putting specific users into an experiment branch.
+        """
+        if user_id in SlateModel.__QA_USER_IDS and slate_config.id in SlateModel.__QA_SLATE_MAP:
+            slate_config = SlateConfigModel.find_by_id(SlateModel.__QA_SLATE_MAP[slate_config.id])
 
         # If we have a > 0 recommendation count lets get some recommendations
         if recommendation_count > 0:
