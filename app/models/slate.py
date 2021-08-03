@@ -8,6 +8,7 @@ from typing import List, Optional
 from app.models.recommendation import RecommendationModel
 from app.models.slate_config import SlateConfigModel
 from app.models.slate_experiment import SlateExperimentModel
+import app.config
 
 
 class SlateModel(BaseModel):
@@ -21,13 +22,6 @@ class SlateModel(BaseModel):
     description: str = None
     recommendations: List[RecommendationModel] = None
 
-    __QA_USER_IDS = ['47372502']
-    __QA_SLATE_MAP = {
-        "2e3ddc90-8def-46d7-b85f-da7525c66fb1": "9dc26792-10ed-4fbe-a13d-6cce3a89b0a1",
-        "0c09627b-a409-4768-b87d-7e1d29259785": "e8251442-ef97-422f-ad65-0f28e6f7a0d6",
-        "0f322865-64e6-472d-8147-b3d6637a7d67": "b70d65c6-9171-40bf-bddb-5a60d42dd03f",
-    }
-
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_slate')
     async def get_slate(slate_id: str, user_id: str = None, recommendation_count: Optional[int] = 10) -> 'SlateModel':
@@ -39,15 +33,6 @@ class SlateModel(BaseModel):
         :param recommendation_count: int, 0 = no recs, > 0 include this many recs
         :return: a SlateModel object
         """
-
-        """
-        HACK: For a particular set of QA users, change the slate to a QA slate.
-        This allows us to track the QA user's impression and open events through our engagement pipeline.
-        This code is intended to be temporary. A better long-term solution would be to use Unleash,
-        which is a feature flag service that supports putting specific users into an experiment branch.
-        """
-        if user_id in SlateModel.__QA_USER_IDS:
-            slate_id = SlateModel.__QA_SLATE_MAP.get(slate_id, slate_id)
 
         slate_config = SlateConfigModel.find_by_id(slate_id)
         return await SlateModel.__get_slate_from_slate_config(
@@ -111,6 +96,15 @@ class SlateModel(BaseModel):
 
         experiment = None
         recommendations = []
+
+        """
+        HACK: For a particular set of QA users, change the slate to a QA slate if qa_slate_map has a replacement.
+        This allows us to track the QA user's impression and open events through our engagement pipeline.
+        This code is intended to be temporary. A better long-term solution would be to use Unleash,
+        which is a feature flag service that supports putting specific users into an experiment branch.
+        """
+        if user_id in app.config.qa_user_ids and slate_config.id in app.config.qa_slate_map:
+            slate_config = SlateConfigModel.find_by_id(app.config.qa_slate_map[slate_config.id])
 
         # If we have a > 0 recommendation count lets get some recommendations
         if recommendation_count > 0:

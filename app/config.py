@@ -54,3 +54,15 @@ elasticache = {
 recit = {
     'endpoint_url': os.getenv('RECIT_ENDPOINT_URL', 'https://recit.readitlater.com')
 }
+
+# Slates will be replace for the following set of QA users. See qa_slate_maps below.
+qa_user_ids = ['47372502']
+# For QA users, slates in keys will be replaced by the slate in the corresponding value.
+qa_slate_map = {
+    # Editors' Picks -> QA duplicate of this slate
+    "2e3ddc90-8def-46d7-b85f-da7525c66fb1": "9dc26792-10ed-4fbe-a13d-6cce3a89b0a1",
+    # Curated Personal Finance Slate -> QA duplicate of this slate
+    "0c09627b-a409-4768-b87d-7e1d29259785": "e8251442-ef97-422f-ad65-0f28e6f7a0d6",
+    # Our most-read Collections -> QA duplicate of this slate
+    "0f322865-64e6-472d-8147-b3d6637a7d67": "b70d65c6-9171-40bf-bddb-5a60d42dd03f",
+}
