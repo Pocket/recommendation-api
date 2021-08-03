@@ -62,7 +62,7 @@ def top45(items: RankableListType) -> RankableListType:
 
 def top1_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List['SlateConfigModel']:
     """
-    returns the lineup with only the top
+    returns the lineup with only the top topic slate included
     :param slates: initial list of slate configs
     :param personalized_topics: recit response including sorted list of personalized topics
     :return: list of slate configs with only the top topic slate
@@ -74,7 +74,7 @@ def top1_topics(slates: List['SlateConfigModel'], personalized_topics: Personali
 def top3_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List[
     'SlateConfigModel']:
     """
-    returns the lineup with only the top
+    returns the lineup with only the top 3 topic slates included
     :param slates: initial list of slate configs
     :param personalized_topics: recit response including sorted list of personalized topics
     :return: list of slate configs with only the top 3 topic slate
