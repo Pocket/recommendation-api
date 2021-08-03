@@ -5,8 +5,7 @@ from app.models.item import ItemModel
 from app.models.slate_lineup_config import SlateLineupConfigModel
 from app.models.slate_config import SlateConfigModel
 
-WEB_HOME_LINEUP_ID = "55f5ed88-c7d9-48f9-bcf1-7ad214684ee9"
-
+ALL_CURATED_TOPICS_LINEUP = "55f5ed88-c7d9-48f9-bcf1-7ad214684ee9"
 
 def generate_recommendations(item_ids: List[int or str]) -> List[RecommendationModel]:
     recs = []
@@ -34,7 +33,7 @@ def generate_curated_configs() -> List[SlateConfigModel]:
     slate_lineup_configs = SlateLineupConfigModel.load_slate_lineup_configs()
     SlateLineupConfigModel.SLATE_LINEUP_CONFIGS_BY_ID = {lc.id: lc for lc in slate_lineup_configs}
 
-    input_lineup = SlateLineupConfigModel.SLATE_LINEUP_CONFIGS_BY_ID[WEB_HOME_LINEUP_ID]
+    input_lineup = SlateLineupConfigModel.SLATE_LINEUP_CONFIGS_BY_ID[ALL_CURATED_TOPICS_LINEUP]
     input_slates = input_lineup.experiments[0].slates
     input_configs = []
     for slate_id in input_slates:
@@ -51,11 +50,11 @@ def generate_uncurated_configs() -> List[SlateConfigModel]:
 
     return input_configs
 
-def generate_hybrid_configs() -> List[SlateConfigModel]:
+def generate_lineup_configs(lineup_id: str):
+    # get slate configs from lineup_id
+    slate_lineup_configs = SlateLineupConfigModel.load_slate_lineup_configs()
     slate_configs = SlateConfigModel.load_slate_configs()
-    # this config has editor's picks first without a topic label
-    # all curated topics and then two algorithmic topic slate configs
-    input_configs = [c for c in slate_configs if c.id == "2e3ddc90-8def-46d7-b85f-da7525c66fb1"]
-    input_configs += generate_curated_configs()
-    input_configs += generate_uncurated_configs()
-    return input_configs
+    x = [x for x in slate_lineup_configs if x.id == lineup_id]
+    slate_ids = x[0].experiments[0].slates
+    return [c for c in slate_configs if c.id in slate_ids], x[0].description
+
