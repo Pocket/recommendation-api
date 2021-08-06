@@ -265,4 +265,5 @@ class RecommendationAPI extends TerraformStack {
 
 const app = new App();
 new RecommendationAPI(app, 'recommendation-api');
+stack.addOverride("terraform.required_version", "0.13.5")
 app.synth();
