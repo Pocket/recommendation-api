@@ -38,6 +38,48 @@ type Query {
         "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
         recommendationCount: Int = 10
     ): SlateLineup
+
+
+    """
+    Request a specific personalized `SlateLineup` by id. This response allows for fallback behavior when there is not
+    a personalized slate lineup available.
+
+    Examples:
+
+    fragment SlateLineupParts on SlateLineup {
+        id
+        experimentId
+        slates {
+            recommendations {
+                id
+                item: {
+                    resolvedUrl
+                    title
+                    topImageUrl
+                }
+            }
+        }
+    }
+
+    query getPersonalizedSlateLineup($id: String!) {
+        getPersonalizedSlateLineup(id: $id) {
+            personalizedSlateLineup {
+                ...SlateLineupParts
+            }
+            fallbackSlateLineup {
+                ...SlateLineupParts
+            }
+        }
+    }
+    """
+    getPersonalizedSlateLineup(
+        "The {SlateLineup.id} of the SlateLineup to return"
+        slateLineupId: String!,
+        "Maximum number of slates to return in {SlateLineup.slates}, defaults to 8"
+        slateCount: Int = 8,
+        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
+        recommendationCount: Int = 10
+    ): PersonalizedSlateLineup
 }
 
 """
@@ -232,6 +274,32 @@ type SlateLineup {
     An ordered list of slates for the client to display
     """
     slates: [Slate!]!
+}
+
+"""
+Wrap slate lineups to provide personalization fallback behavior. There are circumstances where we dont have a profile
+for a user. In this scenario we would like to optionally return a fallback slate lineup.
+"""
+union PersonalizedSlateLineup = PersonalizedSlateLineupSuccess | PersonalizedSlateLineupFallback
+
+"""
+All requirements for personalization are met and a personalized slate lineup was created.
+"""
+type PersonalizedSlateLineupSuccess {
+    """
+    The personalized slate. When there personlization requirements are not met this value can be null.
+    """
+    personalizedSlateLineup: SlateLineup!
+}
+
+"""
+A requirement for personalization is missing. Use this slate linup instead.
+"""
+type PersonalizedSlateLineupFallback {
+    """
+    The fallback slate lineup to be used when the personalized slate lineup is not available.
+    """
+    fallbackSlateLineup: SlateLineup
 }
 
 extend type Item @key(fields: "itemId") {
