@@ -297,9 +297,14 @@ A requirement for personalization is missing. Use this slate linup instead.
 """
 type PersonalizedSlateLineupFallback {
     """
+    Why the fallback was used.
+    """
+    error: String!
+    
+    """
     The fallback slate lineup to be used when the personalized slate lineup is not available.
     """
-    fallbackSlateLineup: SlateLineup
+    fallbackSlateLineup: SlateLineup!
 }
 
 extend type Item @key(fields: "itemId") {
