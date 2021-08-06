@@ -2,21 +2,24 @@ import logging
 import json
 
 from aws_xray_sdk.core import xray_recorder
-from typing import List, Dict, Any, Optional
-from app.models.clickdata import ClickdataModel
+from app.models.metrics.metrics_model import MetricsModel
+
+from app.config import ROOT_DIR
+from typing import List, Dict, Optional, Union
 from operator import itemgetter
 from scipy.stats import beta
 
-from app.models.recommendation import RecommendationModel
 from app.models.slate_config import SlateConfigModel
 from app.models.personalized_topic_list import PersonalizedTopicList
-from app.config import ROOT_DIR, recit as recit_config
 
 DEFAULT_ALPHA_PRIOR = 0.02
 DEFAULT_BETA_PRIOR = 1.0
 
+RankableListType = Union[List['SlateModel'], List['RecommendationModel']]
+RecommendationListType = List['RecommendationModel']
 
-def top5(items: List[Any]) -> List[Any]:
+
+def top5(items: RankableListType) -> RankableListType:
     """
     Gets the first 5 recommendations from the list of recommendations.
 
@@ -26,7 +29,7 @@ def top5(items: List[Any]) -> List[Any]:
     return items[:5]
 
 
-def top15(items: List[Any]) -> List[Any]:
+def top15(items: RankableListType) -> RankableListType:
     """
     Gets the first 15 recommendations from the list of recommendations.
 
@@ -36,7 +39,7 @@ def top15(items: List[Any]) -> List[Any]:
     return items[:15]
 
 
-def top30(items: List[Any]) -> List[Any]:
+def top30(items: RankableListType) -> RankableListType:
     """
     Gets the first 30 recommendations from the list of recommendations.
 
@@ -46,7 +49,18 @@ def top30(items: List[Any]) -> List[Any]:
     return items[:30]
 
 
-def blocklist(recs: List['RecommendationModel'], blocklist: List[str] = None) -> List['RecommendationModel']:
+def top45(items: RankableListType) -> RankableListType:
+    """
+    Gets the first N recommendations from the list of recommendations.
+
+    :param items: a list of recommendations in the desired order (pre-publisher spread)
+    :param n: int, number of recommendations to be returned
+    :return: first n recommendations from the list of recommendations
+    """
+    return items[:45]
+
+
+def blocklist(recs: RecommendationListType, blocklist: Optional[List[str]] = None) -> RecommendationListType:
     """
     this filters recommendations by item_id using the blocklist available
     in ./app/resources/blocklists.json
@@ -63,8 +77,8 @@ def blocklist(recs: List['RecommendationModel'], blocklist: List[str] = None) ->
 
 
 def thompson_sampling(
-        recs: List['RecommendationModel'],
-        clk_data: Dict[(int or str), 'ClickdataModel']) -> List['RecommendationModel']:
+        recs: RankableListType,
+        metrics: Dict[(int or str), 'MetricsModel']) -> RankableListType:
     """
     Re-rank items using Thompson sampling which combines exploitation of known item CTR
     with exploration of new items with unknown CTR modeled by a prior
@@ -74,7 +88,7 @@ def thompson_sampling(
     items to our repertoire.
 
     :param recs: a list of recommendations in the desired order (pre-publisher spread)
-    :param clk_data: a dict with item_id as key and dynamodb row modeled as ClickDataModel
+    :param metrics: a dict with item_id as key and dynamodb row modeled as ClickDataModel
     :return: a re-ordered version of recs satisfying the spread as best as possible
     """
 
@@ -82,26 +96,31 @@ def thompson_sampling(
     if not recs:
         return recs
 
+    # Currently we are using the hardcoded priors below.
+    # TODO: We should return to having slate/lineup-specific priors. We could load slate-priors from
+    #  MODELD-Prod-SlateMetrics, although that might require an additional database lookup. We might choose to use a
+    #  'default' key that aggregates engagement data in the same table, such that no additional lookups are required.
     alpha_prior, beta_prior = DEFAULT_ALPHA_PRIOR, DEFAULT_BETA_PRIOR
-    if clk_data and 'default' in clk_data:
-        # 'default' is a special key we can use for anything that is missing.
-        # The values here aren't actually clicks or impressions,
-        # but instead direct alpha and beta parameters for the module CTR prior
-        alpha_prior, beta_prior = clk_data['default'].clicks, clk_data['default'].impressions
-        if alpha_prior < 0 or beta_prior < 0:
-            logging.error("Alpha (%s) or Beta (%s) prior < 0 for module %s", alpha_prior, beta_prior, clk_data['default'].mod_item)
-            alpha_prior, beta_prior = DEFAULT_ALPHA_PRIOR, DEFAULT_BETA_PRIOR
 
     scores = []
     # create prior distribution for CTR from parameters in click data table
     prior = beta(alpha_prior, beta_prior)
     for rec in recs:
-        resolved_id = rec.item.item_id
-        d = clk_data.get(resolved_id)
+        try:
+            # Recommendations are keyed on item_id.  Note that the metrics model grabs the item_id
+            # when it parses the clickdata by splitting the primary key in dynamo
+            clickdata_id = rec.item.item_id
+        except AttributeError:
+            # Slates are keyed on their slate id, in this case the id field of the slate config model
+            # Similarly these are parsed as the prefix of the primary key in the slate metrics table
+            clickdata_id = rec.id
+
+        d = metrics.get(clickdata_id)
         if d:
-            clicks = max(d.clicks + alpha_prior, 1e-18)
+            # TODO: Decide how many days we want to look back.
+            clicks = max(d.trailing_28_day_opens + alpha_prior, 1e-18)
             # posterior combines click data with prior (also a beta distribution)
-            no_clicks = max(d.impressions - d.clicks + beta_prior, 1e-18)
+            no_clicks = max(d.trailing_28_day_impressions - d.trailing_28_day_opens + beta_prior, 1e-18)
             # sample from posterior for CTR given click data
             score = beta.rvs(clicks, no_clicks)
             scores.append((rec, score))
@@ -160,7 +179,7 @@ def personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
 
 
 @xray_recorder.capture('rankers_algorithms_spread_publishers')
-def spread_publishers(recs: List['RecommendationModel'], spread: int = 3) -> List['RecommendationModel']:
+def spread_publishers(recs: RecommendationListType, spread: int = 3) -> RecommendationListType:
     """
     Makes sure stories from the same publisher/domain are not listed sequentially, and have a configurable number
     of stories in-between them.

@@ -2,8 +2,8 @@ import unittest
 import os
 import json
 
+from app.models.metrics.metrics_model import MetricsModel
 from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_uncurated_configs, generate_hybrid_configs
-from app.models.clickdata import ClickdataModel
 from app.config import ROOT_DIR
 from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist, personalize_topic_slates
 from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
@@ -144,36 +144,48 @@ class TestAlgorithmsBlocklist(unittest.TestCase):
 
 
 class TestAlgorithmsThompsonSampling(unittest.TestCase):
-    def test_it_can_rank_items_with_missing_click_data(self):
+    def test_it_can_rank_items_with_missing_metrics(self):
         recs = generate_recommendations(['333', '999'])
 
-        click_data = {
-            '999': ClickdataModel.parse_obj({
-                'mod_item': 'home/999',
-                'clicks': '99',
-                'impressions': '999',
-                'created_at': '0',
-                'expires_at': '0'
-            }),
+        metrics = {
+            '999': MetricsModel(
+                id='home/999',
+                trailing_1_day_opens=0,
+                trailing_1_day_impressions=0,
+                trailing_7_day_opens=0,
+                trailing_7_day_impressions=0,
+                trailing_14_day_opens=0,
+                trailing_14_day_impressions=0,
+                trailing_28_day_opens=99,
+                trailing_28_day_impressions=999,
+                created_at=0,
+                expires_at=0
+            ),
         }
 
-        sampled_recs = thompson_sampling(recs, click_data)
+        sampled_recs = thompson_sampling(recs, metrics)
         # this needs to be a set since order isn't guaranteed in single trial
         assert {item.item_id for item in sampled_recs} == {"999", "333"}
 
     def test_invalid_prior(self):
         recs = generate_recommendations(['999'])
-        click_data = {
-            'default': ClickdataModel.parse_obj({
-                'mod_item': 'home/default',
-                'clicks': '99',
-                'impressions': '-14',
-                'created_at': '0',
-                'expires_at': '0'
-            }),
+        metrics = {
+            'default': MetricsModel(
+                id='home/default',
+                trailing_1_day_opens=0,
+                trailing_1_day_impressions=0,
+                trailing_7_day_opens=0,
+                trailing_7_day_impressions=0,
+                trailing_14_day_opens=0,
+                trailing_14_day_impressions=0,
+                trailing_28_day_opens=99,
+                trailing_28_day_impressions=-14,
+                created_at=0,
+                expires_at=0,
+            ),
         }
 
-        sampled_recs = thompson_sampling(recs, click_data)
+        sampled_recs = thompson_sampling(recs, metrics)
         # this needs to be a set since order isn't guaranteed in single trial
         assert {item.item_id for item in sampled_recs} == {"999"}
 
@@ -188,35 +200,53 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         """
         recs = generate_recommendations(["333333", "666666", "999999", "222222"])
 
-        click_data = {
-            '999999': ClickdataModel.parse_obj({
-                'mod_item': 'home/999999',
-                'clicks': '99',
-                'impressions': '999',
-                'created_at': '0',
-                'expires_at': '0'
-            }),
-            '666666': ClickdataModel.parse_obj({
-                'mod_item': 'home/666666',
-                'clicks': '66',
-                'impressions': '999',
-                'created_at': '0',
-                'expires_at': '0'
-            }),
-            '333333': ClickdataModel.parse_obj({
-                'mod_item': 'home/333333',
-                'clicks': '33',
-                'impressions': '999',
-                'created_at': '0',
-                'expires_at': '0'
-            })
+        metrics = {
+            '999999': MetricsModel(
+                id='home/999999',
+                trailing_1_day_opens=0,
+                trailing_1_day_impressions=0,
+                trailing_7_day_opens=0,
+                trailing_7_day_impressions=0,
+                trailing_14_day_opens=0,
+                trailing_14_day_impressions=0,
+                trailing_28_day_opens=99,
+                trailing_28_day_impressions=999,
+                created_at=0,
+                expires_at=0
+            ),
+            '666666': MetricsModel(
+                id='home/666666',
+                trailing_1_day_opens=0,
+                trailing_1_day_impressions=0,
+                trailing_7_day_opens=0,
+                trailing_7_day_impressions=0,
+                trailing_14_day_opens=0,
+                trailing_14_day_impressions=0,
+                trailing_28_day_opens=66,
+                trailing_28_day_impressions=999,
+                created_at=0,
+                expires_at=0
+            ),
+            '333333': MetricsModel(
+                id='home/333333',
+                trailing_1_day_opens=0,
+                trailing_1_day_impressions=0,
+                trailing_7_day_opens=0,
+                trailing_7_day_impressions=0,
+                trailing_14_day_opens=0,
+                trailing_14_day_impressions=0,
+                trailing_28_day_opens=33,
+                trailing_28_day_impressions=999,
+                created_at=0,
+                expires_at=0
+            )
         }
 
         # goal of test is to rank by CTR over ntrials
         # order should be 999999, 666666, 333333
         ranks = {}
         for i in range(ntrials):
-            sampled_recs = thompson_sampling(recs, click_data)
+            sampled_recs = thompson_sampling(recs, metrics)
             c = 1
             for rec in sampled_recs:
                 # compute average positional rank over the trials

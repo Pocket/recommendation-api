@@ -8,6 +8,7 @@ from typing import List, Optional
 from app.models.recommendation import RecommendationModel
 from app.models.slate_config import SlateConfigModel
 from app.models.slate_experiment import SlateExperimentModel
+import app.config
 
 
 class SlateModel(BaseModel):
@@ -32,8 +33,12 @@ class SlateModel(BaseModel):
         :param recommendation_count: int, 0 = no recs, > 0 include this many recs
         :return: a SlateModel object
         """
+
         slate_config = SlateConfigModel.find_by_id(slate_id)
-        return await SlateModel.__get_slate_from_slate_config(slate_config, user_id, recommendation_count=recommendation_count)
+        return await SlateModel.__get_slate_from_slate_config(
+            slate_config,
+            user_id,
+            recommendation_count=recommendation_count)
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_all')
@@ -45,7 +50,9 @@ class SlateModel(BaseModel):
         :return: a list fo SlateModel objects
         """
         slate_configs = SlateConfigModel.SLATE_CONFIGS_BY_ID.values()
-        return await SlateModel.get_slates_from_slate_configs(slate_configs, user_id, recommendation_count=recommendation_count)
+        return await SlateModel.get_slates_from_slate_configs(
+            slate_configs, user_id,
+            recommendation_count=recommendation_count)
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_slates_from_slate_configs')
@@ -55,6 +62,7 @@ class SlateModel(BaseModel):
         """
 
         :param slate_configs:
+        :param user_id: Identifies user to deliver personalized recommendations
         :param recommendation_count: int, 0 = no recs, > 0 include this many recs
         :return: a list of SlateModel objects
         """
@@ -62,9 +70,10 @@ class SlateModel(BaseModel):
 
         # for each slate, get random experiment
         for slate_config in slate_configs:
-            slate_model = SlateModel.__get_slate_from_slate_config(slate_config,
-                                                                   user_id,
-                                                                   recommendation_count=recommendation_count)
+            slate_model = SlateModel.__get_slate_from_slate_config(
+                slate_config,
+                user_id,
+                recommendation_count=recommendation_count)
             slate_models.append(slate_model)
 
         slate_models = await gather(*slate_models)
@@ -87,6 +96,15 @@ class SlateModel(BaseModel):
 
         experiment = None
         recommendations = []
+
+        """
+        HACK: For a particular set of QA users, change the slate to a QA slate if qa_slate_map has a replacement.
+        This allows us to track the QA user's impression and open events through our engagement pipeline.
+        This code is intended to be temporary. A better long-term solution would be to use Unleash,
+        which is a feature flag service that supports putting specific users into an experiment branch.
+        """
+        if user_id in app.config.qa_user_ids and slate_config.id in app.config.qa_slate_map:
+            slate_config = SlateConfigModel.find_by_id(app.config.qa_slate_map[slate_config.id])
 
         # If we have a > 0 recommendation count lets get some recommendations
         if recommendation_count > 0:
