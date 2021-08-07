@@ -473,8 +473,8 @@
         "rankers": [],
         "slates": [
           "631d8077-1462-4397-ad0a-aa340c27570a",
+          "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
           "0f322865-64e6-472d-8147-b3d6637a7d67",
-          "2389f563-bd42-411d-bca2-0966638053e8",
           "2f2a3568-901f-4655-8735-daf67e8ecc5d",
           "505c0126-d54d-42ef-8fe7-0f6a6f24e3a5",
           "b4032752-155b-4f09-ac1e-f5337df19e88",
@@ -503,12 +503,13 @@
         "description": "default layout",
         "rankers": [],
         "slates": [
+          "0737b00e-a21e-4875-a4c7-3e14926d4acf",
+          "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
           "0f322865-64e6-472d-8147-b3d6637a7d67",
-          "2389f563-bd42-411d-bca2-0966638053e8",
           "2f2a3568-901f-4655-8735-daf67e8ecc5d",
-          "9bece73b-4d54-43a6-bb10-d7b02abcd181",
           "505c0126-d54d-42ef-8fe7-0f6a6f24e3a5",
-          "90adee1c-7794-4f41-9645-2ff9cf91113c"
+          "7cb4f497-fd05-42c5-9f78-3650e9ddba21",
+          "e9df8a81-19af-48e2-a90f-05e9a37491ca"
         ]
       }
     ]
