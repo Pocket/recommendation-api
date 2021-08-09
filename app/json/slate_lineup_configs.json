@@ -23,7 +23,7 @@
       {
         "description": "default layout",
         "rankers": [
-          "personalized-topics"
+          "top1-topics"
         ],
         "slates": [
           "af2cc2c0-1286-47a3-b8ce-187b905f94af",
@@ -470,7 +470,7 @@
     "experiments": [
       {
         "description": "default layout",
-        "rankers": [],
+        "rankers": ["top3-topics"],
         "slates": [
           "631d8077-1462-4397-ad0a-aa340c27570a",
           "2e3ddc90-8def-46d7-b85f-da7525c66fb1",

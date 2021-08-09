@@ -91,7 +91,8 @@
                   "top15",
                   "top30",
                   "thompson-sampling",
-                  "personalized-topics"
+                  "top1-topics",
+                  "top3-topics"
                 ],
                 "title": "The Items Schema",
                 "default": "",
