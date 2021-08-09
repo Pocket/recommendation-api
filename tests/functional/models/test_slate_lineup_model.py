@@ -105,7 +105,7 @@ class TestSlateLineupModel(TestDynamoDBBase):
 
         assert slate_lineup.id == slate_lineup_config_id
         assert slate_lineup.slates[0].id == slate_config_id_2  # The slate is replace based on qa_slate_map.
-        assert slate_lineup.slates[0].recommendations[0].item.item_id == '11'
+        assert {'11', '12'} == {recommendation.item_id for recommendation in slate_lineup.slates[0].recommendations}
 
     @patch('app.models.slate_lineup_config.SlateLineupConfigModel.find_by_id', return_value=slate_lineup_config_model)
     @patch('app.models.slate_config.SlateConfigModel.find_by_id', return_value=slate_config_model)
