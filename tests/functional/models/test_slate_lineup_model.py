@@ -105,6 +105,7 @@ class TestSlateLineupModel(TestDynamoDBBase):
 
         assert slate_lineup.id == slate_lineup_config_id
         assert slate_lineup.slates[0].id == slate_config_id_2  # The slate is replace based on qa_slate_map.
+        # Assert sets of items ids is equal. Order is random because of Thompson-sampling.
         assert {'11', '12'} == {recommendation.item_id for recommendation in slate_lineup.slates[0].recommendations}
 
     @patch('app.models.slate_lineup_config.SlateLineupConfigModel.find_by_id', return_value=slate_lineup_config_model)
@@ -198,5 +199,7 @@ class TestSlateLineupModel(TestDynamoDBBase):
         assert len(slate_lineup.slates[0].recommendations) == 2
         assert len(slate_lineup.slates[1].recommendations) == 1
 
+        # Assert sets of items ids is equal. Order is random because of Thompson-sampling.
         assert {'10', '11'} == {recommendation.item_id for recommendation in slate_lineup.slates[0].recommendations}
+        # The items are deduplicated, so there is only one unique item left.
         assert slate_lineup.slates[1].recommendations[0].item_id == '12'
