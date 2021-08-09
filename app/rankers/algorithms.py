@@ -15,7 +15,7 @@ from app.models.personalized_topic_list import PersonalizedTopicList
 DEFAULT_ALPHA_PRIOR = 0.02
 DEFAULT_BETA_PRIOR = 1.0
 
-RankableListType = Union[List['SlateModel'], List['RecommendationModel']]
+RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel']]
 RecommendationListType = List['RecommendationModel']
 
 
@@ -58,6 +58,29 @@ def top45(items: RankableListType) -> RankableListType:
     :return: first n recommendations from the list of recommendations
     """
     return items[:45]
+
+
+def top1_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List['SlateConfigModel']:
+    """
+    returns the lineup with only the top topic slate included
+    :param slates: initial list of slate configs
+    :param personalized_topics: recit response including sorted list of personalized topics
+    :return: list of slate configs with only the top topic slate
+    """
+
+    return __personalize_topic_slates(slates, personalized_topics, topic_limit=1)
+
+
+def top3_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List[
+    'SlateConfigModel']:
+    """
+    returns the lineup with only the top 3 topic slates included
+    :param slates: initial list of slate configs
+    :param personalized_topics: recit response including sorted list of personalized topics
+    :return: list of slate configs with only the top 3 topic slate
+    """
+
+    return __personalize_topic_slates(slates, personalized_topics, topic_limit=3)
 
 
 def blocklist(recs: RecommendationListType, blocklist: Optional[List[str]] = None) -> RecommendationListType:
@@ -131,9 +154,9 @@ def thompson_sampling(
     return [x[0] for x in scores]
 
 
-def personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
-                             personalized_topics: PersonalizedTopicList,
-                             topic_limit: Optional[int] = 1) -> List['SlateConfigModel']:
+def __personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
+                               personalized_topics: PersonalizedTopicList,
+                               topic_limit: Optional[int] = 1) -> List['SlateConfigModel']:
     """
     This routine takes a list of slates as input in which must include slates with an associated curator topic
     label.  It uses the topic_profile that is supplied by RecIt to re-rank the slates according to affinity
