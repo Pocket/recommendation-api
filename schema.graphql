@@ -197,8 +197,24 @@ type Slate {
 
     """
     The name to show to the user for this set of recomendations
+    Deprecated for UX use displayTitle, displayTopic and displaySubtitle
     """
     displayName: String
+
+    """
+    The topic to show to the user for this set of recomendations
+    """
+    displayTopic: String
+    
+    """
+    The title to show to the user for this set of recomendations
+    """
+    displayTitle: String
+
+    """
+    The subTitle to show to the user for this set of recomendations
+    """
+    displaySubTitle: String
 
     """
     The description of the the slate
