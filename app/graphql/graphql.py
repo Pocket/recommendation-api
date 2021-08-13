@@ -26,8 +26,9 @@ class Query(ObjectType):
                                                description="Number of recommendations to return, defaults to 10"))
     list_slates = Field(List(Slate), recommendation_count=Int(default_value=0,
                                                               description="Number of recommendations to return, defaults to 0"))
-    get_slate_lineup = Field(SlateLineup, slate_lineup_id=String(required=True,
-                                                                 description="SlateLineup id to get a specific slate lineup"),
+    get_slate_lineup = Field(SlateLineup,
+                             slate_lineup_id=String(required=True, description="SlateLineup id to get a specific slate lineup"),
+                             user_id=String(required=False, description="user id to get a personalized slate lineup"),
                              slate_count=Int(default_value=8, description="Number of slates to return, defaults to 8"),
                              recommendation_count=Int(default_value=10,
                                                       description="Maximum number of recommendations to return, defaults to 10"))
@@ -47,10 +48,12 @@ class Query(ObjectType):
     async def resolve_list_slates(self, info, recommendation_count: int) -> [SlateModel]:
         return await SlateModel.get_all(user_id=info.context.get('user_id'), recommendation_count=recommendation_count)
 
-    async def resolve_get_slate_lineup(self, info, slate_lineup_id: str, recommendation_count: int = 10,
+    async def resolve_get_slate_lineup(self, info, slate_lineup_id: str,
+                                       user_id: str = None,
+                                       recommendation_count: int = 10,
                                        slate_count: int = 8) -> SlateLineupModel:
         return await SlateLineupModel.get_slate_lineup(slate_lineup_id=slate_lineup_id,
-                                                       user_id=info.context.get('user_id'),
+                                                       user_id=user_id,
                                                        recommendation_count=recommendation_count,
                                                        slate_count=slate_count)
 

@@ -14,13 +14,15 @@ class SlateLineupModel(BaseModel):
     Models a slate_lineup.
     """
     id: str
+    userId: Optional[str]
     requestId: str = None
     experimentId: str = None
     slates: List[SlateModel]
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_lineup_get_slate_lineup')
-    async def get_slate_lineup(slate_lineup_id: str, user_id: Optional[str] = None,
+    async def get_slate_lineup(slate_lineup_id: str,
+                               user_id: Optional[str] = None,
                                recommendation_count: Optional[int] = 10,
                                slate_count: Optional[int] = 8) -> 'SlateLineupModel':
         """
@@ -38,10 +40,14 @@ class SlateLineupModel(BaseModel):
                                                                      user_id=user_id,
                                                                      recommendation_count=recommendation_count,
                                                                      slate_count=slate_count)
-
+        if user_id:
+            proving_user_id_query_param_concept = "experiment-for-personalized-slate-lineup"
+        else:
+            proving_user_id_query_param_concept = experiment.id
+            
         return SlateLineupModel(
             id=slate_lineup_id,
-            experimentId=experiment.id,
+            experimentId=proving_user_id_query_param_concept,
             slates=slates,
             requestId=str(uuid.uuid4()),
         )

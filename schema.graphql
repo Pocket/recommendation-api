@@ -5,7 +5,7 @@ type Query {
     getTopicRecommendations(slug: String!, algorithmicCount: Int = 20, curatedCount: Int = 5): TopicRecommendations  @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
 
     """
-    List all available topics that we have recomendarions for.
+    List all available topics that we have recomendations for.
     """
     listTopics: [Topic!]! @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
 
@@ -33,6 +33,8 @@ type Query {
     getSlateLineup(
         "The {SlateLineup.id} of the SlateLineup to return"
         slateLineupId: String!,
+        "Optional userId to personalize the lineup"
+        userId: String,
         "Maximum number of slates to return in {SlateLineup.slates}, defaults to 8"
         slateCount: Int = 8,
         "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
