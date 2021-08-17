@@ -1443,10 +1443,9 @@
       {
         "description": "10 incredible long reads collection",
         "candidateSets": [
-          "860ba820-9ef2-589b-bba8-a2b639e67cb6"
+          "adfdd1fd-28cb-5b2a-9d06-cdac7d949245"
         ],
         "rankers": [
-          "top30",
           "thompson-sampling"
         ]
       }
@@ -1460,10 +1459,9 @@
       {
         "description": "How to start cooking",
         "candidateSets": [
-          "d89008c0-730f-569c-95d8-6241d43317c3"
+          "243cac7e-fa75-5aa2-81d7-f7b40e942805"
         ],
         "rankers": [
-          "top30",
           "thompson-sampling"
         ]
       }
