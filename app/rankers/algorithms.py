@@ -1,3 +1,4 @@
+from functools import partial
 import logging
 import json
 
@@ -19,45 +20,24 @@ RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel']]
 RecommendationListType = List['RecommendationModel']
 
 
-def top5(items: RankableListType) -> RankableListType:
+def top_n(n: int, items: RankableListType) -> RankableListType:
     """
-    Gets the first 5 recommendations from the list of recommendations.
+    Gets the first n recommendations from the list of recommendations.
 
     :param items: a list of recommendations in the desired order (pre-publisher spread)
-    :return: first 5 recommendations from the list of recommendations
-    """
-    return items[:5]
-
-
-def top15(items: RankableListType) -> RankableListType:
-    """
-    Gets the first 15 recommendations from the list of recommendations.
-
-    :param items: a list of recommendations in the desired order (pre-publisher spread)
-    :return: first 15 recommendations from the list of recommendations
-    """
-    return items[:15]
-
-
-def top30(items: RankableListType) -> RankableListType:
-    """
-    Gets the first 30 recommendations from the list of recommendations.
-
-    :param items: a list of recommendations in the desired order (pre-publisher spread)
-    :return: first 30 recommendations from the list of recommendations
-    """
-    return items[:30]
-
-
-def top45(items: RankableListType) -> RankableListType:
-    """
-    Gets the first N recommendations from the list of recommendations.
-
-    :param items: a list of recommendations in the desired order (pre-publisher spread)
-    :param n: int, number of recommendations to be returned
+    :param n: The number of items to return
     :return: first n recommendations from the list of recommendations
     """
-    return items[:45]
+    if len(items) <= n:
+        logging.warning(f"less items than n: {len(items) =} <= {n =} ")
+
+    return items[:n]
+
+
+top5 = partial(top_n, 5)
+top15 = partial(top_n, 15)
+top30 = partial(top_n, 30)
+top45 = partial(top_n, 45)
 
 
 def top1_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List['SlateConfigModel']:
