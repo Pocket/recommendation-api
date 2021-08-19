@@ -1,6 +1,9 @@
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
+from tests.unit.utils import initialize_slate_lineups
 
 from unittest.mock import patch
+
+from copy import deepcopy
 
 import app.config
 from app.models.slate_lineup import SlateLineupModel
@@ -32,6 +35,18 @@ slate_lineup_config_id_2 = 'test-slate_lineup-config-id-2'
 slate_lineup_experiment_2 = SlateLineupExperimentModel('test-ex-2', 'test-ex-desc-2', ['top15'],
                                                      slates=[slate_config_id, slate_config_id_2])
 slate_lineup_config_model_2 = SlateLineupConfigModel(slate_lineup_config_id_2, 'test-desc', [slate_lineup_experiment_2])
+
+# personalized slate lineup
+personalized_slate_lineup = deepcopy(slate_lineup_config_model)
+personalized_slate_lineup.id = 'personalized-lineup-id'
+personalized_slate_lineup.experiments[0].rankers = ["top3-topics"]
+
+# Slate Lineups by id
+slate_lineup_configs_by_id = {
+    slate_lineup_config_model.id: slate_lineup_config_model,
+    slate_lineup_config_model_2.id: slate_lineup_config_model_2,
+    personalized_slate_lineup.id: personalized_slate_lineup,
+}
 
 # Slates by id
 slate_configs_by_id = {
@@ -107,6 +122,50 @@ class TestSlateLineupModel(TestDynamoDBBase):
         assert slate_lineup.slates[0].id == slate_config_id_2  # The slate is replace based on qa_slate_map.
         # Assert sets of items ids is equal. Order is random because of Thompson-sampling.
         assert {'11', '12'} == {recommendation.item_id for recommendation in slate_lineup.slates[0].recommendations}
+
+    @patch.object(SlateLineupConfigModel, 'SLATE_LINEUP_CONFIGS_BY_ID', slate_lineup_configs_by_id)
+    @patch.object(SlateConfigModel, 'SLATE_CONFIGS_BY_ID', slate_configs_by_id)
+    @patch.object(app.config, 'fallback_slate_lineup', {personalized_slate_lineup.id: slate_lineup_config_id_2})
+    async def test_get_slate_lineup_webhome(self):
+        self.candidateSetTable.put_item(Item={
+            "id": "test-candidate-id",
+            "version": 1,
+            "created_at": 1612907252,
+            "candidates": [
+                {
+                    "feed_id": 1,
+                    "item_id": 3208490410,
+                    "publisher": "hbr.org"
+                }
+            ]
+        })
+
+        self.candidateSetTable.put_item(Item={
+            "id": "test-candidate-id-2",
+            "version": 1,
+            "created_at": 1612907252,
+            "candidates": [
+                {
+                    "feed_id": 1,
+                    "item_id": 11,
+                    "publisher": "getpocket.com"
+                },
+                {
+                    "feed_id": 1,
+                    "item_id": 12,
+                    "publisher": "getpocket.com"
+                }
+            ]
+        })
+
+        unpersonalized_slate_lineup_id = slate_lineup_config_id_2
+
+        # To test that the Slate lineup falls back to the default when the personalized lineup is not returned
+        # Note: This throws an exception because user_id = None
+        # Personalized to Default (fallback_slate_lineup) mapping: {personalized_slate_lineup.id: slate_lineup_config_id_2}
+        slate_lineup = await SlateLineupModel.get_slate_lineup(personalized_slate_lineup.id, user_id = None)
+
+        assert slate_lineup.id == unpersonalized_slate_lineup_id
 
     @patch('app.models.slate_lineup_config.SlateLineupConfigModel.find_by_id', return_value=slate_lineup_config_model)
     @patch('app.models.slate_config.SlateConfigModel.find_by_id', return_value=slate_config_model)

@@ -4,6 +4,7 @@ from aws_xray_sdk.core import xray_recorder
 from pydantic import BaseModel
 from typing import List, Optional
 
+import app.config
 from app.models.slate_lineup_config import SlateLineupConfigModel
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate import SlateModel, deduplicate_recommendations_across_slates
@@ -32,12 +33,21 @@ class SlateLineupModel(BaseModel):
         :param slate_count: int, 0 = no slates, > 0 include this many slates
         :return: SlateLineupModel object
         """
-        experiment = SlateLineupConfigModel.get_experiment_from_slate_lineup(slate_lineup_id)
-        slates = await SlateLineupModel.__get_slates_from_experiment(slate_lineup_id,
-                                                                     experiment,
-                                                                     user_id=user_id,
-                                                                     recommendation_count=recommendation_count,
-                                                                     slate_count=slate_count)
+        try:
+            experiment, slates = await SlateLineupModel.__get_slate_lineup_without_fallback(
+                slate_lineup_id, user_id, recommendation_count, slate_count
+            )
+
+        except:
+            # todo: define exceptions
+            slate_lineup_id = app.config.fallback_slate_lineup.get(slate_lineup_id,None)
+            if slate_lineup_id:
+                experiment, slates = await SlateLineupModel.__get_slate_lineup_without_fallback(
+                    slate_lineup_id, user_id, recommendation_count, slate_count
+                )
+            else:
+                # todo: re-raise the above exception
+                raise
 
         return SlateLineupModel(
             id=slate_lineup_id,
@@ -45,6 +55,16 @@ class SlateLineupModel(BaseModel):
             slates=slates,
             requestId=str(uuid.uuid4()),
         )
+
+    @staticmethod
+    async def __get_slate_lineup_without_fallback(slate_lineup_id, user_id, recommendation_count, slate_count):
+        experiment = SlateLineupConfigModel.get_experiment_from_slate_lineup(slate_lineup_id)
+        slates = await SlateLineupModel.__get_slates_from_experiment(slate_lineup_id,
+                                                                     experiment,
+                                                                     user_id=user_id,
+                                                                     recommendation_count=recommendation_count,
+                                                                     slate_count=slate_count)
+        return experiment, slates
 
     @staticmethod
     async def __get_slates_from_experiment(slate_lineup_id: str,
