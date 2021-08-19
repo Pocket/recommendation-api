@@ -38,7 +38,7 @@ class SlateLineupModel(BaseModel):
                 slate_lineup_id, user_id, recommendation_count, slate_count
             )
 
-        except:
+        except Exception as e:
             # todo: define exceptions
             slate_lineup_id = app.config.fallback_slate_lineup.get(slate_lineup_id,None)
             if slate_lineup_id:
@@ -46,8 +46,7 @@ class SlateLineupModel(BaseModel):
                     slate_lineup_id, user_id, recommendation_count, slate_count
                 )
             else:
-                # todo: re-raise the above exception
-                raise
+                raise e
 
         return SlateLineupModel(
             id=slate_lineup_id,

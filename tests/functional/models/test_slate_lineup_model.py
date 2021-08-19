@@ -7,10 +7,11 @@ from copy import deepcopy
 
 import app.config
 from app.models.slate_lineup import SlateLineupModel
-from app.models.slate_config import SlateConfigModel
+from app.models.slate_config import SlateConfigModel, CuratorTopic
 from app.models.slate_experiment import SlateExperimentModel
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate_lineup_config import SlateLineupConfigModel
+from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
 
 
 test_candidate = {
@@ -48,7 +49,7 @@ test_candidate_2 = {
 slate_config_id = 'test-slate-config-id'
 slate_experiment = SlateExperimentModel('test-ex', 'test-ex-desc', ['top15', 'thompson-sampling'],
                                         ['test-candidate-id'])
-slate_config_model = SlateConfigModel(slate_config_id, 'test-this-slate', 'test-desc', experiments=[slate_experiment])
+slate_config_model = SlateConfigModel(slate_config_id, 'test-this-slate', 'test-desc', experiments=[slate_experiment], curator_topic_label=CuratorTopic.HEALTH)
 
 # Second slate
 slate_config_id_2 = 'test-slate-config-id-2'
@@ -133,17 +134,21 @@ class TestSlateLineupModel(TestDynamoDBBase):
 
     @patch.object(SlateLineupConfigModel, 'SLATE_LINEUP_CONFIGS_BY_ID', slate_lineup_configs_by_id)
     @patch.object(SlateConfigModel, 'SLATE_CONFIGS_BY_ID', slate_configs_by_id)
-    @patch.object(app.config, 'fallback_slate_lineup', {'05027beb-0053-4020-8bdc-4da2fcc0cb68': '249850f0-61c0-46f9-a16a-f0553c222800'})
-    async def test_get_slate_lineup_personalized(self):
+    @patch.object(app.config, 'fallback_slate_lineup', {personalized_slate_lineup.id: slate_lineup_config_id_2})
+    @patch('app.models.personalized_topic_list.PersonalizedTopicList.get',
+           return_value=PersonalizedTopicList(curator_topics=[PersonalizedTopicElement(
+               curator_topic_label=CuratorTopic.HEALTH.value, score=1.0)], user_id='user-id')
+           )
+    async def test_get_slate_lineup_personalized(self, personalized_topic_list):
         self.candidateSetTable.put_item(Item=test_candidate)
         self.candidateSetTable.put_item(Item=test_candidate_2)
 
         # To test when Recit doesnt return error but returns a personalized list of topics
         #  the Slate lineup returned is the personalized lineup
-        initialize_slate_lineups()
-        personalized_slate_lineup_id = '05027beb-0053-4020-8bdc-4da2fcc0cb68'
-        unpersonalized_slate_lineup_id = '249850f0-61c0-46f9-a16a-f0553c222800'
-        slate_lineup = await SlateLineupModel.get_slate_lineup(personalized_slate_lineup_id, user_id = '')
+        # initialize_slate_lineups()
+        personalized_slate_lineup_id = personalized_slate_lineup.id
+        unpersonalized_slate_lineup_id = slate_lineup_config_id_2
+        slate_lineup = await SlateLineupModel.get_slate_lineup(personalized_slate_lineup_id, user_id = 'user-id')
         assert slate_lineup.id == personalized_slate_lineup_id
 
     @patch('app.models.slate_lineup_config.SlateLineupConfigModel.find_by_id', return_value=slate_lineup_config_model)
