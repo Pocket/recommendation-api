@@ -51,7 +51,7 @@ class SlateConfigModel:
         self.displayName = display_name
         self.description = description
         self.experiments = experiments or []
-        self.curator_topic_label = curator_topic.value
+        self.curator_topic_label = curator_topic.value if curator_topic else None
 
     @staticmethod
     def load_from_dict(slate_dict: dict) -> 'SlateConfigModel':
