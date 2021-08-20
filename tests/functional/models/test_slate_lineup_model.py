@@ -120,7 +120,7 @@ class TestSlateLineupModel(TestDynamoDBBase):
 
     @patch.object(SlateLineupConfigModel, 'SLATE_LINEUP_CONFIGS_BY_ID', slate_lineup_configs_by_id)
     @patch.object(SlateConfigModel, 'SLATE_CONFIGS_BY_ID', slate_configs_by_id)
-    @patch.object(app.config, 'fallback_slate_lineup', {personalized_slate_lineup.id: slate_lineup_config_id_2})
+    @patch.object(app.config, 'personalization_fallback_slate_lineup', {personalized_slate_lineup.id: slate_lineup_config_id_2})
     async def test_get_slate_lineup_unpersonalized_fallback(self):
         self.candidateSetTable.put_item(Item=test_candidate)
         self.candidateSetTable.put_item(Item=test_candidate_2)
@@ -128,14 +128,14 @@ class TestSlateLineupModel(TestDynamoDBBase):
 
         # To test that the Slate lineup falls back to the default when the personalized lineup is not returned
         # Note: This throws an exception because user_id = None
-        # Personalized to Default (fallback_slate_lineup) mapping: {personalized_slate_lineup.id: slate_lineup_config_id_2}
+        # Personalized to Default (personalization_fallback_slate_lineup) mapping: {personalized_slate_lineup.id: slate_lineup_config_id_2}
         unpersonalized_slate_lineup_id = slate_lineup_config_id_2
         slate_lineup = await SlateLineupModel.get_slate_lineup(personalized_slate_lineup.id, user_id = None)
         assert slate_lineup.id == unpersonalized_slate_lineup_id
 
     @patch.object(SlateLineupConfigModel, 'SLATE_LINEUP_CONFIGS_BY_ID', slate_lineup_configs_by_id)
     @patch.object(SlateConfigModel, 'SLATE_CONFIGS_BY_ID', slate_configs_by_id)
-    @patch.object(app.config, 'fallback_slate_lineup', {personalized_slate_lineup.id: slate_lineup_config_id_2})
+    @patch.object(app.config, 'personalization_fallback_slate_lineup', {personalized_slate_lineup.id: slate_lineup_config_id_2})
     @patch('app.models.personalized_topic_list.PersonalizedTopicList.get',
            return_value=PersonalizedTopicList(curator_topics=[PersonalizedTopicElement(
                curator_topic_label=CuratorTopic.HEALTH.value, score=1.0)], user_id='user-id')
