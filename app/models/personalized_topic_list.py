@@ -5,7 +5,7 @@ from aws_xray_sdk.core import xray_recorder
 from typing import List, Dict
 
 import app.config
-from app.exceptions.personalization_exceptions import PersonalizationError
+from app.exceptions.personalization_error import PersonalizationError
 
 
 class PersonalizedTopicElement(BaseModel):

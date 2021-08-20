@@ -6,7 +6,7 @@ from aioresponses import aioresponses
 
 import app.config
 from app.models.personalized_topic_list import PersonalizedTopicList
-from app.exceptions.personalization_exceptions import PersonalizationError
+from app.exceptions.personalization_error import PersonalizationError
 
 
 class TestPersonalizedTopics(unittest.IsolatedAsyncioTestCase):
