@@ -5,6 +5,7 @@ from aws_xray_sdk.core import xray_recorder
 from typing import List, Dict
 
 import app.config
+from app.exceptions.personalization_exceptions import PersonalizationError
 
 
 class PersonalizedTopicElement(BaseModel):
@@ -27,7 +28,7 @@ class PersonalizedTopicList(BaseModel):
         :return: List with elements [<curatorTopicLabel>, score]
         """
         if not user_id:
-            raise ValueError("user_id must be provided for personalized slate lineups")
+            raise PersonalizationError("user_id must be provided for personalized slate lineups")
 
         # TODO: There should really just be one session shared, not sure how to do this in gunicorn thou
         async with aiohttp.ClientSession() as session:
@@ -37,9 +38,9 @@ class PersonalizedTopicList(BaseModel):
                     j1 = await resp.json()
                     return PersonalizedTopicList.parse_recit_response(user_id, j1)
                 elif resp.status == 404:
-                    logging.info(f"RecIt /v1/user_profile does not have a user profile for user id {user_id}")
-                    # Return empty list when user does not exist in RecIt.
-                    return PersonalizedTopicList(curator_topics=[], user_id=user_id)
+                    error_message = f"RecIt /v1/user_profile does not have a user profile for user id {user_id}"
+                    logging.info(error_message)
+                    raise PersonalizationError(error_message)
                 else:
                     # Unexpected response code
                     raise Exception(f"RecIt responded with {resp.status} for {url}")

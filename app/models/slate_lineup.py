@@ -8,6 +8,7 @@ import app.config
 from app.models.slate_lineup_config import SlateLineupConfigModel
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate import SlateModel, deduplicate_recommendations_across_slates
+from app.exceptions.personalization_exceptions import PersonalizationError
 
 
 class SlateLineupModel(BaseModel):
@@ -38,7 +39,7 @@ class SlateLineupModel(BaseModel):
                 slate_lineup_id, user_id, recommendation_count, slate_count
             )
 
-        except Exception as e:
+        except PersonalizationError as e:
             # todo: define exceptions
             slate_lineup_id = app.config.fallback_slate_lineup.get(slate_lineup_id,None)
             if slate_lineup_id:
