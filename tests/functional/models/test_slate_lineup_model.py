@@ -72,7 +72,7 @@ slate_lineup_config_model_2 = SlateLineupConfigModel(slate_lineup_config_id_2, '
 # personalized slate lineup
 personalized_slate_lineup = deepcopy(slate_lineup_config_model)
 personalized_slate_lineup.id = 'personalized-lineup-id'
-personalized_slate_lineup.experiments[0].rankers = ["top3-topics"]
+personalized_slate_lineup.experiments[0].rankers = ["top1-topics"]
 
 # Slate Lineups by id
 slate_lineup_configs_by_id = {
