@@ -49,7 +49,8 @@ test_candidate_2 = {
 slate_config_id = 'test-slate-config-id'
 slate_experiment = SlateExperimentModel('test-ex', 'test-ex-desc', ['top15', 'thompson-sampling'],
                                         ['test-candidate-id'])
-slate_config_model = SlateConfigModel(slate_config_id, 'test-this-slate', 'test-desc', experiments=[slate_experiment], curator_topic=CuratorTopic.HEALTH)
+slate_config_model = SlateConfigModel(slate_config_id, 'test-this-slate', 'test-desc', experiments=[
+    slate_experiment], curator_topic_label=CuratorTopic.HEALTH.value)
 
 # Second slate
 slate_config_id_2 = 'test-slate-config-id-2'

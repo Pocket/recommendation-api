@@ -46,12 +46,12 @@ class SlateConfigModel:
     SLATE_CONFIGS_BY_ID = {}
 
     def __init__(self, slate_id: str, display_name: str, description: str,
-                 curator_topic: Optional[CuratorTopic] = None, experiments=None):
+                 curator_topic_label: Optional[str] = None, experiments=None):
         self.id = slate_id
         self.displayName = display_name
         self.description = description
         self.experiments = experiments or []
-        self.curator_topic_label = curator_topic.value if curator_topic else None
+        self.curator_topic_label = curator_topic_label
 
     @staticmethod
     def load_from_dict(slate_dict: dict) -> 'SlateConfigModel':
