@@ -72,8 +72,9 @@ export class SqsLambda extends Resource {
             treatMissingData: 'breaching'
           },
           errors: {
-            period: 10800, // 3 hours
-            threshold: 2,
+            evaluationPeriods: 3,
+            period: 3600, // 1 hour
+            threshold: 20,
             actions: [pagerDuty.snsNonCriticalAlarmTopic.arn]
           }
         }
