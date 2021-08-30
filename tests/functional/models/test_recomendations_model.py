@@ -6,7 +6,7 @@ from app.models.item import ItemModel
 class TestRecommendationsModel(TestDynamoDBBase):
 
     async def test_get_latest_curated_candidates_for_topic(self):
-        self.candidateTable.put_item(Item={
+        self.candidate_table.put_item(Item={
             "id": "asdasd-12sd1asd3-5512",
             "topic_id": 'a187ffb4-5c6f-4079-bad9-92442e97bdd1',
             "type": 'curated',
@@ -25,7 +25,7 @@ class TestRecommendationsModel(TestDynamoDBBase):
             ]
         })
 
-        self.candidateTable.put_item(Item={
+        self.candidate_table.put_item(Item={
             "id": "asdasd-12sd1asd3-5512",
             "topic_id": 'a187ffb4-5c6f-4079-bad9-92442e97bdd1',
             "type": 'curated',
@@ -44,7 +44,7 @@ class TestRecommendationsModel(TestDynamoDBBase):
             ]
         })
 
-        self.candidateTable.put_item(Item={
+        self.candidate_table.put_item(Item={
             "id": "asdasd-12sd1asd3-5512",
             "topic_id": 'a187ffb4-5c6f-4079-bad9-92442e97bdd1',
             "type": 'curated',

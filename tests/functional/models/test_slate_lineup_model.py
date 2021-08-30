@@ -94,9 +94,9 @@ class TestSlateLineupModel(TestDynamoDBBase):
     @patch('app.models.slate_lineup_config.SlateLineupConfigModel.find_by_id', return_value=slate_lineup_config_model)
     @patch('app.models.slate_config.SlateConfigModel.find_by_id', return_value=slate_config_model)
     async def test_get_slate_lineup(self, slate_config, slate_lineup_config):
-        self.candidateSetTable.put_item(Item=test_candidate)
+        self.candidate_set_table.put_item(Item=test_candidate)
 
-        slate_lineup = await SlateLineupModel.get_slate_lineup(slate_lineup_config_id)
+        slate_lineup = await SlateLineupModel.get_slate_lineup_with_fallback(slate_lineup_config_id)
 
         assert slate_lineup.id == slate_lineup_config_id
         assert slate_lineup.slates[0].id == slate_config_id
@@ -107,11 +107,11 @@ class TestSlateLineupModel(TestDynamoDBBase):
     @patch.object(SlateConfigModel, 'SLATE_CONFIGS_BY_ID', slate_configs_by_id)
     @patch.object(app.config, 'qa_slate_map', {slate_config_id: slate_config_id_2})
     async def test_get_slate_lineup_for_qa_user(self, slate_lineup_config):
-        self.candidateSetTable.put_item(Item=test_candidate)
-        self.candidateSetTable.put_item(Item=test_candidate_2)
+        self.candidate_set_table.put_item(Item=test_candidate)
+        self.candidate_set_table.put_item(Item=test_candidate_2)
 
         qa_user_id = app.config.qa_user_ids[0]
-        slate_lineup = await SlateLineupModel.get_slate_lineup(slate_lineup_config_id, user_id=qa_user_id)
+        slate_lineup = await SlateLineupModel.get_slate_lineup_with_fallback(slate_lineup_config_id, user_id=qa_user_id)
 
         assert slate_lineup.id == slate_lineup_config_id
         assert slate_lineup.slates[0].id == slate_config_id_2  # The slate is replace based on qa_slate_map.
@@ -122,15 +122,15 @@ class TestSlateLineupModel(TestDynamoDBBase):
     @patch.object(SlateConfigModel, 'SLATE_CONFIGS_BY_ID', slate_configs_by_id)
     @patch.object(app.config, 'personalization_fallback_slate_lineup', {personalized_slate_lineup.id: slate_lineup_config_id_2})
     async def test_get_slate_lineup_unpersonalized_fallback(self):
-        self.candidateSetTable.put_item(Item=test_candidate)
-        self.candidateSetTable.put_item(Item=test_candidate_2)
+        self.candidate_set_table.put_item(Item=test_candidate)
+        self.candidate_set_table.put_item(Item=test_candidate_2)
 
 
         # To test that the Slate lineup falls back to the default when the personalized lineup is not returned
         # Note: This throws an exception because user_id = None
         # Personalized to Default (personalization_fallback_slate_lineup) mapping: {personalized_slate_lineup.id: slate_lineup_config_id_2}
         unpersonalized_slate_lineup_id = slate_lineup_config_id_2
-        slate_lineup = await SlateLineupModel.get_slate_lineup(personalized_slate_lineup.id, user_id = None)
+        slate_lineup = await SlateLineupModel.get_slate_lineup_with_fallback(personalized_slate_lineup.id, user_id = None)
         assert slate_lineup.id == unpersonalized_slate_lineup_id
 
     @patch.object(SlateLineupConfigModel, 'SLATE_LINEUP_CONFIGS_BY_ID', slate_lineup_configs_by_id)
@@ -141,21 +141,21 @@ class TestSlateLineupModel(TestDynamoDBBase):
                curator_topic_label=CuratorTopic.HEALTH.value, score=1.0)], user_id='user-id')
            )
     async def test_get_slate_lineup_personalized(self, personalized_topic_list):
-        self.candidateSetTable.put_item(Item=test_candidate)
-        self.candidateSetTable.put_item(Item=test_candidate_2)
+        self.candidate_set_table.put_item(Item=test_candidate)
+        self.candidate_set_table.put_item(Item=test_candidate_2)
 
         # To test when Recit doesnt return error but returns a personalized list of topics
         #  the Slate lineup returned is the personalized lineup
         # initialize_slate_lineups()
         personalized_slate_lineup_id = personalized_slate_lineup.id
         unpersonalized_slate_lineup_id = slate_lineup_config_id_2
-        slate_lineup = await SlateLineupModel.get_slate_lineup(personalized_slate_lineup_id, user_id = 'user-id')
+        slate_lineup = await SlateLineupModel.get_slate_lineup_with_fallback(personalized_slate_lineup_id, user_id ='user-id')
         assert slate_lineup.id == personalized_slate_lineup_id
 
     @patch('app.models.slate_lineup_config.SlateLineupConfigModel.find_by_id', return_value=slate_lineup_config_model)
     @patch('app.models.slate_config.SlateConfigModel.find_by_id', return_value=slate_config_model)
     async def test_get_slate_lineup_limited_recs(self, slate_config, slate_lineup_config):
-        self.candidateSetTable.put_item(Item={
+        self.candidate_set_table.put_item(Item={
             "id": "test-candidate-id",
             "version": 1,
             "created_at": 1612907252,
@@ -178,21 +178,21 @@ class TestSlateLineupModel(TestDynamoDBBase):
             ]
         })
 
-        slate_lineup = await SlateLineupModel.get_slate_lineup(slate_lineup_config_id, recommendation_count=1)
+        slate_lineup = await SlateLineupModel.get_slate_lineup_with_fallback(slate_lineup_config_id, recommendation_count=1)
         assert len(slate_lineup.slates[0].recommendations) == 1
 
     @patch('app.models.slate_lineup_config.SlateLineupConfigModel.find_by_id', return_value=slate_lineup_config_model)
     @patch('app.models.slate_config.SlateConfigModel.find_by_id', return_value=slate_config_model)
     async def test_get_slate_lineup_no_slates(self, slate_config, slate_lineup_config):
-        self.candidateSetTable.put_item(Item=test_candidate)
+        self.candidate_set_table.put_item(Item=test_candidate)
 
-        slate_lineup = await SlateLineupModel.get_slate_lineup(slate_lineup_config_id, slate_count=0)
+        slate_lineup = await SlateLineupModel.get_slate_lineup_with_fallback(slate_lineup_config_id, slate_count=0)
         assert len(slate_lineup.slates) == 0
 
     @patch.object(SlateConfigModel, 'SLATE_CONFIGS_BY_ID', slate_configs_by_id)
     @patch('app.models.slate_lineup_config.SlateLineupConfigModel.find_by_id', return_value=slate_lineup_config_model_2)
     async def test_get_slate_lineup_dedupe_recs(self, slate_lineup_config):
-        self.candidateSetTable.put_item(Item={
+        self.candidate_set_table.put_item(Item={
             "id": "test-candidate-id",
             "version": 1,
             "created_at": 1612907252,
@@ -210,9 +210,9 @@ class TestSlateLineupModel(TestDynamoDBBase):
             ]
         })
 
-        self.candidateSetTable.put_item(Item=test_candidate_2)
+        self.candidate_set_table.put_item(Item=test_candidate_2)
 
-        slate_lineup = await SlateLineupModel.get_slate_lineup(slate_lineup_config_id_2)
+        slate_lineup = await SlateLineupModel.get_slate_lineup_with_fallback(slate_lineup_config_id_2)
         assert len(slate_lineup.slates[0].recommendations) == 2
         assert len(slate_lineup.slates[1].recommendations) == 1
 
