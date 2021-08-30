@@ -22,9 +22,9 @@ class SlateLineupModel(BaseModel):
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_lineup_get_slate_lineup')
-    async def get_slate_lineup(slate_lineup_id: str, user_id: Optional[str] = None,
-                               recommendation_count: Optional[int] = 10,
-                               slate_count: Optional[int] = 8) -> 'SlateLineupModel':
+    async def get_slate_lineup_with_fallback(slate_lineup_id: str, user_id: Optional[str] = None,
+                                             recommendation_count: Optional[int] = 10,
+                                             slate_count: Optional[int] = 8) -> 'SlateLineupModel':
         """
         Retrieves a slate_lineup based on the given `slate_lineup_id`
 
@@ -35,7 +35,7 @@ class SlateLineupModel(BaseModel):
         :return: SlateLineupModel object
         """
         try:
-            experiment, slates = await SlateLineupModel.__get_slate_lineup_without_fallback(
+            experiment, slates = await SlateLineupModel.__get_slate_lineup(
                 slate_lineup_id, user_id, recommendation_count, slate_count
             )
 
@@ -43,7 +43,7 @@ class SlateLineupModel(BaseModel):
             slate_lineup_id = app.config.personalization_fallback_slate_lineup.get(slate_lineup_id,None)
             if slate_lineup_id:
                 # Retry getting a lineup, but this time with the fallback slate_lineup_id
-                experiment, slates = await SlateLineupModel.__get_slate_lineup_without_fallback(
+                experiment, slates = await SlateLineupModel.__get_slate_lineup(
                     slate_lineup_id, user_id, recommendation_count, slate_count
                 )
             else:
@@ -58,7 +58,7 @@ class SlateLineupModel(BaseModel):
         )
 
     @staticmethod
-    async def __get_slate_lineup_without_fallback(slate_lineup_id, user_id, recommendation_count, slate_count):
+    async def __get_slate_lineup(slate_lineup_id, user_id, recommendation_count, slate_count):
         experiment = SlateLineupConfigModel.get_experiment_from_slate_lineup(slate_lineup_id)
         slates = await SlateLineupModel.__get_slates_from_experiment(slate_lineup_id,
                                                                      experiment,
