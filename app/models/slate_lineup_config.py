@@ -28,7 +28,7 @@ class SlateLineupConfigModel:
     # store loaded slate_lineup configs (loaded at app startup)
     SLATE_LINEUP_CONFIGS_BY_ID = {}
 
-    def __init__(self, slate_lineup_id: str, description: str, experiments=None):
+    def __init__(self, slate_lineup_id: str, description: str, experiments: Optional[List['SlateLineupExperimentModel']] = None):
         self.id = slate_lineup_id
         self.description = description
         self.experiments = experiments or []

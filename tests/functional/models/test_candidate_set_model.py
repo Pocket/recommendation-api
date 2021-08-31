@@ -5,7 +5,7 @@ from app.models.recommendation import RecommendationModel
 
 class TestCandidateSetsModel(TestDynamoDBBase):
     async def test_verify_candidate_set(self):
-        self.candidateSetTable.put_item(Item={
+        self.candidate_set_table.put_item(Item={
             "id": "asdasd-12sd1asd3-5512",
             "version": 1,
             "created_at": 1612907252,
@@ -22,7 +22,7 @@ class TestCandidateSetsModel(TestDynamoDBBase):
         assert executed == True
 
     async def test_get_candidate_set(self):
-        self.candidateSetTable.put_item(Item={
+        self.candidate_set_table.put_item(Item={
             "id": "asdasd-12sd1asd3-5512",
             "version": 1,
             "created_at": 1612907252,
@@ -42,7 +42,7 @@ class TestCandidateSetsModel(TestDynamoDBBase):
         assert candidate.item_id == 3208490410
 
     async def test_get_cached_candidate_set(self):
-        self.candidateSetTable.put_item(Item={
+        self.candidate_set_table.put_item(Item={
             "id": "asdasd-12sd1asd3-5512",
             "version": 1,
             "created_at": 1612907252,
@@ -61,7 +61,7 @@ class TestCandidateSetsModel(TestDynamoDBBase):
         assert candidate_set.candidates[0].item_id == 3208490410
 
         # Change version from 1 to 2.
-        self.candidateSetTable.update_item(
+        self.candidate_set_table.update_item(
             Key={'id': 'asdasd-12sd1asd3-5512'},
             UpdateExpression="set version=:v",
             ExpressionAttributeValues={':v': 2})

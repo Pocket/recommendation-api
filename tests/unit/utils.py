@@ -28,10 +28,7 @@ def generate_curated_configs() -> List[SlateConfigModel]:
     :return:
     '''
 
-    slate_configs = SlateConfigModel.load_slate_configs()
-    SlateConfigModel.SLATE_CONFIGS_BY_ID = {s.id: s for s in slate_configs}
-    slate_lineup_configs = SlateLineupConfigModel.load_slate_lineup_configs()
-    SlateLineupConfigModel.SLATE_LINEUP_CONFIGS_BY_ID = {lc.id: lc for lc in slate_lineup_configs}
+    initialize_slate_lineups()
 
     input_lineup = SlateLineupConfigModel.SLATE_LINEUP_CONFIGS_BY_ID[ALL_CURATED_TOPICS_LINEUP]
     input_slates = input_lineup.experiments[0].slates
@@ -40,6 +37,14 @@ def generate_curated_configs() -> List[SlateConfigModel]:
         input_configs.append(SlateConfigModel.find_by_id(slate_id))
 
     return input_configs
+
+
+def initialize_slate_lineups():
+    slate_configs = SlateConfigModel.load_slate_configs()
+    SlateConfigModel.SLATE_CONFIGS_BY_ID = {s.id: s for s in slate_configs}
+    slate_lineup_configs = SlateLineupConfigModel.load_slate_lineup_configs()
+    SlateLineupConfigModel.SLATE_LINEUP_CONFIGS_BY_ID = {lc.id: lc for lc in slate_lineup_configs}
+
 
 def generate_uncurated_configs() -> List[SlateConfigModel]:
 
