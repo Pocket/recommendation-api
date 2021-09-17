@@ -240,7 +240,7 @@ workflows:
       - apollo:
           <<: *only_main
           requires:
-            - deploy_ecs_prod
+            - deploy_prod
 
       # Build & Deploy Development Lambdas
       - lambda:
