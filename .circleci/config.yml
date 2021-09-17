@@ -64,6 +64,29 @@ jobs:
                 name: push service
                 command: rover subgraph publish pocket-client-api@current --schema ./schema.graphql --routing-url https://recommendation-api.readitlater.com/ --name=recommendation-api
 
+  build:
+    #Sets up the code for the docker image to build in
+    #Other repos at Pocket use this to install modules and or compile the code.
+    docker:
+      - image: python:3.8
+    steps:
+      - checkout
+      # Define the working directory for this job
+      - attach_workspace:
+          at: /tmp/workspace
+
+      # Copy built files to app_prod folder
+      - run:
+          name: Setup workspace
+          command: |
+            mkdir -p /tmp/workspace/app_prod
+            cp -r . /tmp/workspace/app_prod
+      # Persist built files to workspace
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - app_prod
+
   test_app:
     docker:
       - image: python:3.8
@@ -241,6 +264,7 @@ workflows:
           <<: *only_main
           requires:
             - deploy_prod
+      - build
 
       # Build & Deploy Development Lambdas
       - lambda:
@@ -275,6 +299,8 @@ workflows:
           repo-name: recommendationapi-dev-app
           ecr-url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
           push: false
+          requires:
+            - build
 
       # Build & Deploy the Dev Docker Image
       - pocket/docker_build:
@@ -289,6 +315,8 @@ workflows:
           repo-name: recommendationapi-dev-app
           ecr-url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
           push: true
+          requires:
+            - build
 
       # Dev
       - pocket/execute_codepipeline:
@@ -318,6 +346,8 @@ workflows:
           repo-name: recommendationapi-prod-app
           ecr-url: 996905175585.dkr.ecr.us-east-1.amazonaws.com
           push: true
+          requires:
+            - build
 
       # Prod
       - pocket/execute_codepipeline:
