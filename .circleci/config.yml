@@ -275,8 +275,6 @@ workflows:
           repo-name: recommendationapi-dev-app
           ecr-url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
           push: false
-          requires:
-            - build
 
       # Build & Deploy the Dev Docker Image
       - pocket/docker_build:
@@ -291,8 +289,6 @@ workflows:
           repo-name: recommendationapi-dev-app
           ecr-url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
           push: true
-          requires:
-            - build
 
       # Dev
       - pocket/execute_codepipeline:
@@ -322,8 +318,6 @@ workflows:
           repo-name: recommendationapi-prod-app
           ecr-url: 996905175585.dkr.ecr.us-east-1.amazonaws.com
           push: true
-          requires:
-            - build
 
       # Prod
       - pocket/execute_codepipeline:
