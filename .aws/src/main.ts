@@ -232,6 +232,7 @@ class RecommendationAPI extends TerraformStack {
             ],
             codeDeploy: {
                 useCodeDeploy: true,
+                useCodePipeline: true,
                 snsNotificationTopicArn: snsTopic.arn,
             },
             exposedContainer: {
