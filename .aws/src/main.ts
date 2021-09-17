@@ -38,6 +38,8 @@ class RecommendationAPI extends TerraformStack {
       ],
     });
 
+    const isProd : boolean = config.environment === "Prod";
+
     const incidentManagement = new DataTerraformRemoteState(this, 'incident_management', {
       organization: 'Pocket',
       workspaces: {
@@ -235,26 +237,23 @@ class RecommendationAPI extends TerraformStack {
         targetMaxCapacity: 10
       },
       alarms: {
-        http5xxError: {
-          threshold: 10,
-          evaluationPeriods: 2,
-          period: 600,
-          actions: config.environment == 'Dev' ? [] : [pagerDuty.snsCriticalAlarmTopic.arn]
+       http5xxErrorPercentage: {
+          // This will go off if the 5xx errors exceed 25% of the total request over
+          // a period of 20 minutes after 4 evaluation periods of 5 mins each.
+          threshold: 25, // This is a percentage
+          evaluationPeriods: 4,
+          period: 300, // 5 mins
+          actions: isProd ? [pagerDuty.snsCriticalAlarmTopic.arn] : [],
         },
         httpLatency: {
-          threshold: 0.5,
-          evaluationPeriods: 2,
-          period: 300,
-          actions: config.environment == 'Dev' ? [] : [pagerDuty.snsCriticalAlarmTopic.arn]
+          // If the latency is greater than 150 ms for 1 hour continuously i.e
+          // breaches the threshold 4 times every 15 minutes,
+          // this will go off
+          period: 900,
+          evaluationPeriods: 4,
+          threshold: 0.15, // 150ms
+          actions: isProd ? [pagerDuty.snsNonCriticalAlarmTopic.arn] : [],
         },
-        httpRequestCount: {
-          threshold: 10000,
-          evaluationPeriods: 2,
-          period: 300,
-          // We raise a non-critical alarm on request count, because a higher-than-expected
-          // request volume does not have to result an outage. The above two critical alarms cover that.
-          actions: config.environment == 'Dev' ? [] : [pagerDuty.snsNonCriticalAlarmTopic.arn]
-        }
       }
     });
 
