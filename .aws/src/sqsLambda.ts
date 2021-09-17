@@ -1,11 +1,11 @@
 import {Resource} from "cdktf";
 import {Construct} from "constructs";
 import {config} from "./config";
-import {ApplicationDynamoDBTable, PocketVPC} from "@pocket/terraform-modules";
-import {PocketSQSWithLambdaTarget} from "@pocket/terraform-modules";
-import {LAMBDA_RUNTIMES} from "@pocket/terraform-modules/dist/src/base/ApplicationVersionedLambda";
+import {ApplicationDynamoDBTable, PocketVPC} from "@pocket-tools/terraform-modules";
+import {PocketSQSWithLambdaTarget} from "@pocket-tools/terraform-modules";
+import {LAMBDA_RUNTIMES} from "@pocket-tools/terraform-modules";
 import {DataAwsSsmParameter} from "@cdktf/provider-aws";
-import {PocketPagerDuty} from "@pocket/terraform-modules";
+import {PocketPagerDuty} from "@pocket-tools/terraform-modules";
 
 
 export class SqsLambda extends Resource {
@@ -13,7 +13,7 @@ export class SqsLambda extends Resource {
     scope: Construct,
     private name: string,
     candidateSetsTable: ApplicationDynamoDBTable,
-    pagerDuty: PocketPagerDuty
+    pagerDuty?: PocketPagerDuty
   ) {
     super(scope, name);
 
@@ -68,13 +68,14 @@ export class SqsLambda extends Resource {
             period: 10800, // 3 hours
             threshold: 1,
             comparisonOperator: 'LessThanThreshold',
-            actions: [pagerDuty.snsNonCriticalAlarmTopic.arn],
+            actions: config.isProd ? [pagerDuty!.snsNonCriticalAlarmTopic.arn] : [],
             treatMissingData: 'breaching'
           },
           errors: {
-            period: 10800, // 3 hours
-            threshold: 2,
-            actions: [pagerDuty.snsNonCriticalAlarmTopic.arn]
+            evaluationPeriods: 3,
+            period: 3600, // 1 hour
+            threshold: 20,
+            actions: config.isProd ? [pagerDuty!.snsNonCriticalAlarmTopic.arn] : []
           }
         }
       },

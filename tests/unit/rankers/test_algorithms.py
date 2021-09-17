@@ -1,13 +1,18 @@
+import posixpath
 import unittest
 import os
 import json
 
 from app.models.metrics.metrics_model import MetricsModel
-from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_uncurated_configs, generate_hybrid_configs
+from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_nontopic_configs, generate_lineup_configs
 from app.config import ROOT_DIR
-from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist, personalize_topic_slates
+from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist, top1_topics, top3_topics
 from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
+from app.models.slate_lineup_config import SlateLineupConfigModel
 from operator import itemgetter
+
+ANDROID_DISCOVER_LINEUP_ID = "b50524d6-4df9-4f15-a0d0-13ccc8bdf4ed"
+WEB_HOME_LINEUP_ID = "05027beb-0053-4020-8bdc-4da2fcc0cb68"
 
 
 class TestAlgorithmsSpreadPublishers(unittest.TestCase):
@@ -288,42 +293,50 @@ class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
                                for t in full_topic_profile.curator_topics
                                if t.curator_topic_label in input_topics]
 
-        for test_limit in [1, 3, 5]:
-            output_configs = personalize_topic_slates(input_configs, full_topic_profile, test_limit)
+        for test_limit, topic_ranker in zip([1, 3], [top1_topics, top3_topics]):
+            output_configs = topic_ranker(input_configs, full_topic_profile)
             ordered_output_topics = [c.curator_topic_label for c in output_configs]
             print(len(output_configs), test_limit)
             assert len(output_configs) == test_limit
             assert ordered_output_topics == personalized_topics[:test_limit]
 
-    def test_android_discover(self):
+    def test_hybrid_lineups(self):
         ''' this test is the case where one topic slate is returned from a
         lineup with a mix of curated and uncurated slates
         '''
         full_topic_profile = self._read_json_asset("recit_full_user_profile.json")
-        input_configs = generate_hybrid_configs()
-        input_topics = [c.curator_topic_label for c in input_configs]
-        # these are already sorted by RecIt
-        personalizable_slates = [t.curator_topic_label
-                                 for t in full_topic_profile.curator_topics
-                                 if t.curator_topic_label in input_topics]
-        other_slates = [t.id for t in input_configs
-                        if t.curator_topic_label not in personalizable_slates]
+        personalized_topics = [x.curator_topic_label for x in full_topic_profile.curator_topics]
 
-        for topic_limit in range(1, 9):
-            # one non-topic slate should be at start of lineup
-            output_configs = personalize_topic_slates(input_configs, full_topic_profile, topic_limit)
-            ordered_output_topics = [c.curator_topic_label for c in output_configs]
-            assert len(output_configs) == len(other_slates) + topic_limit
-            # first config is not personalziable and should be same as input
-            assert input_configs[0] == output_configs[0]
-            # returned topic slate should be highest ranked
-            assert ordered_output_topics[1:1+topic_limit] == personalizable_slates[:topic_limit]
-            # last two output slates are also not personalizable
-            assert input_configs[-2:] == output_configs[-2:]
+        for lineup_id in [ANDROID_DISCOVER_LINEUP_ID, WEB_HOME_LINEUP_ID]:
+            input_configs, description = generate_lineup_configs(lineup_id)
+            non_topic_slots = [i for i, c in enumerate(input_configs) if c.curator_topic_label is None]
+            # these are already sorted by RecIt
+            first_personalizable_slot = min(set(range(len(input_configs))).difference(set(non_topic_slots)))
+            other_slates_before = [t for i,t in enumerate(input_configs)
+                                   if t.curator_topic_label is None and i < first_personalizable_slot]
+            # this assumes topic slates are contiguous in lineup
+            other_slates_after = [t for i,t in enumerate(input_configs)
+                                  if t.curator_topic_label is None and i > first_personalizable_slot]
 
+            print("Testing: ", description)
+
+            for topic_limit, topic_ranker in zip([1, 3], [top1_topics, top3_topics]):
+                print(f"first personalizable lineup slot is {first_personalizable_slot}, topic limit is {topic_limit}")
+                # one non-topic slate should be at start of lineup
+                output_configs = topic_ranker(input_configs, full_topic_profile)
+                ordered_output_topics = [c.curator_topic_label for c in output_configs]
+
+                assert len(output_configs) == len(other_slates_before) + topic_limit + len(other_slates_after)
+                # if non-personalizable slates are first they should preserve their positions
+                assert output_configs[:len(other_slates_before)] == other_slates_before
+                # returned topic slates should be highest ranked
+                assert ordered_output_topics[first_personalizable_slot:first_personalizable_slot+topic_limit] == personalized_topics[:topic_limit]
+                # check any trailing slates that are also not personalizable
+                assert output_configs[(first_personalizable_slot + topic_limit):] == other_slates_after
 
     def test_no_topic_slates(self):
         full_topic_profile = self._read_json_asset("recit_full_user_profile.json")
-        input_configs = generate_uncurated_configs()
+        input_configs = generate_nontopic_configs()
 
-        self.assertRaises(ValueError, personalize_topic_slates, input_configs, full_topic_profile)
+        for topic_ranker in [top1_topics, top3_topics]:
+            self.assertRaises(ValueError, topic_ranker, input_configs, full_topic_profile)

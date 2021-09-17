@@ -1,3 +1,4 @@
+from functools import partial
 import logging
 import json
 
@@ -15,49 +16,51 @@ from app.models.personalized_topic_list import PersonalizedTopicList
 DEFAULT_ALPHA_PRIOR = 0.02
 DEFAULT_BETA_PRIOR = 1.0
 
-RankableListType = Union[List['SlateModel'], List['RecommendationModel']]
+RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel']]
 RecommendationListType = List['RecommendationModel']
 
 
-def top5(items: RankableListType) -> RankableListType:
+def top_n(n: int, items: RankableListType) -> RankableListType:
     """
-    Gets the first 5 recommendations from the list of recommendations.
+    Gets the first n recommendations from the list of recommendations.
 
     :param items: a list of recommendations in the desired order (pre-publisher spread)
-    :return: first 5 recommendations from the list of recommendations
-    """
-    return items[:5]
-
-
-def top15(items: RankableListType) -> RankableListType:
-    """
-    Gets the first 15 recommendations from the list of recommendations.
-
-    :param items: a list of recommendations in the desired order (pre-publisher spread)
-    :return: first 15 recommendations from the list of recommendations
-    """
-    return items[:15]
-
-
-def top30(items: RankableListType) -> RankableListType:
-    """
-    Gets the first 30 recommendations from the list of recommendations.
-
-    :param items: a list of recommendations in the desired order (pre-publisher spread)
-    :return: first 30 recommendations from the list of recommendations
-    """
-    return items[:30]
-
-
-def top45(items: RankableListType) -> RankableListType:
-    """
-    Gets the first N recommendations from the list of recommendations.
-
-    :param items: a list of recommendations in the desired order (pre-publisher spread)
-    :param n: int, number of recommendations to be returned
+    :param n: The number of items to return
     :return: first n recommendations from the list of recommendations
     """
-    return items[:45]
+    if len(items) <= n:
+        logging.warning(f"less items than n: {len(items) =} <= {n =} ")
+
+    return items[:n]
+
+
+top5 = partial(top_n, 5)
+top15 = partial(top_n, 15)
+top30 = partial(top_n, 30)
+top45 = partial(top_n, 45)
+
+
+def top1_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List['SlateConfigModel']:
+    """
+    returns the lineup with only the top topic slate included
+    :param slates: initial list of slate configs
+    :param personalized_topics: recit response including sorted list of personalized topics
+    :return: list of slate configs with only the top topic slate
+    """
+
+    return __personalize_topic_slates(slates, personalized_topics, topic_limit=1)
+
+
+def top3_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List[
+    'SlateConfigModel']:
+    """
+    returns the lineup with only the top 3 topic slates included
+    :param slates: initial list of slate configs
+    :param personalized_topics: recit response including sorted list of personalized topics
+    :return: list of slate configs with only the top 3 topic slate
+    """
+
+    return __personalize_topic_slates(slates, personalized_topics, topic_limit=3)
 
 
 def blocklist(recs: RecommendationListType, blocklist: Optional[List[str]] = None) -> RecommendationListType:
@@ -131,9 +134,9 @@ def thompson_sampling(
     return [x[0] for x in scores]
 
 
-def personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
-                             personalized_topics: PersonalizedTopicList,
-                             topic_limit: Optional[int] = 1) -> List['SlateConfigModel']:
+def __personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
+                               personalized_topics: PersonalizedTopicList,
+                               topic_limit: Optional[int] = 1) -> List['SlateConfigModel']:
     """
     This routine takes a list of slates as input in which must include slates with an associated curator topic
     label.  It uses the topic_profile that is supplied by RecIt to re-rank the slates according to affinity

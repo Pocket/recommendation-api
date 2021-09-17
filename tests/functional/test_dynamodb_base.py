@@ -21,10 +21,10 @@ class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
     )
     dynamodb: DynamoDBServiceResource
     jsonRoot = os.path.join(ROOT_DIR, '.docker/localstack/dynamodb/')
-    metadataTable: DynamoDBServiceResource.Table
-    candidateTable: DynamoDBServiceResource.Table
-    recommendationMetricsTable: DynamoDBServiceResource.Table
-    candidateSetTable: DynamoDBServiceResource.Table
+    metadata_table: DynamoDBServiceResource.Table
+    candidate_table: DynamoDBServiceResource.Table
+    recommendation_metrics_table: DynamoDBServiceResource.Table
+    candidate_set_table: DynamoDBServiceResource.Table
 
     async def asyncSetUp(self):
         global_sdk_config.set_sdk_enabled(False)
@@ -61,11 +61,11 @@ class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
             pass
 
     def create_tables(self):
-        self.metadataTable = self.create_recommendation_api_metadata_table()
-        self.candidateTable = self.create_recommendation_api_candidates_table()
-        self.recommendationMetricsTable = self.create_recommendation_metrics_table()
-        self.slateMetricsTable = self.create_slate_metrics_table()
-        self.candidateSetTable = self.create_recommendation_api_candidate_sets_table()
+        self.metadata_table = self.create_recommendation_api_metadata_table()
+        self.candidate_table = self.create_recommendation_api_candidates_table()
+        self.recommendation_metrics_table = self.create_recommendation_metrics_table()
+        self.slate_metrics_table = self.create_slate_metrics_table()
+        self.candidate_set_table = self.create_recommendation_api_candidate_sets_table()
 
     def create_table(self, table_schema) -> DynamoDBServiceResource.Table:
         with open(table_schema) as f:

@@ -1,7 +1,7 @@
 import {Resource} from "cdktf";
 import {Construct} from "constructs";
 import {config} from "./config";
-import {ApplicationDynamoDBTable} from "@pocket/terraform-modules";
+import {ApplicationDynamoDBTable} from "@pocket-tools/terraform-modules";
 import {DataAwsDynamodbTable} from "@cdktf/provider-aws";
 
 export class DynamoDB extends Resource {

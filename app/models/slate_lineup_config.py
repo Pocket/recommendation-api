@@ -3,7 +3,7 @@ import os
 
 from typing import Optional, List
 
-from app.config import JSON_DIR
+from app.config import JSON_DIR, dynamodb
 from app.json.utils import parse_to_dict
 from app.models.metrics.slate_metrics_factory import SlateMetricsFactory
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
@@ -28,7 +28,7 @@ class SlateLineupConfigModel:
     # store loaded slate_lineup configs (loaded at app startup)
     SLATE_LINEUP_CONFIGS_BY_ID = {}
 
-    def __init__(self, slate_lineup_id: str, description: str, experiments=None):
+    def __init__(self, slate_lineup_id: str, description: str, experiments: Optional[List['SlateLineupExperimentModel']] = None):
         self.id = slate_lineup_id
         self.description = description
         self.experiments = experiments or []
@@ -123,9 +123,11 @@ class SlateLineupConfigModel:
             if ranker == 'thompson-sampling':
                 # thompson sampling requires slate metrics
                 ranker_kwargs = {
-                    'metrics': await SlateMetricsFactory().get(slate_lineup_id, [s.id for s in slate_configs])
+                    'metrics': await SlateMetricsFactory(dynamodb_endpoint=dynamodb["endpoint_url"]).get(
+                        slate_lineup_id,
+                        [s.id for s in slate_configs])
                 }
-            elif ranker == "personalized-topics":
+            elif ranker in {"top1-topics", "top3-topics"}:
                 ranker_kwargs = {
                     "personalized_topics": await PersonalizedTopicList.get(user_id)
                 }
