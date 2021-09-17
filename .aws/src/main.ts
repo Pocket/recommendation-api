@@ -6,13 +6,13 @@ import {
   DataAwsKmsAlias,
   DataAwsRegion,
   DataAwsSnsTopic
-} from '../.gen/providers/aws';
+} from '@cdktf/provider-aws';
 import {config} from './config';
 import {DynamoDB} from "./dynamodb";
-import {PocketALBApplication} from "@pocket/terraform-modules";
+import {PocketALBApplication} from "@pocket-tools/terraform-modules";
 import {EventBridgeLambda} from "./eventBridgeLambda";
-import {PocketPagerDuty} from "@pocket/terraform-modules";
-import {PagerdutyProvider} from "../.gen/providers/pagerduty";
+import {PocketPagerDuty} from "@pocket-tools/terraform-modules";
+import {PagerdutyProvider} from "@cdktf/provider-pagerduty";
 import {SqsLambda} from "./sqsLambda";
 import {Elasticache} from "./elasticache";
 
@@ -38,7 +38,6 @@ class RecommendationAPI extends TerraformStack {
       ],
     });
 
-    const isProd : boolean = config.environment === "Prod";
 
     const incidentManagement = new DataTerraformRemoteState(this, 'incident_management', {
       organization: 'Pocket',
@@ -47,13 +46,16 @@ class RecommendationAPI extends TerraformStack {
       }
     });
 
-    const pagerDuty = new PocketPagerDuty(this, 'pagerduty', {
-      prefix: config.prefix,
-      service: {
-        criticalEscalationPolicyId: incidentManagement.get('policy_backend_critical_id'),
-        nonCriticalEscalationPolicyId: incidentManagement.get('policy_backend_non_critical_id')
-      },
-    })
+    let pagerDuty : PocketPagerDuty|undefined = undefined;
+    if (config.isProd) {
+      pagerDuty = new PocketPagerDuty(this, 'pagerduty', {
+        prefix: config.prefix,
+        service: {
+          criticalEscalationPolicyId: incidentManagement.get('policy_backend_critical_id'),
+          nonCriticalEscalationPolicyId: incidentManagement.get('policy_backend_non_critical_id')
+        },
+      });
+    }
 
     const region = new DataAwsRegion(this, 'region');
     const caller = new DataAwsCallerIdentity(this, 'caller');
@@ -243,7 +245,7 @@ class RecommendationAPI extends TerraformStack {
           threshold: 25, // This is a percentage
           evaluationPeriods: 4,
           period: 300, // 5 mins
-          actions: isProd ? [pagerDuty.snsCriticalAlarmTopic.arn] : [],
+          actions: config.isProd ? [pagerDuty!.snsCriticalAlarmTopic.arn] : [],
         },
         httpLatency: {
           // If the latency is greater than 500 ms for 1 hour continuously i.e
@@ -252,7 +254,7 @@ class RecommendationAPI extends TerraformStack {
           period: 900,
           evaluationPeriods: 4,
           threshold: 0.5, // 500ms
-          actions: isProd ? [pagerDuty.snsNonCriticalAlarmTopic.arn] : [],
+          actions: config.isProd ? [pagerDuty!.snsNonCriticalAlarmTopic.arn] : [],
         },
       }
     });
