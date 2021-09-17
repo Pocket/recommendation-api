@@ -11,7 +11,7 @@ import {config} from './config';
 import {DynamoDB} from "./dynamodb";
 import {PocketALBApplication} from "@pocket/terraform-modules";
 import {EventBridgeLambda} from "./eventBridgeLambda";
-import {PocketPagerDuty} from "@pocket/terraform-modules/dist/src/pocket/PocketPagerDuty";
+import {PocketPagerDuty} from "@pocket/terraform-modules";
 import {PagerdutyProvider} from "../.gen/providers/pagerduty";
 import {SqsLambda} from "./sqsLambda";
 import {Elasticache} from "./elasticache";
@@ -246,12 +246,12 @@ class RecommendationAPI extends TerraformStack {
           actions: isProd ? [pagerDuty.snsCriticalAlarmTopic.arn] : [],
         },
         httpLatency: {
-          // If the latency is greater than 150 ms for 1 hour continuously i.e
+          // If the latency is greater than 500 ms for 1 hour continuously i.e
           // breaches the threshold 4 times every 15 minutes,
           // this will go off
           period: 900,
           evaluationPeriods: 4,
-          threshold: 0.15, // 150ms
+          threshold: 0.5, // 500ms
           actions: isProd ? [pagerDuty.snsNonCriticalAlarmTopic.arn] : [],
         },
       }
