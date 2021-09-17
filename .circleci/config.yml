@@ -299,6 +299,7 @@ workflows:
           aws-region: Dev_AWS_DEFAULT_REGION
           repo-name: recommendationapi-dev-app
           ecr-url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
+          extra-build-args: --build-arg GIT_SHA=${CIRCLE_SHA1}
           push: false
           requires:
             - build
@@ -315,6 +316,7 @@ workflows:
           codebuild-project-branch: dev
           repo-name: recommendationapi-dev-app
           ecr-url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
+          extra-build-args: --build-arg GIT_SHA=${CIRCLE_SHA1}
           push: true
           requires:
             - build
@@ -346,6 +348,7 @@ workflows:
           codebuild-project-branch: main
           repo-name: recommendationapi-prod-app
           ecr-url: 996905175585.dkr.ecr.us-east-1.amazonaws.com
+          extra-build-args: --build-arg GIT_SHA=${CIRCLE_SHA1}
           push: true
           requires:
             - build
