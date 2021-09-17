@@ -4,7 +4,7 @@ import os
 import json
 
 from app.models.metrics.metrics_model import MetricsModel
-from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_uncurated_configs, generate_lineup_configs
+from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_nontopic_configs, generate_lineup_configs
 from app.config import ROOT_DIR
 from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist, top1_topics, top3_topics
 from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
@@ -336,7 +336,7 @@ class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
 
     def test_no_topic_slates(self):
         full_topic_profile = self._read_json_asset("recit_full_user_profile.json")
-        input_configs = generate_uncurated_configs()
+        input_configs = generate_nontopic_configs()
 
         for topic_ranker in [top1_topics, top3_topics]:
             self.assertRaises(ValueError, topic_ranker, input_configs, full_topic_profile)
