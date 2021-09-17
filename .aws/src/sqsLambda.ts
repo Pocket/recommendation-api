@@ -2,10 +2,10 @@ import {Resource} from "cdktf";
 import {Construct} from "constructs";
 import {config} from "./config";
 import {ApplicationDynamoDBTable, PocketVPC} from "@pocket/terraform-modules";
-import {PocketSQSWithLambdaTarget} from "@pocket/terraform-modules/dist/src/pocket/PocketSQSWithLambdaTarget";
-import {LAMBDA_RUNTIMES} from "@pocket/terraform-modules/dist/src/base/ApplicationVersionedLambda";
+import {PocketSQSWithLambdaTarget} from "@pocket/terraform-modules";
+import {LAMBDA_RUNTIMES} from "@pocket/terraform-modules";
 import {DataAwsSecretsmanagerSecretVersion, DataAwsSsmParameter} from "../.gen/providers/aws";
-import {PocketPagerDuty} from "@pocket/terraform-modules/dist/src/pocket/PocketPagerDuty";
+import {PocketPagerDuty} from "@pocket/terraform-modules";
 
 
 export class SqsLambda extends Resource {
