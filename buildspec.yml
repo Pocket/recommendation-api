@@ -53,7 +53,6 @@ phases:
       - tfenv use $(cat .terraform-version)
 
       - npm install
-      - npm run get
       - npm run build
       # synthesize the js into terraform json with the proper node environment
       - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then NODE_ENV=development npm run synth; else npm run synth; fi'
