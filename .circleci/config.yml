@@ -2,30 +2,91 @@ version: 2.1
 
 orbs:
   aws-cli: circleci/aws-cli@1.2.1
-  aws-ecr: circleci/aws-ecr@6.10.0
   aws-ecs: circleci/aws-ecs@2.0.0
-  pocket: pocket/circleci-orbs@1.0.0
-  queue: eddiewebb/queue@1.5.0
+  pocket: pocket/circleci-orbs@1.2.0
+
+# Workflow shortcuts
+not_main: &not_main
+  filters:
+    branches:
+      ignore:
+        - main
+
+only_main: &only_main
+  filters:
+    branches:
+      only:
+        - main
+
+not_dev: &not_dev
+  filters:
+    branches:
+      ignore:
+        - dev
+
+not_dev_main: &not_dev_main
+  filters:
+    branches:
+      ignore:
+        - dev
+        - main
+
+only_dev: &only_dev
+  filters:
+    branches:
+      only:
+        - dev
 
 jobs:
-
   apollo:
     docker:
-      - image: circleci/node:15
+      - image: circleci/node:16
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - run:
-          name: install apollo
-          # CircleCI needs global installs to be sudo
+          name: install rover
           command: |
-            sudo npm install -g apollo
+            # download and install Rover
+            curl -sSL https://rover.apollo.dev/nix/v0.1.0 | sh
+            # This allows the PATH changes to persist to the next `run` step
+            echo 'export PATH=$HOME/.rover/bin:$PATH' >> $BASH_ENV
       - run:
-          name: push service
+          name: check service
+          command: rover subgraph check pocket-client-api@current --schema ./schema.graphql --name=list
+      - when:
+          condition:
+            equal: [main, << pipeline.git.branch >>]
+          steps:
+            - run:
+                name: push service
+                command: rover subgraph publish pocket-client-api@current --schema ./schema.graphql --routing-url https://recommendation-api.readitlater.com/ --name=recommendation-api
+
+  build:
+    #Sets up the code for the docker image to build in
+    #Other repos at Pocket use this to install modules and or compile the code.
+    docker:
+      - image: python:3.8
+    steps:
+      - checkout
+      # Define the working directory for this job
+      - attach_workspace:
+          at: /tmp/workspace
+
+      # Copy built files to app_prod folder
+      - run:
+          name: Setup workspace
           command: |
-            apollo service:push --graph=pocket-client-api --localSchemaFile=schema.graphql --key=$APOLLO_KEY --serviceURL=https://recommendation-api.readitlater.com/ --serviceName=recommendation-api
+            mkdir -p /tmp/workspace/app_prod
+            cp -r . /tmp/workspace/app_prod
+            cp .docker/images/app/Dockerfile /tmp/workspace/app_prod/
+      # Persist built files to workspace
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - app_prod
 
   test_app:
     docker:
@@ -116,59 +177,6 @@ jobs:
       - store_test_results:
           path: test-reports
 
-  docker_build:
-    parameters:
-      tag:
-        description: 'The docker tag name'
-        type: string
-      environment:
-        description: 'The environment name'
-        type: string
-      ecr_url:
-        description: 'The ecr url'
-        type: string
-      repo_name:
-        description: 'The ecr repo name'
-        type: string
-      push:
-        description: 'Whether or not to push the code'
-        type: boolean
-        default: false
-    docker:
-      - image: cimg/base:2020.01
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-    steps:
-      - checkout
-      - run:
-          name: Setup common environment variables
-          command: |
-            echo 'export AWS_ECR_ACCOUNT_URL="<< parameters.ecr_url >>"' >> $BASH_ENV
-            echo 'export AWS_REGION=${<< parameters.environment >>_AWS_DEFAULT_REGION}' >> $BASH_ENV
-      - run:
-          name: Setup docker build
-          command: |
-            cp .docker/images/app/Dockerfile .
-      - when:
-          condition: <<parameters.push>>
-          steps:
-            - aws-ecr/build-and-push-image:
-                checkout: false
-                repo: << parameters.repo_name >>
-                setup-remote-docker: true
-                aws-access-key-id: << parameters.environment >>_AWS_ACCESS_KEY
-                aws-secret-access-key: << parameters.environment >>_AWS_SECRET_ACCESS_KEY
-                tag: << parameters.tag >>
-                extra-build-args: --build-arg GIT_SHA=${CIRCLE_SHA1}
-      - unless:
-          condition: <<parameters.push>>
-          steps:
-            - setup_remote_docker
-            - aws-ecr/build-image:
-                repo: << parameters.repo_name >>
-                tag: << parameters.tag >>
-                extra-build-args: --build-arg GIT_SHA=${CIRCLE_SHA1}
   lambda:
     description: Builds and Optionaly deploys all the associated lambdas
     parameters:
@@ -243,45 +251,6 @@ jobs:
       - store_artifacts:
           path: /tmp/build.zip
 
-# Workflow shortcuts
-not_main: &not_main
-  filters:
-    branches:
-      ignore:
-        - main
-
-only_main: &only_main
-  filters:
-    branches:
-      only:
-        - main
-
-not_dev: &not_dev
-  filters:
-    branches:
-      ignore:
-        - dev
-
-only_dev_main: &only_dev_main
-  filters:
-    branches:
-      only:
-        - dev
-        - main
-
-not_dev_main: &not_dev_main
-  filters:
-    branches:
-      ignore:
-        - dev
-        - main
-
-only_dev: &only_dev
-  filters:
-    branches:
-      only:
-        - dev
-
 workflows:
   all:
     jobs:
@@ -295,7 +264,8 @@ workflows:
       - apollo:
           <<: *only_main
           requires:
-            - deploy_ecs_prod
+            - deploy_prod
+      - build
 
       # Build & Deploy Development Lambdas
       - lambda:
@@ -320,86 +290,85 @@ workflows:
             - setup-deploy-params-prod
 
       # Try building the ECS docker image on each branch
-      - docker_build:
+      - pocket/docker_build:
           <<: *not_dev_main
           context: pocket
           name: build_docker
-          environment: 'Dev'
-          tag: latest,$CIRCLE_SHA1
-          repo_name: recommendationapi-dev-app
-          ecr_url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
-          push: false
-
-      # Build & Deploy the Dev Docker Image
-      - docker_build:
-          <<: *only_dev
-          context: pocket
-          name: build_docker_dev
-          environment: 'Dev'
-          tag: latest,$CIRCLE_SHA1
-          repo_name: recommendationapi-dev-app
-          ecr_url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
-          push: true
-
-      - queue/block_workflow:
-          <<: *only_dev_main
-          context: pocket
-          name: wait_for_deploy_queue
-          time: '30'
-
-      - aws-ecs/deploy-service-update:
-          <<: *only_dev
-          context: pocket
-          name: deploy_ecs_dev
-          family: 'RecommendationAPI-Dev'
-          cluster-name: 'RecommendationAPI-Dev'
-          deployment-controller: 'CODE_DEPLOY'
-          codedeploy-application-name: 'RecommendationAPI-Dev-ECS'
-          codedeploy-deployment-group-name: 'RecommendationAPI-Dev-ECS'
-          codedeploy-load-balanced-container-name: app
-          codedeploy-load-balanced-container-port: 8000
-          container-image-name-updates: 'container=app,image-and-tag=410318598490.dkr.ecr.us-east-1.amazonaws.com/recommendationapi-dev-app:$CIRCLE_SHA1'
           aws-access-key-id: Dev_AWS_ACCESS_KEY
           aws-secret-access-key: Dev_AWS_SECRET_ACCESS_KEY
           aws-region: Dev_AWS_DEFAULT_REGION
-          verify-revision-is-deployed: true
-          verification-timeout: '30'
+          repo-name: recommendationapi-dev-app
+          ecr-url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
+          extra-build-args: --build-arg GIT_SHA=${CIRCLE_SHA1}
+          push: false
+          requires:
+            - build
+
+      # Build & Deploy the Dev Docker Image
+      - pocket/docker_build:
+          <<: *only_dev
+          context: pocket
+          name: build_docker_dev
+          aws-access-key-id: Dev_AWS_ACCESS_KEY
+          aws-secret-access-key: Dev_AWS_SECRET_ACCESS_KEY
+          aws-region: Dev_AWS_DEFAULT_REGION
+          codebuild-project-name: RecommendationAPI-Dev
+          codebuild-project-branch: dev
+          repo-name: recommendationapi-dev-app
+          ecr-url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
+          extra-build-args: --build-arg GIT_SHA=${CIRCLE_SHA1}
+          push: true
+          requires:
+            - build
+
+      # Dev
+      - pocket/execute_codepipeline:
+          <<: *only_dev
+          context: pocket
+          name: deploy_dev
+          environment: Dev
+          aws-access-key-id: Dev_AWS_ACCESS_KEY
+          aws-secret-access-key: Dev_AWS_SECRET_ACCESS_KEY
+          aws-region: Dev_AWS_DEFAULT_REGION
+          codepipeline-name: RecommendationAPI-Dev-CodePipeline
+          codebuild-project-name: RecommendationAPI-Dev
+          codebuild-project-branch: dev
           requires:
             - build_docker_dev
-            - wait_for_deploy_queue
 
-      # Bu›ild & Deploy the Prod Docker Image
-      - docker_build:
+      # Build & Deploy the Prod Docker Image
+      - pocket/docker_build:
           <<: *only_main
           context: pocket
           name: build_docker_prod
-          environment: 'Prod'
-          tag: latest,$CIRCLE_SHA1
-          repo_name: recommendationapi-prod-app
-          ecr_url: 996905175585.dkr.ecr.us-east-1.amazonaws.com
-          push: true
-
-      - aws-ecs/deploy-service-update:
-          <<: *only_main
-          name: deploy_ecs_prod
-          context: pocket
-          family: 'RecommendationAPI-Prod'
-          cluster-name: 'RecommendationAPI-Prod'
-          deployment-controller: 'CODE_DEPLOY'
-          codedeploy-application-name: 'RecommendationAPI-Prod-ECS'
-          codedeploy-deployment-group-name: 'RecommendationAPI-Prod-ECS'
-          codedeploy-load-balanced-container-name: app
-          codedeploy-load-balanced-container-port: 8000
-          container-image-name-updates: 'container=app,image-and-tag=996905175585.dkr.ecr.us-east-1.amazonaws.com/recommendationapi-prod-app:$CIRCLE_SHA1'
           aws-access-key-id: Prod_AWS_ACCESS_KEY
           aws-secret-access-key: Prod_AWS_SECRET_ACCESS_KEY
           aws-region: Prod_AWS_DEFAULT_REGION
-          verify-revision-is-deployed: true
-          verification-timeout: '30'
+          codebuild-project-name: RecommendationAPI-Prod
+          codebuild-project-branch: main
+          repo-name: recommendationapi-prod-app
+          ecr-url: 996905175585.dkr.ecr.us-east-1.amazonaws.com
+          extra-build-args: --build-arg GIT_SHA=${CIRCLE_SHA1}
+          push: true
+          requires:
+            - build
+
+      # Prod
+      - pocket/execute_codepipeline:
+          <<: *only_main
+          context: pocket
+          name: deploy_prod
+          environment: Prod
+          aws-access-key-id: Prod_AWS_ACCESS_KEY
+          aws-secret-access-key: Prod_AWS_SECRET_ACCESS_KEY
+          aws-region: Prod_AWS_DEFAULT_REGION
+          codepipeline-name: RecommendationAPI-Prod-CodePipeline
+          codebuild-project-name: RecommendationAPI-Prod
+          codebuild-project-branch: main
           requires:
             - build_docker_prod
-            - wait_for_deploy_queue
 
+      # Prod
       - pocket/setup_deploy_params:
           <<: *only_main
           name: setup-deploy-params-prod
@@ -409,6 +378,7 @@ workflows:
           env: Prod
           service_name: RecommendationAPI
 
+      # Dev
       - pocket/setup_deploy_params:
           <<: *only_dev
           name: setup-deploy-params-dev
@@ -429,7 +399,7 @@ workflows:
           sentry_org: pocket
           workspace-path: /tmp/workspace
           requires:
-            - deploy_ecs_prod
+            - deploy_prod
 
       # Notify sentry of dev deployment
       - pocket/sentry_release_notification:
@@ -442,4 +412,4 @@ workflows:
           sentry_org: pocket
           workspace-path: /tmp/workspace
           requires:
-            - deploy_ecs_dev
+            - deploy_dev
