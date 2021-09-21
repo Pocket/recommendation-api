@@ -1,2 +1,2 @@
-#All Files/PRS
-*                         @pocket/backend
+app/json/*.json @pocket/datalearning
+*               @pocket/dataengineering
