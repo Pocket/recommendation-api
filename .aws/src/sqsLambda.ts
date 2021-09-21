@@ -68,14 +68,14 @@ export class SqsLambda extends Resource {
             period: 10800, // 3 hours
             threshold: 1,
             comparisonOperator: 'LessThanThreshold',
-            actions: config.isProd ? [pagerDuty!.snsNonCriticalAlarmTopic.arn] : [],
+            actions: config.isDev ? [] : [pagerDuty!.snsNonCriticalAlarmTopic.arn],
             treatMissingData: 'breaching'
           },
           errors: {
             evaluationPeriods: 3,
             period: 3600, // 1 hour
             threshold: 20,
-            actions: config.isProd ? [pagerDuty!.snsNonCriticalAlarmTopic.arn] : []
+            actions: config.isDev ? [] : [pagerDuty!.snsNonCriticalAlarmTopic.arn]
           }
         }
       },

@@ -7,15 +7,16 @@ version: 0.2
 #####
 
 env:
-  shell: /bin/bash
   variables:
     #Terraform workspace that we operate in
     TF_DEV_WORKSPACE: Dev
     TF_WORKSPACE: Prod
     #The ref of the main branch we work against
-    MAIN_BRANCH: 'refs/heads/main'
+    MAIN_BRANCH_REF: 'refs/heads/main'
+    MAIN_BRANCH: 'main'
     #The ref of the dev branch we work against
-    DEV_BRANCH: 'refs/heads/dev'
+    DEV_BRANCH_REF: 'refs/heads/dev'
+    DEV_BRANCH: 'dev'
     #Metaflow requires a username to run
     USERNAME: 'codebuild'
   secrets-manager:
@@ -28,7 +29,7 @@ env:
 phases:
   install:
     commands:
-      - echo Installing JQ, AWS CLI, Perl Utils, Node, NPM
+      - echo Installing utilities necessary. Eventually we will bake these into an image..
       # Within our terraform files we execute jq, and aws-cli and python
       - apt-get -qq update && apt-get -qq install jq nodejs npm curl wget awscli > /dev/null
 
@@ -62,11 +63,19 @@ phases:
     commands:
       - echo Build started on `date`
       ### If the branch is not main and its not dev, lets do a plan on prod.
-      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" != "$MAIN_BRANCH" ] && [ "$CODEBUILD_WEBHOOK_HEAD_REF" != "$DEV_BRANCH" ]; then terraform plan -lock=false -refresh=false -no-color; fi'
+      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" != "$MAIN_BRANCH_REF" ] && [ "$CODEBUILD_WEBHOOK_HEAD_REF" != "$DEV_BRANCH_REF" ]; then terraform plan -lock=false -refresh=false -no-color; fi'
       #### If the branch is dev, lets do an apply on dev.
-      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then TF_WORKSPACE=$TF_DEV_WORKSPACE TF_LOG=INFO terraform apply -auto-approve -no-color; fi'
+      - 'if [ "$GIT_BRANCH" == "$DEV_BRANCH" ]; then TF_WORKSPACE=$TF_DEV_WORKSPACE TF_LOG=INFO terraform apply -auto-approve -no-color; fi'
       #### If the branch is main lets apply.
-      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$MAIN_BRANCH" ]; then terraform apply -auto-approve -no-color; fi'
+      - 'if [ "$GIT_BRANCH" == "$MAIN_BRANCH" ]; then terraform apply -auto-approve -no-color; fi'
   post_build:
     commands:
+      - 'if [ "$GIT_BRANCH" == "$MAIN_BRANCH" ] || [ "$GIT_BRANCH" == "$DEV_BRANCH" ]; then cp appspec.json taskdef.json ../../../../; fi'
+      # get back to the root dir
+      - cd ../../
       - echo Build completed on `date`
+
+artifacts:
+  files:
+    - taskdef.json
+    - appspec.json
