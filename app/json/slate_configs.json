@@ -1,8 +1,9 @@
 [
   {
     "id": "de254c5d-57a7-4553-850f-153ee385014d",
-    "displayName": "Editors' Picks",
-    "description": "Curated items that are over a week old",
+    "displayName": "Must-read stories",
+    "description": "Compelling articles worth your time",
+    "internalDescription": "Curated items that are over a week old",
     "experiments": [
       {
         "description": "default",
@@ -30,8 +31,9 @@
   },
   {
     "id": "2389f563-bd42-411d-bca2-0966638053e8",
-    "displayName": "Editors' Picks",
-    "description": "Curated items that are over a week old without syndicated",
+    "displayName": "Pocket worthy",
+    "description": "Fascinating stories to fill your Pocket with",
+    "internalDescription": "Curated items that are over a week old without syndicated",
     "experiments": [
       {
         "description": "default",
@@ -60,7 +62,8 @@
   {
     "id": "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
     "displayName": "Editors' Picks",
-    "description": "Curated items excluding syndicated that are at most a week old",
+    "description": "Great reads from around the web, curated by Pocket",
+    "internalDescription": "Curated items excluding syndicated that are at most a week old",
     "experiments": [
       {
         "description": "default",
@@ -89,7 +92,8 @@
   {
     "id": "9dc26792-10ed-4fbe-a13d-6cce3a89b0a1",
     "displayName": "Editors' Picks",
-    "description": "QA slate duplicated from 2e3ddc90-8def-46d7-b85f-da7525c66fb1 that is only used for QA purposes",
+    "description": "Great reads from around the web, curated by Pocket",
+    "internalDescription": "QA slate duplicated from 2e3ddc90-8def-46d7-b85f-da7525c66fb1 that is only used for QA purposes",
     "experiments": [
       {
         "description": "default",
@@ -117,8 +121,9 @@
   },
   {
     "id": "48e766be-5e96-46fb-acbf-55fee3ae8a28",
-    "displayName": "Editors' Picks",
-    "description": "Top 5 curated items excluding syndicated that are at most a week old",
+    "displayName": "Spotlight",
+    "description": "Essential articles to save to your Pocket",
+    "internalDescription": "Top 5 curated items excluding syndicated that are at most a week old",
     "experiments": [
       {
         "description": "default",
@@ -148,8 +153,9 @@
   },
   {
     "id": "0737b00e-a21e-4875-a4c7-3e14926d4acf",
-    "displayName": "Editors' Picks",
-    "description": "Curated items including syndicated that are at most a week old",
+    "displayName": "Best of the web",
+    "description": "New perspectives, intriguing deep-dives, and timeless classics",
+    "internalDescription": "Curated items including syndicated that are at most a week old",
     "experiments": [
       {
         "description": "default",
@@ -185,7 +191,8 @@
   {
     "id": "631d8077-1462-4397-ad0a-aa340c27570a",
     "displayName": "Editors' Picks, Just For You",
-    "description": "Curated Personalized",
+    "description": "Stories to fuel your mind, curated for your interests",
+    "internalDescription": "Curated Personalized",
     "experiments": [
       {
         "description": "recit-personalized curated",
@@ -202,8 +209,9 @@
   },
   {
     "id": "ad73c061-5ac5-458f-8691-ab071f7eadd7",
-    "displayName": "Personalized picks popular with pocket readers",
-    "description": "Best of Personalized",
+    "displayName": "Popular Pocket picks, curated for you",
+    "description": "Thought-provoking stories and hidden gems that feed your interests",
+    "internalDescription": "Best of Personalized",
     "experiments": [
       {
         "description": "recit-personalized",
@@ -221,6 +229,7 @@
     "id": "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
     "displayName": "Popular with Pocket readers  Stories from across the web",
     "description": "Algorithmic Business Slate",
+    "curatorTopicLabel": "Business",
     "experiments": [
       {
         "description": "algorithmic business items, thompson-sampling30",
@@ -298,6 +307,7 @@
     "id": "e6c8db8d-cae7-4947-a57e-872dec639472",
     "displayName": "Popular with Pocket readers  Stories from across the web",
     "description": "Algorithmic Career Slate",
+    "curatorTopicLabel": "Career",
     "experiments": [
       {
         "description": "algorithmic career items, thompson-sampling30",
@@ -375,6 +385,7 @@
     "id": "8aaac382-9c27-42ab-9470-ac1dfc666262",
     "displayName": "Popular with Pocket readers  Stories from across the web",
     "description": "Algorithmic Education Slate",
+    "curatorTopicLabel": "Education",
     "experiments": [
       {
         "description": "algorithmic education items, thompson-sampling30",
@@ -452,6 +463,7 @@
     "id": "ce96db55-f32e-48f1-929f-216eb2e8c082",
     "displayName": "Popular with Pocket readers  Stories from across the web",
     "description": "Algorithmic Entertainment Slate",
+    "curatorTopicLabel": "Entertainment",
     "experiments": [
       {
         "description": "algorithmic entertainment items, thompson-sampling30",
@@ -529,6 +541,7 @@
     "id": "884414d5-502d-4e1a-8e70-1dc8eb4a345a",
     "displayName": "Popular with Pocket readers  Stories from across the web",
     "description": "Algorithmic Food Slate",
+    "curatorTopicLabel": "Food",
     "experiments": [
       {
         "description": "algorithmic food items, thompson-sampling30",
@@ -606,6 +619,7 @@
     "id": "44dff273-3604-40e9-a0b5-bf3852581990",
     "displayName": "Popular with Pocket readers  Stories from across the web",
     "description": "Algorithmic Gaming Slate",
+    "curatorTopicLabel": "Gaming",
     "experiments": [
       {
         "description": "algorithmic gaming items, thompson-sampling30",
@@ -683,6 +697,7 @@
     "id": "494eaa68-f048-4f52-bb9a-5e7d2526f5cb",
     "displayName": "Popular with Pocket readers  Stories from across the web",
     "description": "Algorithmic Health Slate",
+    "curatorTopicLabel": "Health & Fitness",
     "experiments": [
       {
         "description": "algorithmic health items, thompson-sampling30",
@@ -760,6 +775,7 @@
     "id": "e6600ffe-b65a-42d3-b570-f460f3d7326e",
     "displayName": "Popular with Pocket readers  Stories from across the web",
     "description": "Algorithmic Parenting Slate",
+    "curatorTopicLabel": "Parenting",
     "experiments": [
       {
         "description": "algorithmic parenting items, thompson-sampling30",
@@ -826,6 +842,7 @@
     "id": "72ce0827-9dbc-470f-9722-39476daaeb0f",
     "displayName": "Popular with Pocket readers  Stories from across the web",
     "description": "Algorithmic Personal Finance Slate",
+    "curatorTopicLabel": "Personal Finance",
     "experiments": [
       {
         "description": "algorithmic personal finance items, thompson-sampling30",
@@ -932,6 +949,7 @@
     "id": "9901851d-ea76-4667-8dc7-0c1677ecb910",
     "displayName": "Popular with Pocket readers  Stories from across the web",
     "description": "Algorithmic Politics Slate",
+    "curatorTopicLabel": "Politics",
     "experiments": [
       {
         "description": "algorithmic politics items, thompson-sampling30",
@@ -1009,6 +1027,7 @@
     "id": "ab6048ca-5c61-4e87-aefd-7a612b60ab7b",
     "displayName": "Popular with Pocket readers  Stories from across the web",
     "description": "Algorithmic Science Slate",
+    "curatorTopicLabel": "Science",
     "experiments": [
       {
         "description": "algorithmic science items, thompson-sampling30",
@@ -1086,6 +1105,7 @@
     "id": "47688fcf-2bbb-4e0e-a02e-1f68c248a67e",
     "displayName": "Popular with Pocket readers  Stories from across the web",
     "description": "Algorithmic Self-Improvement Slate",
+    "curatorTopicLabel": "Self Improvement",
     "experiments": [
       {
         "description": "algorithmic self-improvement items, thompson-sampling30",
@@ -1163,6 +1183,7 @@
     "id": "8a495385-9972-4d0e-b93e-4234f4897939",
     "displayName": "Popular with Pocket readers  Stories from across the web",
     "description": "Algorithmic Sports Slate",
+    "curatorTopicLabel": "Sports",
     "experiments": [
       {
         "description": "algorithmic sports items, thompson-sampling30",
@@ -1240,6 +1261,7 @@
     "id": "fa61096a-b681-4251-b299-2fda06c49ebf",
     "displayName": "Popular with Pocket readers  Stories from across the web",
     "description": "Algorithmic Technology Slate",
+    "curatorTopicLabel": "Technology",
     "experiments": [
       {
         "description": "algorithmic technology items, thompson-sampling30",
@@ -1317,6 +1339,7 @@
     "id": "d024ce9c-ed96-453f-a81e-8a0b850681e7",
     "displayName": "Popular with Pocket readers  Stories from across the web",
     "description": "Algorithmic Travel Slate",
+    "curatorTopicLabel": "Travel",
     "experiments": [
       {
         "description": "algorithmic travel items, thompson-sampling30",
@@ -1437,16 +1460,15 @@
   },
   {
     "id": "4d95bade-8a43-4700-9879-3a73ba1da640",
-    "displayName": "There’s nothing like getting lost in a fascinating story — and now is a better time than any to dive into another world.",
-    "description": "10 Incredible Long-Reads That’ll Transport You to Another Time and Place",
+    "displayName": "Incredible long reads that’ll transport you to another time and place",
+    "description": "Dive into another world with these fascinating stories",
     "experiments": [
       {
         "description": "10 incredible long reads collection",
         "candidateSets": [
-          "860ba820-9ef2-589b-bba8-a2b639e67cb6"
+          "adfdd1fd-28cb-5b2a-9d06-cdac7d949245"
         ],
         "rankers": [
-          "top30",
           "thompson-sampling"
         ]
       }
@@ -1454,16 +1476,15 @@
   },
   {
     "id": "8944f662-cfc7-4fcb-a510-55a8589b08e7",
-    "displayName": "There’s nothing better for your health, wallet, or personal sense of accomplishment than learning how to cook. We’ve pulled together the best resources to help you establish confidence in the kitchen, from proper preparation and creative shortcuts to mastering simple but brilliant techniques. Grab your knives (carefully!) and let’s get started.",
-    "description": "How to start cooking collection items",
+    "displayName": "How to start cooking",
+    "description": "Get comfortable in the kitchen with beginner-friendly tips and techniques",
     "experiments": [
       {
         "description": "How to start cooking",
         "candidateSets": [
-          "d89008c0-730f-569c-95d8-6241d43317c3"
+          "243cac7e-fa75-5aa2-81d7-f7b40e942805"
         ],
         "rankers": [
-          "top30",
           "thompson-sampling"
         ]
       }
@@ -1472,7 +1493,8 @@
   {
     "id": "626397d3-fa4e-4299-8d07-cbeaa269ebc1",
     "displayName": "Ten Minutes or Less",
-    "description": "Curated short reads excluding syndicated",
+    "description": "Smart, quick reads from trusted sources",
+    "internalDescription": "Curated short reads excluding syndicated",
     "experiments": [
       {
         "description": "No syndicated short reads",
@@ -1490,7 +1512,8 @@
   {
     "id": "8fa462a6-81d1-47ee-8de3-1e5e0030e6d6",
     "displayName": "Long Reads Worth the Time",
-    "description": "Curated long reads excluding syndicated",
+    "description": "The best longform journalism and essays popular in Pocket",
+    "internalDescription": "Curated long reads excluding syndicated",
     "experiments": [
       {
         "description": "No syndicated long reads",
@@ -1508,7 +1531,7 @@
   {
     "id": "2f2a3568-901f-4655-8735-daf67e8ecc5d",
     "displayName": "In Case You Missed It",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "description": "Great stories that stand the test of time",
     "experiments": [
       {
         "description": "Syndicated by total score",

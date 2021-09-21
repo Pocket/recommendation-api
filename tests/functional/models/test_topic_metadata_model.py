@@ -49,7 +49,7 @@ class TestTopicMetadata(TestDynamoDBBase):
             await TopicModel.get_topic(slug='stonks')
 
     def populate_metadata_table(self):
-        self.metadataTable.put_item(Item={
+        self.metadata_table.put_item(Item={
             'id': 'a187ffb4-5c6f-4079-bad9-92442e97bdd1',
             "display_name": 'tech',
             "slug": 'tech',
@@ -60,7 +60,7 @@ class TestTopicMetadata(TestDynamoDBBase):
             "is_promoted": False
         })
 
-        self.metadataTable.put_item(Item={
+        self.metadata_table.put_item(Item={
             'id': 'a187ffb4-5c6f-4079-bad9-asd23234234',
             "display_name": 'Business',
             "slug": 'business',

@@ -23,7 +23,7 @@ class TestGraphQLMetadata(TestDynamoDBBase):
         }
 
     def populate_metadata_table(self):
-        self.metadataTable.put_item(Item={
+        self.metadata_table.put_item(Item={
             'id': 'a187ffb4-5c6f-4079-bad9-92442e97bdd1',
             "display_name": 'tech',
             "page_type": 'topic_page',

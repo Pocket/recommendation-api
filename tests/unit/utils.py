@@ -28,10 +28,7 @@ def generate_curated_configs() -> List[SlateConfigModel]:
     :return:
     '''
 
-    slate_configs = SlateConfigModel.load_slate_configs()
-    SlateConfigModel.SLATE_CONFIGS_BY_ID = {s.id: s for s in slate_configs}
-    slate_lineup_configs = SlateLineupConfigModel.load_slate_lineup_configs()
-    SlateLineupConfigModel.SLATE_LINEUP_CONFIGS_BY_ID = {lc.id: lc for lc in slate_lineup_configs}
+    initialize_slate_lineups()
 
     input_lineup = SlateLineupConfigModel.SLATE_LINEUP_CONFIGS_BY_ID[ALL_CURATED_TOPICS_LINEUP]
     input_slates = input_lineup.experiments[0].slates
@@ -41,11 +38,18 @@ def generate_curated_configs() -> List[SlateConfigModel]:
 
     return input_configs
 
-def generate_uncurated_configs() -> List[SlateConfigModel]:
 
+def initialize_slate_lineups():
     slate_configs = SlateConfigModel.load_slate_configs()
-    # two algorithmic topic slates
-    input_slates = ["d024ce9c-ed96-453f-a81e-8a0b850681e7", "fa61096a-b681-4251-b299-2fda06c49ebf"]
+    SlateConfigModel.SLATE_CONFIGS_BY_ID = {s.id: s for s in slate_configs}
+    slate_lineup_configs = SlateLineupConfigModel.load_slate_lineup_configs()
+    SlateLineupConfigModel.SLATE_LINEUP_CONFIGS_BY_ID = {lc.id: lc for lc in slate_lineup_configs}
+
+
+def generate_nontopic_configs() -> List[SlateConfigModel]:
+    slate_configs = SlateConfigModel.load_slate_configs()
+    # Two non-topic slates
+    input_slates = ["de254c5d-57a7-4553-850f-153ee385014d", "48e766be-5e96-46fb-acbf-55fee3ae8a28"]
     input_configs = [c for c in slate_configs if c.id in input_slates]
 
     return input_configs
