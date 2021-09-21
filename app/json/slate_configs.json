@@ -227,7 +227,7 @@
   },
   {
     "id": "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
-    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Recommended in Business",
     "description": "Algorithmic Business Slate",
     "curatorTopicLabel": "Business",
     "experiments": [
@@ -305,7 +305,7 @@
   },
   {
     "id": "e6c8db8d-cae7-4947-a57e-872dec639472",
-    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Recommended in Career",
     "description": "Algorithmic Career Slate",
     "curatorTopicLabel": "Career",
     "experiments": [
@@ -383,7 +383,7 @@
   },
   {
     "id": "8aaac382-9c27-42ab-9470-ac1dfc666262",
-    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Recommended in Education",
     "description": "Algorithmic Education Slate",
     "curatorTopicLabel": "Education",
     "experiments": [
@@ -461,7 +461,7 @@
   },
   {
     "id": "ce96db55-f32e-48f1-929f-216eb2e8c082",
-    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Recommended in Entertainment",
     "description": "Algorithmic Entertainment Slate",
     "curatorTopicLabel": "Entertainment",
     "experiments": [
@@ -539,7 +539,7 @@
   },
   {
     "id": "884414d5-502d-4e1a-8e70-1dc8eb4a345a",
-    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Recommended in Food",
     "description": "Algorithmic Food Slate",
     "curatorTopicLabel": "Food",
     "experiments": [
@@ -617,7 +617,7 @@
   },
   {
     "id": "44dff273-3604-40e9-a0b5-bf3852581990",
-    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Recommended in Gaming",
     "description": "Algorithmic Gaming Slate",
     "curatorTopicLabel": "Gaming",
     "experiments": [
@@ -695,7 +695,7 @@
   },
   {
     "id": "494eaa68-f048-4f52-bb9a-5e7d2526f5cb",
-    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Recommended in Health & Fitness",
     "description": "Algorithmic Health Slate",
     "curatorTopicLabel": "Health & Fitness",
     "experiments": [
@@ -773,7 +773,7 @@
   },
   {
     "id": "e6600ffe-b65a-42d3-b570-f460f3d7326e",
-    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Recommended in Parenting",
     "description": "Algorithmic Parenting Slate",
     "curatorTopicLabel": "Parenting",
     "experiments": [
@@ -840,7 +840,7 @@
   },
   {
     "id": "72ce0827-9dbc-470f-9722-39476daaeb0f",
-    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Recommended in Personal Finance",
     "description": "Algorithmic Personal Finance Slate",
     "curatorTopicLabel": "Personal Finance",
     "experiments": [
@@ -947,7 +947,7 @@
   },
   {
     "id": "9901851d-ea76-4667-8dc7-0c1677ecb910",
-    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Recommended in Politics",
     "description": "Algorithmic Politics Slate",
     "curatorTopicLabel": "Politics",
     "experiments": [
@@ -1025,7 +1025,7 @@
   },
   {
     "id": "ab6048ca-5c61-4e87-aefd-7a612b60ab7b",
-    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Recommended in Science",
     "description": "Algorithmic Science Slate",
     "curatorTopicLabel": "Science",
     "experiments": [
@@ -1103,7 +1103,7 @@
   },
   {
     "id": "47688fcf-2bbb-4e0e-a02e-1f68c248a67e",
-    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Recommended in Self-Improvement",
     "description": "Algorithmic Self-Improvement Slate",
     "curatorTopicLabel": "Self Improvement",
     "experiments": [
@@ -1181,7 +1181,7 @@
   },
   {
     "id": "8a495385-9972-4d0e-b93e-4234f4897939",
-    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Recommended in Sports",
     "description": "Algorithmic Sports Slate",
     "curatorTopicLabel": "Sports",
     "experiments": [
@@ -1259,7 +1259,7 @@
   },
   {
     "id": "fa61096a-b681-4251-b299-2fda06c49ebf",
-    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Recommended in Technology",
     "description": "Algorithmic Technology Slate",
     "curatorTopicLabel": "Technology",
     "experiments": [
@@ -1337,7 +1337,7 @@
   },
   {
     "id": "d024ce9c-ed96-453f-a81e-8a0b850681e7",
-    "displayName": "Popular with Pocket readers  Stories from across the web",
+    "displayName": "Recommended in Travel",
     "description": "Algorithmic Travel Slate",
     "curatorTopicLabel": "Travel",
     "experiments": [
