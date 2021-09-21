@@ -1,8 +1,9 @@
 [
   {
     "id": "de254c5d-57a7-4553-850f-153ee385014d",
-    "displayName": "Editors' Picks",
-    "description": "Curated items that are over a week old",
+    "displayName": "Must-read stories",
+    "description": "Compelling articles worth your time",
+    "internalDescription": "Curated items that are over a week old",
     "experiments": [
       {
         "description": "default",
@@ -30,8 +31,9 @@
   },
   {
     "id": "2389f563-bd42-411d-bca2-0966638053e8",
-    "displayName": "Editors' Picks",
-    "description": "Curated items that are over a week old without syndicated",
+    "displayName": "Pocket worthy",
+    "description": "Fascinating stories to fill your Pocket with",
+    "internalDescription": "Curated items that are over a week old without syndicated",
     "experiments": [
       {
         "description": "default",
@@ -60,7 +62,8 @@
   {
     "id": "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
     "displayName": "Editors' Picks",
-    "description": "Curated items excluding syndicated that are at most a week old",
+    "description": "Great reads from around the web, curated by Pocket",
+    "internalDescription": "Curated items excluding syndicated that are at most a week old",
     "experiments": [
       {
         "description": "default",
@@ -89,7 +92,8 @@
   {
     "id": "9dc26792-10ed-4fbe-a13d-6cce3a89b0a1",
     "displayName": "Editors' Picks",
-    "description": "QA slate duplicated from 2e3ddc90-8def-46d7-b85f-da7525c66fb1 that is only used for QA purposes",
+    "description": "Great reads from around the web, curated by Pocket",
+    "internalDescription": "QA slate duplicated from 2e3ddc90-8def-46d7-b85f-da7525c66fb1 that is only used for QA purposes",
     "experiments": [
       {
         "description": "default",
@@ -117,8 +121,9 @@
   },
   {
     "id": "48e766be-5e96-46fb-acbf-55fee3ae8a28",
-    "displayName": "Editors' Picks",
-    "description": "Top 5 curated items excluding syndicated that are at most a week old",
+    "displayName": "Spotlight",
+    "description": "Essential articles to save to your Pocket",
+    "internalDescription": "Top 5 curated items excluding syndicated that are at most a week old",
     "experiments": [
       {
         "description": "default",
@@ -148,8 +153,9 @@
   },
   {
     "id": "0737b00e-a21e-4875-a4c7-3e14926d4acf",
-    "displayName": "Editors' Picks",
-    "description": "Curated items including syndicated that are at most a week old",
+    "displayName": "Best of the web",
+    "description": "New perspectives, intriguing deep-dives, and timeless classics",
+    "internalDescription": "Curated items including syndicated that are at most a week old",
     "experiments": [
       {
         "description": "default",
@@ -185,7 +191,8 @@
   {
     "id": "631d8077-1462-4397-ad0a-aa340c27570a",
     "displayName": "Editors' Picks, Just For You",
-    "description": "Curated Personalized",
+    "description": "Stories to fuel your mind, curated for your interests",
+    "internalDescription": "Curated Personalized",
     "experiments": [
       {
         "description": "recit-personalized curated",
@@ -202,8 +209,9 @@
   },
   {
     "id": "ad73c061-5ac5-458f-8691-ab071f7eadd7",
-    "displayName": "Personalized picks popular with pocket readers",
-    "description": "Best of Personalized",
+    "displayName": "Popular Pocket picks, curated for you",
+    "description": "Thought-provoking stories and hidden gems that feed your interests",
+    "internalDescription": "Best of Personalized",
     "experiments": [
       {
         "description": "recit-personalized",
@@ -1452,8 +1460,8 @@
   },
   {
     "id": "4d95bade-8a43-4700-9879-3a73ba1da640",
-    "displayName": "There’s nothing like getting lost in a fascinating story — and now is a better time than any to dive into another world.",
-    "description": "10 Incredible Long-Reads That’ll Transport You to Another Time and Place",
+    "displayName": "Incredible long reads that’ll transport you to another time and place",
+    "description": "Dive into another world with these fascinating stories",
     "experiments": [
       {
         "description": "10 incredible long reads collection",
@@ -1468,8 +1476,8 @@
   },
   {
     "id": "8944f662-cfc7-4fcb-a510-55a8589b08e7",
-    "displayName": "There’s nothing better for your health, wallet, or personal sense of accomplishment than learning how to cook. We’ve pulled together the best resources to help you establish confidence in the kitchen, from proper preparation and creative shortcuts to mastering simple but brilliant techniques. Grab your knives (carefully!) and let’s get started.",
-    "description": "How to start cooking collection items",
+    "displayName": "How to start cooking",
+    "description": "Get comfortable in the kitchen with beginner-friendly tips and techniques",
     "experiments": [
       {
         "description": "How to start cooking",
@@ -1485,7 +1493,8 @@
   {
     "id": "626397d3-fa4e-4299-8d07-cbeaa269ebc1",
     "displayName": "Ten Minutes or Less",
-    "description": "Curated short reads excluding syndicated",
+    "description": "Smart, quick reads from trusted sources",
+    "internalDescription": "Curated short reads excluding syndicated",
     "experiments": [
       {
         "description": "No syndicated short reads",
@@ -1503,7 +1512,8 @@
   {
     "id": "8fa462a6-81d1-47ee-8de3-1e5e0030e6d6",
     "displayName": "Long Reads Worth the Time",
-    "description": "Curated long reads excluding syndicated",
+    "description": "The best longform journalism and essays popular in Pocket",
+    "internalDescription": "Curated long reads excluding syndicated",
     "experiments": [
       {
         "description": "No syndicated long reads",
@@ -1521,7 +1531,7 @@
   {
     "id": "2f2a3568-901f-4655-8735-daf67e8ecc5d",
     "displayName": "In Case You Missed It",
-    "description": "Curated by our editors Stories to fuel your mind",
+    "description": "Great stories that stand the test of time",
     "experiments": [
       {
         "description": "Syndicated by total score",
