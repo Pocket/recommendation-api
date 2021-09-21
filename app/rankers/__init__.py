@@ -20,14 +20,20 @@ def get_all_rankers():
         top5,
         top15,
         top30,
+        top45,
         thompson_sampling,
-        spread_publishers
+        spread_publishers,
+        top1_topics,
+        top3_topics
     )
 
     return {
         'top5': top5,
         'top15': top15,
         'top30': top30,
+        'top45': top45,
         'thompson-sampling': thompson_sampling,
+        'top1-topics': top1_topics,
+        'top3-topics': top3_topics,
         'pubspread': spread_publishers
     }

@@ -4,7 +4,7 @@ import {config} from "./config";
 import {
     ApplicationMemcache,
     PocketVPC,
-} from "@pocket/terraform-modules";
+} from "@pocket-tools/terraform-modules";
 
 export class Elasticache extends Resource {
 

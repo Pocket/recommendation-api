@@ -1,9 +1,18 @@
+import posixpath
 import unittest
+import os
+import json
 
-from tests.unit.utils import generate_recommendations
-from app.models.clickdata import ClickdataModel
-from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist
+from app.models.metrics.metrics_model import MetricsModel
+from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_nontopic_configs, generate_lineup_configs
+from app.config import ROOT_DIR
+from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist, top1_topics, top3_topics
+from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
+from app.models.slate_lineup_config import SlateLineupConfigModel
 from operator import itemgetter
+
+ANDROID_DISCOVER_LINEUP_ID = "b50524d6-4df9-4f15-a0d0-13ccc8bdf4ed"
+WEB_HOME_LINEUP_ID = "05027beb-0053-4020-8bdc-4da2fcc0cb68"
 
 
 class TestAlgorithmsSpreadPublishers(unittest.TestCase):
@@ -140,36 +149,48 @@ class TestAlgorithmsBlocklist(unittest.TestCase):
 
 
 class TestAlgorithmsThompsonSampling(unittest.TestCase):
-    def test_it_can_rank_items_with_missing_click_data(self):
+    def test_it_can_rank_items_with_missing_metrics(self):
         recs = generate_recommendations(['333', '999'])
 
-        click_data = {
-            '999': ClickdataModel.parse_obj({
-                'mod_item': 'home/999',
-                'clicks': '99',
-                'impressions': '999',
-                'created_at': '0',
-                'expires_at': '0'
-            }),
+        metrics = {
+            '999': MetricsModel(
+                id='home/999',
+                trailing_1_day_opens=0,
+                trailing_1_day_impressions=0,
+                trailing_7_day_opens=0,
+                trailing_7_day_impressions=0,
+                trailing_14_day_opens=0,
+                trailing_14_day_impressions=0,
+                trailing_28_day_opens=99,
+                trailing_28_day_impressions=999,
+                created_at=0,
+                expires_at=0
+            ),
         }
 
-        sampled_recs = thompson_sampling(recs, click_data)
+        sampled_recs = thompson_sampling(recs, metrics)
         # this needs to be a set since order isn't guaranteed in single trial
         assert {item.item_id for item in sampled_recs} == {"999", "333"}
 
     def test_invalid_prior(self):
         recs = generate_recommendations(['999'])
-        click_data = {
-            'default': ClickdataModel.parse_obj({
-                'mod_item': 'home/default',
-                'clicks': '99',
-                'impressions': '-14',
-                'created_at': '0',
-                'expires_at': '0'
-            }),
+        metrics = {
+            'default': MetricsModel(
+                id='home/default',
+                trailing_1_day_opens=0,
+                trailing_1_day_impressions=0,
+                trailing_7_day_opens=0,
+                trailing_7_day_impressions=0,
+                trailing_14_day_opens=0,
+                trailing_14_day_impressions=0,
+                trailing_28_day_opens=99,
+                trailing_28_day_impressions=-14,
+                created_at=0,
+                expires_at=0,
+            ),
         }
 
-        sampled_recs = thompson_sampling(recs, click_data)
+        sampled_recs = thompson_sampling(recs, metrics)
         # this needs to be a set since order isn't guaranteed in single trial
         assert {item.item_id for item in sampled_recs} == {"999"}
 
@@ -180,39 +201,57 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         aggregating results over multiple trials.  In a single run of the
         ranker results may not be ordered by CTR, but over multiple trials the
         ranks converge to descending by CTR
-        :param ntrails is the number of trials for the aggregation
+        :param ntrials is the number of trials for the aggregation
         """
         recs = generate_recommendations(["333333", "666666", "999999", "222222"])
 
-        click_data = {
-            '999999': ClickdataModel.parse_obj({
-                'mod_item': 'home/999999',
-                'clicks': '99',
-                'impressions': '999',
-                'created_at': '0',
-                'expires_at': '0'
-            }),
-            '666666': ClickdataModel.parse_obj({
-                'mod_item': 'home/666666',
-                'clicks': '66',
-                'impressions': '999',
-                'created_at': '0',
-                'expires_at': '0'
-            }),
-            '333333': ClickdataModel.parse_obj({
-                'mod_item': 'home/333333',
-                'clicks': '33',
-                'impressions': '999',
-                'created_at': '0',
-                'expires_at': '0'
-            })
+        metrics = {
+            '999999': MetricsModel(
+                id='home/999999',
+                trailing_1_day_opens=0,
+                trailing_1_day_impressions=0,
+                trailing_7_day_opens=0,
+                trailing_7_day_impressions=0,
+                trailing_14_day_opens=0,
+                trailing_14_day_impressions=0,
+                trailing_28_day_opens=99,
+                trailing_28_day_impressions=999,
+                created_at=0,
+                expires_at=0
+            ),
+            '666666': MetricsModel(
+                id='home/666666',
+                trailing_1_day_opens=0,
+                trailing_1_day_impressions=0,
+                trailing_7_day_opens=0,
+                trailing_7_day_impressions=0,
+                trailing_14_day_opens=0,
+                trailing_14_day_impressions=0,
+                trailing_28_day_opens=66,
+                trailing_28_day_impressions=999,
+                created_at=0,
+                expires_at=0
+            ),
+            '333333': MetricsModel(
+                id='home/333333',
+                trailing_1_day_opens=0,
+                trailing_1_day_impressions=0,
+                trailing_7_day_opens=0,
+                trailing_7_day_impressions=0,
+                trailing_14_day_opens=0,
+                trailing_14_day_impressions=0,
+                trailing_28_day_opens=33,
+                trailing_28_day_impressions=999,
+                created_at=0,
+                expires_at=0
+            )
         }
 
         # goal of test is to rank by CTR over ntrials
         # order should be 999999, 666666, 333333
-        ranks = dict()
+        ranks = {}
         for i in range(ntrials):
-            sampled_recs = thompson_sampling(recs, click_data)
+            sampled_recs = thompson_sampling(recs, metrics)
             c = 1
             for rec in sampled_recs:
                 # compute average positional rank over the trials
@@ -232,3 +271,72 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         assert int(ranks['666666']) != ranks['666666']
         assert int(ranks['333333']) != ranks['333333']
         assert int(ranks['222222']) != ranks['222222']
+
+
+class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
+
+    @staticmethod
+    def _read_json_asset(filename: str):
+        with open(os.path.join(ROOT_DIR, 'tests/assets/json/', filename)) as f:
+            response = json.load(f)
+        personalized_topics = [PersonalizedTopicElement(curator_topic_label=x[0], score=x[1])
+                               for x in response["curator_topics"]]
+        return PersonalizedTopicList(curator_topics=personalized_topics, user_id="3636")
+
+
+    def test_personalize_topic_limit(self):
+        full_topic_profile = self._read_json_asset("recit_full_user_profile.json")
+        input_configs = generate_curated_configs()
+        input_topics = [c.curator_topic_label for c in input_configs]
+        # these are already sorted by RecIt
+        personalized_topics = [t.curator_topic_label
+                               for t in full_topic_profile.curator_topics
+                               if t.curator_topic_label in input_topics]
+
+        for test_limit, topic_ranker in zip([1, 3], [top1_topics, top3_topics]):
+            output_configs = topic_ranker(input_configs, full_topic_profile)
+            ordered_output_topics = [c.curator_topic_label for c in output_configs]
+            print(len(output_configs), test_limit)
+            assert len(output_configs) == test_limit
+            assert ordered_output_topics == personalized_topics[:test_limit]
+
+    def test_hybrid_lineups(self):
+        ''' this test is the case where one topic slate is returned from a
+        lineup with a mix of curated and uncurated slates
+        '''
+        full_topic_profile = self._read_json_asset("recit_full_user_profile.json")
+        personalized_topics = [x.curator_topic_label for x in full_topic_profile.curator_topics]
+
+        for lineup_id in [ANDROID_DISCOVER_LINEUP_ID, WEB_HOME_LINEUP_ID]:
+            input_configs, description = generate_lineup_configs(lineup_id)
+            non_topic_slots = [i for i, c in enumerate(input_configs) if c.curator_topic_label is None]
+            # these are already sorted by RecIt
+            first_personalizable_slot = min(set(range(len(input_configs))).difference(set(non_topic_slots)))
+            other_slates_before = [t for i,t in enumerate(input_configs)
+                                   if t.curator_topic_label is None and i < first_personalizable_slot]
+            # this assumes topic slates are contiguous in lineup
+            other_slates_after = [t for i,t in enumerate(input_configs)
+                                  if t.curator_topic_label is None and i > first_personalizable_slot]
+
+            print("Testing: ", description)
+
+            for topic_limit, topic_ranker in zip([1, 3], [top1_topics, top3_topics]):
+                print(f"first personalizable lineup slot is {first_personalizable_slot}, topic limit is {topic_limit}")
+                # one non-topic slate should be at start of lineup
+                output_configs = topic_ranker(input_configs, full_topic_profile)
+                ordered_output_topics = [c.curator_topic_label for c in output_configs]
+
+                assert len(output_configs) == len(other_slates_before) + topic_limit + len(other_slates_after)
+                # if non-personalizable slates are first they should preserve their positions
+                assert output_configs[:len(other_slates_before)] == other_slates_before
+                # returned topic slates should be highest ranked
+                assert ordered_output_topics[first_personalizable_slot:first_personalizable_slot+topic_limit] == personalized_topics[:topic_limit]
+                # check any trailing slates that are also not personalizable
+                assert output_configs[(first_personalizable_slot + topic_limit):] == other_slates_after
+
+    def test_no_topic_slates(self):
+        full_topic_profile = self._read_json_asset("recit_full_user_profile.json")
+        input_configs = generate_nontopic_configs()
+
+        for topic_ranker in [top1_topics, top3_topics]:
+            self.assertRaises(ValueError, topic_ranker, input_configs, full_topic_profile)

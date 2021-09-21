@@ -9,13 +9,13 @@ from app.models.slate import SlateModel
 slate_config_id = 'test-slate_lineup-config-id'
 slate_experiment = SlateExperimentModel('test-ex', 'test-ex-desc', ['top15', 'thompson-sampling'],
                                         ['test-candidate-id'])
-slate_config_model = SlateConfigModel(slate_config_id, 'test-this-slate', 'test-desc', [slate_experiment])
+slate_config_model = SlateConfigModel(slate_config_id, 'test-this-slate', 'test-desc', experiments=[slate_experiment])
 
 
 class TestSlateModel(TestDynamoDBBase):
     async def asyncSetUp(self):
         await super().asyncSetUp()
-        self.candidateSetTable.put_item(Item={
+        self.candidate_set_table.put_item(Item={
             'id': 'test-candidate-id',
             'version': 1,
             'created_at': 1612907252,
@@ -62,7 +62,7 @@ class TestSlateModel(TestDynamoDBBase):
         assert len(slates[0].recommendations) == 1
 
     async def test_get_slates_from_slate_configs_with_limited_recs(self):
-        self.candidateSetTable.put_item(Item={
+        self.candidate_set_table.put_item(Item={
             'id': 'test-candidate-id',
             'version': 1,
             'created_at': 1612907252,

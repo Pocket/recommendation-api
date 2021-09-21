@@ -90,7 +90,9 @@
                   "pubspread",
                   "top15",
                   "top30",
-                  "thompson-sampling"
+                  "thompson-sampling",
+                  "top1-topics",
+                  "top3-topics"
                 ],
                 "title": "The Items Schema",
                 "default": "",

@@ -1,47 +1,69 @@
+from functools import partial
 import logging
 import json
 
 from aws_xray_sdk.core import xray_recorder
-from typing import List, Dict, Any
-from app.models.clickdata import ClickdataModel
+from app.models.metrics.metrics_model import MetricsModel
+
+from app.config import ROOT_DIR
+from typing import List, Dict, Optional, Union
 from operator import itemgetter
 from scipy.stats import beta
 
-from app.models.recommendation import RecommendationModel
-from app.config import ROOT_DIR
+from app.models.slate_config import SlateConfigModel
+from app.models.personalized_topic_list import PersonalizedTopicList
+
+DEFAULT_ALPHA_PRIOR = 0.02
+DEFAULT_BETA_PRIOR = 1.0
+
+RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel']]
+RecommendationListType = List['RecommendationModel']
 
 
-def top5(items: List[Any]) -> List[Any]:
+def top_n(n: int, items: RankableListType) -> RankableListType:
     """
-    Gets the first 5 recommendations from the list of recommendations.
+    Gets the first n recommendations from the list of recommendations.
 
     :param items: a list of recommendations in the desired order (pre-publisher spread)
-    :return: first 5 recommendations from the list of recommendations
+    :param n: The number of items to return
+    :return: first n recommendations from the list of recommendations
     """
-    return items[:5]
+    if len(items) <= n:
+        logging.warning(f"less items than n: {len(items) =} <= {n =} ")
+
+    return items[:n]
 
 
-def top15(items: List[Any]) -> List[Any]:
+top5 = partial(top_n, 5)
+top15 = partial(top_n, 15)
+top30 = partial(top_n, 30)
+top45 = partial(top_n, 45)
+
+
+def top1_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List['SlateConfigModel']:
     """
-    Gets the first 15 recommendations from the list of recommendations.
-
-    :param items: a list of recommendations in the desired order (pre-publisher spread)
-    :return: first 15 recommendations from the list of recommendations
+    returns the lineup with only the top topic slate included
+    :param slates: initial list of slate configs
+    :param personalized_topics: recit response including sorted list of personalized topics
+    :return: list of slate configs with only the top topic slate
     """
-    return items[:15]
+
+    return __personalize_topic_slates(slates, personalized_topics, topic_limit=1)
 
 
-def top30(items: List[Any]) -> List[Any]:
+def top3_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List[
+    'SlateConfigModel']:
     """
-    Gets the first 30 recommendations from the list of recommendations.
-
-    :param items: a list of recommendations in the desired order (pre-publisher spread)
-    :return: first 30 recommendations from the list of recommendations
+    returns the lineup with only the top 3 topic slates included
+    :param slates: initial list of slate configs
+    :param personalized_topics: recit response including sorted list of personalized topics
+    :return: list of slate configs with only the top 3 topic slate
     """
-    return items[:30]
+
+    return __personalize_topic_slates(slates, personalized_topics, topic_limit=3)
 
 
-def blocklist(recs: List['RecommendationModel'], blocklist: List[str] = None) -> List['RecommendationModel']:
+def blocklist(recs: RecommendationListType, blocklist: Optional[List[str]] = None) -> RecommendationListType:
     """
     this filters recommendations by item_id using the blocklist available
     in ./app/resources/blocklists.json
@@ -57,13 +79,9 @@ def blocklist(recs: List['RecommendationModel'], blocklist: List[str] = None) ->
         return [rec for rec in recs if rec.item.item_id not in blocklist]
 
 
-DEFAULT_ALPHA_PRIOR = 0.02
-DEFAULT_BETA_PRIOR = 1.0
-
-
 def thompson_sampling(
-        recs: List['RecommendationModel'],
-        clk_data: Dict[(int or str), 'ClickdataModel']) -> List['RecommendationModel']:
+        recs: RankableListType,
+        metrics: Dict[(int or str), 'MetricsModel']) -> RankableListType:
     """
     Re-rank items using Thompson sampling which combines exploitation of known item CTR
     with exploration of new items with unknown CTR modeled by a prior
@@ -73,7 +91,7 @@ def thompson_sampling(
     items to our repertoire.
 
     :param recs: a list of recommendations in the desired order (pre-publisher spread)
-    :param clk_data: a dict with item_id as key and dynamodb row modeled as ClickDataModel
+    :param metrics: a dict with item_id as key and dynamodb row modeled as ClickDataModel
     :return: a re-ordered version of recs satisfying the spread as best as possible
     """
 
@@ -81,26 +99,31 @@ def thompson_sampling(
     if not recs:
         return recs
 
+    # Currently we are using the hardcoded priors below.
+    # TODO: We should return to having slate/lineup-specific priors. We could load slate-priors from
+    #  MODELD-Prod-SlateMetrics, although that might require an additional database lookup. We might choose to use a
+    #  'default' key that aggregates engagement data in the same table, such that no additional lookups are required.
     alpha_prior, beta_prior = DEFAULT_ALPHA_PRIOR, DEFAULT_BETA_PRIOR
-    if clk_data and 'default' in clk_data:
-        # 'default' is a special key we can use for anything that is missing.
-        # The values here aren't actually clicks or impressions,
-        # but instead direct alpha and beta parameters for the module CTR prior
-        alpha_prior, beta_prior = clk_data['default'].clicks, clk_data['default'].impressions
-        if alpha_prior < 0 or beta_prior < 0:
-            logging.error("Alpha (%s) or Beta (%s) prior < 0 for module %s", alpha_prior, beta_prior, clk_data['default'].mod_item)
-            alpha_prior, beta_prior = DEFAULT_ALPHA_PRIOR, DEFAULT_BETA_PRIOR
 
     scores = []
     # create prior distribution for CTR from parameters in click data table
     prior = beta(alpha_prior, beta_prior)
     for rec in recs:
-        resolved_id = rec.item.item_id
-        d = clk_data.get(resolved_id)
+        try:
+            # Recommendations are keyed on item_id.  Note that the metrics model grabs the item_id
+            # when it parses the clickdata by splitting the primary key in dynamo
+            clickdata_id = rec.item.item_id
+        except AttributeError:
+            # Slates are keyed on their slate id, in this case the id field of the slate config model
+            # Similarly these are parsed as the prefix of the primary key in the slate metrics table
+            clickdata_id = rec.id
+
+        d = metrics.get(clickdata_id)
         if d:
-            clicks = max(d.clicks + alpha_prior, 1e-18)
+            # TODO: Decide how many days we want to look back.
+            clicks = max(d.trailing_28_day_opens + alpha_prior, 1e-18)
             # posterior combines click data with prior (also a beta distribution)
-            no_clicks = max(d.impressions - d.clicks + beta_prior, 1e-18)
+            no_clicks = max(d.trailing_28_day_impressions - d.trailing_28_day_opens + beta_prior, 1e-18)
             # sample from posterior for CTR given click data
             score = beta.rvs(clicks, no_clicks)
             scores.append((rec, score))
@@ -111,8 +134,55 @@ def thompson_sampling(
     return [x[0] for x in scores]
 
 
+def __personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
+                               personalized_topics: PersonalizedTopicList,
+                               topic_limit: Optional[int] = 1) -> List['SlateConfigModel']:
+    """
+    This routine takes a list of slates as input in which must include slates with an associated curator topic
+    label.  It uses the topic_profile that is supplied by RecIt to re-rank the slates according to affinity
+    with items in the user's list.
+    This version allows non-topic slates within the lineup.  These are left in order in the output configs
+    list.  Personalizable (topic) slates are re-ordered using their initial slots in the config lineup.
+    If the topic_limit parameter is included this will determine the number of topic slates that
+    remain in the output config list.
+    :param input_slate_configs: SlateConfigModel list that includes slates with curatorTopicLabels
+    :param personalized_topics: response from RecIt listing topics ordered by affinity to user
+    :param topic_limit: desired number of topics to return, if this is set the number of slates returned is truncated.
+                        otherwise all personalized topics among the input slate configs are returned
+    :return: SlateLineupExperimentModel with reordered slates
+    """
+    topic_to_score_map = {t.curator_topic_label: t.score for t in personalized_topics.curator_topics}
+    # filter non-topic slates
+    personalizable_configs = list(filter(lambda s: s.curator_topic_label in topic_to_score_map, input_slate_configs))
+    logging.debug(personalizable_configs)
+
+    if not personalizable_configs:
+        raise ValueError(f"Input lineup to personalize_topic_slates includes no topic slates")
+    elif topic_limit and len(personalizable_configs) < topic_limit:
+        raise ValueError(f"Input lineup to personalize_topic_slates includes fewer topic slates than requested")
+
+    # re-rank topic slates
+    personalizable_configs.sort(key=lambda s: topic_to_score_map.get(s.curator_topic_label), reverse=True)
+
+    output_configs = list()
+    added_topic_slates = 0
+    personalized_index = 0
+    for config in input_slate_configs:
+        if config in personalizable_configs:
+            # if slate is personalizable add highest ranked slate remaining
+            if added_topic_slates < topic_limit:
+                output_configs.append(personalizable_configs[personalized_index])
+                added_topic_slates += 1
+                personalized_index += 1
+        else:
+            logging.debug(f"adding topic slate {added_topic_slates}")
+            output_configs.append(config)
+
+    return output_configs
+
+
 @xray_recorder.capture('rankers_algorithms_spread_publishers')
-def spread_publishers(recs: List['RecommendationModel'], spread: int = 3) -> List['RecommendationModel']:
+def spread_publishers(recs: RecommendationListType, spread: int = 3) -> RecommendationListType:
     """
     Makes sure stories from the same publisher/domain are not listed sequentially, and have a configurable number
     of stories in-between them.

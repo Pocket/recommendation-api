@@ -1,21 +1,23 @@
 import {Resource} from "cdktf";
 import {Construct} from "constructs";
 import {config} from "./config";
-import {ApplicationDynamoDBTable} from "@pocket/terraform-modules";
-import {DataAwsDynamodbTable} from "../.gen/providers/aws";
+import {ApplicationDynamoDBTable} from "@pocket-tools/terraform-modules";
+import {DataAwsDynamodbTable} from "@cdktf/provider-aws";
 
 export class DynamoDB extends Resource {
 
   public readonly candidatesTable: ApplicationDynamoDBTable
   public readonly metadataTable: ApplicationDynamoDBTable
-  public readonly clickdataTable: DataAwsDynamodbTable
+  public readonly recommendationMetricsTable: DataAwsDynamodbTable
+  public readonly slateMetricsTable: DataAwsDynamodbTable
   public readonly candidateSetsTable: ApplicationDynamoDBTable;
 
   constructor(scope: Construct, name: string) {
     super(scope, name);
     this.candidatesTable = this.setupCandidatesTable();
     this.metadataTable = this.setupTopicsMetadataTable();
-    this.clickdataTable = this.getClickdataTable();
+    this.recommendationMetricsTable = this.getRecommendationMetricsTable();
+    this.slateMetricsTable = this.getSlateMetricsTable();
     this.candidateSetsTable = this.setupCandidateSetsTable();
   }
 
@@ -155,9 +157,15 @@ export class DynamoDB extends Resource {
     });
   }
 
-  private getClickdataTable() {
-    return new DataAwsDynamodbTable(this, `clickdata`, {
-      name: config.clickdataDynamodbName,
+  private getRecommendationMetricsTable() {
+    return new DataAwsDynamodbTable(this, `rec_metrics`, {
+      name: config.recommendationMetricsDynamodbName,
+    });
+  }
+
+  private getSlateMetricsTable() {
+    return new DataAwsDynamodbTable(this, `slate_metrics`, {
+      name: config.slateMetricsDynamodbName,
     });
   }
 }

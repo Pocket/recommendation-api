@@ -1,6 +1,8 @@
 import aioboto3
 
 from asyncio import gather
+
+import logging
 from aws_xray_sdk.core import xray_recorder
 from boto3.dynamodb.conditions import Key
 from enum import Enum
@@ -10,7 +12,7 @@ from app.config import dynamodb as dynamodb_config
 # Needs to exist for pydantic to resolve the model field "item: ItemModel" in the RecommendationModel
 from app.graphql.item import Item
 from app.models.candidate_set import candidate_set_factory
-from app.models.clickdata import ClickdataModel
+from app.models.metrics.recommendation_metrics_factory import RecommendationMetricsFactory
 from app.models.item import ItemModel
 from app.models.slate_experiment import SlateExperimentModel
 from app.rankers import get_ranker
@@ -65,7 +67,7 @@ class RecommendationModel(BaseModel):
         :return: list of RecommendationModel objects
         """
         async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
-            table = await dynamodb.Table(dynamodb_config['recommendation_api_candidates_table'])
+            table = await dynamodb.Table(dynamodb_config['candidates']['table'])
             key_condition = Key('topic_id-type').eq(topic_id + '|' + recommendation_type.value)
             response = await table.query(IndexName='topic_id-type', Limit=1, KeyConditionExpression=key_condition,
                                          ScanIndexForward=False)
@@ -85,7 +87,8 @@ class RecommendationModel(BaseModel):
         :return: a list of RecommendationModel instances
         """
         # for each candidate set id, get the candidate set record from the db
-        candidate_sets = await gather(*(candidate_set_factory(cs_id).get(cs_id, user_id) for cs_id in experiment.candidate_sets))
+        candidate_sets = await gather(
+            *(candidate_set_factory(cs_id).get(cs_id, user_id) for cs_id in experiment.candidate_sets))
 
         recommendations = []
         # get the recommendations
@@ -107,7 +110,7 @@ class RecommendationModel(BaseModel):
     async def __thompson_sample(slate_id: str, recommendations: ['RecommendationModel']) -> ['RecommendationModel']:
         """
         Special processing for handling the thompson sampling ranker. Retrieves click data for the items being ranked
-        and uses that for thompson sampling algorithm with beta distirbutions.
+        and uses that for thompson sampling algorithm with beta distributions.
 
         Thompson sampling is a probabilistic approach to estimating the CTR of an item.  It combines historical data
         about item CTR on a specific recommendation surface with per-item click and impression data to form
@@ -125,9 +128,8 @@ class RecommendationModel(BaseModel):
         """
         item_ids = [recommendation.item.item_id for recommendation in recommendations]
         try:
-            click_data = await ClickdataModel.get(slate_id, item_ids)
+            click_data = await RecommendationMetricsFactory(dynamodb_config["endpoint_url"]).get(slate_id, item_ids)
         except ValueError:
-            rec_item_ids = ','.join(item_ids)
-            print(f'click data not found for candidates with item ids: {rec_item_ids}')
+            logging.warning(f'No click data found for {slate_id = } {item_ids = }')
             click_data = {}
         return get_ranker('thompson-sampling')(recommendations, click_data)

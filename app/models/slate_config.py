@@ -1,17 +1,37 @@
 from collections import Counter
 import os
 
-from typing import List
+from typing import List, Optional
+from enum import Enum
 
 from app.config import JSON_DIR
 from app.json.utils import parse_to_dict
 from app.models.slate_experiment import SlateExperimentModel
 
 
+class CuratorTopic(Enum):
+    BUSINESS = 'Business'
+    CAREER = 'Career'
+    EDUCATION = 'Education'
+    ENTERTAINMENT = 'Entertainment'
+    FOOD = 'Food'
+    GAMING = 'Gaming'
+    HEALTH = 'Health & Fitness'
+    PARENTING = 'Parenting'
+    PERSONAL_FINANCE = 'Personal Finance'
+    POLITICS = 'Politics'
+    SCIENCE = 'Science'
+    SELF_IMPROVEMENT = 'Self Improvement'
+    SPORTS = 'Sports'
+    TECHNOLOGY = 'Technology'
+    TRAVEL = 'Travel'
+    CORONAVIRUS = 'COVID-19'
+
+
 class SlateConfigModel:
     """
-    Represents the experiments that we might run when a slate_lineup or a client requests a slate of this id. Data for this
-    model lives in hard-coded JSON files (which will be incrementally updated through PRs).
+    Represents the experiments that we might run when a slate_lineup or a client requests a slate of this id.
+    Data for this model lives in hard-coded JSON files (which will be incrementally updated through PRs).
 
     This JSON is parsed at startup, and instances of this model will be persisted in-memory for use by Slate instances.
 
@@ -25,11 +45,13 @@ class SlateConfigModel:
     # store loaded slate configs (loaded at app startup)
     SLATE_CONFIGS_BY_ID = {}
 
-    def __init__(self, slate_id: str, display_name: str, description: str, experiments=None):
+    def __init__(self, slate_id: str, display_name: str, description: str,
+                 curator_topic_label: Optional[str] = None, experiments=None):
         self.id = slate_id
         self.displayName = display_name
         self.description = description
         self.experiments = experiments or []
+        self.curator_topic_label = curator_topic_label
 
     @staticmethod
     def load_from_dict(slate_dict: dict) -> 'SlateConfigModel':
@@ -38,8 +60,8 @@ class SlateConfigModel:
         :param slate_dict: dictionary created from parsing json
         :return: SlateConfigModel instance
         """
-        return SlateConfigModel(slate_dict["id"], slate_dict["displayName"], slate_dict["description"])
-
+        return SlateConfigModel(slate_dict["id"], slate_dict["displayName"], slate_dict["description"],
+                                slate_dict.get("curatorTopicLabel"))
 
     @staticmethod
     def load_slate_configs(

@@ -36,13 +36,52 @@
         ],
         "pattern": "^(.+)$"
       },
+      "curatorTopicLabel": {
+        "$id": "#/properties/displayName",
+        "type": "string",
+        "title": "The Curator Topic Label Schema",
+        "default": "",
+        "examples": [
+          "Self Improvement"
+        ],
+        "enum" : [
+          "Business",
+          "COVID-19",
+          "Career",
+          "Education",
+          "Entertainment",
+          "Food",
+          "Gaming",
+          "Health & Fitness",
+          "Parenting",
+          "Personal Finance",
+          "Politics",
+          "Science",
+          "Self Improvement",
+          "Sports",
+          "Technology",
+          "Travel"
+        ],
+        "pattern": "^(.+)$"
+      },
       "description": {
         "$id": "#/properties/description",
         "type": "string",
         "title": "The Description Schema",
         "default": "",
         "examples": [
-          "Curated articles within the last week that have high cascade probability"
+          "New perspectives, intriguing deep-dives, and timeless classics"
+        ],
+        "pattern": "^(.+)$"
+      },
+      "internalDescription": {
+        "$id": "#/properties/internalDescription",
+        "type": "string",
+        "title": "The Internal Description Schema",
+        "description": "A slate description for internal use only",
+        "default": "",
+        "examples": [
+          "Curated items including syndicated that are at most a week old"
         ],
         "pattern": "^(.+)$"
       },
@@ -105,6 +144,7 @@
                   "top5",
                   "top15",
                   "top30",
+                  "top45",
                   "thompson-sampling"
                 ],
                 "title": "The Experiment Ranker Items Schema",

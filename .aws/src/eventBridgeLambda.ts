@@ -1,11 +1,11 @@
 import {Resource} from "cdktf";
 import {Construct} from "constructs";
 import {config} from "./config";
-import {ApplicationDynamoDBTable, PocketVPC} from "@pocket/terraform-modules";
-import {PocketEventBridgeWithLambdaTarget} from "@pocket/terraform-modules/dist/src/pocket/PocketEventBridgeWithLambdaTarget";
-import {LAMBDA_RUNTIMES} from "@pocket/terraform-modules/dist/src/base/ApplicationVersionedLambda";
-import {DataAwsSecretsmanagerSecretVersion, DataAwsSsmParameter} from "../.gen/providers/aws";
-import {PocketPagerDuty} from "@pocket/terraform-modules/dist/src/pocket/PocketPagerDuty";
+import {ApplicationDynamoDBTable, PocketVPC} from "@pocket-tools/terraform-modules";
+import {PocketEventBridgeWithLambdaTarget} from "@pocket-tools/terraform-modules";
+import {LAMBDA_RUNTIMES} from "@pocket-tools/terraform-modules";
+import {DataAwsSecretsmanagerSecretVersion, DataAwsSsmParameter} from "@cdktf/provider-aws";
+import {PocketPagerDuty} from "@pocket-tools/terraform-modules";
 
 
 export class EventBridgeLambda extends Resource {
@@ -13,7 +13,7 @@ export class EventBridgeLambda extends Resource {
     scope: Construct,
     private name: string,
     candidatesTable: ApplicationDynamoDBTable,
-    pagerDuty: PocketPagerDuty
+    pagerDuty?: PocketPagerDuty
   ) {
     super(scope, name);
 
@@ -86,13 +86,13 @@ export class EventBridgeLambda extends Resource {
             period: 10800, // 3 hours
             threshold: 1,
             comparisonOperator: 'LessThanThreshold',
-            actions: [pagerDuty.snsNonCriticalAlarmTopic.arn],
+            actions: config.isDev ? [] : [pagerDuty!.snsNonCriticalAlarmTopic.arn],
             treatMissingData: 'breaching'
           },
           errors: {
             period: 10800, // 3 hours
             threshold: 2,
-            actions: [pagerDuty.snsNonCriticalAlarmTopic.arn]
+            actions: config.isDev ? [] : [pagerDuty!.snsNonCriticalAlarmTopic.arn]
           }
         }
       },
