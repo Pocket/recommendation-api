@@ -6,9 +6,10 @@ updates:
   - package-ecosystem: 'npm'
     # Look for `package.json` and `lock` files in the `root` directory
     directory: '.aws'
-    # Check the npm registry for updates every day (weekdays)
     schedule:
       interval: 'daily'
+      time: '09:00'
+      timezone: 'America/Los_Angeles'
     commit-message:
       prefix: '[DEPBOT-0101]'
 
@@ -19,6 +20,8 @@ updates:
     # Check for updates once a week
     schedule:
       interval: 'daily'
+      time: '09:00'
+      timezone: 'America/Los_Angeles'
     commit-message:
       prefix: '[DEPBOT-0102]'
 
@@ -27,6 +30,8 @@ updates:
     directory: '/'
     schedule:
       interval: 'daily'
+      time: '09:00'
+      timezone: 'America/Los_Angeles'
     commit-message:
       prefix: '[DEPBOT-0103]'
 
@@ -36,5 +41,7 @@ updates:
     directory: '/'
     schedule:
       interval: 'daily'
+      time: '09:00'
+      timezone: 'America/Los_Angeles'
     commit-message:
       prefix: '[DEPBOT-0104]'

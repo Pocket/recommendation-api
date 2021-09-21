@@ -6,6 +6,7 @@ from aioresponses import aioresponses
 
 import app.config
 from app.models.personalized_topic_list import PersonalizedTopicList
+from app.exceptions.personalization_error import PersonalizationError
 
 
 class TestPersonalizedTopics(unittest.IsolatedAsyncioTestCase):
@@ -32,6 +33,11 @@ class TestPersonalizedTopics(unittest.IsolatedAsyncioTestCase):
         personalized_topics = await PersonalizedTopicList.get(user_id)
         assert len(personalized_topics.curator_topics) == 16
 
+    async def test_get_none_user_id(self):
+        # Assert PersonalizedTopicList.get raises PersonalizationError when user_id is None
+        with self.assertRaises(PersonalizationError) as context:
+            await PersonalizedTopicList.get(user_id=None)
+
     @aioresponses()
     async def test_get_404(self, mocked):
         user_id = '123'
@@ -39,8 +45,9 @@ class TestPersonalizedTopics(unittest.IsolatedAsyncioTestCase):
 
         mocked.get(url, status=404)
 
-        personalized_topics = await PersonalizedTopicList.get(user_id)
-        assert len(personalized_topics.curator_topics) == 0
+        # Assert PersonalizedTopicList.get raises PersonalizationError when recit responds with a 404 status
+        with self.assertRaises(PersonalizationError) as context:
+            await PersonalizedTopicList.get(user_id)
 
     @aioresponses()
     async def test_get_500(self, mocked):

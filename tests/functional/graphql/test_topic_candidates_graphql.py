@@ -12,7 +12,7 @@ class TestGraphQLCandidates(TestDynamoDBBase):
         self.client = Client(schema)
 
     def test_get_topic_recommendations(self):
-        self.metadataTable.put_item(Item={
+        self.metadata_table.put_item(Item={
             "id": "123123-12sd1asd3-5512",
             "display_name": 'tech',
             "slug": 'tech',
@@ -23,7 +23,7 @@ class TestGraphQLCandidates(TestDynamoDBBase):
             "is_promoted": False
         })
 
-        self.candidateTable.put_item(Item={
+        self.candidate_table.put_item(Item={
             "id": "asdasd-12sd1asd3-5512",
             "topic_id": '123123-12sd1asd3-5512',
             "type": 'curated',
@@ -73,7 +73,7 @@ class TestGraphQLCandidates(TestDynamoDBBase):
         }
 
     def test_get_collection_topic_recommendations(self):
-        self.metadataTable.put_item(Item={
+        self.metadata_table.put_item(Item={
             "id": "123123-12sd1asd3-5512",
             "display_name": 'special',
             "slug": 'special',
@@ -84,7 +84,7 @@ class TestGraphQLCandidates(TestDynamoDBBase):
             "is_promoted": False
         })
 
-        self.candidateTable.put_item(Item={
+        self.candidate_table.put_item(Item={
             "id": "asdasd-12sd1asd3-5512",
             "topic_id": '123123-12sd1asd3-5512',
             "type": 'collection',
@@ -103,7 +103,7 @@ class TestGraphQLCandidates(TestDynamoDBBase):
             ]
         })
 
-        self.candidateTable.put_item(Item={
+        self.candidate_table.put_item(Item={
             "id": "a1dasd-12sd15d3-5522",
             "topic_id": '123123-12sd1asd3-5512',
             "type": 'algorithmic',
@@ -122,7 +122,7 @@ class TestGraphQLCandidates(TestDynamoDBBase):
             ]
         })
 
-        self.candidateTable.put_item(Item={
+        self.candidate_table.put_item(Item={
             "id": "asdasd-12s2asd3-5312",
             "topic_id": '123123-12sd1asd3-5512',
             "type": 'curated',
