@@ -6,13 +6,13 @@ import {
   DataAwsKmsAlias,
   DataAwsRegion,
   DataAwsSnsTopic
-} from '../.gen/providers/aws';
+} from '@cdktf/provider-aws';
 import {config} from './config';
 import {DynamoDB} from "./dynamodb";
-import {PocketALBApplication} from "@pocket/terraform-modules";
+import {PocketALBApplication} from "@pocket-tools/terraform-modules";
 import {EventBridgeLambda} from "./eventBridgeLambda";
-import {PocketPagerDuty} from "@pocket/terraform-modules/dist/src/pocket/PocketPagerDuty";
-import {PagerdutyProvider} from "../.gen/providers/pagerduty";
+import {PocketPagerDuty} from "@pocket-tools/terraform-modules";
+import {PagerdutyProvider} from "@cdktf/provider-pagerduty";
 import {SqsLambda} from "./sqsLambda";
 import {Elasticache} from "./elasticache";
 
@@ -38,6 +38,7 @@ class RecommendationAPI extends TerraformStack {
       ],
     });
 
+
     const incidentManagement = new DataTerraformRemoteState(this, 'incident_management', {
       organization: 'Pocket',
       workspaces: {
@@ -45,13 +46,16 @@ class RecommendationAPI extends TerraformStack {
       }
     });
 
-    const pagerDuty = new PocketPagerDuty(this, 'pagerduty', {
-      prefix: config.prefix,
-      service: {
-        criticalEscalationPolicyId: incidentManagement.get('policy_backend_critical_id'),
-        nonCriticalEscalationPolicyId: incidentManagement.get('policy_backend_non_critical_id')
-      },
-    })
+    let pagerDuty : PocketPagerDuty|undefined = undefined;
+    if (config.isProd) {
+      pagerDuty = new PocketPagerDuty(this, 'pagerduty', {
+        prefix: config.prefix,
+        service: {
+          criticalEscalationPolicyId: incidentManagement.get('policy_backend_critical_id'),
+          nonCriticalEscalationPolicyId: incidentManagement.get('policy_backend_non_critical_id')
+        },
+      });
+    }
 
     const region = new DataAwsRegion(this, 'region');
     const caller = new DataAwsCallerIdentity(this, 'caller');
@@ -235,26 +239,23 @@ class RecommendationAPI extends TerraformStack {
         targetMaxCapacity: 10
       },
       alarms: {
-        http5xxError: {
-          threshold: 10,
-          evaluationPeriods: 2,
-          period: 600,
-          actions: config.environment == 'Dev' ? [] : [pagerDuty.snsCriticalAlarmTopic.arn]
+       http5xxErrorPercentage: {
+          // This will go off if the 5xx errors exceed 25% of the total request over
+          // a period of 20 minutes after 4 evaluation periods of 5 mins each.
+          threshold: 25, // This is a percentage
+          evaluationPeriods: 4,
+          period: 300, // 5 mins
+          actions: config.isProd ? [pagerDuty!.snsCriticalAlarmTopic.arn] : [],
         },
         httpLatency: {
-          threshold: 0.5,
-          evaluationPeriods: 2,
-          period: 300,
-          actions: config.environment == 'Dev' ? [] : [pagerDuty.snsCriticalAlarmTopic.arn]
+          // If the latency is greater than 500 ms for 1 hour continuously i.e
+          // breaches the threshold 4 times every 15 minutes,
+          // this will go off
+          period: 900,
+          evaluationPeriods: 4,
+          threshold: 0.5, // 500ms
+          actions: config.isProd ? [pagerDuty!.snsNonCriticalAlarmTopic.arn] : [],
         },
-        httpRequestCount: {
-          threshold: 10000,
-          evaluationPeriods: 2,
-          period: 300,
-          // We raise a non-critical alarm on request count, because a higher-than-expected
-          // request volume does not have to result an outage. The above two critical alarms cover that.
-          actions: config.environment == 'Dev' ? [] : [pagerDuty.snsNonCriticalAlarmTopic.arn]
-        }
       }
     });
 

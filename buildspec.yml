@@ -52,13 +52,11 @@ phases:
       - tfenv install
       - tfenv use $(cat .terraform-version)
 
-      - npm install
-      - npm run get
+      - npm ci
       - npm run build
       # synthesize the js into terraform json with the proper node environment
       - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" == "$DEV_BRANCH" ]; then NODE_ENV=development npm run synth; else npm run synth; fi'
-      - cd cdktf.out
-      - rm -rf .terraform # remove sym-link to ../.terraform (if this sym-link exists, terraform doesn't apply correctly. hmmmm)
+      - cd cdktf.out/stacks/recommendation-api
       - terraform init
   build:
     commands:

@@ -44,6 +44,24 @@
         "examples": [
           "Self Improvement"
         ],
+        "enum" : [
+          "Business",
+          "COVID-19",
+          "Career",
+          "Education",
+          "Entertainment",
+          "Food",
+          "Gaming",
+          "Health & Fitness",
+          "Parenting",
+          "Personal Finance",
+          "Politics",
+          "Science",
+          "Self Improvement",
+          "Sports",
+          "Technology",
+          "Travel"
+        ],
         "pattern": "^(.+)$"
       },
       "description": {
