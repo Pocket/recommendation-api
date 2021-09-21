@@ -52,7 +52,18 @@
         "title": "The Description Schema",
         "default": "",
         "examples": [
-          "Curated articles within the last week that have high cascade probability"
+          "New perspectives, intriguing deep-dives, and timeless classics"
+        ],
+        "pattern": "^(.+)$"
+      },
+      "internalDescription": {
+        "$id": "#/properties/internalDescription",
+        "type": "string",
+        "title": "The Internal Description Schema",
+        "description": "A slate description for internal use only",
+        "default": "",
+        "examples": [
+          "Curated items including syndicated that are at most a week old"
         ],
         "pattern": "^(.+)$"
       },
