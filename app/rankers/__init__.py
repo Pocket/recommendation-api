@@ -24,7 +24,8 @@ def get_all_rankers():
         thompson_sampling,
         spread_publishers,
         top1_topics,
-        top3_topics
+        top3_topics,
+        rank_topics
     )
 
     return {
@@ -35,5 +36,6 @@ def get_all_rankers():
         'thompson-sampling': thompson_sampling,
         'top1-topics': top1_topics,
         'top3-topics': top3_topics,
+        'rank-topics': rank_topics,
         'pubspread': spread_publishers
     }

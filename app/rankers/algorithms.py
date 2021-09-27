@@ -39,6 +39,15 @@ top15 = partial(top_n, 15)
 top30 = partial(top_n, 30)
 top45 = partial(top_n, 45)
 
+def rank_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List['SlateConfigModel']:
+    """
+    returns the lineup with topic slates sorted by the user's profile.
+    :param slates: initial list of slate configs
+    :param personalized_topics: recit response including sorted list of personalized topics
+    :return: list of slate configs the personalized topics sorted
+    """
+
+    return __personalize_topic_slates(slates, personalized_topics, topic_limit=None)
 
 def top1_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List['SlateConfigModel']:
     """
@@ -170,10 +179,15 @@ def __personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
     for config in input_slate_configs:
         if config in personalizable_configs:
             # if slate is personalizable add highest ranked slate remaining
-            if added_topic_slates < topic_limit:
+            if topic_limit:
+                if added_topic_slates < topic_limit:
+                    output_configs.append(personalizable_configs[personalized_index])
+                    added_topic_slates += 1
+                    personalized_index += 1
+            else:
                 output_configs.append(personalizable_configs[personalized_index])
-                added_topic_slates += 1
                 personalized_index += 1
+                added_topic_slates += 1
         else:
             logging.debug(f"adding topic slate {added_topic_slates}")
             output_configs.append(config)

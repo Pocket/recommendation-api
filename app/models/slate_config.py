@@ -111,6 +111,9 @@ class SlateConfigModel:
 
         return slate_config
 
+    def __repr__(self):
+        return f"<SlateConfigModel {self.displayName} [{self.id}] >"
+
 
 def validate_slate_config(slate_configs: List[SlateConfigModel]) -> None:
     """
