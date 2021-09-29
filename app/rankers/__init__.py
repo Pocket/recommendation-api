@@ -1,6 +1,7 @@
 def get_ranker(name):
     return get_all_rankers()[name]
 
+PERSONALIZED_RANKERS = {"top1-topics", "top3-topics", "rank-topics"}
 
 def get_all_rankers():
     # Importing algorithms within the function here ensures that when rankers are imported
