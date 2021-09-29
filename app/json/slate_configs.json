@@ -1435,8 +1435,7 @@
           "303174fc-a9ff-4a51-984a-e09ce7120d18"
         ],
         "rankers": [
-          "top30",
-          "thompson-sampling"
+          "top30"
         ]
       }
     ]

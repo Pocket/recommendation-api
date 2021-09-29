@@ -8,7 +8,7 @@ from app.json.utils import parse_to_dict
 from app.models.metrics.slate_metrics_factory import SlateMetricsFactory
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate_config import SlateConfigModel
-from app.rankers import get_ranker
+from app.rankers import get_ranker, PERSONALIZED_RANKERS
 from app.models.personalized_topic_list import PersonalizedTopicList
 
 
@@ -127,7 +127,7 @@ class SlateLineupConfigModel:
                         slate_lineup_id,
                         [s.id for s in slate_configs])
                 }
-            elif ranker in {"top1-topics", "top3-topics"}:
+            elif ranker in PERSONALIZED_RANKERS:
                 ranker_kwargs = {
                     "personalized_topics": await PersonalizedTopicList.get(user_id)
                 }
