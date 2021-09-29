@@ -145,6 +145,9 @@
                   "top15",
                   "top30",
                   "top45",
+                  "thompson-sampling-1day",
+                  "thompson-sampling-7day",
+                  "thompson-sampling-14day",
                   "thompson-sampling"
                 ],
                 "title": "The Experiment Ranker Items Schema",

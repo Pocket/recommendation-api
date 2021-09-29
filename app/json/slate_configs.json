@@ -1539,7 +1539,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling"
+          "thompson-sampling-1day"
         ]
       }
     ]
