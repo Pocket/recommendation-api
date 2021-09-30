@@ -15,7 +15,7 @@ from app.models.candidate_set import candidate_set_factory
 from app.models.metrics.recommendation_metrics_factory import RecommendationMetricsFactory
 from app.models.item import ItemModel
 from app.models.slate_experiment import SlateExperimentModel
-from app.rankers import get_ranker
+from app.rankers import get_ranker, THOMPSON_SAMPLING_RANKERS
 
 
 class RecommendationType(Enum):
@@ -98,16 +98,17 @@ class RecommendationModel(BaseModel):
 
         # apply rankers from the slate experiment on the candidate set's candidates
         for ranker in experiment.rankers:
-            if ranker == 'thompson-sampling':
+            if ranker in THOMPSON_SAMPLING_RANKERS:
                 # thompson sampling takes two specific arguments so it needs to be handled differently
-                recommendations = await RecommendationModel.__thompson_sample(slate_id, recommendations)
+                recommendations = await RecommendationModel.__thompson_sample(ranker, slate_id, recommendations)
                 continue
             recommendations = get_ranker(ranker)(recommendations)
 
         return recommendations
 
     @staticmethod
-    async def __thompson_sample(slate_id: str, recommendations: ['RecommendationModel']) -> ['RecommendationModel']:
+    async def __thompson_sample(ranker: str, slate_id: str,
+                                recommendations: ['RecommendationModel']) -> ['RecommendationModel']:
         """
         Special processing for handling the thompson sampling ranker. Retrieves click data for the items being ranked
         and uses that for thompson sampling algorithm with beta distributions.
@@ -132,4 +133,4 @@ class RecommendationModel(BaseModel):
         except ValueError:
             logging.warning(f'No click data found for {slate_id = } {item_ids = }')
             click_data = {}
-        return get_ranker('thompson-sampling')(recommendations, click_data)
+        return get_ranker(ranker)(recommendations, click_data)

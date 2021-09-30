@@ -12,7 +12,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -23,7 +23,7 @@
         ],
         "rankers": [
           "top15",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -42,7 +42,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -53,7 +53,7 @@
         ],
         "rankers": [
           "top15",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -72,7 +72,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -83,7 +83,7 @@
         ],
         "rankers": [
           "top15",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -102,7 +102,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -113,7 +113,7 @@
         ],
         "rankers": [
           "top15",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -132,7 +132,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread",
           "top5"
         ]
@@ -144,7 +144,7 @@
         ],
         "rankers": [
           "top15",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread",
           "top5"
         ]
@@ -164,7 +164,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -201,7 +201,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -220,7 +220,7 @@
         ],
         "rankers": [
           "top15",
-          "thompson-sampling"
+          "thompson-sampling-28day"
         ]
       }
     ]
@@ -238,7 +238,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -249,7 +249,7 @@
         ],
         "rankers": [
           "top45",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -278,7 +278,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -297,7 +297,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -316,7 +316,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -327,7 +327,7 @@
         ],
         "rankers": [
           "top45",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -356,7 +356,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -375,7 +375,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -394,7 +394,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -405,7 +405,7 @@
         ],
         "rankers": [
           "top45",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -434,7 +434,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -453,7 +453,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -472,7 +472,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -483,7 +483,7 @@
         ],
         "rankers": [
           "top45",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -512,7 +512,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -531,7 +531,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -550,7 +550,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -561,7 +561,7 @@
         ],
         "rankers": [
           "top45",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -590,7 +590,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -609,7 +609,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -628,7 +628,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -639,7 +639,7 @@
         ],
         "rankers": [
           "top45",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -668,7 +668,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -687,7 +687,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -706,7 +706,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -717,7 +717,7 @@
         ],
         "rankers": [
           "top45",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -746,7 +746,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -765,7 +765,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -784,7 +784,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -813,7 +813,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -832,7 +832,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -851,7 +851,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -862,7 +862,7 @@
         ],
         "rankers": [
           "top45",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -891,7 +891,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -920,7 +920,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -939,7 +939,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -958,7 +958,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -969,7 +969,7 @@
         ],
         "rankers": [
           "top45",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -998,7 +998,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1017,7 +1017,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1036,7 +1036,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -1047,7 +1047,7 @@
         ],
         "rankers": [
           "top45",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1076,7 +1076,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1095,7 +1095,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1114,7 +1114,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -1125,7 +1125,7 @@
         ],
         "rankers": [
           "top45",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1154,7 +1154,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1173,7 +1173,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1192,7 +1192,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -1203,7 +1203,7 @@
         ],
         "rankers": [
           "top45",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1232,7 +1232,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1251,7 +1251,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1270,7 +1270,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -1281,7 +1281,7 @@
         ],
         "rankers": [
           "top45",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1310,7 +1310,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1329,7 +1329,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1348,7 +1348,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -1359,7 +1359,7 @@
         ],
         "rankers": [
           "top45",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1388,7 +1388,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       },
@@ -1399,7 +1399,7 @@
         ],
         "rankers": [
           "top45",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1418,7 +1418,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1452,7 +1452,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling"
+          "thompson-sampling-28day"
         ]
       }
     ]
@@ -1468,7 +1468,7 @@
           "adfdd1fd-28cb-5b2a-9d06-cdac7d949245"
         ],
         "rankers": [
-          "thompson-sampling"
+          "thompson-sampling-28day"
         ]
       }
     ]
@@ -1484,7 +1484,7 @@
           "243cac7e-fa75-5aa2-81d7-f7b40e942805"
         ],
         "rankers": [
-          "thompson-sampling"
+          "thompson-sampling-28day"
         ]
       }
     ]
@@ -1502,7 +1502,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1521,7 +1521,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }
@@ -1556,7 +1556,7 @@
         ],
         "rankers": [
           "top30",
-          "thompson-sampling",
+          "thompson-sampling-28day",
           "pubspread"
         ]
       }

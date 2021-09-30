@@ -208,7 +208,7 @@
       {
         "description": "SlateLineup test 1",
         "rankers": [
-          "thompson-sampling"
+          "thompson-sampling-28day"
         ],
         "slates": [
           "de254c5d-57a7-4553-850f-153ee385014d",
@@ -223,7 +223,7 @@
       {
         "description": "SlateLineup test 2",
         "rankers": [
-          "thompson-sampling"
+          "thompson-sampling-28day"
         ],
         "slates": [
           "de254c5d-57a7-4553-850f-153ee385014d",
