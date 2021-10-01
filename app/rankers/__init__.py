@@ -4,7 +4,7 @@ def get_ranker(name):
 PERSONALIZED_RANKERS = {"top1-topics", "top3-topics", "rank-topics"}
 
 THOMPSON_SAMPLING_RANKERS = {"thompson-sampling", "thompson-sampling-1day", "thompson-sampling-7day",
-                             "thompson-sampling-14day"}
+                             "thompson-sampling-14day", "thompson-sampling-28day"}
 
 def get_all_rankers():
     # Importing algorithms within the function here ensures that when rankers are imported
