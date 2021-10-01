@@ -10,7 +10,6 @@ import {
 import {config} from './config';
 import {DynamoDB} from "./dynamodb";
 import {PocketALBApplication, PocketECSCodePipeline} from "@pocket-tools/terraform-modules";
-import {EventBridgeLambda} from "./eventBridgeLambda";
 import {PocketPagerDuty} from "@pocket-tools/terraform-modules";
 import {PagerdutyProvider} from "@cdktf/provider-pagerduty";
 import {SqsLambda} from "./sqsLambda";
@@ -48,7 +47,6 @@ class RecommendationAPI extends TerraformStack {
 
         this.createApplicationCodePipeline(pocketApp);
 
-        new EventBridgeLambda(this, 'event-bridge-lambda', dynamodb.candidatesTable, pagerduty);
         new SqsLambda(this, 'sqs-lambda', dynamodb.candidateSetsTable, pagerduty);
     }
 
