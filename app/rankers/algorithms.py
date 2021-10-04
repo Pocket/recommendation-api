@@ -90,7 +90,8 @@ def blocklist(recs: RecommendationListType, blocklist: Optional[List[str]] = Non
 
 def thompson_sampling(
         recs: RankableListType,
-        metrics: Dict[(int or str), 'MetricsModel']) -> RankableListType:
+        metrics: Dict[(int or str), 'MetricsModel'],
+        trailing_period: int = 28) -> RankableListType:
     """
     Re-rank items using Thompson sampling which combines exploitation of known item CTR
     with exploration of new items with unknown CTR modeled by a prior
@@ -101,12 +102,19 @@ def thompson_sampling(
 
     :param recs: a list of recommendations in the desired order (pre-publisher spread)
     :param metrics: a dict with item_id as key and dynamodb row modeled as ClickDataModel
+    :param trailing_period: the number of days that impressions and opens are aggregated for sampling
     :return: a re-ordered version of recs satisfying the spread as best as possible
     """
 
     # if there are no recommendations, we done
     if not recs:
         return recs
+
+    if trailing_period not in [1, 7, 14, 28]:
+        raise ValueError(f"trailing_period of {trailing_period} is not available")
+
+    opens_column = f"trailing_{trailing_period}_day_opens"
+    imprs_column = f"trailing_{trailing_period}_day_impressions"
 
     # Currently we are using the hardcoded priors below.
     # TODO: We should return to having slate/lineup-specific priors. We could load slate-priors from
@@ -130,9 +138,9 @@ def thompson_sampling(
         d = metrics.get(clickdata_id)
         if d:
             # TODO: Decide how many days we want to look back.
-            clicks = max(d.trailing_28_day_opens + alpha_prior, 1e-18)
+            clicks = max(getattr(d, opens_column) + alpha_prior, 1e-18)
             # posterior combines click data with prior (also a beta distribution)
-            no_clicks = max(d.trailing_28_day_impressions - d.trailing_28_day_opens + beta_prior, 1e-18)
+            no_clicks = max(getattr(d, imprs_column) - getattr(d, opens_column) + beta_prior, 1e-18)
             # sample from posterior for CTR given click data
             score = beta.rvs(clicks, no_clicks)
             scores.append((rec, score))
@@ -141,6 +149,11 @@ def thompson_sampling(
 
     scores.sort(key=itemgetter(1), reverse=True)
     return [x[0] for x in scores]
+
+
+thompson_sampling_1day = partial(thompson_sampling, trailing_period=1)
+thompson_sampling_7day = partial(thompson_sampling, trailing_period=7)
+thompson_sampling_14day = partial(thompson_sampling, trailing_period=14)
 
 
 def __personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],

@@ -3,6 +3,9 @@ def get_ranker(name):
 
 PERSONALIZED_RANKERS = {"top1-topics", "top3-topics", "rank-topics"}
 
+THOMPSON_SAMPLING_RANKERS = {"thompson-sampling-1day", "thompson-sampling-7day",
+                             "thompson-sampling-14day", "thompson-sampling-28day"}
+
 def get_all_rankers():
     # Importing algorithms within the function here ensures that when rankers are imported
     # they do not cause unwanted circular imports.
@@ -22,7 +25,10 @@ def get_all_rankers():
         top15,
         top30,
         top45,
-        thompson_sampling,
+        thompson_sampling,  # this uses a 28 day window by default
+        thompson_sampling_1day,
+        thompson_sampling_7day,
+        thompson_sampling_14day,
         spread_publishers,
         top1_topics,
         top3_topics,
@@ -34,7 +40,10 @@ def get_all_rankers():
         'top15': top15,
         'top30': top30,
         'top45': top45,
-        'thompson-sampling': thompson_sampling,
+        'thompson-sampling-1day': thompson_sampling_1day,
+        'thompson-sampling-7day': thompson_sampling_7day,
+        'thompson-sampling-14day': thompson_sampling_14day,
+        'thompson-sampling-28day': thompson_sampling,
         'top1-topics': top1_topics,
         'top3-topics': top3_topics,
         'rank-topics': rank_topics,
