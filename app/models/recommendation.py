@@ -15,7 +15,7 @@ from app.models.candidate_set import candidate_set_factory
 from app.models.metrics.recommendation_metrics_factory import RecommendationMetricsFactory
 from app.models.item import ItemModel
 from app.models.slate_experiment import SlateExperimentModel
-from app.rankers import get_ranker
+from app.rankers import get_ranker, THOMPSON_SAMPLING_RANKERS
 
 
 class RecommendationType(Enum):
@@ -58,25 +58,6 @@ class RecommendationModel(BaseModel):
         return recommendation
 
     @staticmethod
-    @xray_recorder.capture_async('model_recommendations_get_recommendations')
-    async def get_recommendations(topic_id: str, recommendation_type: RecommendationType) -> ['RecommendationModel']:
-        """
-        Retrieves recommendations for the given `topic_id` of the given type from dynamo db.
-        :param topic_id: id of the topic we want recommendations for
-        :param recommendation_type: the type of recommendations we want, e.g. algorithmic, curated
-        :return: list of RecommendationModel objects
-        """
-        async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
-            table = await dynamodb.Table(dynamodb_config['candidates']['table'])
-            key_condition = Key('topic_id-type').eq(topic_id + '|' + recommendation_type.value)
-            response = await table.query(IndexName='topic_id-type', Limit=1, KeyConditionExpression=key_condition,
-                                         ScanIndexForward=False)
-        if not response['Items']:
-            return []
-        # assume 'candidates' below contains publisher
-        return list(map(RecommendationModel.candidate_dict_to_recommendation, response['Items'][0]['candidates']))
-
-    @staticmethod
     async def get_recommendations_from_experiment(
             slate_id: str, experiment: SlateExperimentModel, user_id: str) -> ['RecommendationModel']:
         """
@@ -98,16 +79,17 @@ class RecommendationModel(BaseModel):
 
         # apply rankers from the slate experiment on the candidate set's candidates
         for ranker in experiment.rankers:
-            if ranker == 'thompson-sampling':
+            if ranker in THOMPSON_SAMPLING_RANKERS:
                 # thompson sampling takes two specific arguments so it needs to be handled differently
-                recommendations = await RecommendationModel.__thompson_sample(slate_id, recommendations)
+                recommendations = await RecommendationModel.__thompson_sample(ranker, slate_id, recommendations)
                 continue
             recommendations = get_ranker(ranker)(recommendations)
 
         return recommendations
 
     @staticmethod
-    async def __thompson_sample(slate_id: str, recommendations: ['RecommendationModel']) -> ['RecommendationModel']:
+    async def __thompson_sample(ranker: str, slate_id: str,
+                                recommendations: ['RecommendationModel']) -> ['RecommendationModel']:
         """
         Special processing for handling the thompson sampling ranker. Retrieves click data for the items being ranked
         and uses that for thompson sampling algorithm with beta distributions.
@@ -132,4 +114,4 @@ class RecommendationModel(BaseModel):
         except ValueError:
             logging.warning(f'No click data found for {slate_id = } {item_ids = }')
             click_data = {}
-        return get_ranker('thompson-sampling')(recommendations, click_data)
+        return get_ranker(ranker)(recommendations, click_data)

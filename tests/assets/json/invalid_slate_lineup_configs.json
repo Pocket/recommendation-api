@@ -6,7 +6,7 @@
      {
        "description": "Android is where it's at",
        "rankers": [
-         "thompson-sampling"
+         "thompson-sampling-28day"
        ],
        "slates": [
          "c410516f-18b3-46a1-b356-c7c003de2b53",
@@ -47,7 +47,7 @@
        "rankers": [
          "pubspread",
          "top15",
-         "thompson-sampling"
+         "thompson-sampling-28day"
        ],
        "slates": [
          "e410516f-18b3-46a1-b356-c7c003de2b53",

@@ -22,6 +22,9 @@ export class DynamoDB extends Resource {
   }
 
   /**
+   * @deprecated Delete this table if PR #409 is deployed without issues for a week:
+   * https://github.com/Pocket/recommendation-api/pull/409
+   *
    * Sets up the dynamodb table where the candidates will live
    * @private
    */
@@ -67,7 +70,8 @@ export class DynamoDB extends Resource {
         tracking: 70,
         max: 100,
         min: 5
-      }
+      },
+      preventDestroyTable: false,
     });
   }
 
