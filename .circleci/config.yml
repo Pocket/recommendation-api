@@ -55,7 +55,7 @@ jobs:
             echo 'export PATH=$HOME/.rover/bin:$PATH' >> $BASH_ENV
       - run:
           name: check service
-          command: rover subgraph check pocket-client-api@current --schema ./schema.graphql --name=list
+          command: rover subgraph check pocket-client-api@current --schema ./schema.graphql --name=recommendation-api
       - when:
           condition:
             equal: [main, << pipeline.git.branch >>]
@@ -250,10 +250,8 @@ workflows:
           <<: *not_main
           context: pocket
 
-      - apollo:
-          <<: *only_main
-          requires:
-            - deploy_prod
+      - apollo
+
       - build
 
       # Build & Deploy Development Lambdas
