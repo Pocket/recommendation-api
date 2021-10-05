@@ -57,7 +57,7 @@ class TestSlateLineupExperimentModel(unittest.TestCase):
                ],
                "rankers": [
                  "top30",
-                 "thompson-sampling",
+                 "thompson-sampling-28day",
                  "pubspread"
                ]
             }
@@ -80,7 +80,7 @@ class TestSlateLineupExperimentModel(unittest.TestCase):
                ],
                "rankers": [
                  "top15",
-                 "thompson-sampling"
+                 "thompson-sampling-28day"
                ],
                "weight": 0.3
              }

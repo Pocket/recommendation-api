@@ -57,7 +57,7 @@ class TestSlateExperimentModel(unittest.TestCase):
                ],
                "rankers": [
                  "top30",
-                 "thompson-sampling",
+                 "thompson-sampling-28day",
                  "pubspread"
                ]
             }
