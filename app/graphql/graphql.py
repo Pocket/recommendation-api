@@ -2,23 +2,14 @@ from graphene import ObjectType, String, Field, List, Int
 from graphene_federation import build_schema
 
 from app.models.topic import TopicModel
-from app.models.topic_recommendations import TopicRecommendationsModel
 from app.models.slate import SlateModel
 from app.models.slate_lineup import SlateLineupModel
 from app.graphql.topic import Topic
-from app.graphql.topic_recommendations import TopicRecommendations
 from app.graphql.slate import Slate
 from app.graphql.slate_lineup import SlateLineup
 
 
 class Query(ObjectType):
-    get_topic_recommendations = Field(TopicRecommendations, slug=String(required=True, description="Topic slug to get "
-                                                                                                   "recommendations "
-                                                                                                   "for"),
-                                      algorithmic_count=Int(default_value=20, description="Number of algorithmic "
-                                                                                          "results to return"),
-                                      curated_count=Int(default_value=5, description="Number of curated "
-                                                                                     "results to return"))
     list_topics = List(Topic)
 
     get_slate = Field(Slate, slate_id=String(required=True, description="Slate id to get a specific slate"),
@@ -31,11 +22,6 @@ class Query(ObjectType):
                              slate_count=Int(default_value=8, description="Number of slates to return, defaults to 8"),
                              recommendation_count=Int(default_value=10,
                                                       description="Maximum number of recommendations to return, defaults to 10"))
-
-    async def resolve_get_topic_recommendations(self, info, slug: str, algorithmic_count: int,
-                                                curated_count: int) -> TopicRecommendationsModel:
-        return await TopicRecommendationsModel.get_recommendations(slug=slug, algorithmic_count=algorithmic_count,
-                                                                   curated_count=curated_count)
 
     async def resolve_list_topics(self, info) -> [TopicModel]:
         return await TopicModel.get_all()

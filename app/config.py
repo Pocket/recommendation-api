@@ -20,9 +20,6 @@ dynamodb = {
     'metadata': {
         'table': os.getenv('RECOMMENDATION_API_METADATA_TABLE', 'recommendation_api_metadata'),
     },
-    'candidates': {
-        'table': os.getenv('RECOMMENDATION_API_CANDIDATES_TABLE', 'recommendation_api_candidates'),
-    },
     'candidate_sets': {
         'table': os.getenv('RECOMMENDATION_API_CANDIDATE_SETS_TABLE', 'recommendation_api_candidate_sets'),
     },
