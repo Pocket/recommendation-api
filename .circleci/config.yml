@@ -126,7 +126,6 @@ jobs:
           name: Build environment and install requirements
           command: |
             pip install pipenv
-            pipenv lock --clear
             pipenv install --dev
       - save_cache:
           key: deps-test-{{ checksum "<<parameters.pipenv_path>>Pipfile.lock" }}
