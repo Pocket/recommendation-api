@@ -55,7 +55,6 @@ phases:
 
       - npm install -g npm@latest
       - npm ci
-      - npm run build
       # synthesize the js into terraform json with the proper node environment
       - 'if [ "$GIT_BRANCH" == "$DEV_BRANCH" ]; then NODE_ENV=development npm run synth; else npm run synth; fi'
       - cd cdktf.out/stacks/recommendation-api
