@@ -64,7 +64,7 @@ phases:
     commands:
       - echo Build started on `date`
       ### If the branch is not main and its not dev, lets do a plan on prod.
-      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" != "$MAIN_BRANCH_REF" ] && [ "$CODEBUILD_WEBHOOK_HEAD_REF" != "$DEV_BRANCH_REF" ]; then terraform plan -lock=false -refresh=false -no-color; fi'
+      - 'if [ "$CODEBUILD_WEBHOOK_HEAD_REF" != "$MAIN_BRANCH_REF" ] && [ "$CODEBUILD_WEBHOOK_HEAD_REF" != "$DEV_BRANCH_REF" ] && [ -z "$GIT_BRANCH" ]; then terraform plan -lock=false -refresh=false -no-color; fi'
       #### If the branch is dev, lets do an apply on dev.
       - 'if [ "$GIT_BRANCH" == "$DEV_BRANCH" ]; then TF_WORKSPACE=$TF_DEV_WORKSPACE TF_LOG=INFO terraform apply -auto-approve -no-color; fi'
       #### If the branch is main lets apply.
