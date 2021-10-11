@@ -9,6 +9,7 @@ import {
 } from '@cdktf/provider-aws';
 import { LocalProvider } from '@cdktf/provider-local';
 import { NullProvider } from '@cdktf/provider-null';
+import { ArchiveProvider } from '@cdktf/provider-archive';
 import {config} from './config';
 import {DynamoDB} from "./dynamodb";
 import {PocketALBApplication, PocketECSCodePipeline} from "@pocket-tools/terraform-modules";
@@ -26,6 +27,7 @@ class RecommendationAPI extends TerraformStack {
         new PagerdutyProvider(this, 'pagerduty_provider', {token: undefined});
         new LocalProvider(this, 'local_provider');
         new NullProvider(this, 'null_provider');
+        new ArchiveProvider(this, 'archive_provider');
 
         new RemoteBackend(this, {
             hostname: 'app.terraform.io',
