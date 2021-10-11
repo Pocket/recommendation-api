@@ -31,7 +31,6 @@ uvicorn = "==0.14.0"
 #   pydantic<=1.6,>=1.0 (from graphene-pydantic==0.1.0)
 fastapi = "==0.64.0"
 uvloop = "*"
-httptools = "==0.2.0"
 gql = "*"
 xraysink = "*"
 aws-xray-sdk = "*"
@@ -40,6 +39,7 @@ jsonschema = "*"
 aiocache = {extras = ["memcached"], version = "*"}
 # aiocache will automatically use ujson when available. ujson supports decimal types, and json does not.
 ujson = "*"
+httptools = "*"
 
 [requires]
 python_version = "3.8"
