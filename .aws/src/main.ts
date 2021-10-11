@@ -7,6 +7,8 @@ import {
     DataAwsRegion,
     DataAwsSnsTopic
 } from '@cdktf/provider-aws';
+import { LocalProvider } from '@cdktf/provider-local';
+import { NullProvider } from '@cdktf/provider-null';
 import {config} from './config';
 import {DynamoDB} from "./dynamodb";
 import {PocketALBApplication, PocketECSCodePipeline} from "@pocket-tools/terraform-modules";
@@ -19,9 +21,11 @@ class RecommendationAPI extends TerraformStack {
     constructor(scope: Construct, name: string) {
         super(scope, name);
 
+        // Create providers
         new AwsProvider(this, 'aws', {region: 'us-east-1'});
-
         new PagerdutyProvider(this, 'pagerduty_provider', {token: undefined});
+        new LocalProvider(this, 'local_provider');
+        new NullProvider(this, 'null_provider');
 
         new RemoteBackend(this, {
             hostname: 'app.terraform.io',
