@@ -117,7 +117,6 @@ jobs:
         type: string
     environment:
       WORKON_HOME: '~/.venv'
-      PIP_NO_CACHE_DIR: 'true'
     steps:
       - checkout
       - restore_cache:
