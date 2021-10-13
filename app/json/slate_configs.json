@@ -61,7 +61,7 @@
   },
   {
     "id": "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
-    "displayName": "Editors' Picks",
+    "displayName": "Editors' picks",
     "description": "Great reads from around the web, curated by Pocket",
     "internalDescription": "Curated items excluding syndicated that are at most a week old",
     "experiments": [
@@ -1667,7 +1667,7 @@
   },
   {
     "id": "626397d3-fa4e-4299-8d07-cbeaa269ebc1",
-    "displayName": "Ten Minutes or Less",
+    "displayName": "Ten minutes or less",
     "description": "Smart, quick reads from trusted sources",
     "internalDescription": "Curated short reads excluding syndicated",
     "experiments": [
@@ -1686,7 +1686,7 @@
   },
   {
     "id": "8fa462a6-81d1-47ee-8de3-1e5e0030e6d6",
-    "displayName": "Long Reads Worth the Time",
+    "displayName": "Long reads worth the time",
     "description": "The best longform journalism and essays popular in Pocket",
     "internalDescription": "Curated long reads excluding syndicated",
     "experiments": [
@@ -1705,7 +1705,7 @@
   },
   {
     "id": "2f2a3568-901f-4655-8735-daf67e8ecc5d",
-    "displayName": "In Case You Missed It",
+    "displayName": "In case you missed it",
     "description": "Great stories that stand the test of time",
     "experiments": [
       {

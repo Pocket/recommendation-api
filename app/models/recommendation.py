@@ -58,25 +58,6 @@ class RecommendationModel(BaseModel):
         return recommendation
 
     @staticmethod
-    @xray_recorder.capture_async('model_recommendations_get_recommendations')
-    async def get_recommendations(topic_id: str, recommendation_type: RecommendationType) -> ['RecommendationModel']:
-        """
-        Retrieves recommendations for the given `topic_id` of the given type from dynamo db.
-        :param topic_id: id of the topic we want recommendations for
-        :param recommendation_type: the type of recommendations we want, e.g. algorithmic, curated
-        :return: list of RecommendationModel objects
-        """
-        async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
-            table = await dynamodb.Table(dynamodb_config['candidates']['table'])
-            key_condition = Key('topic_id-type').eq(topic_id + '|' + recommendation_type.value)
-            response = await table.query(IndexName='topic_id-type', Limit=1, KeyConditionExpression=key_condition,
-                                         ScanIndexForward=False)
-        if not response['Items']:
-            return []
-        # assume 'candidates' below contains publisher
-        return list(map(RecommendationModel.candidate_dict_to_recommendation, response['Items'][0]['candidates']))
-
-    @staticmethod
     async def get_recommendations_from_experiment(
             slate_id: str, experiment: SlateExperimentModel, user_id: str) -> ['RecommendationModel']:
         """

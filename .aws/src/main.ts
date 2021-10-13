@@ -7,10 +7,12 @@ import {
     DataAwsRegion,
     DataAwsSnsTopic
 } from '@cdktf/provider-aws';
+import { LocalProvider } from '@cdktf/provider-local';
+import { NullProvider } from '@cdktf/provider-null';
+import { ArchiveProvider } from '@cdktf/provider-archive';
 import {config} from './config';
 import {DynamoDB} from "./dynamodb";
 import {PocketALBApplication, PocketECSCodePipeline} from "@pocket-tools/terraform-modules";
-import {EventBridgeLambda} from "./eventBridgeLambda";
 import {PocketPagerDuty} from "@pocket-tools/terraform-modules";
 import {PagerdutyProvider} from "@cdktf/provider-pagerduty";
 import {SqsLambda} from "./sqsLambda";
@@ -20,9 +22,12 @@ class RecommendationAPI extends TerraformStack {
     constructor(scope: Construct, name: string) {
         super(scope, name);
 
+        // Create providers
         new AwsProvider(this, 'aws', {region: 'us-east-1'});
-
         new PagerdutyProvider(this, 'pagerduty_provider', {token: undefined});
+        new LocalProvider(this, 'local_provider');
+        new NullProvider(this, 'null_provider');
+        new ArchiveProvider(this, 'archive_provider');
 
         new RemoteBackend(this, {
             hostname: 'app.terraform.io',
@@ -48,7 +53,6 @@ class RecommendationAPI extends TerraformStack {
 
         this.createApplicationCodePipeline(pocketApp);
 
-        new EventBridgeLambda(this, 'event-bridge-lambda', dynamodb.candidatesTable, pagerduty);
         new SqsLambda(this, 'sqs-lambda', dynamodb.candidateSetsTable, pagerduty);
     }
 

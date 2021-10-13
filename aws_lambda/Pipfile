@@ -13,12 +13,10 @@ mypy_boto3_dynamodb = "*"
 pytest-mock = "*"
 
 [packages]
-metaflow = "*"
 boto3 = "*"
 # We define the essential stubs
 boto3-stubs = {extras = ["essential"], version = "*"}
 sentry-sdk = "*"
-aws_secretsmanager_caching = "*"
 
 [requires]
 python_version = "3.8"
