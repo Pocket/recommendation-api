@@ -11,7 +11,7 @@
           "34167872-ab8f-444e-9a6e-15606c2706d9"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -22,7 +22,7 @@
           "34167872-ab8f-444e-9a6e-15606c2706d9"
         ],
         "rankers": [
-          "top15",
+          "top15-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -41,7 +41,7 @@
           "7e1f09b7-3e06-4723-a43c-7f6cd2f36749"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -52,7 +52,7 @@
           "7e1f09b7-3e06-4723-a43c-7f6cd2f36749"
         ],
         "rankers": [
-          "top15",
+          "top15-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -71,7 +71,7 @@
           "493a5556-9800-449f-8f8c-c27bb6c8c810"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -82,7 +82,7 @@
           "493a5556-9800-449f-8f8c-c27bb6c8c810"
         ],
         "rankers": [
-          "top15",
+          "top15-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -101,7 +101,7 @@
           "493a5556-9800-449f-8f8c-c27bb6c8c810"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -112,7 +112,7 @@
           "493a5556-9800-449f-8f8c-c27bb6c8c810"
         ],
         "rankers": [
-          "top15",
+          "top15-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -131,10 +131,10 @@
           "493a5556-9800-449f-8f8c-c27bb6c8c810"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread",
-          "top5"
+          "top5-items"
         ]
       },
       {
@@ -143,10 +143,10 @@
           "493a5556-9800-449f-8f8c-c27bb6c8c810"
         ],
         "rankers": [
-          "top15",
+          "top15-items",
           "thompson-sampling-28day",
           "pubspread",
-          "top5"
+          "top5-items"
         ]
       }
     ]
@@ -163,7 +163,7 @@
           "35018233-48cd-4ec4-bcfd-7b1b1ccf30de"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -182,7 +182,7 @@
           "c29fbf48-0093-49d2-ae55-4e01a3cf800e"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "pubspread"
         ]
       }
@@ -200,7 +200,7 @@
           "recit-personalized/curated"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -219,7 +219,7 @@
           "recit-personalized/bestof"
         ],
         "rankers": [
-          "top15",
+          "top15-items",
           "thompson-sampling-28day"
         ]
       }
@@ -237,7 +237,7 @@
           "70701fe5-0ee5-44ab-bb84-dd7a5041e365"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -248,7 +248,7 @@
           "70701fe5-0ee5-44ab-bb84-dd7a5041e365"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-7day",
           "pubspread"
         ]
@@ -259,7 +259,7 @@
           "70701fe5-0ee5-44ab-bb84-dd7a5041e365"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-1day",
           "pubspread"
         ]
@@ -278,7 +278,7 @@
           "c7a0201d-0e36-4b3e-b09a-70dd239f057b"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "pubspread"
         ]
       },
@@ -288,7 +288,7 @@
           "c7a0201d-0e36-4b3e-b09a-70dd239f057b"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -307,7 +307,7 @@
           "962a8efb-2a57-472a-9bd4-2631dc6684f3"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -326,7 +326,7 @@
           "496ae933-d84c-4546-8730-145f0fccf36d"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -337,7 +337,7 @@
           "496ae933-d84c-4546-8730-145f0fccf36d"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-7day",
           "pubspread"
         ]
@@ -348,7 +348,7 @@
           "496ae933-d84c-4546-8730-145f0fccf36d"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-1day",
           "pubspread"
         ]
@@ -367,7 +367,7 @@
           "f693a2e2-9ed0-49d4-a739-2b25b41da5e3"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "pubspread"
         ]
       },
@@ -377,7 +377,7 @@
           "f693a2e2-9ed0-49d4-a739-2b25b41da5e3"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -396,7 +396,7 @@
           "651990d0-d223-46bf-b9d1-007ea312dd88"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -415,7 +415,7 @@
           "49f8c31c-bd45-4965-8335-8aab2988b238"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -426,7 +426,7 @@
           "49f8c31c-bd45-4965-8335-8aab2988b238"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-7day",
           "pubspread"
         ]
@@ -437,7 +437,7 @@
           "49f8c31c-bd45-4965-8335-8aab2988b238"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-1day",
           "pubspread"
         ]
@@ -456,7 +456,7 @@
           "b85a946e-a093-4f14-8d7d-412b34f1206b"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "pubspread"
         ]
       },
@@ -466,7 +466,7 @@
           "b85a946e-a093-4f14-8d7d-412b34f1206b"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -485,7 +485,7 @@
           "3a5f2bf4-c7aa-45c4-9105-4ac548679dd8"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -504,7 +504,7 @@
           "56053d72-5fd2-4bc3-ae12-5fda3160d96d"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -515,7 +515,7 @@
           "56053d72-5fd2-4bc3-ae12-5fda3160d96d"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-7day",
           "pubspread"
         ]
@@ -526,7 +526,7 @@
           "56053d72-5fd2-4bc3-ae12-5fda3160d96d"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-1day",
           "pubspread"
         ]
@@ -545,7 +545,7 @@
           "ad9b3930-9f16-43dc-ae5c-eb14766c1ec9"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "pubspread"
         ]
       },
@@ -555,7 +555,7 @@
           "ad9b3930-9f16-43dc-ae5c-eb14766c1ec9"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -574,7 +574,7 @@
           "e53ae7b1-5489-45cf-b007-ffffdcac50ba"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -593,7 +593,7 @@
           "f0cc2cf4-f6db-48b4-bd50-8fd118e5fb92"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -604,7 +604,7 @@
           "f0cc2cf4-f6db-48b4-bd50-8fd118e5fb92"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-7day",
           "pubspread"
         ]
@@ -615,7 +615,7 @@
           "f0cc2cf4-f6db-48b4-bd50-8fd118e5fb92"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-1day",
           "pubspread"
         ]
@@ -634,7 +634,7 @@
           "2da138a0-74c1-405e-9191-1317cc59ceed"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "pubspread"
         ]
       },
@@ -644,7 +644,7 @@
           "2da138a0-74c1-405e-9191-1317cc59ceed"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -663,7 +663,7 @@
           "5b5bc672-59bb-4189-b6c4-79dc9f58242b"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -682,7 +682,7 @@
           "5aa1e0d8-3f56-4bed-9708-f4eaa9b5bb49"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -693,7 +693,7 @@
           "5aa1e0d8-3f56-4bed-9708-f4eaa9b5bb49"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-7day",
           "pubspread"
         ]
@@ -704,7 +704,7 @@
           "5aa1e0d8-3f56-4bed-9708-f4eaa9b5bb49"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-1day",
           "pubspread"
         ]
@@ -723,7 +723,7 @@
           "2bf336d5-1645-4b71-8444-2e5271d7e32c"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "pubspread"
         ]
       },
@@ -733,7 +733,7 @@
           "2bf336d5-1645-4b71-8444-2e5271d7e32c"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -752,7 +752,7 @@
           "00dbf162-0178-45ce-8926-9fdb9ae3c5e1"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -771,7 +771,7 @@
           "60d62ea8-0518-49e4-8531-fecd486d5220"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -782,7 +782,7 @@
           "60d62ea8-0518-49e4-8531-fecd486d5220"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-7day",
           "pubspread"
         ]
@@ -793,7 +793,7 @@
           "60d62ea8-0518-49e4-8531-fecd486d5220"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-1day",
           "pubspread"
         ]
@@ -812,7 +812,7 @@
           "5681d1c4-7e50-4e35-a54b-643a3bd14769"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "pubspread"
         ]
       },
@@ -822,7 +822,7 @@
           "5681d1c4-7e50-4e35-a54b-643a3bd14769"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -841,7 +841,7 @@
           "37a81a59-9052-455e-9912-763c6d994292"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -860,7 +860,7 @@
           "117e17b3-23cc-4343-91d7-2e1a37da78b0"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -871,7 +871,7 @@
           "117e17b3-23cc-4343-91d7-2e1a37da78b0"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-7day",
           "pubspread"
         ]
@@ -882,7 +882,7 @@
           "117e17b3-23cc-4343-91d7-2e1a37da78b0"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-1day",
           "pubspread"
         ]
@@ -901,7 +901,7 @@
           "fb1e0d23-28e0-448d-82a8-a7cb0a6c1ad1"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "pubspread"
         ]
       },
@@ -911,7 +911,7 @@
           "fb1e0d23-28e0-448d-82a8-a7cb0a6c1ad1"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -930,7 +930,7 @@
           "69efd069-0f7b-4868-b49b-409a02fae83e"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -949,7 +949,7 @@
           "ea2aa748-4c9f-4d0a-9319-f05b19f54102"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -960,7 +960,7 @@
           "ea2aa748-4c9f-4d0a-9319-f05b19f54102"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-7day",
           "pubspread"
         ]
@@ -971,7 +971,7 @@
           "ea2aa748-4c9f-4d0a-9319-f05b19f54102"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-1day",
           "pubspread"
         ]
@@ -990,7 +990,7 @@
           "5abdc94e-76d5-4f59-8e8d-22c8ee084a2d"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "pubspread"
         ]
       },
@@ -1000,7 +1000,7 @@
           "5abdc94e-76d5-4f59-8e8d-22c8ee084a2d"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1019,7 +1019,7 @@
           "5abdc94e-76d5-4f59-8e8d-22c8ee084a2d"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "pubspread"
         ]
       },
@@ -1029,7 +1029,7 @@
           "5abdc94e-76d5-4f59-8e8d-22c8ee084a2d"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1048,7 +1048,7 @@
           "acaa5ee8-fd8e-4932-86d6-4411aeb7fe73"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1067,7 +1067,7 @@
           "6f96238e-df6e-4ef0-8adc-48dc181bbf6a"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1078,7 +1078,7 @@
           "6f96238e-df6e-4ef0-8adc-48dc181bbf6a"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-7day",
           "pubspread"
         ]
@@ -1089,7 +1089,7 @@
           "6f96238e-df6e-4ef0-8adc-48dc181bbf6a"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-1day",
           "pubspread"
         ]
@@ -1108,7 +1108,7 @@
           "d893eb54-f3ce-43df-a0c9-76cd8fd53d4b"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "pubspread"
         ]
       },
@@ -1118,7 +1118,7 @@
           "d893eb54-f3ce-43df-a0c9-76cd8fd53d4b"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1137,7 +1137,7 @@
           "c1ae549f-3058-410d-aa81-601f339c7b9a"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1156,7 +1156,7 @@
           "70e59f76-d488-48a2-b99d-076f667bb9e4"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1167,7 +1167,7 @@
           "70e59f76-d488-48a2-b99d-076f667bb9e4"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-7day",
           "pubspread"
         ]
@@ -1178,7 +1178,7 @@
           "70e59f76-d488-48a2-b99d-076f667bb9e4"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-1day",
           "pubspread"
         ]
@@ -1197,7 +1197,7 @@
           "81754b9d-ff5b-454f-ba97-9ce72d9fc747"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "pubspread"
         ]
       },
@@ -1207,7 +1207,7 @@
           "81754b9d-ff5b-454f-ba97-9ce72d9fc747"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1226,7 +1226,7 @@
           "207828a9-5962-4ea0-8ec2-78e694af6606"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1245,7 +1245,7 @@
           "a6696de0-2695-4ab8-b389-6dd82e28ff98"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1256,7 +1256,7 @@
           "a6696de0-2695-4ab8-b389-6dd82e28ff98"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-7day",
           "pubspread"
         ]
@@ -1267,7 +1267,7 @@
           "a6696de0-2695-4ab8-b389-6dd82e28ff98"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-1day",
           "pubspread"
         ]
@@ -1286,7 +1286,7 @@
           "5857f00b-634f-441d-9fe9-e892a5743f48"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "pubspread"
         ]
       },
@@ -1296,7 +1296,7 @@
           "5857f00b-634f-441d-9fe9-e892a5743f48"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1315,7 +1315,7 @@
           "2113e88f-1c2a-4181-8bc3-3e936496f4d1"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1334,7 +1334,7 @@
           "88424d81-8737-4cab-aa72-64496d015a03"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1345,7 +1345,7 @@
           "88424d81-8737-4cab-aa72-64496d015a03"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-7day",
           "pubspread"
         ]
@@ -1356,7 +1356,7 @@
           "88424d81-8737-4cab-aa72-64496d015a03"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-1day",
           "pubspread"
         ]
@@ -1375,7 +1375,7 @@
           "81ee1a0f-19a2-4a26-8223-75baffab5af0"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "pubspread"
         ]
       },
@@ -1385,7 +1385,7 @@
           "81ee1a0f-19a2-4a26-8223-75baffab5af0"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1404,7 +1404,7 @@
           "cb69b5a1-c20d-4218-ab89-c577c7bfa20b"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1423,7 +1423,7 @@
           "46ec119b-2705-4631-8cc2-69092b95b26a"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1434,7 +1434,7 @@
           "46ec119b-2705-4631-8cc2-69092b95b26a"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-7day",
           "pubspread"
         ]
@@ -1445,7 +1445,7 @@
           "46ec119b-2705-4631-8cc2-69092b95b26a"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-1day",
           "pubspread"
         ]
@@ -1464,7 +1464,7 @@
           "e78cc946-c042-4607-abb1-b25f759df059"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "pubspread"
         ]
       },
@@ -1474,7 +1474,7 @@
           "e78cc946-c042-4607-abb1-b25f759df059"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1493,7 +1493,7 @@
           "6ad94e1d-11e5-4d05-8ad7-8ff3faec3e9d"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1512,7 +1512,7 @@
           "1da85dce-44f5-42ed-9c06-e95ebc797a65"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1523,7 +1523,7 @@
           "1da85dce-44f5-42ed-9c06-e95ebc797a65"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-7day",
           "pubspread"
         ]
@@ -1534,7 +1534,7 @@
           "1da85dce-44f5-42ed-9c06-e95ebc797a65"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-1day",
           "pubspread"
         ]
@@ -1553,7 +1553,7 @@
           "e10b7582-73e8-40b2-bba9-84e27b8de046"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "pubspread"
         ]
       },
@@ -1563,7 +1563,7 @@
           "e10b7582-73e8-40b2-bba9-84e27b8de046"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1574,7 +1574,7 @@
           "e10b7582-73e8-40b2-bba9-84e27b8de046"
         ],
         "rankers": [
-          "top45",
+          "top45-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1593,7 +1593,7 @@
           "8130b37a-9703-4ea1-a4ba-2ded7be7d643"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1611,7 +1611,7 @@
           "303174fc-a9ff-4a51-984a-e09ce7120d18"
         ],
         "rankers": [
-          "top30"
+          "top30-items"
         ]
       }
     ]
@@ -1627,7 +1627,7 @@
           "303174fc-a9ff-4a51-984a-e09ce7120d18"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day"
         ]
       }
@@ -1677,7 +1677,7 @@
           "7ef90242-ff7a-44ac-8a32-53193e4a23eb"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1696,7 +1696,7 @@
           "dacc55ea-db8d-4858-a51d-e1c78298337e"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
@@ -1714,7 +1714,7 @@
           "a8425a46-187a-4cdb-8157-5d2f308c52cd"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-1day"
         ]
       }
@@ -1731,7 +1731,7 @@
           "c66a1485-6c87-4c68-b29e-e7e838465ff7"
         ],
         "rankers": [
-          "top30",
+          "top30-items",
           "thompson-sampling-28day",
           "pubspread"
         ]
