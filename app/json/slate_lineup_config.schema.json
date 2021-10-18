@@ -104,7 +104,7 @@
                 "default": "",
                 "examples": [
                   "pubspread",
-                  "top30"
+                  "top30-slates"
                 ],
                 "pattern": "^(.+)$"
               }

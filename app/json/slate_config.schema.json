@@ -154,7 +154,7 @@
                 "default": "",
                 "examples": [
                   "pubspread",
-                  "top30"
+                  "top30-items"
                 ],
                 "pattern": "^(.+)$"
               }
