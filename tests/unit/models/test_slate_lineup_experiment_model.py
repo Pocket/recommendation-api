@@ -8,12 +8,12 @@ class TestSlateLineupExperimentModel(unittest.TestCase):
     # test instantiation
 
     def test_no_weight(self):
-        ex = SlateLineupExperimentModel(experiment_id='c3h5n3o9', description='d', slates=['a'], rankers=['top15'])
+        ex = SlateLineupExperimentModel(experiment_id='c3h5n3o9', description='d', slates=['a'], rankers=['top15-slates'])
         self.assertEqual(ex.weight, SlateLineupExperimentModel.DEFAULT_WEIGHT)
 
     def test_no_slates(self):
         with self.assertRaises(ValueError) as context:
-            SlateLineupExperimentModel(experiment_id='c3h5n3o9', description='desc', slates=[], rankers=['top15'])
+            SlateLineupExperimentModel(experiment_id='c3h5n3o9', description='desc', slates=[], rankers=['top15-slates'])
 
         self.assertTrue('no slates provided for experiment' in str(context.exception))
 
@@ -34,7 +34,7 @@ class TestSlateLineupExperimentModel(unittest.TestCase):
         ex_id = 'c3h5n3o9'
         desc = 'd'
         slates = ['a', 'b']
-        rs = ['top15', 'pubspread']
+        rs = ['top15-slates', 'pubspread']
         w = 0.2
 
         experiment = SlateLineupExperimentModel(experiment_id=ex_id, description=desc, slates=slates, rankers=rs, weight=w)
@@ -56,7 +56,7 @@ class TestSlateLineupExperimentModel(unittest.TestCase):
                  "df8a86c1-8b40-48bf-b85d-c144ed96c3fc"
                ],
                "rankers": [
-                 "top30",
+                 "top30-slates",
                  "thompson-sampling-28day",
                  "pubspread"
                ]
@@ -79,7 +79,7 @@ class TestSlateLineupExperimentModel(unittest.TestCase):
                  "df8a86c1-8b40-48bf-b85d-c144ed96c3fd"
                ],
                "rankers": [
-                 "top15",
+                 "top15-slates",
                  "thompson-sampling-28day"
                ],
                "weight": 0.3

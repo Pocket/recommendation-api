@@ -16,7 +16,7 @@
      {
        "description": "Android is where it's at part 2",
        "rankers": [
-         "top30"
+         "top30-slates"
        ],
        "slates": [
          "c410516f-18b3-46a1-b356-c7c003de2b63",
@@ -46,7 +46,7 @@
        "description": "firefoxOS is...where?",
        "rankers": [
          "pubspread",
-         "top15",
+         "top15-slates",
          "thompson-sampling-28day"
        ],
        "slates": [

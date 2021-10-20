@@ -47,26 +47,26 @@ test_candidate_2 = {
 
 # First slate
 slate_config_id = 'test-slate-config-id'
-slate_experiment = SlateExperimentModel('test-ex', 'test-ex-desc', ['top15', 'thompson-sampling-28day'],
+slate_experiment = SlateExperimentModel('test-ex', 'test-ex-desc', ['top15-items', 'thompson-sampling-28day'],
                                         ['test-candidate-id'])
 slate_config_model = SlateConfigModel(slate_config_id, 'test-this-slate', 'test-desc', experiments=[
     slate_experiment], curator_topic_label=CuratorTopic.HEALTH.value)
 
 # Second slate
 slate_config_id_2 = 'test-slate-config-id-2'
-slate_experiment_2 = SlateExperimentModel('test-ex-2', 'test-ex-desc-2', ['top15', 'thompson-sampling-28day'],
+slate_experiment_2 = SlateExperimentModel('test-ex-2', 'test-ex-desc-2', ['top15-items', 'thompson-sampling-28day'],
                                         ['test-candidate-id-2'])
 slate_config_model_2 = SlateConfigModel(slate_config_id_2, 'test-this-slate-2', 'test-desc-2',
                                         experiments=[slate_experiment_2])
 
 # Lineup with one slate
 slate_lineup_config_id = 'test-slate_lineup-config-id'
-slate_lineup_experiment = SlateLineupExperimentModel('test-ex', 'test-ex-desc', ['top15'], [slate_config_id])
+slate_lineup_experiment = SlateLineupExperimentModel('test-ex', 'test-ex-desc', ['top15-slates'], [slate_config_id])
 slate_lineup_config_model = SlateLineupConfigModel(slate_lineup_config_id, 'test-desc', [slate_lineup_experiment])
 
 # Lineup with two slates
 slate_lineup_config_id_2 = 'test-slate_lineup-config-id-2'
-slate_lineup_experiment_2 = SlateLineupExperimentModel('test-ex-2', 'test-ex-desc-2', ['top15'],
+slate_lineup_experiment_2 = SlateLineupExperimentModel('test-ex-2', 'test-ex-desc-2', ['top15-slates'],
                                                      slates=[slate_config_id, slate_config_id_2])
 slate_lineup_config_model_2 = SlateLineupConfigModel(slate_lineup_config_id_2, 'test-desc', [slate_lineup_experiment_2])
 

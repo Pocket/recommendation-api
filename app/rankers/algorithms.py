@@ -154,6 +154,7 @@ def thompson_sampling(
 thompson_sampling_1day = partial(thompson_sampling, trailing_period=1)
 thompson_sampling_7day = partial(thompson_sampling, trailing_period=7)
 thompson_sampling_14day = partial(thompson_sampling, trailing_period=14)
+thompson_sampling_28day = partial(thompson_sampling, trailing_period=28)
 
 
 def __personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
