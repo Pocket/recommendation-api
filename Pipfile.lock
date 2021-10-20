@@ -310,11 +310,11 @@
         },
         "jsonschema": {
             "hashes": [
-                "sha256:2b3cca28580511d44326f0e7fc582eab3cbe31aabd1a1c2cfa74a399796ffd84",
-                "sha256:9dd7c33b4a96138dc37bb86b3610d3b12d30d96433d4d73435ca3025804154a8"
+                "sha256:166870c8ab27bd712a8627e0598de4685bd8d199c4d7bd7cacc3d941ba0c6ca0",
+                "sha256:5c1a282ee6b74235057421fd0f766ac5f2972f77440927f6471c9e8493632fac"
             ],
             "index": "pypi",
-            "version": "==4.1.0"
+            "version": "==4.1.2"
         },
         "multidict": {
             "hashes": [
