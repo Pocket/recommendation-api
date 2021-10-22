@@ -22,7 +22,8 @@ class SlateLineupModel(BaseModel):
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_lineup_get_slate_lineup')
-    async def get_slate_lineup_with_fallback(slate_lineup_id: str, user_id: Optional[str] = None,
+    async def get_slate_lineup_with_fallback(slate_lineup_id: str,
+                                             user_id: Optional[str] = None,
                                              recommendation_count: Optional[int] = 10,
                                              slate_count: Optional[int] = 8) -> 'SlateLineupModel':
         """
