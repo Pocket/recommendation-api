@@ -1,7 +1,8 @@
-from graphene_pydantic import PydanticObjectType
+import strawberry
+
 from app.models.slate_lineup import SlateLineupModel
 
 
-class SlateLineup(PydanticObjectType):
-    class Meta:
-        model = SlateLineupModel
+@strawberry.experimental.pydantic.type(model=SlateLineupModel, all_fields=True)
+class SlateLineup:
+    pass

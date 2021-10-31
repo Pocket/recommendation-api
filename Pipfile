@@ -18,13 +18,12 @@ boto3-stubs = {extras = ["essential"], version = "==1.16.15.0"}
 aioresponses = "*"
 
 [packages]
-starlette = "*"
 sentry-sdk = "*"
 aioboto3 = "<9"
 gunicorn = "*"
-uvicorn = "==0.14.0"
+uvicorn = {extras = ["standard"], version = "*"}
 fastapi = "*"
-uvloop = "*"
+strawberry-graphql = {extras = ["fastapi"], version = "*"}
 xraysink = "*"
 aws-xray-sdk = "*"
 scipy = "*"
@@ -33,7 +32,6 @@ aiocache = {extras = ["memcached"], version = "*"}
 # aiocache will automatically use ujson when available. ujson supports decimal types, and json does not.
 ujson = "*"
 httptools = "*"
-strawberry-graphql = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.9"

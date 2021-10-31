@@ -1,8 +1,10 @@
-from graphene_pydantic import PydanticObjectType
+from enum import Enum
+
+import strawberry
 
 from app.models.topic import TopicModel
 
 
-class Topic(PydanticObjectType):
-    class Meta:
-        model = TopicModel
+@strawberry.experimental.pydantic.type(model=TopicModel, all_fields=True)
+class Topic:
+    pass

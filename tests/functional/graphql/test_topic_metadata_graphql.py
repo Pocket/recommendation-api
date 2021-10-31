@@ -1,6 +1,6 @@
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from graphene.test import Client
-from app.graphql.graphql import schema
+from app.graphql.schema import schema
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 
 

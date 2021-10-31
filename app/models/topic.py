@@ -4,17 +4,10 @@ from aws_xray_sdk.core import xray_recorder
 from boto3.dynamodb.conditions import Key
 from enum import Enum
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 from app.config import dynamodb as dynamodb_config
-
-
-class PageType(str, Enum):
-    """
-    Define the possible page types for a topic.
-    """
-    editorial_collection = 'editorial_collection'
-    topic_page = 'topic_page'
+from app.graphql.page_type import PageType
 
 
 class TopicModel(BaseModel):
