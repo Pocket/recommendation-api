@@ -22,7 +22,7 @@ sentry-sdk = "*"
 aioboto3 = "<9"
 gunicorn = "*"
 uvicorn = {extras = ["standard"], version = "*"}
-fastapi = "*"
+fastapi = ">= 0.70.0"
 strawberry-graphql = {extras = ["fastapi"], version = "*"}
 xraysink = "*"
 aws-xray-sdk = "*"
