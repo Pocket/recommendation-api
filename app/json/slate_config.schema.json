@@ -141,10 +141,10 @@
                 "type": "string",
                 "enum": [
                   "pubspread",
-                  "top5",
-                  "top15",
-                  "top30",
-                  "top45",
+                  "top5-items",
+                  "top15-items",
+                  "top30-items",
+                  "top45-items",
                   "thompson-sampling-1day",
                   "thompson-sampling-7day",
                   "thompson-sampling-14day",
@@ -154,7 +154,7 @@
                 "default": "",
                 "examples": [
                   "pubspread",
-                  "top30"
+                  "top30-items"
                 ],
                 "pattern": "^(.+)$"
               }

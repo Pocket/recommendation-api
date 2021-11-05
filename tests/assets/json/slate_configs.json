@@ -19,7 +19,7 @@
          "ab8a86c1-8b40-48bf-b85d-c144ed96c3fd"
        ],
        "rankers": [
-         "top15",
+         "top15-items",
          "thompson-sampling-28day",
          "pubspread"
        ],
@@ -40,7 +40,7 @@
        ],
        "rankers": [
          "thompson-sampling-28day",
-         "top15"
+         "top15-items"
        ],
        "weight": 0.2
      },
