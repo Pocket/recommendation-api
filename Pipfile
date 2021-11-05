@@ -19,10 +19,10 @@ aioresponses = "*"
 
 [packages]
 sentry-sdk = "*"
-aioboto3 = "<9"
+aioboto3 = "*"
 gunicorn = "*"
 uvicorn = {extras = ["standard"], version = "*"}
-fastapi = ">= 0.70.0"
+fastapi = "*"
 strawberry-graphql = {extras = ["fastapi"], version = "*"}
 xraysink = "*"
 aws-xray-sdk = "*"
