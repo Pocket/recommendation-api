@@ -102,7 +102,8 @@ class AbstractMetricsFactory(ABC):
         """
         metrics = {}
 
-        async with aioboto3.resource('dynamodb', endpoint_url=self._dynamodb_endpoint) as dynamodb:
+        session = aioboto3.Session()
+        async with session.resource('dynamodb', endpoint_url=self._dynamodb_endpoint) as dynamodb:
             for keychunk in _chunks(metrics_keys):
                 request = {
                     self._dynamodb_table: {
