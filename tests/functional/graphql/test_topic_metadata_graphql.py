@@ -1,20 +1,19 @@
-from graphql.execution.executors.asyncio import AsyncioExecutor
-from graphene.test import Client
-from app.graphql.schema import schema
+from fastapi.testclient import TestClient
+from app.main import app
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 
 
 class TestGraphQLMetadata(TestDynamoDBBase):
-    client: Client
+    client: TestClient
 
     async def asyncSetUp(self):
         await super().asyncSetUp()
         self.populate_metadata_table()
-        self.client = Client(schema)
+        self.client = TestClient(app)
 
     def test_main_list_topics(self):
-        executed = self.client.execute('''{ listTopics { displayName} }''', executor=AsyncioExecutor())
-        assert executed == {
+        response = self.client.post('/', json={'query': '{ listTopics { displayName} }'})
+        assert response.json() == {
             'data': {
                 'listTopics': [{
                     'displayName': 'tech'
