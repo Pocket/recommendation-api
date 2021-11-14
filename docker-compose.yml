@@ -19,6 +19,22 @@ services:
     depends_on:
       - localstack
       - memcached
+      - xray
+
+  xray:
+    image: amazon/aws-xray-daemon:latest
+    command:
+      - "--region"
+      - "us-east-1"
+      - "--local-mode"
+    environment:
+      # Run `source <(maws -o awscli)` to export credentials with AWS CLI
+      - AWS_PROFILE=pocket-dev-PocketSSOBackend
+    volumes:
+      - ~/.aws:/root/.aws
+    ports:
+      - "2000:2000" # xray
+
 
   localstack:
     image: localstack/localstack:0.12.11
