@@ -5,12 +5,12 @@ import strawberry
 import sentry_sdk
 
 from aws_xray_sdk.core import xray_recorder
+from aws_xray_sdk.core.async_context import AsyncContext
 from fastapi import FastAPI, Response, status
 from strawberry.fastapi import GraphQLRouter
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from xraysink.asgi.middleware import xray_middleware
-from xraysink.context import AsyncContext
 
 from app.cache import initialize_caches
 from app.config import ENV, ENV_PROD, ENV_DEV, service, sentry as sentry_config
@@ -44,11 +44,6 @@ app.include_router(graphql_app)
 app.add_middleware(BaseHTTPMiddleware, dispatch=xray_middleware)
 app.add_middleware(SentryAsgiMiddleware)
 
-
-# app.add_route("/", GraphQLAppWithMiddleware(
-#     schema=schema,
-#     executor_class=AsyncioExecutor,
-#     middleware=[GraphQLSentryMiddleware(), UserMiddleware()]))
 
 @app.get("/health-check")
 async def read_root(response: Response):
