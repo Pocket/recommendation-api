@@ -1,7 +1,9 @@
-from typing import Annotated, List
+from typing import Annotated, List, Optional
 
 import strawberry
-from strawberry.types import Info
+import sentry_sdk
+from graphql import GraphQLError
+from strawberry.types import Info, ExecutionContext
 
 from app.graphql.annotations import recommendation_count_annotation, slate_count_annotation
 from app.models.topic import TopicModel
@@ -65,3 +67,24 @@ class Query:
             recommendation_count=recommendation_count,
             slate_count=slate_count,
         ))
+
+
+class SchemaWithSentryExceptionHandling(strawberry.Schema):
+    """
+    Modify the Strawberry schema to send exceptions to Sentry.
+    @see https://strawberry.rocks/docs/types/schema#handling-execution-errors
+    """
+    def process_errors(
+        self,
+        errors: List[GraphQLError],
+        execution_context: Optional[ExecutionContext] = None,
+    ) -> None:
+        for error in errors:
+            # A GraphQLError wraps the underlying error so we have to access it
+            # through the `original_error` property
+            # https://graphql-core-3.readthedocs.io/en/latest/modules/error.html#graphql.error.GraphQLError
+            # If original_error is not available, we'll fall back to the GraphQL exception.
+            exception = error.original_error or error
+            sentry_sdk.capture_exception(exception)
+        # Call method on base class.
+        super().process_errors(errors=errors, execution_context=execution_context)

@@ -14,7 +14,7 @@ from xraysink.asgi.middleware import xray_middleware
 
 from app.cache import initialize_caches
 from app.config import ENV, ENV_PROD, ENV_DEV, service, sentry as sentry_config
-from app.graphql.schema import Query
+from app.graphql.schema import Query, SchemaWithSentryExceptionHandling
 from app.models.candidate_set import candidate_set_factory
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate_lineup_config import SlateLineupConfigModel, validate_unique_guids
@@ -34,7 +34,7 @@ sentry_sdk.integrations.logging.ignore_logger("graphql.execution.utils")
 # Standard asyncio X-Ray configuration, customise as you choose
 xray_recorder.configure(context=AsyncContext(), service=service.get('domain'), plugins=['ecsplugin'])
 
-schema = strawberry.Schema(query=Query)
+schema = SchemaWithSentryExceptionHandling(query=Query)
 graphql_app = GraphQLRouter(schema, path='/')
 
 app = FastAPI()
