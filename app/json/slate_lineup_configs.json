@@ -550,7 +550,7 @@
   },
   {
     "id": "05027beb-0053-4020-8bdc-4da2fcc0cb68",
-    "description": "Web Home - Personalized Curated",
+    "description": "Web Home - wh_persv2 Experiment Personalized Curated",
     "experiments": [
       {
         "description": "default layout",
@@ -575,6 +575,25 @@
           "ea40bef5-4406-488d-ad9d-915dfa1f0794",
           "e0d7063a-9421-4148-b548-446e9fbc8566",
           "9389d944-fdcf-4394-9ca3-4604c0af4fac"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "76b3f758-6aa3-430b-bcf1-8867897692b2",
+    "description": "Web Home - wh_persv2 Experiment Control",
+    "experiments": [
+      {
+        "description": "default layout",
+        "rankers": [],
+        "slates": [
+          "0737b00e-a21e-4875-a4c7-3e14926d4acf",
+          "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
+          "0f322865-64e6-472d-8147-b3d6637a7d67",
+          "2f2a3568-901f-4655-8735-daf67e8ecc5d",
+          "505c0126-d54d-42ef-8fe7-0f6a6f24e3a5",
+          "7cb4f497-fd05-42c5-9f78-3650e9ddba21",
+          "e9df8a81-19af-48e2-a90f-05e9a37491ca"
         ]
       }
     ]
