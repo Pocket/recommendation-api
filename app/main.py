@@ -26,8 +26,7 @@ from app.health_status import get_health_status, set_health_status, HealthStatus
 sentry_sdk.init(
     dsn=sentry_config['dsn'],
     release=sentry_config['release'],
-    environment=sentry_config['environment'],
-    traces_sample_rate=0.1
+    environment=sentry_config['environment']
 )
 # Ignore graphql.execution.utils to prevent duplicate Sentry events. Exceptions are handled by GraphQLSentryMiddleware.
 sentry_sdk.integrations.logging.ignore_logger("graphql.execution.utils")
