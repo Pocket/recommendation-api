@@ -90,6 +90,24 @@
     ]
   },
   {
+    "id": "f99178fb-6bd0-4fa1-8109-cda181b697f6",
+    "displayName": "New Tab Recommendations",
+    "description": "A selection of content for display on the Firefox new tab",
+    "internalDescription": "en-us New Tab recommendation items for today",
+    "experiments": [
+      {
+        "description": "default",
+        "candidateSets": [
+          "493a5556-9800-449f-8f8c-c27bb6c8c810"
+        ],
+        "rankers": [
+          "top30-items",
+          "thompson-sampling-28day"
+        ]
+      }
+    ]
+  },
+  {
     "id": "9dc26792-10ed-4fbe-a13d-6cce3a89b0a1",
     "displayName": "Editors' Picks",
     "description": "Great reads from around the web, curated by Pocket",
