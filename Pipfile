@@ -16,6 +16,7 @@ aws_secretsmanager_caching = "*"
 # We define the essential stubs
 boto3-stubs = {extras = ["essential"], version = "==1.16.15.0"}
 aioresponses = "*"
+pytest-asyncio = "*"
 
 [packages]
 graphene = "*"
