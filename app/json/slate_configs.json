@@ -164,7 +164,7 @@
         ],
         "rankers": [
           "top30-items",
-          "thompson-sampling-28day",
+          "firefox-thompson-sampling-15minute",
           "pubspread"
         ]
       }

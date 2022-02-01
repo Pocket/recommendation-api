@@ -15,6 +15,8 @@ from app.models.personalized_topic_list import PersonalizedTopicList
 
 DEFAULT_ALPHA_PRIOR = 0.02
 DEFAULT_BETA_PRIOR = 1.0
+DEFAULT_FIREFOX_ALPHA_PRIOR = 0.02
+DEFAULT_FIREFOX_BETA_PRIOR = 1.0
 
 RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel']]
 RecommendationListType = List['RecommendationModel']
@@ -91,7 +93,10 @@ def blocklist(recs: RecommendationListType, blocklist: Optional[List[str]] = Non
 def thompson_sampling(
         recs: RankableListType,
         metrics: Dict[(int or str), 'MetricsModel'],
-        trailing_period: int = 28) -> RankableListType:
+        trailing_period: int = 28,
+        trailing_period_name: str = 'day',
+        default_alpha_prior=DEFAULT_ALPHA_PRIOR,
+        default_beta_prior=DEFAULT_BETA_PRIOR) -> RankableListType:
     """
     Re-rank items using Thompson sampling which combines exploitation of known item CTR
     with exploration of new items with unknown CTR modeled by a prior
@@ -103,6 +108,7 @@ def thompson_sampling(
     :param recs: a list of recommendations in the desired order (pre-publisher spread)
     :param metrics: a dict with item_id as key and dynamodb row modeled as ClickDataModel
     :param trailing_period: the number of days that impressions and opens are aggregated for sampling
+    :param trailing_period_name: 'day' or 'minute'
     :return: a re-ordered version of recs satisfying the spread as best as possible
     """
 
@@ -113,14 +119,17 @@ def thompson_sampling(
     if trailing_period not in [1, 7, 14, 28]:
         raise ValueError(f"trailing_period of {trailing_period} is not available")
 
-    opens_column = f"trailing_{trailing_period}_day_opens"
-    imprs_column = f"trailing_{trailing_period}_day_impressions"
+    if trailing_period_name not in ['day', 'minute']:
+        raise ValueError(f"trailing_period_name {trailing_period_name} is not valid")
+
+    opens_column = f"trailing_{trailing_period}_{trailing_period_name}_opens"
+    imprs_column = f"trailing_{trailing_period}_{trailing_period_name}_impressions"
 
     # Currently we are using the hardcoded priors below.
     # TODO: We should return to having slate/lineup-specific priors. We could load slate-priors from
     #  MODELD-Prod-SlateMetrics, although that might require an additional database lookup. We might choose to use a
     #  'default' key that aggregates engagement data in the same table, such that no additional lookups are required.
-    alpha_prior, beta_prior = DEFAULT_ALPHA_PRIOR, DEFAULT_BETA_PRIOR
+    alpha_prior, beta_prior = default_alpha_prior, default_beta_prior
 
     scores = []
     # create prior distribution for CTR from parameters in click data table
@@ -155,6 +164,14 @@ thompson_sampling_1day = partial(thompson_sampling, trailing_period=1)
 thompson_sampling_7day = partial(thompson_sampling, trailing_period=7)
 thompson_sampling_14day = partial(thompson_sampling, trailing_period=14)
 thompson_sampling_28day = partial(thompson_sampling, trailing_period=28)
+
+firefox_thompson_sampling_15minute = partial(
+    thompson_sampling,
+    trailing_period=15,
+    trailing_period_name='minute',
+    default_alpha_prior=DEFAULT_FIREFOX_ALPHA_PRIOR,
+    default_beta_prior=DEFAULT_FIREFOX_BETA_PRIOR,
+)
 
 
 def __personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],

@@ -12,10 +12,11 @@ from app.config import dynamodb as dynamodb_config
 # Needs to exist for pydantic to resolve the model field "item: ItemModel" in the RecommendationModel
 from app.graphql.item import Item
 from app.models.candidate_set import candidate_set_factory
+from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
 from app.models.metrics.recommendation_metrics_factory import RecommendationMetricsFactory
 from app.models.item import ItemModel
 from app.models.slate_experiment import SlateExperimentModel
-from app.rankers import get_ranker, THOMPSON_SAMPLING_RANKERS
+from app.rankers import get_ranker, THOMPSON_SAMPLING_RANKERS, FIREFOX_THOMPSON_SAMPLING_RANKERS
 
 
 class RecommendationType(Enum):
@@ -79,11 +80,23 @@ class RecommendationModel(BaseModel):
 
         # apply rankers from the slate experiment on the candidate set's candidates
         for ranker in experiment.rankers:
+            ranker_kwargs = {}
             if ranker in THOMPSON_SAMPLING_RANKERS:
-                # thompson sampling takes two specific arguments so it needs to be handled differently
-                recommendations = await RecommendationModel.__thompson_sample(ranker, slate_id, recommendations)
-                continue
-            recommendations = get_ranker(ranker)(recommendations)
+                # Thompson sampling requires click/impression data
+                ranker_kwargs = {
+                    'metrics': await RecommendationMetricsFactory(dynamodb_config["endpoint_url"]).get(
+                        slate_id,
+                        [recommendation.item.item_id for recommendation in recommendations])
+                }
+            elif ranker in FIREFOX_THOMPSON_SAMPLING_RANKERS:
+                # firefox Thompson sampling requires click/impression data from it's own data source
+                ranker_kwargs = {
+                    'metrics': await FirefoxNewTabMetricsFactory().get(
+                        slate_id,
+                        # TODO: Use hash of url as content identifiers?
+                        [str(int(recommendation.item.item_id) % 100) for recommendation in recommendations])
+                }
+            recommendations = get_ranker(ranker)(recommendations, **ranker_kwargs)
 
         return recommendations
 
@@ -108,10 +121,4 @@ class RecommendationModel(BaseModel):
         :param recommendations: a list of RecommendationModel instances
         :return: a list of RecommendationModel instances
         """
-        item_ids = [recommendation.item.item_id for recommendation in recommendations]
-        try:
-            click_data = await RecommendationMetricsFactory(dynamodb_config["endpoint_url"]).get(slate_id, item_ids)
-        except ValueError:
-            logging.warning(f'No click data found for {slate_id = } {item_ids = }')
-            click_data = {}
         return get_ranker(ranker)(recommendations, click_data)
