@@ -37,6 +37,9 @@ aws-xray-sdk = "*"
 scipy = "*"
 jsonschema = "*"
 aiocache = {extras = ["memcached"], version = "*"}
+# aiocache depends on aiomcache, but our stack isn't compatible with version >= 0.7:
+#   TypeError: __init__() got an unexpected keyword argument 'loop'
+aiomcache = "==0.6.*"
 # aiocache will automatically use ujson when available. ujson supports decimal types, and json does not.
 ujson = "*"
 httptools = "*"
