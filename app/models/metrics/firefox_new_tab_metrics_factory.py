@@ -11,6 +11,11 @@ from app.models.metrics.firefox_new_tab_metrics_model import FirefoxNewTabMetric
 from app.models.metrics.metrics_model import MetricsModel
 
 
+# Unfortunately boto3 doesn't use types for feature store records at the moment, so we define one ourselves.
+# For example records see tests/assets/json/firefox_new_tab_engagement.json
+FeatureStoreRecordType = List[Dict[str, str]]
+
+
 class FirefoxNewTabMetricsFactory():
     _dynamodb_endpoint: str = None
     _dynamodb_table: str = None
@@ -50,17 +55,18 @@ class FirefoxNewTabMetricsFactory():
     def get_feature_group_name(cls):
         return f'{config.ENV}-firefox-new-tab-engagement-v{cls._FEATURE_GROUP_VERSION}'
 
-    def parse_from_record(self, record: Dict[str, Any]) -> FirefoxNewTabMetricsModel:
+    def parse_from_record(self, record: FeatureStoreRecordType) -> FirefoxNewTabMetricsModel:
         """
-        Converts a FeatureGroup record Dict to a Pydantic FirefoxNewTabMetricsModel object
+        Converts a FeatureGroup record to a Pydantic FirefoxNewTabMetricsModel object
         :param record: dictionary containing all required keys for FirefoxNewTabMetricsModel
         :return: Parsed FirefoxNewTabMetricsModel
         """
-        # Pydantic model uses lowercase keys, and FeatureGroup uppercase.
-        return FirefoxNewTabMetricsModel.parse_obj({k.lower(): v for k, v in record.items()})
+        # Pydantic model uses lowercase keys.
+        features = {feature['FeatureName'].lower(): feature['ValueAsString'] for feature in record}
+        return FirefoxNewTabMetricsModel.parse_obj(features)
 
     @xray_recorder.capture_async('models.MetricsBaseModel._query_metrics')
-    async def _query_metrics(self, metrics_keys: List[str]) -> List[Dict[str, Any]]:
+    async def _query_metrics(self, metrics_keys: List[str]) -> List[FeatureStoreRecordType]:
         """
         Queries metrics from the Feature Group.
 
@@ -88,9 +94,7 @@ class FirefoxNewTabMetricsFactory():
                 # If FeatureStore can't find an ID, it returns a 200 response without a record.
                 record = response.get('Record')
                 if record:
-                    # Convert from Feature Store record to dict, and append to metrics
-                    features = {feature['FeatureName']: feature['ValueAsString'] for feature in record}
-                    metrics.append(features)
+                    metrics.append(record)
 
             # We're logging an error here because the full request context is available.
             # if not responses["Responses"][self._dynamodb_table]:

@@ -116,14 +116,14 @@ def thompson_sampling(
     if not recs:
         return recs
 
-    if trailing_period not in [1, 7, 14, 28]:
-        raise ValueError(f"trailing_period of {trailing_period} is not available")
-
     if trailing_period_name not in ['day', 'minute']:
         raise ValueError(f"trailing_period_name {trailing_period_name} is not valid")
 
     opens_column = f"trailing_{trailing_period}_{trailing_period_name}_opens"
     imprs_column = f"trailing_{trailing_period}_{trailing_period_name}_impressions"
+
+    if any(not (hasattr(m, opens_column) and hasattr(m, opens_column)) for m in metrics):
+        raise ValueError(f"Missing attribute {opens_column} or {imprs_column} on some metrics: {metrics}")
 
     # Currently we are using the hardcoded priors below.
     # TODO: We should return to having slate/lineup-specific priors. We could load slate-priors from
