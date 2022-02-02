@@ -18,7 +18,7 @@ boto3-stubs = {extras = ["essential"], version = "==1.16.15.0"}
 aioresponses = "*"
 
 [packages]
-graphene = "*"
+graphene = "==2.*"
 graphene-federation = "*"
 starlette = "*"
 sentry-sdk = "*"
@@ -31,12 +31,15 @@ uvicorn = "==0.14.0"
 #   pydantic<=1.6,>=1.0 (from graphene-pydantic==0.1.0)
 fastapi = "==0.64.0"
 uvloop = "*"
-gql = "*"
+gql = "==2.*"
 xraysink = "*"
 aws-xray-sdk = "*"
 scipy = "*"
 jsonschema = "*"
 aiocache = {extras = ["memcached"], version = "*"}
+# aiocache depends on aiomcache, but our stack isn't compatible with version >= 0.7:
+#   TypeError: __init__() got an unexpected keyword argument 'loop'
+aiomcache = "==0.6.*"
 # aiocache will automatically use ujson when available. ujson supports decimal types, and json does not.
 ujson = "*"
 httptools = "*"
