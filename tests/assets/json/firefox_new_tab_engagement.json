@@ -1,0 +1,422 @@
+{
+  "0/0737b00e-a21e-4875-a4c7-3e14926d4acf": {
+    "Record": [
+      {
+        "FeatureName": "ID",
+        "ValueAsString": "0/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "UNLOADED_AT",
+        "ValueAsString": "2022-01-31T16:15:30Z"
+      },
+      {
+        "FeatureName": "URL",
+        "ValueAsString": "https://example.com/0/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "SLATE_ID",
+        "ValueAsString": "0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_OPENS",
+        "ValueAsString": "0"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+        "ValueAsString": "100"
+      }
+    ]
+  },
+  "1/0737b00e-a21e-4875-a4c7-3e14926d4acf": {
+    "Record": [
+      {
+        "FeatureName": "ID",
+        "ValueAsString": "1/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "UNLOADED_AT",
+        "ValueAsString": "2022-01-31T16:15:30Z"
+      },
+      {
+        "FeatureName": "URL",
+        "ValueAsString": "https://example.com/1/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "SLATE_ID",
+        "ValueAsString": "0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_OPENS",
+        "ValueAsString": "1"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+        "ValueAsString": "101"
+      }
+    ]
+  },
+  "2/0737b00e-a21e-4875-a4c7-3e14926d4acf": {
+    "Record": [
+      {
+        "FeatureName": "ID",
+        "ValueAsString": "2/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "UNLOADED_AT",
+        "ValueAsString": "2022-01-31T16:15:30Z"
+      },
+      {
+        "FeatureName": "URL",
+        "ValueAsString": "https://example.com/2/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "SLATE_ID",
+        "ValueAsString": "0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_OPENS",
+        "ValueAsString": "2"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+        "ValueAsString": "102"
+      }
+    ]
+  },
+  "3/0737b00e-a21e-4875-a4c7-3e14926d4acf": {
+    "Record": [
+      {
+        "FeatureName": "ID",
+        "ValueAsString": "3/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "UNLOADED_AT",
+        "ValueAsString": "2022-01-31T16:15:30Z"
+      },
+      {
+        "FeatureName": "URL",
+        "ValueAsString": "https://example.com/3/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "SLATE_ID",
+        "ValueAsString": "0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_OPENS",
+        "ValueAsString": "3"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+        "ValueAsString": "103"
+      }
+    ]
+  },
+  "4/0737b00e-a21e-4875-a4c7-3e14926d4acf": {
+    "Record": [
+      {
+        "FeatureName": "ID",
+        "ValueAsString": "4/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "UNLOADED_AT",
+        "ValueAsString": "2022-01-31T16:15:30Z"
+      },
+      {
+        "FeatureName": "URL",
+        "ValueAsString": "https://example.com/4/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "SLATE_ID",
+        "ValueAsString": "0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_OPENS",
+        "ValueAsString": "4"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+        "ValueAsString": "104"
+      }
+    ]
+  },
+  "5/0737b00e-a21e-4875-a4c7-3e14926d4acf": {
+    "Record": [
+      {
+        "FeatureName": "ID",
+        "ValueAsString": "5/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "UNLOADED_AT",
+        "ValueAsString": "2022-01-31T16:15:30Z"
+      },
+      {
+        "FeatureName": "URL",
+        "ValueAsString": "https://example.com/5/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "SLATE_ID",
+        "ValueAsString": "0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_OPENS",
+        "ValueAsString": "5"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+        "ValueAsString": "105"
+      }
+    ]
+  },
+  "6/0737b00e-a21e-4875-a4c7-3e14926d4acf": {
+    "Record": [
+      {
+        "FeatureName": "ID",
+        "ValueAsString": "6/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "UNLOADED_AT",
+        "ValueAsString": "2022-01-31T16:15:30Z"
+      },
+      {
+        "FeatureName": "URL",
+        "ValueAsString": "https://example.com/6/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "SLATE_ID",
+        "ValueAsString": "0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_OPENS",
+        "ValueAsString": "6"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+        "ValueAsString": "106"
+      }
+    ]
+  },
+  "7/0737b00e-a21e-4875-a4c7-3e14926d4acf": {
+    "Record": [
+      {
+        "FeatureName": "ID",
+        "ValueAsString": "7/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "UNLOADED_AT",
+        "ValueAsString": "2022-01-31T16:15:30Z"
+      },
+      {
+        "FeatureName": "URL",
+        "ValueAsString": "https://example.com/7/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "SLATE_ID",
+        "ValueAsString": "0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_OPENS",
+        "ValueAsString": "7"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+        "ValueAsString": "107"
+      }
+    ]
+  },
+  "8/0737b00e-a21e-4875-a4c7-3e14926d4acf": {
+    "Record": [
+      {
+        "FeatureName": "ID",
+        "ValueAsString": "8/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "UNLOADED_AT",
+        "ValueAsString": "2022-01-31T16:15:30Z"
+      },
+      {
+        "FeatureName": "URL",
+        "ValueAsString": "https://example.com/8/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "SLATE_ID",
+        "ValueAsString": "0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_OPENS",
+        "ValueAsString": "8"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+        "ValueAsString": "108"
+      }
+    ]
+  },
+  "9/0737b00e-a21e-4875-a4c7-3e14926d4acf": {
+    "Record": [
+      {
+        "FeatureName": "ID",
+        "ValueAsString": "9/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "UNLOADED_AT",
+        "ValueAsString": "2022-01-31T16:15:30Z"
+      },
+      {
+        "FeatureName": "URL",
+        "ValueAsString": "https://example.com/9/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "SLATE_ID",
+        "ValueAsString": "0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_OPENS",
+        "ValueAsString": "9"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+        "ValueAsString": "109"
+      }
+    ]
+  },
+  "10/0737b00e-a21e-4875-a4c7-3e14926d4acf": {
+    "Record": [
+      {
+        "FeatureName": "ID",
+        "ValueAsString": "10/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "UNLOADED_AT",
+        "ValueAsString": "2022-01-31T16:15:30Z"
+      },
+      {
+        "FeatureName": "URL",
+        "ValueAsString": "https://example.com/10/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "SLATE_ID",
+        "ValueAsString": "0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_OPENS",
+        "ValueAsString": "10"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+        "ValueAsString": "110"
+      }
+    ]
+  },
+  "11/0737b00e-a21e-4875-a4c7-3e14926d4acf": {
+    "Record": [
+      {
+        "FeatureName": "ID",
+        "ValueAsString": "11/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "UNLOADED_AT",
+        "ValueAsString": "2022-01-31T16:15:30Z"
+      },
+      {
+        "FeatureName": "URL",
+        "ValueAsString": "https://example.com/11/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "SLATE_ID",
+        "ValueAsString": "0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_OPENS",
+        "ValueAsString": "11"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+        "ValueAsString": "111"
+      }
+    ]
+  },
+  "12/0737b00e-a21e-4875-a4c7-3e14926d4acf": {
+    "Record": [
+      {
+        "FeatureName": "ID",
+        "ValueAsString": "12/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "UNLOADED_AT",
+        "ValueAsString": "2022-01-31T16:15:30Z"
+      },
+      {
+        "FeatureName": "URL",
+        "ValueAsString": "https://example.com/12/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "SLATE_ID",
+        "ValueAsString": "0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_OPENS",
+        "ValueAsString": "12"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+        "ValueAsString": "112"
+      }
+    ]
+  },
+  "13/0737b00e-a21e-4875-a4c7-3e14926d4acf": {
+    "Record": [
+      {
+        "FeatureName": "ID",
+        "ValueAsString": "13/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "UNLOADED_AT",
+        "ValueAsString": "2022-01-31T16:15:30Z"
+      },
+      {
+        "FeatureName": "URL",
+        "ValueAsString": "https://example.com/13/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "SLATE_ID",
+        "ValueAsString": "0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_OPENS",
+        "ValueAsString": "13"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+        "ValueAsString": "113"
+      }
+    ]
+  },
+  "14/0737b00e-a21e-4875-a4c7-3e14926d4acf": {
+    "Record": [
+      {
+        "FeatureName": "ID",
+        "ValueAsString": "14/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "UNLOADED_AT",
+        "ValueAsString": "2022-01-31T16:15:30Z"
+      },
+      {
+        "FeatureName": "URL",
+        "ValueAsString": "https://example.com/14/0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "SLATE_ID",
+        "ValueAsString": "0737b00e-a21e-4875-a4c7-3e14926d4acf"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_OPENS",
+        "ValueAsString": "14"
+      },
+      {
+        "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+        "ValueAsString": "114"
+      }
+    ]
+  }
+}

@@ -16,30 +16,39 @@ class FirefoxNewTabMetricsFactory():
     _dynamodb_table: str = None
     _PRIMARY_KEY_NAME: str = 'ID'
     _FEATURE_GROUP_VERSION: int = 1
+    _FEATURE_NAMES: List[str] = [
+        'ID',
+        'UNLOADED_AT',
+        'URL',
+        'SLATE_ID',
+        'TRAILING_15_MINUTE_OPENS',
+        'TRAILING_15_MINUTE_IMPRESSIONS',
+    ]
 
-    async def get(self, slate_id: str, content_ids: List[str]) -> Dict[str, 'MetricsModel']:
+    async def get(self, slate_id: str, content_ids: List[str]) -> Dict[str, 'FirefoxNewTabMetricsModel']:
         """
         Get engagement metrics for a Firefox New Tab slate.
-        :param slate_id: The last part of the primary key
-        :param content_ids: The first part of the primary key
-        :return: dictionary of FirefoxNewTabMetricsModel objects keyed on id (i.e. not including the slate_id)
+        :param slate_id: The slate ('feed') for which to get metrics
+        :param content_ids: The content ids for which to get metrics
+        :return: dictionary of FirefoxNewTabMetricsModel objects keyed on content id (i.e. not including the slate_id)
         """
-        # Keys are namespaced by the module we are getting data from. First put them in a set to ensure unique keys.
+        # Keys are namespaced by the slate that we are getting data from. First put them in a set to ensure unique keys.
         keys = list({self._make_key(slate_id, i) for i in content_ids})
 
         metrics = await self._query_metrics(keys)
-        # Remove "/<modules>" suffix and remove None values
-        # TODO: It might be cleaner if this method just returns List[MetricsBaseModel], and callers create the dict
-        # of their choosing.
-        metrics = {k.split("/")[0]: self.parse_from_record(v) for k, v in metrics.items() if v is not None}
-
         if not metrics:
-            logging.error(f"No metrics for module {slate_id} with keys={keys}")
+            logging.error(f"No Firefox New Tab metrics for slate {slate_id} with keys={keys}")
 
-        return metrics
+        # Convert from dict to Pydantic model and key on id.
+        parsed_metrics = [self.parse_from_record(m) for m in metrics]
+        # TODO: Add content_id to feature group so we can access this directly.
+        parsed_metrics_by_id = {self._get_content_id_from_id(m.id): m for m in parsed_metrics}
 
-    def _get_feature_group_name(self):
-        return f'{config.ENV}-firefox-new-tab-engagement-v{self._FEATURE_GROUP_VERSION}'
+        return parsed_metrics_by_id
+
+    @classmethod
+    def get_feature_group_name(cls):
+        return f'{config.ENV}-firefox-new-tab-engagement-v{cls._FEATURE_GROUP_VERSION}'
 
     def parse_from_record(self, record: Dict[str, Any]) -> FirefoxNewTabMetricsModel:
         """
@@ -51,14 +60,16 @@ class FirefoxNewTabMetricsFactory():
         return FirefoxNewTabMetricsModel.parse_obj({k.lower(): v for k, v in record.items()})
 
     @xray_recorder.capture_async('models.MetricsBaseModel._query_metrics')
-    async def _query_metrics(self, metrics_keys: List[str]) -> Dict[str, Optional[Dict]]:
+    async def _query_metrics(self, metrics_keys: List[str]) -> List[Dict[str, Any]]:
         """
-        Queries metrics from the Dynamodb table specified in self._dynamodb_table, using self._primary_key_name.
+        Queries metrics from the Feature Group.
 
-        :param metrics_keys: Primary keys to match against self._primary_key_name
-        :return: Dictionary where all metrics_keys are present as keys, and values are a metrics dictionary or None.
+        :param metrics_keys: Feature record IDs to query
+        :return: List with all metrics that were successfully queried from the Feature Store.
+                 If metrics are missing from the output that means the feature group did not find a match, probably
+                 because the recommendation is too recent.
         """
-        metrics = {}
+        metrics = []
 
         async with aioboto3.client('sagemaker-featurestore-runtime') as featurestore:
             # TODO: Update aioboto3 to v9 to improve performance with featurestore's batch_get_record.
@@ -66,80 +77,42 @@ class FirefoxNewTabMetricsFactory():
             #       - aioboto3 8.3.0 pins aiobotocore[boto3]==1.2.2
             #       - aiobotocore 1.2.2 pins boto3 1.16.52
             promises = [featurestore.get_record(
-                FeatureGroupName=self._get_feature_group_name(),
+                FeatureGroupName=self.get_feature_group_name(),
                 RecordIdentifierValueAsString=metrics_key,
-                FeatureNames=[
-                    'ID',
-                    'UNLOADED_AT',
-                    'URL',
-                    'SLATE_ID',
-                    'TRAILING_15_MINUTE_OPENS',
-                    'TRAILING_15_MINUTE_IMPRESSIONS',
-                ]
+                FeatureNames=self._FEATURE_NAMES
             ) for metrics_key in metrics_keys]
 
             responses = await gather(*promises)
 
             for response in responses:
-                features = {feature['FeatureName']: feature['ValueAsString'] for feature in response['Record']}
-                pk = features[self._PRIMARY_KEY_NAME]
-                metrics[pk] = features
+                # If FeatureStore can't find an ID, it returns a 200 response without a record.
+                record = response.get('Record')
+                if record:
+                    # Convert from Feature Store record to dict, and append to metrics
+                    features = {feature['FeatureName']: feature['ValueAsString'] for feature in record}
+                    metrics.append(features)
 
-            # TODO: We are somewhat confident that every slate and lineup has at least some metrics available by
-            #  now. If this error does not occur in practice, it would be better to change it to an exception.
             # We're logging an error here because the full request context is available.
             # if not responses["Responses"][self._dynamodb_table]:
             #     logging.info(f"DynamoDB returned no metrics for query {request}")
 
-        return {k: metrics.get(k) for k in metrics_keys}
+        return metrics
 
-    @xray_recorder.capture_async('models.MetricsBaseModel._query_metrics')
-    async def _generate_dummy_data(self, metrics_keys: List[str]) -> Dict[str, Optional[Dict]]:
-        """
-        TODO: Remove debug code.
-        """
-        metrics = {}
-
-        async with aioboto3.client('sagemaker-featurestore-runtime') as featurestore:
-            promises = [featurestore.put_record(
-                FeatureGroupName=self._get_feature_group_name(),
-                Record=[
-                    {
-                        'FeatureName': 'ID',
-                        'ValueAsString': metrics_key
-                    },
-                    {
-                        'FeatureName': 'UNLOADED_AT',
-                        'ValueAsString': '2022-01-31T16:15:30Z'
-                    },
-                    {
-                        'FeatureName': 'URL',
-                        'ValueAsString': f'https://example.com/{metrics_key}',
-                    },
-                    {
-                        'FeatureName': 'SLATE_ID',
-                        'ValueAsString': metrics_key.split('/')[1],
-                    },
-                    {
-                        'FeatureName': 'TRAILING_15_MINUTE_OPENS',
-                        'ValueAsString': metrics_key.split('/')[0],
-                    },
-                    {
-                        'FeatureName': 'TRAILING_15_MINUTE_IMPRESSIONS',
-                        'ValueAsString': str(100 + int(metrics_key.split('/')[0])),
-                    },
-                ],
-            ) for metrics_key in metrics_keys]
-
-            responses = await gather(*promises)
-            print(responses)
-
-    def _make_key(self, module: str, item_id: str) -> str:
+    def _make_key(self, slate_id: str, content_id: str) -> str:
         """
         Generate the primary key for the metrics database
 
-        :param module: Prefix for which to get metrics
-        :param item_id: Item for which to get metrics
+        :param slate_id: Slate for which to get metrics
+        :param content_id: Content for which to get metrics
         :return: DynamoDB primary key value
         """
-        return "%s/%s" % (item_id, module)
+        return "%s/%s" % (content_id, slate_id)
+
+    def _get_content_id_from_id(self, compound_id: str) -> str:
+        """
+        Extract the content id from the compounded id
+
+        :param compound_id: Id formatted as content_id/slate_id
+        :return: Content di
+        """
+        return compound_id.split('/')[0]
