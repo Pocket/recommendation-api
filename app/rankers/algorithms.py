@@ -15,8 +15,8 @@ from app.models.personalized_topic_list import PersonalizedTopicList
 
 DEFAULT_ALPHA_PRIOR = 0.02
 DEFAULT_BETA_PRIOR = 1.0
-DEFAULT_FIREFOX_ALPHA_PRIOR = 0.02
-DEFAULT_FIREFOX_BETA_PRIOR = 1.0
+DEFAULT_FIREFOX_ALPHA_PRIOR = 0.02  # TODO: Update this from feed-machine
+DEFAULT_FIREFOX_BETA_PRIOR = 1.0  # TODO: Update this from feed-machine
 
 RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel']]
 RecommendationListType = List['RecommendationModel']
