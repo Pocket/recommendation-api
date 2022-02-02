@@ -197,16 +197,6 @@ type CorpusRecommendation @key(fields: "id") @key(fields: "corpusItem { id }") @
     Corpus item id.
     """
     corpusItemId: String!
-
-    """
-    The Item that is resolved by apollo federation using the corpusItemId.
-    """
-    corpusItem: CorpusItem!
-
-    """
-    The Item that is resolved by apollo federation using the url.
-    """
-    item: Item!
 }
 
 union Recommendation = ParserRecommendation | CorpusRecommendation
