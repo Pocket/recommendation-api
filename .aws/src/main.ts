@@ -297,6 +297,15 @@ class RecommendationAPI extends TerraformStack {
                     },
                     {
                         actions: [
+                            'sagemaker:BatchGetRecord',
+                            'sagemaker:GetRecord',
+                            'sagemaker:DescribeFeatureGroup',
+                        ],
+                        resources: ['*'],
+                        effect: 'Allow'
+                    },
+                    {
+                        actions: [
                             'xray:PutTraceSegments',
                             'xray:PutTelemetryRecords',
                             'xray:GetSamplingRules',
@@ -305,7 +314,7 @@ class RecommendationAPI extends TerraformStack {
                         ],
                         resources: ['*'],
                         effect: 'Allow'
-                    }
+                    },
                 ],
                 taskExecutionDefaultAttachmentArn: 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy',
             },
