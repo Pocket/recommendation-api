@@ -2,18 +2,69 @@ import posixpath
 import unittest
 import os
 import json
+from typing import Dict, List
+
+import pytest
 
 from app.models.metrics.metrics_model import MetricsModel
 from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_nontopic_configs, generate_lineup_configs
 from app.config import ROOT_DIR
 from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, rank_topics, \
-    thompson_sampling_1day, thompson_sampling_7day, thompson_sampling_14day, blocklist, top1_topics, top3_topics
+    thompson_sampling_1day, thompson_sampling_7day, thompson_sampling_14day, blocklist, top1_topics, top3_topics, \
+    firefox_thompson_sampling_15minute
 from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
 from app.models.slate_lineup_config import SlateLineupConfigModel
 from operator import itemgetter
 
 ANDROID_DISCOVER_LINEUP_ID = "b50524d6-4df9-4f15-a0d0-13ccc8bdf4ed"
 WEB_HOME_LINEUP_ID = "05027beb-0053-4020-8bdc-4da2fcc0cb68"
+
+
+def _get_metrics_model(**kwargs) -> 'MetricsModel':
+    """
+    :param kwargs: override any MetricsModel attributes
+    :return: MetricsModel
+    """
+    default_values = {
+        'id': 'home/999',
+        'trailing_1_day_opens': 0,
+        'trailing_1_day_impressions': 0,
+        'trailing_7_day_opens': 0,
+        'trailing_7_day_impressions': 0,
+        'trailing_14_day_opens': 0,
+        'trailing_14_day_impressions': 0,
+        'trailing_28_day_opens': 0,
+        'trailing_28_day_impressions': 0,
+        'created_at': 0,
+        'expires_at': 0
+    }
+    default_values.update(**kwargs)
+    return MetricsModel.parse_obj(default_values)
+
+
+def _get_metrics_model_dict(**kwargs) -> Dict[str, 'MetricsModel']:
+    """
+    :param kwargs: override any MetricsModel attributes
+    :return: dict with value the MetricsModel and key the second component of the id
+    """
+    model = _get_metrics_model(**kwargs)
+    return {model.id.split('/')[1]: model}
+
+
+def _generate_metrics(kwargs_list: List[Dict]):
+    metrics = {}
+    for kwargs in kwargs_list:
+        metrics.update(_get_metrics_model_dict(**kwargs))
+
+    return metrics
+
+
+def _generate_day_n_metrics(period):
+    return _generate_metrics([{
+            "id": f"home/{item_id}",
+            f"trailing_{period}_day_opens": int(item_id[:2]),
+            f"trailing_{period}_day_impressions": 999,
+        } for item_id in ["999999", "666666", "333333"]])
 
 
 class TestAlgorithmsSpreadPublishers(unittest.TestCase):
@@ -149,25 +200,17 @@ class TestAlgorithmsBlocklist(unittest.TestCase):
         assert [x.item.item_id for x in filtered] == ['1', '33', '66', '999']
 
 
-class TestAlgorithmsThompsonSampling(unittest.TestCase):
+class TestAlgorithmsThompsonSampling:
+    
+
     def test_it_can_rank_items_with_missing_metrics(self):
         recs = generate_recommendations(['333', '999'])
 
-        metrics = {
-            '999': MetricsModel(
-                id='home/999',
-                trailing_1_day_opens=0,
-                trailing_1_day_impressions=0,
-                trailing_7_day_opens=0,
-                trailing_7_day_impressions=0,
-                trailing_14_day_opens=0,
-                trailing_14_day_impressions=0,
-                trailing_28_day_opens=99,
-                trailing_28_day_impressions=999,
-                created_at=0,
-                expires_at=0
-            ),
-        }
+        metrics = self._get_metrics_model_dict(
+            id='home/999',
+            trailing_28_day_opens=99,
+            trailing_28_day_impressions=999,
+        )
 
         sampled_recs = thompson_sampling(recs, metrics)
         # this needs to be a set since order isn't guaranteed in single trial
@@ -175,28 +218,38 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
 
     def test_invalid_prior(self):
         recs = generate_recommendations(['999'])
-        metrics = {
-            'default': MetricsModel(
-                id='home/default',
-                trailing_1_day_opens=0,
-                trailing_1_day_impressions=0,
-                trailing_7_day_opens=0,
-                trailing_7_day_impressions=0,
-                trailing_14_day_opens=0,
-                trailing_14_day_impressions=0,
-                trailing_28_day_opens=99,
-                trailing_28_day_impressions=-14,
-                created_at=0,
-                expires_at=0,
-            ),
-        }
+        metrics = self._get_metrics_model_dict(
+            id = 'home/default',
+            trailing_28_day_opens=99,
+            trailing_28_day_impressions=-14,
+        )
 
         sampled_recs = thompson_sampling(recs, metrics)
         # this needs to be a set since order isn't guaranteed in single trial
         assert {item.item_id for item in sampled_recs} == {"999"}
 
-    # Moved from a previous thompson sampling test file
-    def test_rank_by_ctr_over_n_trials(self, ntrials=99):
+    def test_invalid_trailing_period(self):
+        """
+        An exception should be raised is the trailing period does not exist on any metrics model
+        :return:
+        """
+        # Invalid trailing_period_name
+        with pytest.raises(ValueError):
+            thompson_sampling([], metrics=self._get_metrics_model_dict(), trailing_period_name='foobar')
+        # Invalid trailing_period
+        with pytest.raises(ValueError):
+            thompson_sampling([], metrics=self._get_metrics_model_dict(), trailing_period=123)
+        # MetricModel does not have trailing 15 minute metrics (but FirefoxNewTabMetricsModel does)
+        with pytest.raises(ValueError):
+            firefox_thompson_sampling_15minute([], metrics=self._get_metrics_model_dict())
+
+    @pytest.mark.parametrize("thompson_sampling_function,metrics", [
+        (thompson_sampling, _generate_day_n_metrics(28)),  # 28 day is the default
+        (thompson_sampling_1day, _generate_day_n_metrics(1)),
+        (thompson_sampling_7day, _generate_day_n_metrics(7)),
+        (thompson_sampling_14day, _generate_day_n_metrics(14)),
+    ])
+    def test_rank_by_ctr_over_n_trials(self, thompson_sampling_function, metrics, ntrials = 99):
         """
         This routine tests the Thompson sampling ranker by
         aggregating results over multiple trials.  In a single run of the
@@ -205,62 +258,32 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         :param ntrials is the number of trials for the aggregation
         """
 
-        all_time_windows = [1, 7, 14, 28]
-
         recs = generate_recommendations(["333333", "666666", "999999", "222222"])
 
-        for current_window in all_time_windows:
+        # goal of test is to rank by CTR over ntrials
+        # order should be 999999, 666666, 333333
+        ranks = {}
+        for i in range(ntrials):
+            sampled_recs = thompson_sampling_function(recs, metrics)
+            c = 1
+            for rec in sampled_recs:
+                # compute average positional rank over the trials
+                ranks[rec.item.item_id] = ranks.get(rec.item.item_id, 0) + (c / ntrials)
+                c += 1
 
-            open_attr = f"trailing_{current_window}_day_opens"
+        final_ranks = sorted(ranks.items(), key=itemgetter(1))
 
-            metrics = dict()
-            for item_id in ["999999", "666666", "333333"]:
+        assert final_ranks[0][0] == '999999'
+        assert final_ranks[1][0] == '666666'
+        assert final_ranks[2][0] == '333333'
+        # click data here should sample from default prior a = 0.02 b = 1, mean = 0.019
+        assert final_ranks[3][0] == '222222'
 
-                opens = int(item_id[:2])
-                metrics[item_id] = MetricsModel.parse_obj(dict(id=f"home/{item_id}",
-                             trailing_1_day_opens=(opens * int(open_attr == "trailing_1_day_opens")),
-                             trailing_1_day_impressions=999,
-                             trailing_7_day_opens=(opens * int(open_attr == "trailing_7_day_opens")),
-                             trailing_7_day_impressions=999,
-                             trailing_14_day_opens=(opens * int(open_attr == "trailing_14_day_opens")),
-                             trailing_14_day_impressions=999,
-                             trailing_28_day_opens=(opens * int(open_attr == "trailing_28_day_opens")),
-                             trailing_28_day_impressions=999,
-                             created_at=0,
-                             expires_at=0))
-
-
-            # goal of test is to rank by CTR over ntrials
-            # order should be 999999, 666666, 333333
-            ranks = {}
-            for i in range(ntrials):
-                if current_window == 1:
-                    sampled_recs = thompson_sampling_1day(recs, metrics)
-                elif current_window == 7:
-                    sampled_recs = thompson_sampling_7day(recs, metrics)
-                elif current_window == 14:
-                    sampled_recs = thompson_sampling_14day(recs, metrics)
-                else:
-                    sampled_recs = thompson_sampling(recs, metrics)
-                c = 1
-                for rec in sampled_recs:
-                    # compute average positional rank over the trials
-                    ranks[rec.item.item_id] = ranks.get(rec.item.item_id, 0) + (c / ntrials)
-                    c += 1
-
-            final_ranks = sorted(ranks.items(), key=itemgetter(1))
-
-            assert final_ranks[0][0] == '999999'
-            assert final_ranks[1][0] == '666666'
-            assert final_ranks[2][0] == '333333'
-            # click data here should sample from default prior a = 0.02 b = 1, mean = 0.019
-            assert final_ranks[3][0] == '222222'
-
-            # ranks are not deterministic
-            assert int(ranks['999999']) != ranks['999999']
-            assert int(ranks['666666']) != ranks['666666']
-            assert int(ranks['333333']) != ranks['333333']
-            assert int(ranks['222222']) != ranks['222222']
+        # ranks are not deterministic
+        assert int(ranks['999999']) != ranks['999999']
+        assert int(ranks['666666']) != ranks['666666']
+        assert int(ranks['333333']) != ranks['333333']
+        assert int(ranks['222222']) != ranks['222222']
 
 
 class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
