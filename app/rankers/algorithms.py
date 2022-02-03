@@ -122,8 +122,8 @@ def thompson_sampling(
     opens_column = f"trailing_{trailing_period}_{trailing_period_name}_opens"
     imprs_column = f"trailing_{trailing_period}_{trailing_period_name}_impressions"
 
-    if any(not (hasattr(m, opens_column) and hasattr(m, opens_column)) for m in metrics):
-        raise ValueError(f"Missing attribute {opens_column} or {imprs_column} on some metrics: {metrics}")
+    if any(not (hasattr(m, opens_column) and hasattr(m, opens_column)) for m in metrics.values()):
+        raise ValueError(f"Missing attribute {opens_column} or {imprs_column} on some metrics: {metrics.values()}")
 
     # Currently we are using the hardcoded priors below.
     # TODO: We should return to having slate/lineup-specific priors. We could load slate-priors from
