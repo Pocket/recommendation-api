@@ -4,6 +4,7 @@ import json
 
 from aws_xray_sdk.core import xray_recorder
 from app.models.metrics.metrics_model import MetricsModel
+from app.models.metrics.firefox_new_tab_metrics_model import FirefoxNewTabMetricsModel
 
 from app.config import ROOT_DIR
 from typing import List, Dict, Optional, Union
@@ -92,7 +93,7 @@ def blocklist(recs: RecommendationListType, blocklist: Optional[List[str]] = Non
 
 def thompson_sampling(
         recs: RankableListType,
-        metrics: Dict[(int or str), 'MetricsModel'],
+        metrics: Dict[(int or str), Union['MetricsModel', 'FirefoxNewTabMetricsModel']],
         trailing_period: int = 28,
         trailing_period_name: str = 'day',
         default_alpha_prior=DEFAULT_ALPHA_PRIOR,

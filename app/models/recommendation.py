@@ -94,7 +94,7 @@ class RecommendationModel(BaseModel):
                     'metrics': await FirefoxNewTabMetricsFactory().get(
                         slate_id,
                         # TODO: Use hash of url as content identifiers?
-                        [str(int(recommendation.item.item_id) % 100) for recommendation in recommendations])
+                        [str(recommendation.item.item_id) for recommendation in recommendations])
                 }
             recommendations = get_ranker(ranker)(recommendations, **ranker_kwargs)
 
