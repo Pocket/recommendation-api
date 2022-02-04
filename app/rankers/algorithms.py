@@ -16,8 +16,11 @@ from app.models.personalized_topic_list import PersonalizedTopicList
 
 DEFAULT_ALPHA_PRIOR = 0.02
 DEFAULT_BETA_PRIOR = 1.0
-DEFAULT_FIREFOX_ALPHA_PRIOR = 0.02  # TODO: Update this from feed-machine
-DEFAULT_FIREFOX_BETA_PRIOR = 1.0  # TODO: Update this from feed-machine
+
+# These values were taken from: https://github.com/Pocket/feed-machine/blob/master/resources/models/b-0085-15k-age-05-syn-score-explore-locales-rr.json#L4-L5
+# They were experimentally derived in 2018: https://getpocket.atlassian.net/browse/P18-616
+DEFAULT_FIREFOX_BETA_PRIOR = 15600
+DEFAULT_FIREFOX_ALPHA_PRIOR = int(0.0085 * DEFAULT_FIREFOX_BETA_PRIOR)
 
 RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel']]
 RecommendationListType = List['RecommendationModel']
