@@ -83,6 +83,7 @@ def _validate_candidate_set(candidate_set: Dict[str, Any]):
 
 def _validate_candidate(candidate: Dict[str, Any]):
     _validate_dict_value_type(candidate, 'item_id', int)
+    _validate_dict_value_type(candidate, 'url', str)
     _validate_dict_value_type(candidate, 'publisher', str)
 
 
