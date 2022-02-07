@@ -1,113 +1,20 @@
-import posixpath
 import unittest
 import os
 import json
-from typing import Dict, List
 
 import pytest
 
-from app.models.metrics.metrics_model import MetricsModel
-from app.models.metrics.firefox_new_tab_metrics_model import FirefoxNewTabMetricsModel
+from tests.assets.engagement_metrics import generate_metrics, generate_firefox_metrics
 from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_nontopic_configs, generate_lineup_configs
 from app.config import ROOT_DIR
 from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, rank_topics, \
     thompson_sampling_1day, thompson_sampling_7day, thompson_sampling_14day, blocklist, top1_topics, top3_topics, \
     firefox_thompson_sampling_15minute
 from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
-from app.models.slate_lineup_config import SlateLineupConfigModel
 from operator import itemgetter
 
 ANDROID_DISCOVER_LINEUP_ID = "b50524d6-4df9-4f15-a0d0-13ccc8bdf4ed"
 WEB_HOME_LINEUP_ID = "05027beb-0053-4020-8bdc-4da2fcc0cb68"
-
-
-def _get_metrics_model(**kwargs) -> 'MetricsModel':
-    """
-    :param kwargs: override any MetricsModel attributes
-    :return: MetricsModel
-    """
-    default_values = {
-        'id': 'home/999',
-        'trailing_1_day_opens': 0,
-        'trailing_1_day_impressions': 0,
-        'trailing_7_day_opens': 0,
-        'trailing_7_day_impressions': 0,
-        'trailing_14_day_opens': 0,
-        'trailing_14_day_impressions': 0,
-        'trailing_28_day_opens': 0,
-        'trailing_28_day_impressions': 0,
-        'created_at': 0,
-        'expires_at': 0
-    }
-    default_values.update(**kwargs)
-    return MetricsModel.parse_obj(default_values)
-
-
-def _get_firefox_new_tab_metrics_model(**kwargs) -> 'FirefoxNewTabMetricsModel':
-    """
-    :param kwargs: override any MetricsModel attributes
-    :return: MetricsModel
-    """
-    default_values = {
-        'id': 'home/999',
-        'trailing_15_minute_opens': 0,
-        'trailing_15_minute_impressions': 0,
-        'unloaded_at': '2022-02-02',
-        'url': 'http://example.com/999',
-        'slate_id': '',
-    }
-    default_values.update(**kwargs)
-    return FirefoxNewTabMetricsModel.parse_obj(default_values)
-
-
-def _get_metrics_model_dict(**kwargs) -> Dict[str, 'MetricsModel']:
-    """
-    :param kwargs: override any MetricsModel attributes
-    :return: dict with value the MetricsModel and key the second component of the id
-    """
-    model = _get_metrics_model(**kwargs)
-    return {model.id.split('/')[1]: model}
-
-
-def _get_firefox_new_tab_metrics_model_dict(**kwargs) -> Dict[str, 'FirefoxNewTabMetricsModel']:
-    """
-    :param kwargs: override any FirefoxNewTabMetricsModel attributes
-    :return: dict with value the FirefoxNewTabMetricsModel and key the second component of the id
-    """
-    model = _get_firefox_new_tab_metrics_model(**kwargs)
-    return {model.id.split('/')[1]: model}
-
-
-def _generate_metrics(period):
-    kwargs_list = [
-        {
-            "id": f"home/{item_id}",
-            f"trailing_{period}_day_opens": int(item_id[:2]),
-            f"trailing_{period}_day_impressions": 999,
-        } for item_id in ["999999", "666666", "333333"]
-    ]
-
-    metrics = {}
-    for kwargs in kwargs_list:
-        metrics.update(_get_metrics_model_dict(**kwargs))
-
-    return metrics
-
-
-def _generate_firefox_metrics():
-    kwargs_list = [
-        {
-            "id": f"home/{item_id}",
-            f"trailing_15_minute_opens": int(item_id[:2]),
-            f"trailing_15_minute_impressions": 999,
-        } for item_id in ["999999", "666666", "333333"]
-    ]
-
-    metrics = {}
-    for kwargs in kwargs_list:
-        metrics.update(_get_firefox_new_tab_metrics_model_dict(**kwargs))
-
-    return metrics
 
 
 class TestAlgorithmsSpreadPublishers(unittest.TestCase):
@@ -287,11 +194,11 @@ class TestAlgorithmsThompsonSampling:
             firefox_thompson_sampling_15minute([], metrics=self._get_metrics_model_dict())
 
     @pytest.mark.parametrize("thompson_sampling_function,metrics", [
-        (thompson_sampling, _generate_metrics(28)),  # 28 day is the default
-        (thompson_sampling_1day, _generate_metrics(1)),
-        (thompson_sampling_7day, _generate_metrics(7)),
-        (thompson_sampling_14day, _generate_metrics(14)),
-        (firefox_thompson_sampling_15minute, _generate_firefox_metrics()),
+        (thompson_sampling, generate_metrics(28)),  # 28 day is the default
+        (thompson_sampling_1day, generate_metrics(1)),
+        (thompson_sampling_7day, generate_metrics(7)),
+        (thompson_sampling_14day, generate_metrics(14)),
+        (firefox_thompson_sampling_15minute, generate_firefox_metrics(["333333", "666666", "999999"])),
     ])
     def test_rank_by_ctr_over_n_trials(self, thompson_sampling_function, metrics, ntrials = 99):
         """
