@@ -1,6 +1,6 @@
 type Query {
     """
-    Get the recomendations for a specific topic
+    Get the recommendations for a specific topic
     """
     getTopicRecommendations(slug: String!, algorithmicCount: Int = 20, curatedCount: Int = 5): TopicRecommendations  @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
 
@@ -85,12 +85,12 @@ type Topic {
     curatorLabel: String!
 
     """
-    Whether or not clients should show this topic ot users
+    Whether or not clients should show this topic to users
     """
     isDisplayed: Boolean!
 
     """
-    Whether or not this topic should be visiblly promoted (prominent on the page)
+    Whether or not this topic should be visibly promoted (prominent on the page)
     """
     isPromoted: Boolean!
 
@@ -121,43 +121,47 @@ type Topic {
 }
 
 """
-Represents a set of recomednations for /explore
+Represents a set of recommendations for /explore
 Deprecated for SlateLineups
 """
 type TopicRecommendations {
     """
-    Recomendations that are sourced directly from our curators
+    Recommendations that are sourced directly from our curators
     """
     curatedRecommendations: [Recommendation!]!
 
     """
-    Recomendations that are sourced from Machine Learning models
+    Recommendations that are sourced from Machine Learning models
     """
     algorithmicRecommendations: [Recommendation!]!
 }
 
 """
-Represents a Recomendation from Pocket
+Represents a Recommendation from Pocket
 """
-type Recommendation @key(fields: "item { itemId }") {
+type Recommendation @key(fields: "item { url }") {
     """
-    A generated id from the Data and Learning team that represents the Recomendation
+    A generated id from the Data and Learning team that represents the Recommendation
     """
     id: ID
 
     """
-    A generated id from the Data and Learning team that represents the Recomendation - Deprecated
+    A generated id from the Data and Learning team that represents the Recommendation - Deprecated
     """
     feedItemId: ID @deprecated(reason: "Use `id`")
 
     """
-    The ID of the item this recomendation represents
-    TODO: Use apollo federation to turn this into an Item type.
+    The URL and ID of record for the item this recommendation represents
+    """
+    url: URL!
+
+    """
+    A deprecated ID that we still use for ranking
     """
     itemId: ID!
 
     """
-    The Item that is resolved by apollo federation using the itemId
+    The Item that is resolved by apollo federation using the givenUrl
     """
     item: Item!
 
@@ -178,7 +182,7 @@ type Recommendation @key(fields: "item { itemId }") {
 }
 
 """
-A grouping of item recomendations that relate to each other under a specific name and description
+A grouping of item recommendations that relate to each other under a specific name and description
 """
 type Slate {
     id: String!
@@ -196,7 +200,7 @@ type Slate {
     experimentId: ID!
 
     """
-    The name to show to the user for this set of recomendations
+    The name to show to the user for this set of recommendations
     """
     displayName: String
 
@@ -206,7 +210,7 @@ type Slate {
     description: String
 
     """
-    An ordered list of the recomendations to show to the user
+    An ordered list of the recommendations to show to the user
     """
     recommendations: [Recommendation!]!
 }
@@ -234,9 +238,7 @@ type SlateLineup {
     slates: [Slate!]!
 }
 
-extend type Item @key(fields: "itemId") {
-    """
-    The ID of the item that is used by apollo federation to reference the Item entity.
-    """
-    itemId: String! @external
+extend type Item @key(fields: "givenUrl") {
+  "key field to identify the Item entity in the Parser service"
+  givenUrl: Url! @external
 }

@@ -36,6 +36,7 @@ class RecommendationModel(BaseModel):
     feed_item_id: str = None
     feed_id: int = None
     item_id: str
+    url: str
     item: ItemModel
     rec_src: str = 'RecommendationAPI'
     publisher: str = None
@@ -51,6 +52,7 @@ class RecommendationModel(BaseModel):
             feed_id=candidate.get('feed_id'),
             publisher=candidate.get('publisher'),
             item_id=candidate.get('item_id'),
+            url=candidate.get('url'),
             item=ItemModel(item_id=candidate.get('item_id'))
         )
         recommendation.id = recommendation.rec_src + '/' + recommendation.item.item_id

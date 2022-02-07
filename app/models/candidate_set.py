@@ -93,7 +93,8 @@ class RecItCandidateSet(CandidateSetModel):
     def parse_recit_response(cs_id: str, response: Dict) -> "RecItCandidateSet":
         """Transforms a RecIt response to a CandidateSet. We set publisher to '0' since RecIt doesn't currently return
         publishers."""
-        candidates = [Candidate(item_id=r["resolved_id"], publisher="0") for r in response["items"]]
+        # TODO: Does Recit return the URL of record?
+        candidates = [Candidate(item_id=r["resolved_id"], publisher="0", url="placeholder.com") for r in response["items"]]
         return RecItCandidateSet(candidates=candidates, id=cs_id, version=1)
 
 
