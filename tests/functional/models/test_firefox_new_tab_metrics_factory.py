@@ -48,16 +48,25 @@ class TestFirefoxNewTabMetricsFactory:
             return json.load(f)
 
     def _feature_store_get_record_stub(self, *args, **kwargs):
-        RecordIdentifierValueAsString = kwargs['RecordIdentifierValueAsString']
-        FeatureGroupName = kwargs['FeatureGroupName']
+        """
+        This function simulates the FeatureStore get_record operation.
+        :param args:
+        :param kwargs: get_record arguments
+        :return: simplified version of get_record return value: only the record is returned (not any request metadata)
+        """
+        record_identifier_value_as_string = kwargs['RecordIdentifierValueAsString']
+        feature_group_name = kwargs['FeatureGroupName']
+        feature_names = kwargs['FeatureNames']
 
-        if FeatureGroupName != self.feature_group_name:
+        if feature_group_name != self.feature_group_name:
+            # Raise an exception if the feature group is not found.
             # In reality FeatureStore raises a ClientError, but the BotoCoreError is easier to construct for testing.
             raise BotoCoreError()
 
-        return {
-            'Record': self._firefox_new_tab_engagement_record_by_id.get(RecordIdentifierValueAsString, {})
-        }
+        full_record = self._firefox_new_tab_engagement_record_by_id.get(record_identifier_value_as_string, {})
+        # Only return requested features to check that a valid model can be constructed from the requested features.
+        filtered_record = [feature for feature in full_record if feature['FeatureName'] in feature_names]
+        return {'Record': filtered_record}
 
     async def test_get_existing_records(self, monkeypatch):
         """

@@ -9,6 +9,14 @@
       "ValueAsString": "2022-02-07T16:15:30Z"
     },
     {
+      "FeatureName": "SCHEDULED_SURFACE_ITEM_ID",
+      "ValueAsString": "4a105732-6dcc-4bfa-a92e-8bb0e5616e89"
+    },
+    {
+      "FeatureName": "SLATE_EXPERIMENT_ID",
+      "ValueAsString": "13055e0"
+    },
+    {
       "FeatureName": "URL",
       "ValueAsString": "https://example.com/00000000-0000-0000-0000-000000000000"
     },
@@ -33,6 +41,14 @@
     {
       "FeatureName": "UNLOADED_AT",
       "ValueAsString": "2022-02-07T16:15:30Z"
+    },
+    {
+      "FeatureName": "SCHEDULED_SURFACE_ITEM_ID",
+      "ValueAsString": "9a3c4484-42a0-4660-b00b-01adc4d91925"
+    },
+    {
+      "FeatureName": "SLATE_EXPERIMENT_ID",
+      "ValueAsString": "13055e0"
     },
     {
       "FeatureName": "URL",
@@ -61,6 +77,14 @@
       "ValueAsString": "2022-02-07T16:15:30Z"
     },
     {
+      "FeatureName": "SCHEDULED_SURFACE_ITEM_ID",
+      "ValueAsString": "e1786c57-55d1-48f1-8e10-1bd8708fee0b"
+    },
+    {
+      "FeatureName": "SLATE_EXPERIMENT_ID",
+      "ValueAsString": "13055e0"
+    },
+    {
       "FeatureName": "URL",
       "ValueAsString": "https://example.com/00000000-0000-0000-0000-000000000002"
     },
@@ -85,6 +109,14 @@
     {
       "FeatureName": "UNLOADED_AT",
       "ValueAsString": "2022-02-07T16:15:30Z"
+    },
+    {
+      "FeatureName": "SCHEDULED_SURFACE_ITEM_ID",
+      "ValueAsString": "6ae4f437-93e0-44eb-91cf-a09a5cefb389"
+    },
+    {
+      "FeatureName": "SLATE_EXPERIMENT_ID",
+      "ValueAsString": "13055e0"
     },
     {
       "FeatureName": "URL",
@@ -113,6 +145,14 @@
       "ValueAsString": "2022-02-07T16:15:30Z"
     },
     {
+      "FeatureName": "SCHEDULED_SURFACE_ITEM_ID",
+      "ValueAsString": "7eb5ec56-a6fc-4878-9ad4-0c90d991eb77"
+    },
+    {
+      "FeatureName": "SLATE_EXPERIMENT_ID",
+      "ValueAsString": "13055e0"
+    },
+    {
       "FeatureName": "URL",
       "ValueAsString": "https://example.com/00000000-0000-0000-0000-000000000004"
     },
@@ -137,6 +177,14 @@
     {
       "FeatureName": "UNLOADED_AT",
       "ValueAsString": "2022-02-07T16:15:30Z"
+    },
+    {
+      "FeatureName": "SCHEDULED_SURFACE_ITEM_ID",
+      "ValueAsString": "10391a87-a236-49d8-a36a-d36c36016bac"
+    },
+    {
+      "FeatureName": "SLATE_EXPERIMENT_ID",
+      "ValueAsString": "13055e0"
     },
     {
       "FeatureName": "URL",
@@ -165,6 +213,14 @@
       "ValueAsString": "2022-02-07T16:15:30Z"
     },
     {
+      "FeatureName": "SCHEDULED_SURFACE_ITEM_ID",
+      "ValueAsString": "222db521-c87f-4eb8-98c6-d88054e37dde"
+    },
+    {
+      "FeatureName": "SLATE_EXPERIMENT_ID",
+      "ValueAsString": "13055e0"
+    },
+    {
       "FeatureName": "URL",
       "ValueAsString": "https://example.com/00000000-0000-0000-0000-000000000006"
     },
@@ -189,6 +245,14 @@
     {
       "FeatureName": "UNLOADED_AT",
       "ValueAsString": "2022-02-07T16:15:30Z"
+    },
+    {
+      "FeatureName": "SCHEDULED_SURFACE_ITEM_ID",
+      "ValueAsString": "abc8d947-90ea-42d5-8fba-6e5d95ec017b"
+    },
+    {
+      "FeatureName": "SLATE_EXPERIMENT_ID",
+      "ValueAsString": "13055e0"
     },
     {
       "FeatureName": "URL",
@@ -217,6 +281,14 @@
       "ValueAsString": "2022-02-07T16:15:30Z"
     },
     {
+      "FeatureName": "SCHEDULED_SURFACE_ITEM_ID",
+      "ValueAsString": "a78c8bb0-8bb9-4e16-9b6a-86fa2604cdec"
+    },
+    {
+      "FeatureName": "SLATE_EXPERIMENT_ID",
+      "ValueAsString": "13055e0"
+    },
+    {
       "FeatureName": "URL",
       "ValueAsString": "https://example.com/00000000-0000-0000-0000-000000000008"
     },
@@ -241,6 +313,14 @@
     {
       "FeatureName": "UNLOADED_AT",
       "ValueAsString": "2022-02-07T16:15:30Z"
+    },
+    {
+      "FeatureName": "SCHEDULED_SURFACE_ITEM_ID",
+      "ValueAsString": "b5d056a7-3746-4b4e-8bae-b5ae90aed178"
+    },
+    {
+      "FeatureName": "SLATE_EXPERIMENT_ID",
+      "ValueAsString": "13055e0"
     },
     {
       "FeatureName": "URL",

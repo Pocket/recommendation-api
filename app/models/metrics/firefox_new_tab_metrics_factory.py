@@ -1,7 +1,6 @@
 import logging
-from typing import List, Dict, Optional, Any
+from typing import List, Dict
 from asyncio import gather
-import uuid
 
 import aioboto3
 
@@ -25,6 +24,8 @@ class FirefoxNewTabMetricsFactory():
     _FEATURE_NAMES: List[str] = [
         'ID',
         'UNLOADED_AT',
+        'SCHEDULED_SURFACE_ITEM_ID',
+        'SLATE_EXPERIMENT_ID',
         'URL',
         'SLATE_ID',
         'TRAILING_15_MINUTE_OPENS',
