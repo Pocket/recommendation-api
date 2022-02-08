@@ -39,7 +39,6 @@ class FirefoxNewTabMetricsFactory():
         :return: dictionary of FirefoxNewTabMetricsModel objects keyed on recommendation id
         """
         # Keys are namespaced by the slate that we are getting data from. First put them in a set to ensure unique keys.
-        await self._generate_dummy_data(recommendation_ids)
         metrics = await self._query_metrics(recommendation_ids)
         if not metrics:
             logging.error(f"No Firefox New Tab metrics for recommendation_ids={recommendation_ids}")
@@ -122,7 +121,11 @@ class FirefoxNewTabMetricsFactory():
                     },
                     {
                         'FeatureName': 'SCHEDULED_SURFACE_ITEM_ID',
-                        'ValueAsString': uuid.uuid4(),
+                        'ValueAsString': str(uuid.uuid4()),
+                    },
+                    {
+                        'FeatureName': 'SLATE_EXPERIMENT_ID',
+                        'ValueAsString': '13055e0',
                     },
                     {
                         'FeatureName': 'URL',
@@ -134,11 +137,11 @@ class FirefoxNewTabMetricsFactory():
                     },
                     {
                         'FeatureName': 'TRAILING_15_MINUTE_OPENS',
-                        'ValueAsString': 100 * index,
+                        'ValueAsString': str(100 * index),
                     },
                     {
                         'FeatureName': 'TRAILING_15_MINUTE_IMPRESSIONS',
-                        'ValueAsString': 100000,
+                        'ValueAsString': str(100000),
                     },
                 ],
             ) for index, metrics_key in enumerate(metrics_keys)]
