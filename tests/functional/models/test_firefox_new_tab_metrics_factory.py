@@ -23,13 +23,14 @@ class FeatureStoreClient:
 @pytest.mark.asyncio
 class TestFirefoxNewTabMetricsFactory:
 
-    SLATE_ID = '0737b00e-a21e-4875-a4c7-3e14926d4acf'
-    feature_group_name: str
+    SLATE_ID = 'f99178fb-6bd0-4fa1-8109-cda181b697f6'  # Matches the slate_id in firefox_new_tab_engagement.json
+    feature_group_name: str = FirefoxNewTabMetricsFactory.get_feature_group_name()
 
     def setup(self):
         global_sdk_config.set_sdk_enabled(False)
-        self._firefox_new_tab_engagement_fixture = self._read_json_asset('firefox_new_tab_engagement.json')
-        self.feature_group_name = FirefoxNewTabMetricsFactory.get_feature_group_name()
+        records = self._read_json_asset('firefox_new_tab_engagement.json')
+        # Map id to record (use record[0] assuming that ID is the first feature in the above json fixture)
+        self._firefox_new_tab_engagement_record_by_id = {record[0]['ValueAsString']: record for record in records}
 
     async def _get_mocked_feature_store_client(self, monkeypatch):
         # Mock boto3. Localstack currently does not support Feature Group, so we need to mock it ourselves.
@@ -54,7 +55,9 @@ class TestFirefoxNewTabMetricsFactory:
             # In reality FeatureStore raises a ClientError, but the BotoCoreError is easier to construct for testing.
             raise BotoCoreError()
 
-        return self._firefox_new_tab_engagement_fixture.get(RecordIdentifierValueAsString, {})
+        return {
+            'Record': self._firefox_new_tab_engagement_record_by_id.get(RecordIdentifierValueAsString, {})
+        }
 
     async def test_get_existing_records(self, monkeypatch):
         """
@@ -67,20 +70,20 @@ class TestFirefoxNewTabMetricsFactory:
 
         # Check that the return value is a dict with Firefox metric models.
         assert set(new_tab_engagement.keys()) == set(recommendation_ids)
-        for content_id in recommendation_ids:
-            engagement = new_tab_engagement[content_id]
-            assert engagement.id == f'{content_id}/{self.SLATE_ID}'
-            assert engagement.slate_id == self.SLATE_ID
-            assert engagement.trailing_15_minute_impressions >= 100  # All fixtures have at least 100 impressions
-
         # Get the client that was created in the 'with' statement
         with_client = await client().__aenter__()
         assert with_client.get_record.call_count == len(recommendation_ids)
-        # Assert that get_record was called with the right arguments for each content_id
-        for content_id in recommendation_ids:
+
+        for recommendation_id in recommendation_ids:
+            engagement = new_tab_engagement[recommendation_id]
+            assert engagement.id == recommendation_id
+            assert engagement.slate_id == self.SLATE_ID
+            assert engagement.trailing_15_minute_impressions == 100000  # All fixtures records have 100,000 impressions
+
+            # Assert that get_record was called with the right arguments for each recommendation_id
             with_client.get_record.assert_any_call(
                 FeatureGroupName=FirefoxNewTabMetricsFactory.get_feature_group_name(),
-                RecordIdentifierValueAsString=f'{content_id}/{self.SLATE_ID}',
+                RecordIdentifierValueAsString=recommendation_id,
                 FeatureNames=FirefoxNewTabMetricsFactory._FEATURE_NAMES,
             )
 
@@ -90,17 +93,17 @@ class TestFirefoxNewTabMetricsFactory:
         """
         client = await self._get_mocked_feature_store_client(monkeypatch)
         # The fixture data does not have a record with id == -1
-        queried_content_ids = [str(i) for i in range(-1, 2)]
+        existing_recommendation_ids = [f"00000000-0000-0000-0000-00000000000{i}" for i in range(0, 2)]
+        queried_recommendation_ids = list(existing_recommendation_ids) + ['non-existing-uuid']
 
-        new_tab_engagement = await FirefoxNewTabMetricsFactory().get(recommendation_ids=queried_content_ids)
+        new_tab_engagement = await FirefoxNewTabMetricsFactory().get(recommendation_ids=queried_recommendation_ids)
 
-        existing_content_ids = [content_id for content_id in queried_content_ids if int(content_id) >= 0]
         # Check that only the existing content ids are returned.
-        assert set(new_tab_engagement.keys()) == set(existing_content_ids)
+        assert set(new_tab_engagement.keys()) == set(existing_recommendation_ids)
         # Metrics for existing content ids should be returned successfully.
-        for content_id in existing_content_ids:
-            engagement = new_tab_engagement[content_id]
-            assert engagement.id == f'{content_id}/{self.SLATE_ID}'
+        for recommendation_id in existing_recommendation_ids:
+            engagement = new_tab_engagement[recommendation_id]
+            assert engagement.id == recommendation_id
             assert engagement.slate_id == self.SLATE_ID
             assert engagement.trailing_15_minute_impressions >= 100  # All fixtures have at least 100 impressions
 
