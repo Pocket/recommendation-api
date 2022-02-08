@@ -61,16 +61,13 @@ class TestFirefoxNewTabMetricsFactory:
         Test the case where the queried records exist in the Feature Group.
         """
         client = await self._get_mocked_feature_store_client(monkeypatch)
-        content_ids = [str(i) for i in range(10)]
+        recommendation_ids = [f"00000000-0000-0000-0000-00000000000{i}" for i in range(10)]
 
-        new_tab_engagement = await FirefoxNewTabMetricsFactory().get(
-            slate_id=self.SLATE_ID,
-            scheduled_surface_item_ids=content_ids,
-        )
+        new_tab_engagement = await FirefoxNewTabMetricsFactory().get(recommendation_ids=recommendation_ids)
 
         # Check that the return value is a dict with Firefox metric models.
-        assert set(new_tab_engagement.keys()) == set(content_ids)
-        for content_id in content_ids:
+        assert set(new_tab_engagement.keys()) == set(recommendation_ids)
+        for content_id in recommendation_ids:
             engagement = new_tab_engagement[content_id]
             assert engagement.id == f'{content_id}/{self.SLATE_ID}'
             assert engagement.slate_id == self.SLATE_ID
@@ -78,9 +75,9 @@ class TestFirefoxNewTabMetricsFactory:
 
         # Get the client that was created in the 'with' statement
         with_client = await client().__aenter__()
-        assert with_client.get_record.call_count == len(content_ids)
+        assert with_client.get_record.call_count == len(recommendation_ids)
         # Assert that get_record was called with the right arguments for each content_id
-        for content_id in content_ids:
+        for content_id in recommendation_ids:
             with_client.get_record.assert_any_call(
                 FeatureGroupName=FirefoxNewTabMetricsFactory.get_feature_group_name(),
                 RecordIdentifierValueAsString=f'{content_id}/{self.SLATE_ID}',
@@ -95,10 +92,7 @@ class TestFirefoxNewTabMetricsFactory:
         # The fixture data does not have a record with id == -1
         queried_content_ids = [str(i) for i in range(-1, 2)]
 
-        new_tab_engagement = await FirefoxNewTabMetricsFactory().get(
-            slate_id=self.SLATE_ID,
-            scheduled_surface_item_ids=queried_content_ids,
-        )
+        new_tab_engagement = await FirefoxNewTabMetricsFactory().get(recommendation_ids=queried_content_ids)
 
         existing_content_ids = [content_id for content_id in queried_content_ids if int(content_id) >= 0]
         # Check that only the existing content ids are returned.
@@ -121,7 +115,4 @@ class TestFirefoxNewTabMetricsFactory:
         # Assert that the exception bubbles up when the feature group does not exist.
         # In reality FeatureStore raises a ClientError, but the BotoCoreError is easier to construct for testing.
         with pytest.raises(BotoCoreError):
-            await FirefoxNewTabMetricsFactory().get(
-                slate_id=self.SLATE_ID,
-                scheduled_surface_item_ids=content_ids,
-            )
+            await FirefoxNewTabMetricsFactory().get(recommendation_ids=content_ids)

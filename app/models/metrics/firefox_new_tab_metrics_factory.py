@@ -21,7 +21,7 @@ class FirefoxNewTabMetricsFactory():
     _dynamodb_endpoint: str = None
     _dynamodb_table: str = None
     _PRIMARY_KEY_NAME: str = 'ID'
-    _FEATURE_GROUP_VERSION: int = 1
+    _FEATURE_GROUP_VERSION: int = 2
     _FEATURE_NAMES: List[str] = [
         'ID',
         'UNLOADED_AT',
@@ -31,26 +31,22 @@ class FirefoxNewTabMetricsFactory():
         'TRAILING_15_MINUTE_IMPRESSIONS',
     ]
 
-    async def get(self, slate_id: str, slate_experiment_id: str, scheduled_surface_item_ids: List[str]) -> Dict[str, 'FirefoxNewTabMetricsModel']:
+    async def get(self, recommendation_ids: List[str]) -> Dict[str, 'FirefoxNewTabMetricsModel']:
         """
         Get engagement metrics for a Firefox New Tab slate experiment.
         TODO: This function should simply accept 'recommendation_ids', and we should generate these ids elsewhere.
-        :param slate_id: The slate for which to get metrics
-        :param slate_experiment_id: Slate experiment identifier. @see ExperimentModel.generate_experiment_id()
-        :param scheduled_surface_item_ids: Pocket/curated-corpus-api GUIDs representing a scheduled run of a corpus item
-        :return: dictionary of FirefoxNewTabMetricsModel objects keyed on content id (i.e. not including the slate_id)
+        :param recommendation_ids: GUIDs uniquely represent a scheduled run of a corpus item in a slate experiment.
+        :return: dictionary of FirefoxNewTabMetricsModel objects keyed on recommendation id
         """
         # Keys are namespaced by the slate that we are getting data from. First put them in a set to ensure unique keys.
-        keys = list({self._make_key(slate_id, slate_experiment_id, i) for i in scheduled_surface_item_ids})
-
-        metrics = await self._query_metrics(keys)
+        await self._generate_dummy_data(recommendation_ids)
+        metrics = await self._query_metrics(recommendation_ids)
         if not metrics:
-            logging.error(f"No Firefox New Tab metrics for slate {slate_id} with keys={keys}")
+            logging.error(f"No Firefox New Tab metrics for recommendation_ids={recommendation_ids}")
 
         # Convert from dict to Pydantic model and key on id.
         parsed_metrics = [self.parse_from_record(m) for m in metrics]
-        # TODO: Add content_id to feature group so we can access this directly.
-        parsed_metrics_by_id = {self._get_content_id_from_id(m.id): m for m in parsed_metrics}
+        parsed_metrics_by_id = {m.id: m for m in parsed_metrics}
 
         return parsed_metrics_by_id
 
@@ -105,22 +101,47 @@ class FirefoxNewTabMetricsFactory():
 
         return metrics
 
-    def _make_key(self, slate_id: str, slate_experiment_id: str, scheduled_surface_item_id: str) -> str:
+    async def _generate_dummy_data(self, metrics_keys: List[str]):
         """
-        Generate the primary key for the metrics database
+        TODO: Remove debug code.
+        """
+        metrics = {}
+        import uuid
 
-        :param slate_id: Slate for which to get metrics
-        :param scheduled_surface_item_id: Content for which to get metrics
-        :return: DynamoDB primary key value
-        """
-        slate_uuid = uuid.UUID(slate_id)
-        return uuid.uuid5(slate_uuid, f"{slate_experiment_id}/{scheduled_surface_item_id}")
+        async with aioboto3.client('sagemaker-featurestore-runtime') as featurestore:
+            promises = [featurestore.put_record(
+                FeatureGroupName=self.get_feature_group_name(),
+                Record=[
+                    {
+                        'FeatureName': 'ID',
+                        'ValueAsString': metrics_key
+                    },
+                    {
+                        'FeatureName': 'UNLOADED_AT',
+                        'ValueAsString': '2022-02-07T16:15:30Z'
+                    },
+                    {
+                        'FeatureName': 'SCHEDULED_SURFACE_ITEM_ID',
+                        'ValueAsString': uuid.uuid4(),
+                    },
+                    {
+                        'FeatureName': 'URL',
+                        'ValueAsString': f'https://example.com/{metrics_key}',
+                    },
+                    {
+                        'FeatureName': 'SLATE_ID',
+                        'ValueAsString': 'f99178fb-6bd0-4fa1-8109-cda181b697f6',
+                    },
+                    {
+                        'FeatureName': 'TRAILING_15_MINUTE_OPENS',
+                        'ValueAsString': 100 * index,
+                    },
+                    {
+                        'FeatureName': 'TRAILING_15_MINUTE_IMPRESSIONS',
+                        'ValueAsString': 100000,
+                    },
+                ],
+            ) for index, metrics_key in enumerate(metrics_keys)]
 
-    def _get_content_id_from_id(self, compound_id: str) -> str:
-        """
-        Extract the content id from the compounded id
-
-        :param compound_id: Id formatted as content_id/slate_id
-        :return: Content di
-        """
-        return compound_id.split('/')[0]
+            responses = await gather(*promises)
+            print(responses)

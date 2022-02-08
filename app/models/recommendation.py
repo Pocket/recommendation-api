@@ -91,34 +91,8 @@ class RecommendationModel(BaseModel):
             elif ranker in FIREFOX_THOMPSON_SAMPLING_RANKERS:
                 # firefox Thompson sampling requires click/impression data from it's own data source
                 ranker_kwargs = {
-                    'metrics': await FirefoxNewTabMetricsFactory().get(
-                        slate_id,
-                        # TODO: Use hash of url as content identifiers?
-                        [str(recommendation.item.item_id) for recommendation in recommendations])
+                    'metrics': await FirefoxNewTabMetricsFactory().get([rec.id for rec in recommendations])
                 }
             recommendations = get_ranker(ranker)(recommendations, **ranker_kwargs)
 
         return recommendations
-
-    @staticmethod
-    async def __thompson_sample(ranker: str, slate_id: str,
-                                recommendations: ['RecommendationModel']) -> ['RecommendationModel']:
-        """
-        Special processing for handling the thompson sampling ranker. Retrieves click data for the items being ranked
-        and uses that for thompson sampling algorithm with beta distributions.
-
-        Thompson sampling is a probabilistic approach to estimating the CTR of an item.  It combines historical data
-        about item CTR on a specific recommendation surface with per-item click and impression data to form
-        a distribution for each item's CTR.  For new items, the distribution relies more on the historical data.  For
-        items with available click data, the distribution will reflect the observed performance and improve in
-        its accuracy.
-
-        Items are ranked by sampling from the corresponding CTR distribution which is updated daily.
-        This allows us to balance the need to explore new items' performance, and rank highly items
-        that have already demonstrated high performance (in terms of CTR).
-
-        :param slate_id:
-        :param recommendations: a list of RecommendationModel instances
-        :return: a list of RecommendationModel instances
-        """
-        return get_ranker(ranker)(recommendations, click_data)
