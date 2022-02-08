@@ -108,14 +108,19 @@ class TestSlateModel(TestDynamoDBBase):
     @patch('app.rankers.algorithms.firefox_thompson_sampling_15minute',
            # Mock thompson sampling and return recs in same order, to be able to assert that it's called
            side_effect=lambda recs, metrics: recs)
-    async def test_get_slate_ranked_by_firefox_new_tab_metrics(self, thompson_sampling_mock, metrics_mock):
+    async def test_get_slate_ranked_by_firefox_new_tab_metrics(
+            self,
+            firefox_thompson_sampling_mock,
+            get_firefox_metrics_mock
+    ):
         self._put_candidates(4)
 
         slates = await SlateModel.get_slates_from_slate_configs([firefox_slate_config_model], None)
 
         assert slates[0].id == firefox_slate_config_id
         assert len(slates[0].recommendations) == 4
-        thompson_sampling_mock.assert_called_once()
+        get_firefox_metrics_mock.assert_called_once()
+        firefox_thompson_sampling_mock.assert_called_once()
 
     async def test_get_slates_from_slate_configs_with_limited_recs(self):
         self._put_candidates(4)
