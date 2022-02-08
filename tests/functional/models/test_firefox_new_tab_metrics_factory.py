@@ -65,7 +65,7 @@ class TestFirefoxNewTabMetricsFactory:
 
         new_tab_engagement = await FirefoxNewTabMetricsFactory().get(
             slate_id=self.SLATE_ID,
-            content_ids=content_ids,
+            scheduled_surface_item_ids=content_ids,
         )
 
         # Check that the return value is a dict with Firefox metric models.
@@ -97,7 +97,7 @@ class TestFirefoxNewTabMetricsFactory:
 
         new_tab_engagement = await FirefoxNewTabMetricsFactory().get(
             slate_id=self.SLATE_ID,
-            content_ids=queried_content_ids,
+            scheduled_surface_item_ids=queried_content_ids,
         )
 
         existing_content_ids = [content_id for content_id in queried_content_ids if int(content_id) >= 0]
@@ -123,5 +123,5 @@ class TestFirefoxNewTabMetricsFactory:
         with pytest.raises(BotoCoreError):
             await FirefoxNewTabMetricsFactory().get(
                 slate_id=self.SLATE_ID,
-                content_ids=content_ids,
+                scheduled_surface_item_ids=content_ids,
             )

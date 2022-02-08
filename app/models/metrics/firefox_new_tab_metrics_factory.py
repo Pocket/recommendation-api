@@ -1,6 +1,7 @@
 import logging
 from typing import List, Dict, Optional, Any
 from asyncio import gather
+import uuid
 
 import aioboto3
 
@@ -30,15 +31,17 @@ class FirefoxNewTabMetricsFactory():
         'TRAILING_15_MINUTE_IMPRESSIONS',
     ]
 
-    async def get(self, slate_id: str, content_ids: List[str]) -> Dict[str, 'FirefoxNewTabMetricsModel']:
+    async def get(self, slate_id: str, slate_experiment_id: str, scheduled_surface_item_ids: List[str]) -> Dict[str, 'FirefoxNewTabMetricsModel']:
         """
-        Get engagement metrics for a Firefox New Tab slate.
-        :param slate_id: The slate ('feed') for which to get metrics
-        :param content_ids: The content ids for which to get metrics
+        Get engagement metrics for a Firefox New Tab slate experiment.
+        TODO: This function should simply accept 'recommendation_ids', and we should generate these ids elsewhere.
+        :param slate_id: The slate for which to get metrics
+        :param slate_experiment_id: Slate experiment identifier. @see ExperimentModel.generate_experiment_id()
+        :param scheduled_surface_item_ids: Pocket/curated-corpus-api GUIDs representing a scheduled run of a corpus item
         :return: dictionary of FirefoxNewTabMetricsModel objects keyed on content id (i.e. not including the slate_id)
         """
         # Keys are namespaced by the slate that we are getting data from. First put them in a set to ensure unique keys.
-        keys = list({self._make_key(slate_id, i) for i in content_ids})
+        keys = list({self._make_key(slate_id, slate_experiment_id, i) for i in scheduled_surface_item_ids})
 
         metrics = await self._query_metrics(keys)
         if not metrics:
@@ -102,15 +105,16 @@ class FirefoxNewTabMetricsFactory():
 
         return metrics
 
-    def _make_key(self, slate_id: str, content_id: str) -> str:
+    def _make_key(self, slate_id: str, slate_experiment_id: str, scheduled_surface_item_id: str) -> str:
         """
         Generate the primary key for the metrics database
 
         :param slate_id: Slate for which to get metrics
-        :param content_id: Content for which to get metrics
+        :param scheduled_surface_item_id: Content for which to get metrics
         :return: DynamoDB primary key value
         """
-        return "%s/%s" % (content_id, slate_id)
+        slate_uuid = uuid.UUID(slate_id)
+        return uuid.uuid5(slate_uuid, f"{slate_experiment_id}/{scheduled_surface_item_id}")
 
     def _get_content_id_from_id(self, compound_id: str) -> str:
         """
