@@ -20,7 +20,7 @@ class FeatureStoreClient:
         pass
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio  # This pytest-asyncio decorator allows us to use an async side_effect
 class TestFirefoxNewTabMetricsFactory:
 
     SLATE_ID = 'f99178fb-6bd0-4fa1-8109-cda181b697f6'  # Matches the slate_id in firefox_new_tab_engagement.json
