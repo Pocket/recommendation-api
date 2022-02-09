@@ -19,9 +19,6 @@ type Query {
         recommendationCount: Int = 10
     ): Slate
 
-    # TODO: Is there a better name for `RecommendationResult`?
-    getCorpusSlate(slateId: String!): CorpusSlate
-
     """
     List all available slates
     """
@@ -41,6 +38,13 @@ type Query {
         "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
         recommendationCount: Int = 10
     ): SlateLineup
+
+    """
+    Request a specific `CorpusSlate` by ID: ultimately replaces `getSlate`
+    """
+    getCorpusSlate(
+        corpusSlateId: String!
+    ): CorpusSlate
 }
 
 type CorpusSlate @key(fields: "id") {
