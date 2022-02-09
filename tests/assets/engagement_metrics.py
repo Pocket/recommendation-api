@@ -35,6 +35,8 @@ def _get_firefox_new_tab_metrics_model(**kwargs) -> 'FirefoxNewTabMetricsModel':
         'id': 'home/999',
         'trailing_15_minute_opens': 0,
         'trailing_15_minute_impressions': 0,
+        'scheduled_surface_item_id': '4a105732-6dcc-4bfa-a92e-8bb0e5616e89',
+        'slate_experiment_id': '13055e0',
         'unloaded_at': '2022-02-02',
         'url': 'http://example.com/999',
         'slate_id': '',
@@ -43,7 +45,7 @@ def _get_firefox_new_tab_metrics_model(**kwargs) -> 'FirefoxNewTabMetricsModel':
     return FirefoxNewTabMetricsModel.parse_obj(default_values)
 
 
-def _get_metrics_model_dict(**kwargs) -> Dict[str, 'MetricsModel']:
+def generate_metrics_model_dict(**kwargs) -> Dict[str, 'MetricsModel']:
     """
     :param kwargs: override any MetricsModel attributes
     :return: dict with value the MetricsModel and key the second component of the id
@@ -81,7 +83,7 @@ def generate_metrics(period) -> Dict[str, 'MetricsModel']:
 
     metrics = {}
     for kwargs in kwargs_list:
-        metrics.update(_get_metrics_model_dict(**kwargs))
+        metrics.update(generate_metrics_model_dict(**kwargs))
 
     return metrics
 

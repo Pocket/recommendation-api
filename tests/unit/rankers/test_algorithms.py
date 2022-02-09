@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from tests.assets.engagement_metrics import generate_metrics, generate_firefox_metrics
+from tests.assets.engagement_metrics import generate_metrics, generate_firefox_metrics, generate_metrics_model_dict
 from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_nontopic_configs, generate_lineup_configs
 from app.config import ROOT_DIR
 from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, rank_topics, \
@@ -151,12 +151,11 @@ class TestAlgorithmsBlocklist(unittest.TestCase):
 
 
 class TestAlgorithmsThompsonSampling:
-    
 
     def test_it_can_rank_items_with_missing_metrics(self):
         recs = generate_recommendations(['333', '999'])
 
-        metrics = self._get_metrics_model_dict(
+        metrics = generate_metrics_model_dict(
             id='home/999',
             trailing_28_day_opens=99,
             trailing_28_day_impressions=999,
@@ -168,7 +167,7 @@ class TestAlgorithmsThompsonSampling:
 
     def test_invalid_prior(self):
         recs = generate_recommendations(['999'])
-        metrics = self._get_metrics_model_dict(
+        metrics = generate_metrics_model_dict(
             id = 'home/default',
             trailing_28_day_opens=99,
             trailing_28_day_impressions=-14,
@@ -185,13 +184,24 @@ class TestAlgorithmsThompsonSampling:
         """
         # Invalid trailing_period_name
         with pytest.raises(ValueError):
-            thompson_sampling([], metrics=self._get_metrics_model_dict(), trailing_period_name='foobar')
+            thompson_sampling(
+                generate_recommendations(['999']),
+                metrics=generate_metrics_model_dict(),
+                trailing_period_name='foobar'
+            )
         # Invalid trailing_period
         with pytest.raises(ValueError):
-            thompson_sampling([], metrics=self._get_metrics_model_dict(), trailing_period=123)
+            thompson_sampling(
+                generate_recommendations(['999']),
+                metrics=generate_metrics_model_dict(),
+                trailing_period=123
+            )
         # MetricModel does not have trailing 15 minute metrics (but FirefoxNewTabMetricsModel does)
         with pytest.raises(ValueError):
-            firefox_thompson_sampling_15minute([], metrics=self._get_metrics_model_dict())
+            firefox_thompson_sampling_15minute(
+                generate_recommendations(['999']),
+                metrics=generate_metrics_model_dict()
+            )
 
     @pytest.mark.parametrize("thompson_sampling_function,metrics", [
         (thompson_sampling, generate_metrics(28)),  # 28 day is the default

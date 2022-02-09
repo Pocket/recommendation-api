@@ -10,7 +10,7 @@ from app.models.slate import SlateModel
 candidates = [
     {
         'feed_id': 1,
-        'item_id': 32087904180,
+        'item_id': 3208490410,
         'publisher': 'hbr.org'
     },
     {
