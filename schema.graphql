@@ -19,8 +19,7 @@ type Query {
         recommendationCount: Int = 10
     ): Slate
 
-    # TODO: Is there a better name for `RecommendationResult`?
-    getCorpusSlate(slateId: String!): CorpusSlate
+    corpusSlate(id: ID!): CorpusSlate
 
     """
     List all available slates
