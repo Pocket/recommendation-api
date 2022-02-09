@@ -70,6 +70,10 @@ type CorpusSlateRecommendationResult {
     recommendations(count: Int = 10): [CorpusItemRecommendation!]!
 }
 
+extend type CorpusItem @key(fields: "id") {
+  id: ID! @external
+}
+
 """
 Represents a Recomendation from the curated corpus
 """
@@ -80,11 +84,8 @@ type CorpusItemRecommendation @key(fields: "id") {
     aggregate more meta data about the decision.
     """
     id: ID!
-
-    """
-    Corpus item id.
-    """
-    corpusItemId: ID!
+    
+    corpusItem: CorpusItem
 
     # TODO: Item score?
 }
