@@ -42,8 +42,19 @@ type Query {
     ): SlateLineup
 }
 
+"""
+This is the same as Slate but in this type all recommendations are backed by CorpusItems. This means that the editorial
+team has editorial control over the items served by this endpoint.
+"""
 type CorpusSlate @key(fields: "id") {
+    """
+    UUID
+    """
     id: ID!
+
+    """
+    Administrative name for the slate, in english.
+    """
     name: String!
     description: String!
     experiments: [CorpusSlateExperiment!]!
@@ -70,7 +81,65 @@ type CorpusSlateRecommendationResult {
 }
 
 extend type CorpusItem @key(fields: "id") {
-  id: ID! @external
+    id: ID! @external
+
+    ## Below is provided for documentation and will be provided by external services
+    # Now
+    excerpt: String!
+    id: ID!
+    imageUrl: Url!
+    language: String!
+    publisher: String!
+    title: String!
+    url: Url!
+
+    # Soon
+    webImage: WebImage
+    readTimeMinutes: Int!
+}
+
+"""
+WebImage is a future addition and does not belong in this service. It is being included right not so that it is easier
+to visualize the future that we are working towards.
+
+WebImage allows us to remove the requirement that client teams have to hard code their implementation of the Image
+Cache. Additionally this allows us to prevent DDOS attacks on the service. This will allow us to replace one image cache
+service for another without any client updates.
+"""
+type WebImage @key(fields: "url") {
+    url: String!
+    thumbnails(inputs: [WebImageThumbnailInput]): [WebImageThumbnail!]!
+}
+
+enum WebImageThumbnailTrimFit {
+    """
+    Make the image take up the entire height and width of the image. This will trim image edges that dont fit.
+    """
+    TRIM
+
+    """
+    None of the image will be trimmed. As a result some of the image will be blank space on either the top or bottom.
+    """
+    FIT
+}
+
+input WebImageThumbnailInput {
+    id: ID!
+    height: Int
+    width: Int
+    trimFit: WebImageThumbnailTrimFit!
+}
+
+type WebImageThumbnail {
+    """
+    The same value provided as WebImageThumbnailInput.id.
+    """
+    id: ID!
+
+    """
+    Url to fetch the image.
+    """
+    url: String!
 }
 
 """
@@ -86,7 +155,7 @@ type CorpusItemRecommendation @key(fields: "id") {
     
     corpusItem: CorpusItem
 
-    # TODO: Item score?
+    score: Float!
 }
 
 """
