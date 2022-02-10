@@ -7,17 +7,8 @@ from unittest.mock import MagicMock, AsyncMock
 from aws_xray_sdk import global_sdk_config
 from botocore.exceptions import BotoCoreError
 
-pytest.importorskip("aioboto3")
-
 import app.config
 from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
-
-
-class FeatureStoreClient:
-    def __init__(self, **kwargs):
-        pass
-    async def get_record(self, **kwargs):
-        pass
 
 
 @pytest.mark.asyncio  # This pytest-asyncio decorator allows us to use an async side_effect
@@ -34,7 +25,7 @@ class TestFirefoxNewTabMetricsFactory:
 
     async def _get_mocked_feature_store_client(self, monkeypatch):
         # Mock boto3. Localstack currently does not support Feature Group, so we need to mock it ourselves.
-        client = MagicMock()  # AsyncMock(FeatureStoreClient)
+        client = MagicMock()
         aioboto3 = MagicMock(client=client)
         monkeypatch.setattr("app.models.metrics.firefox_new_tab_metrics_factory.aioboto3", aioboto3)
         # Mock return values for 'get_record' calls.

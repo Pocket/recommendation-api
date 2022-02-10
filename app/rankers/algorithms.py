@@ -134,12 +134,16 @@ def thompson_sampling(
     # create prior distribution for CTR from parameters in click data table
     prior = beta(alpha_prior, beta_prior)
     for rec in recs:
-        try:
+        # When metrics data no longer keyed on item_id, we can simple do `metrics_model = metrics.get(rec.id)`.
+        if rec.id in metrics:
             metrics_model = metrics[rec.id]
-        except (AttributeError, KeyError):
-            # Legacy recommendations are keyed on item_id.  Note that the metrics model grabs the item_id
-            # when it parses the clickdata by splitting the primary key in dynamo.
-            metrics_model = metrics.get(rec.item.item_id, None)
+        else:
+            try:
+                # Legacy recommendations are keyed on item_id.  Note that the metrics model grabs the item_id
+                # when it parses the clickdata by splitting the primary key in dynamo.
+                metrics_model = metrics.get(rec.item.item_id, None)
+            except AttributeError:
+                metrics_model = None
 
         if metrics_model:
             open_metric = getattr(metrics_model, opens_column)

@@ -95,8 +95,4 @@ class FirefoxNewTabMetricsFactory():
                 if record:
                     metrics.append(record)
 
-            # We're logging an error here because the full request context is available.
-            # if not responses["Responses"][self._dynamodb_table]:
-            #     logging.info(f"DynamoDB returned no metrics for query {request}")
-
         return metrics

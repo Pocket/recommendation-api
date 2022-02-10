@@ -43,8 +43,6 @@ firefox_slate_config_model = SlateConfigModel(firefox_slate_config_id, 'test-fir
 
 
 class TestSlateModel(TestDynamoDBBase):
-    async def asyncSetUp(self):
-        await super().asyncSetUp()
 
     def _put_candidates(self, count=None):
         """
@@ -101,6 +99,7 @@ class TestSlateModel(TestDynamoDBBase):
         assert len(slates[0].recommendations) == 1
 
     @patch('app.models.metrics.firefox_new_tab_metrics_factory.FirefoxNewTabMetricsFactory.get',
+           # TODO: Change the call to generate_firefox_metrics when Firefox candidates are no longer loaded by item_id.
            return_value=generate_firefox_metrics(recommendation_ids=[str(c['item_id']) for c in candidates]))
     @patch('app.rankers.algorithms.firefox_thompson_sampling_1day',
            # Mock thompson sampling and return recs in same order, to be able to assert that it's called
@@ -110,6 +109,9 @@ class TestSlateModel(TestDynamoDBBase):
             firefox_thompson_sampling_mock,
             get_firefox_metrics_mock
     ):
+        """
+        Test the integration between the Firefox ranker and fetching Firefox metrics.
+        """
         self._put_candidates(4)
 
         slates = await SlateModel.get_slates_from_slate_configs([firefox_slate_config_model], None)
@@ -118,6 +120,10 @@ class TestSlateModel(TestDynamoDBBase):
         assert len(slates[0].recommendations) == 4
         get_firefox_metrics_mock.assert_called_once()
         firefox_thompson_sampling_mock.assert_called_once()
+        # Assert that the Thompson sampling ranker received all recommendations and metrics.
+        ranker_args, ranker_kwargs = firefox_thompson_sampling_mock.call_args
+        assert len(ranker_kwargs['metrics']) == len(candidates)
+        assert len(ranker_args[0]) == len(candidates)  # First positional argument is recommendations
 
     async def test_get_slates_from_slate_configs_with_limited_recs(self):
         self._put_candidates(4)
