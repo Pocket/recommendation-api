@@ -46,7 +46,7 @@ class FirefoxNewTabMetricsFactory():
             logging.error(f"No Firefox New Tab metrics for recommendation_ids={recommendation_ids}")
 
         # Convert from dict to Pydantic model and key on id.
-        parsed_metrics = [self.parse_from_record(m) for m in metrics]
+        parsed_metrics = [self._parse_from_record(m) for m in metrics]
         parsed_metrics_by_id = {m.id: m for m in parsed_metrics}
 
         return parsed_metrics_by_id
@@ -55,7 +55,7 @@ class FirefoxNewTabMetricsFactory():
     def get_feature_group_name(cls):
         return f'{config.ENV}-firefox-new-tab-engagement-v{cls._FEATURE_GROUP_VERSION}'
 
-    def parse_from_record(self, record: FeatureStoreRecordType) -> FirefoxNewTabMetricsModel:
+    def _parse_from_record(self, record: FeatureStoreRecordType) -> FirefoxNewTabMetricsModel:
         """
         Converts a FeatureGroup record to a Pydantic FirefoxNewTabMetricsModel object
         :param record: dictionary containing all required keys for FirefoxNewTabMetricsModel

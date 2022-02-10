@@ -41,9 +41,6 @@ firefox_slate_experiment = SlateExperimentModel('test-firefox-ex', 'test-ex-fire
 firefox_slate_config_model = SlateConfigModel(firefox_slate_config_id, 'test-firefox-slate', 'test-firefox-desc',
                                               experiments=[firefox_slate_experiment])
 
-def foo_bar_123():
-    return 123
-
 
 class TestSlateModel(TestDynamoDBBase):
     async def asyncSetUp(self):
