@@ -101,7 +101,8 @@
           "493a5556-9800-449f-8f8c-c27bb6c8c810"
         ],
         "rankers": [
-          "top30-items"
+          "top30-items",
+          "firefox-thompson-sampling-1day"
         ]
       }
     ]

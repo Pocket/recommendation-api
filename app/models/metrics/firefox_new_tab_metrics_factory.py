@@ -40,6 +40,7 @@ class FirefoxNewTabMetricsFactory():
         :return: dictionary of FirefoxNewTabMetricsModel objects keyed on recommendation id
         """
         # Keys are namespaced by the slate that we are getting data from. First put them in a set to ensure unique keys.
+        await self._generate_dummy_data(recommendation_ids)
         metrics = await self._query_metrics(recommendation_ids)
         if not metrics:
             logging.error(f"No Firefox New Tab metrics for recommendation_ids={recommendation_ids}")
@@ -100,3 +101,52 @@ class FirefoxNewTabMetricsFactory():
             #     logging.info(f"DynamoDB returned no metrics for query {request}")
 
         return metrics
+
+    async def _generate_dummy_data(self, metrics_keys: List[str]):
+        """
+        TODO: Remove debug code.
+        """
+        metrics = {}
+        import uuid
+
+        async with aioboto3.client('sagemaker-featurestore-runtime') as featurestore:
+            promises = [featurestore.put_record(
+                FeatureGroupName=self.get_feature_group_name(),
+                Record=[
+                    {
+                        'FeatureName': 'ID',
+                        'ValueAsString': metrics_key
+                    },
+                    {
+                        'FeatureName': 'UNLOADED_AT',
+                        'ValueAsString': '2022-02-07T16:15:30Z'
+                    },
+                    {
+                        'FeatureName': 'SCHEDULED_SURFACE_ITEM_ID',
+                        'ValueAsString': str(uuid.uuid4()),
+                    },
+                    {
+                        'FeatureName': 'SLATE_EXPERIMENT_ID',
+                        'ValueAsString': '13055e0',
+                    },
+                    {
+                        'FeatureName': 'URL',
+                        'ValueAsString': f'https://example.com/{metrics_key}',
+                    },
+                    {
+                        'FeatureName': 'SLATE_ID',
+                        'ValueAsString': 'f99178fb-6bd0-4fa1-8109-cda181b697f6',
+                    },
+                    {
+                        'FeatureName': 'TRAILING_1_DAY_OPENS',
+                        'ValueAsString': str(100 * index),
+                    },
+                    {
+                        'FeatureName': 'TRAILING_1_DAY_IMPRESSIONS',
+                        'ValueAsString': str(100000),
+                    },
+                ],
+            ) for index, metrics_key in enumerate(metrics_keys)]
+
+            responses = await gather(*promises)
+            print(responses)

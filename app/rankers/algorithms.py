@@ -135,22 +135,21 @@ def thompson_sampling(
     prior = beta(alpha_prior, beta_prior)
     for rec in recs:
         try:
-            # Recommendations are keyed on item_id.  Note that the metrics model grabs the item_id
-            # when it parses the clickdata by splitting the primary key in dynamo
-            clickdata_id = rec.item.item_id
-        except AttributeError:
-            # Slates are keyed on their slate id, in this case the id field of the slate config model
-            # Similarly these are parsed as the prefix of the primary key in the slate metrics table
-            clickdata_id = rec.id
+            metrics_model = metrics[rec.id]
+        except (AttributeError, KeyError):
+            # Legacy recommendations are keyed on item_id.  Note that the metrics model grabs the item_id
+            # when it parses the clickdata by splitting the primary key in dynamo.
+            metrics_model = metrics.get(rec.item.item_id, None)
 
-        d = metrics.get(clickdata_id)
-        if d:
-            # TODO: Decide how many days we want to look back.
-            clicks = max(getattr(d, opens_column) + alpha_prior, 1e-18)
+        if metrics_model:
+            open_metric = getattr(metrics_model, opens_column)
+            imprs_metric = getattr(metrics_model, imprs_column)
+
+            opens = max(open_metric + alpha_prior, 1e-18)
             # posterior combines click data with prior (also a beta distribution)
-            no_clicks = max(getattr(d, imprs_column) - getattr(d, opens_column) + beta_prior, 1e-18)
+            no_opens = max(imprs_metric - open_metric + beta_prior, 1e-18)
             # sample from posterior for CTR given click data
-            score = beta.rvs(clicks, no_clicks)
+            score = beta.rvs(opens, no_opens)
             scores.append((rec, score))
         else:  # no click data, sample from module prior
             scores.append((rec, prior.rvs()))
