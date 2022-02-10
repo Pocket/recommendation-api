@@ -40,7 +40,6 @@ class FirefoxNewTabMetricsFactory():
         :return: dictionary of FirefoxNewTabMetricsModel objects keyed on recommendation id
         """
         # Keys are namespaced by the slate that we are getting data from. First put them in a set to ensure unique keys.
-        await self._generate_dummy_data(recommendation_ids)
         metrics = await self._query_metrics(recommendation_ids)
         if not metrics:
             logging.error(f"No Firefox New Tab metrics for recommendation_ids={recommendation_ids}")
