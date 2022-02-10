@@ -17,9 +17,6 @@ FeatureStoreRecordType = List[Dict[str, str]]
 
 
 class FirefoxNewTabMetricsFactory():
-    _dynamodb_endpoint: str = None
-    _dynamodb_table: str = None
-    _PRIMARY_KEY_NAME: str = 'ID'
     _FEATURE_GROUP_VERSION: int = 3
     _FEATURE_NAMES: List[str] = [
         'ID',
