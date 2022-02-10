@@ -9,7 +9,7 @@ from tests.unit.utils import generate_recommendations, generate_curated_configs,
 from app.config import ROOT_DIR
 from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, rank_topics, \
     thompson_sampling_1day, thompson_sampling_7day, thompson_sampling_14day, blocklist, top1_topics, top3_topics, \
-    firefox_thompson_sampling_15minute
+    firefox_thompson_sampling_1day
 from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
 from operator import itemgetter
 
@@ -182,25 +182,19 @@ class TestAlgorithmsThompsonSampling:
         An exception should be raised is the trailing period does not exist on any metrics model
         :return:
         """
-        # Invalid trailing_period_name
-        with pytest.raises(ValueError):
-            thompson_sampling(
-                generate_recommendations(['999']),
-                metrics=generate_metrics_model_dict(),
-                trailing_period_name='foobar'
-            )
         # Invalid trailing_period
         with pytest.raises(ValueError):
             thompson_sampling(
                 generate_recommendations(['999']),
                 metrics=generate_metrics_model_dict(),
-                trailing_period=123
+                trailing_period=123  # Model does not have 123 day trailing metrics
             )
-        # MetricModel does not have trailing 15 minute metrics (but FirefoxNewTabMetricsModel does)
+        # Invalid trailing_period for Firefox New Tab metrics
         with pytest.raises(ValueError):
-            firefox_thompson_sampling_15minute(
-                generate_recommendations(['999']),
-                metrics=generate_metrics_model_dict()
+            thompson_sampling(
+                generate_recommendations(['000-999']),
+                metrics=generate_firefox_metrics(['000-999']),
+                trailing_period=7  # MetricsModel has 7 day trailing period, but FirefoxNewTabMetricsModel does not.
             )
 
     @pytest.mark.parametrize("thompson_sampling_function,metrics", [
@@ -208,7 +202,7 @@ class TestAlgorithmsThompsonSampling:
         (thompson_sampling_1day, generate_metrics(1)),
         (thompson_sampling_7day, generate_metrics(7)),
         (thompson_sampling_14day, generate_metrics(14)),
-        (firefox_thompson_sampling_15minute, generate_firefox_metrics(["333333", "666666", "999999"])),
+        (firefox_thompson_sampling_1day, generate_firefox_metrics(["333333", "666666", "999999"])),
     ])
     def test_rank_by_ctr_over_n_trials(self, thompson_sampling_function, metrics, ntrials = 99):
         """

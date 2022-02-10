@@ -25,11 +25,11 @@
       "ValueAsString": "f99178fb-6bd0-4fa1-8109-cda181b697f6"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_OPENS",
+      "FeatureName": "TRAILING_1_DAY_OPENS",
       "ValueAsString": "0"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+      "FeatureName": "TRAILING_1_DAY_IMPRESSIONS",
       "ValueAsString": "100000"
     }
   ],
@@ -59,11 +59,11 @@
       "ValueAsString": "f99178fb-6bd0-4fa1-8109-cda181b697f6"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_OPENS",
+      "FeatureName": "TRAILING_1_DAY_OPENS",
       "ValueAsString": "100"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+      "FeatureName": "TRAILING_1_DAY_IMPRESSIONS",
       "ValueAsString": "100000"
     }
   ],
@@ -93,11 +93,11 @@
       "ValueAsString": "f99178fb-6bd0-4fa1-8109-cda181b697f6"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_OPENS",
+      "FeatureName": "TRAILING_1_DAY_OPENS",
       "ValueAsString": "200"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+      "FeatureName": "TRAILING_1_DAY_IMPRESSIONS",
       "ValueAsString": "100000"
     }
   ],
@@ -127,11 +127,11 @@
       "ValueAsString": "f99178fb-6bd0-4fa1-8109-cda181b697f6"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_OPENS",
+      "FeatureName": "TRAILING_1_DAY_OPENS",
       "ValueAsString": "300"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+      "FeatureName": "TRAILING_1_DAY_IMPRESSIONS",
       "ValueAsString": "100000"
     }
   ],
@@ -161,11 +161,11 @@
       "ValueAsString": "f99178fb-6bd0-4fa1-8109-cda181b697f6"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_OPENS",
+      "FeatureName": "TRAILING_1_DAY_OPENS",
       "ValueAsString": "400"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+      "FeatureName": "TRAILING_1_DAY_IMPRESSIONS",
       "ValueAsString": "100000"
     }
   ],
@@ -195,11 +195,11 @@
       "ValueAsString": "f99178fb-6bd0-4fa1-8109-cda181b697f6"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_OPENS",
+      "FeatureName": "TRAILING_1_DAY_OPENS",
       "ValueAsString": "500"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+      "FeatureName": "TRAILING_1_DAY_IMPRESSIONS",
       "ValueAsString": "100000"
     }
   ],
@@ -229,11 +229,11 @@
       "ValueAsString": "f99178fb-6bd0-4fa1-8109-cda181b697f6"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_OPENS",
+      "FeatureName": "TRAILING_1_DAY_OPENS",
       "ValueAsString": "600"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+      "FeatureName": "TRAILING_1_DAY_IMPRESSIONS",
       "ValueAsString": "100000"
     }
   ],
@@ -263,11 +263,11 @@
       "ValueAsString": "f99178fb-6bd0-4fa1-8109-cda181b697f6"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_OPENS",
+      "FeatureName": "TRAILING_1_DAY_OPENS",
       "ValueAsString": "700"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+      "FeatureName": "TRAILING_1_DAY_IMPRESSIONS",
       "ValueAsString": "100000"
     }
   ],
@@ -297,11 +297,11 @@
       "ValueAsString": "f99178fb-6bd0-4fa1-8109-cda181b697f6"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_OPENS",
+      "FeatureName": "TRAILING_1_DAY_OPENS",
       "ValueAsString": "800"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+      "FeatureName": "TRAILING_1_DAY_IMPRESSIONS",
       "ValueAsString": "100000"
     }
   ],
@@ -331,11 +331,11 @@
       "ValueAsString": "f99178fb-6bd0-4fa1-8109-cda181b697f6"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_OPENS",
+      "FeatureName": "TRAILING_1_DAY_OPENS",
       "ValueAsString": "900"
     },
     {
-      "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+      "FeatureName": "TRAILING_1_DAY_IMPRESSIONS",
       "ValueAsString": "100000"
     }
   ]

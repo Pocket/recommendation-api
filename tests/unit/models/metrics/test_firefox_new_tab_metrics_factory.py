@@ -30,16 +30,16 @@ class TestFirefoxNewTabMetricsFactory:
                 "ValueAsString": "f99178fb-6bd0-4fa1-8109-cda181b697f6"
             },
             {
-                "FeatureName": "TRAILING_15_MINUTE_OPENS",
+                "FeatureName": "TRAILING_1_DAY_OPENS",
                 "ValueAsString": "0"
             },
             {
-                "FeatureName": "TRAILING_15_MINUTE_IMPRESSIONS",
+                "FeatureName": "TRAILING_1_DAY_IMPRESSIONS",
                 "ValueAsString": "100000"
             }
         ]
 
         metrics = FirefoxNewTabMetricsFactory().parse_from_record(record)
-        assert metrics.trailing_15_minute_opens == 0
-        assert metrics.trailing_15_minute_impressions == 100000
+        assert metrics.trailing_1_day_opens == 0
+        assert metrics.trailing_1_day_impressions == 100000
         assert metrics.id == "00000000-0000-0000-0000-000000000000"

@@ -87,7 +87,7 @@ class TestFirefoxNewTabMetricsFactory:
             engagement = new_tab_engagement[recommendation_id]
             assert engagement.id == recommendation_id
             assert engagement.slate_id == self.SLATE_ID
-            assert engagement.trailing_15_minute_impressions == 100000  # All fixtures records have 100,000 impressions
+            assert engagement.trailing_1_day_impressions == 100000  # All fixtures records have 100,000 impressions
 
             # Assert that get_record was called with the right arguments for each recommendation_id
             with_client.get_record.assert_any_call(
@@ -114,7 +114,7 @@ class TestFirefoxNewTabMetricsFactory:
             engagement = new_tab_engagement[recommendation_id]
             assert engagement.id == recommendation_id
             assert engagement.slate_id == self.SLATE_ID
-            assert engagement.trailing_15_minute_impressions >= 100  # All fixtures have at least 100 impressions
+            assert engagement.trailing_1_day_impressions >= 100  # All fixtures have at least 100 impressions
 
     async def test_get_non_existing_feature_group(self, monkeypatch):
         """

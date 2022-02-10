@@ -98,7 +98,6 @@ def thompson_sampling(
         recs: RankableListType,
         metrics: Dict[(int or str), Union['MetricsModel', 'FirefoxNewTabMetricsModel']],
         trailing_period: int = 28,
-        trailing_period_name: str = 'day',
         default_alpha_prior=DEFAULT_ALPHA_PRIOR,
         default_beta_prior=DEFAULT_BETA_PRIOR) -> RankableListType:
     """
@@ -112,7 +111,6 @@ def thompson_sampling(
     :param recs: a list of recommendations in the desired order (pre-publisher spread)
     :param metrics: a dict with item_id as key and dynamodb row modeled as ClickDataModel
     :param trailing_period: the number of days that impressions and opens are aggregated for sampling
-    :param trailing_period_name: 'day' or 'minute'
     :return: a re-ordered version of recs satisfying the spread as best as possible
     """
 
@@ -120,11 +118,8 @@ def thompson_sampling(
     if not recs:
         return recs
 
-    if trailing_period_name not in ['day', 'minute']:
-        raise ValueError(f"trailing_period_name {trailing_period_name} is not valid")
-
-    opens_column = f"trailing_{trailing_period}_{trailing_period_name}_opens"
-    imprs_column = f"trailing_{trailing_period}_{trailing_period_name}_impressions"
+    opens_column = f"trailing_{trailing_period}_day_opens"
+    imprs_column = f"trailing_{trailing_period}_day_impressions"
 
     if any(not (hasattr(m, opens_column) and hasattr(m, opens_column)) for m in metrics.values()):
         raise ValueError(f"Missing attribute {opens_column} or {imprs_column} on some metrics: {metrics.values()}")
@@ -169,10 +164,9 @@ thompson_sampling_7day = partial(thompson_sampling, trailing_period=7)
 thompson_sampling_14day = partial(thompson_sampling, trailing_period=14)
 thompson_sampling_28day = partial(thompson_sampling, trailing_period=28)
 
-firefox_thompson_sampling_15minute = partial(
+firefox_thompson_sampling_1day = partial(
     thompson_sampling,
-    trailing_period=15,
-    trailing_period_name='minute',
+    trailing_period=1,
     default_alpha_prior=DEFAULT_FIREFOX_ALPHA_PRIOR,
     default_beta_prior=DEFAULT_FIREFOX_BETA_PRIOR,
 )

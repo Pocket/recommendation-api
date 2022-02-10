@@ -20,7 +20,7 @@ class FirefoxNewTabMetricsFactory():
     _dynamodb_endpoint: str = None
     _dynamodb_table: str = None
     _PRIMARY_KEY_NAME: str = 'ID'
-    _FEATURE_GROUP_VERSION: int = 2
+    _FEATURE_GROUP_VERSION: int = 3
     _FEATURE_NAMES: List[str] = [
         'ID',
         'UNLOADED_AT',
@@ -28,8 +28,8 @@ class FirefoxNewTabMetricsFactory():
         'SLATE_EXPERIMENT_ID',
         'URL',
         'SLATE_ID',
-        'TRAILING_15_MINUTE_OPENS',
-        'TRAILING_15_MINUTE_IMPRESSIONS',
+        'TRAILING_1_DAY_OPENS',
+        'TRAILING_1_DAY_IMPRESSIONS',
     ]
 
     async def get(self, recommendation_ids: List[str]) -> Dict[str, 'FirefoxNewTabMetricsModel']:

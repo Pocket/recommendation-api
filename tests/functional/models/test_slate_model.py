@@ -37,7 +37,7 @@ slate_config_model = SlateConfigModel(slate_config_id, 'test-this-slate', 'test-
 
 firefox_slate_config_id = 'test-firefox-slate_lineup-config-id'
 firefox_slate_experiment = SlateExperimentModel('test-firefox-ex', 'test-ex-firefox-desc',
-                                                ['firefox-thompson-sampling-15minute'], ['test-candidate-id'])
+                                                ['firefox-thompson-sampling-1day'], ['test-candidate-id'])
 firefox_slate_config_model = SlateConfigModel(firefox_slate_config_id, 'test-firefox-slate', 'test-firefox-desc',
                                               experiments=[firefox_slate_experiment])
 
@@ -104,8 +104,8 @@ class TestSlateModel(TestDynamoDBBase):
         assert len(slates[0].recommendations) == 1
 
     @patch('app.models.metrics.firefox_new_tab_metrics_factory.FirefoxNewTabMetricsFactory.get',
-           return_value=generate_firefox_metrics(item_ids=[str(c['item_id']) for c in candidates]))
-    @patch('app.rankers.algorithms.firefox_thompson_sampling_15minute',
+           return_value=generate_firefox_metrics(recommendation_ids=[str(c['item_id']) for c in candidates]))
+    @patch('app.rankers.algorithms.firefox_thompson_sampling_1day',
            # Mock thompson sampling and return recs in same order, to be able to assert that it's called
            side_effect=lambda recs, metrics: recs)
     async def test_get_slate_ranked_by_firefox_new_tab_metrics(

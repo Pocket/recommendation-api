@@ -8,5 +8,5 @@ class FirefoxNewTabMetricsModel(BaseModel):
     slate_experiment_id: str
     url: str
     slate_id: str
-    trailing_15_minute_opens: int
-    trailing_15_minute_impressions: int
+    trailing_1_day_opens: int
+    trailing_1_day_impressions: int
