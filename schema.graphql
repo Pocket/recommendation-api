@@ -40,6 +40,8 @@ type Query {
         "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
         recommendationCount: Int = 10
     ): SlateLineup
+
+    webImage(url: Url!): WebImage!
 }
 
 """
@@ -56,22 +58,60 @@ type CorpusSlate @key(fields: "id") {
     Administrative name for the slate, in english.
     """
     name: String!
+
+    """
+    Administrative description, in english.
+    """
     description: String!
+
+    """
+    Administrative data about experiments currently being run on this slate.
+    """
     experiments: [CorpusSlateExperiment!]!
+
+    """
+    Please find a better name.
+
+    Get recommendations for the current request context.
+    """
     recommendationResult: CorpusSlateRecommendationResult
 }
 
+"""
+Every CorpusSlate may have multiple experiments. Any recommendationResult may be associated with any
+CorpusSlateExperiment for the current Slate.
+"""
 type CorpusSlateExperiment @key(fields: "id") {
+    """
+    UUID
+    """
     id: ID!
-    corpusSlateId: ID!
+
+    """
+    Parent CorpusSlate.
+    """
     corpusSlate: CorpusSlate!
+
+    """
+    Administrative description.
+    """
     description: String!
+
+    """
+    Candidate sets backing this experiment.
+    """
     candidateSets: [ID!]
+
+    """
+    Rankers for the given experiment.
+    """
     rankers: [ID!]
 }
 
 type CorpusSlateRecommendationResult {
-    corpusSlateExperimentId: ID! #TODO: This existed in old Slate. I dont know how it gets populated.
+    """
+    The experiment assigned to this result.
+    """
     corpusSlateExperiment: CorpusSlateExperiment!
 
     """
@@ -81,6 +121,9 @@ type CorpusSlateRecommendationResult {
 }
 
 extend type CorpusItem @key(fields: "id") {
+    """
+    UUID.
+    """
     id: ID! @external
 
     ## Below is provided for documentation and will be provided by external services
@@ -94,7 +137,14 @@ extend type CorpusItem @key(fields: "id") {
     url: Url!
 
     # Soon
+    """
+    Web thumbnail generator and cache.
+    """
     webImage: WebImage
+
+    """
+    Estimated read time, in minutes, based on word count and language.
+    """
     readTimeMinutes: Int!
 }
 
@@ -105,9 +155,48 @@ to visualize the future that we are working towards.
 WebImage allows us to remove the requirement that client teams have to hard code their implementation of the Image
 Cache. Additionally this allows us to prevent DDOS attacks on the service. This will allow us to replace one image cache
 service for another without any client updates.
+
+Example:
+query getThumbnails {
+    webImage(url: "https://getpocket.com/explore/image.jpg") {
+        thumbnails(inputs: [{
+            id: 'small'
+            height: 180
+            width: 400
+            trimFit: TRIM
+        }, {
+            id: 'medium'
+            height: 500
+            width: 1000
+            trimFit: TRIM
+        }])
+    }
+}
+
+Returns:
+{
+    getThumbnails: {
+        webImage: {
+            thumbnails: [{
+                id: 'small',
+                url: 'https://pocketimagecache/medium/url.jpg'
+            }, {
+                id: 'medium',
+                url: 'https://pocketimagecache/medium/url.jpg'
+            }]
+        }
+    }
+}
 """
 type WebImage @key(fields: "url") {
-    url: String!
+    """
+    Original url.
+    """
+    url: Url!
+
+    """
+    Let's generate some thumbnails.
+    """
     thumbnails(inputs: [WebImageThumbnailInput]): [WebImageThumbnail!]!
 }
 
@@ -125,8 +214,20 @@ enum WebImageThumbnailTrimFit {
 
 input WebImageThumbnailInput {
     id: ID!
+
+    """
+    Height in pixels.
+    """
     height: Int
+
+    """
+    Width in pixels.
+    """
     width: Int
+
+    """
+    See: WebImageThumbnailTrimFit.
+    """
     trimFit: WebImageThumbnailTrimFit!
 }
 
