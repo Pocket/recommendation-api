@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from app.models.recommendation import RecommendationModel
 
 
-class CorpusSlateInstance(BaseModel):
+class RankedCorpusItemsInstance(BaseModel):
     """
     Models a corpus slate
     """
@@ -14,5 +14,6 @@ class CorpusSlateInstance(BaseModel):
     experimentId: str = None
     display_name: str = None
     description: str = None
-    recommendations: List[RecommendationModel] = None
+    corpusItems: List[RecommendationModel] = None
+
 

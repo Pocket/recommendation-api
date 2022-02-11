@@ -2,8 +2,8 @@ from graphene import ObjectType, String, Field, List, Int
 from graphene_federation import build_schema
 
 from app.api_clients.curation_api_client import CurationAPIClient
-from app.graphql.corpus_slate import CorpusSlate
-from app.models.corpus_slate_instance import CorpusSlateInstance
+from app.graphql.ranked_corpus_items import RankedCorpusItems
+from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
 from app.models.topic import TopicModel
 from app.models.slate import SlateModel
 from app.models.slate_lineup import SlateLineupModel
@@ -19,7 +19,7 @@ class Query(ObjectType):
                       recommendation_count=Int(default_value=10,
                                                description="Number of recommendations to return, defaults to 10"))
 
-    get_corpus_slate = Field(CorpusSlate, corpus_slate_id=String(required=True, description="Slate id to get a specific Corpus slate"))
+    get_ranked_corpus_items = Field(RankedCorpusItems, id=String(required=True, description="A ranked list of recommendation items"))
 
     list_slates = Field(List(Slate), recommendation_count=Int(default_value=0,
                                                               description="Number of recommendations to return, defaults to 0"))
@@ -36,8 +36,8 @@ class Query(ObjectType):
         return await SlateModel.get_slate(slate_id=slate_id, user_id=info.context.get('user_id'),
                                           recommendation_count=recommendation_count)
 
-    async def resolve_get_corpus_slate(self, info, corpus_slate_id: str) -> CorpusSlateInstance:
-        return await CurationAPIClient.get_corpus_slate(corpus_slate_id=corpus_slate_id, user_id=info.context.get('user_id'))
+    async def resolve_get_ranked_corpus_items(self, info, id: str) -> RankedCorpusItemsInstance:
+        return await CurationAPIClient.get_ranked_corpus_items(corpus_id=id, user_id=info.context.get('user_id'))
 
     async def resolve_list_slates(self, info, recommendation_count: int) -> [SlateModel]:
         return await SlateModel.get_all(user_id=info.context.get('user_id'), recommendation_count=recommendation_count)
