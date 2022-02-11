@@ -37,8 +37,6 @@ class TestGetRankedCorpusItems(TestDynamoDBBase):
                 context_value={"user_id": "johnjacobjingleheimerschmidt"},
                 executor=AsyncioExecutor())
 
-            print("HWATEVER")
-            print(executed)
             response = executed.get('data').get('getRankedCorpusItems')
             id = response.get('id')
             assert id == "00000000-0000-0000-0000-000000000496"
