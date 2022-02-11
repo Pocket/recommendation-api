@@ -3,8 +3,8 @@ import requests
 import json
 from datetime import date
 
+from app.models.corpus_item import CorpusItem
 from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
-from app.models.recommendation import RecommendationModel
 
 
 class CurationAPIClient(object):
@@ -25,7 +25,7 @@ class CurationAPIClient(object):
         }}
         """
         # Sounds like we want this to go directly to corpus API.
-        # Let's talk to backend about this 
+        # Let's talk to backend about this
         url = 'https://client-api.getpocket.com'
         response = requests.post(url, json={'query': query})
         response_body = json.loads(response.text)
@@ -34,5 +34,5 @@ class CurationAPIClient(object):
         return RankedCorpusItemsInstance(
             id=str(uuid.UUID(int=sum([ord(char) for char in "IAmTheWalrus"]))),
             description="I am the corpus slate, coo coo ca choo",
-            corpusItems = [RecommendationModel(id=item.get('id')) for item in corpus_items],
+            corpusItems = [CorpusItem(id=item.get('id')) for item in corpus_items],
         )
