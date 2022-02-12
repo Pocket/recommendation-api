@@ -2,7 +2,7 @@ import json
 import os
 import pytest
 from functools import partial
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import MagicMock
 
 from aws_xray_sdk import global_sdk_config
 from botocore.exceptions import BotoCoreError

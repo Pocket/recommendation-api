@@ -16,7 +16,7 @@ from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetr
 from app.models.metrics.recommendation_metrics_factory import RecommendationMetricsFactory
 from app.models.item import ItemModel
 from app.models.slate_experiment import SlateExperimentModel
-from app.rankers import get_ranker, THOMPSON_SAMPLING_RANKERS, FIREFOX_THOMPSON_SAMPLING_RANKERS
+from app.rankers import get_ranker, POCKET_THOMPSON_SAMPLING_RANKERS, FIREFOX_THOMPSON_SAMPLING_RANKERS
 
 
 class RecommendationType(Enum):
@@ -81,7 +81,7 @@ class RecommendationModel(BaseModel):
         # apply rankers from the slate experiment on the candidate set's candidates
         for ranker in experiment.rankers:
             ranker_kwargs = {}
-            if ranker in THOMPSON_SAMPLING_RANKERS:
+            if ranker in POCKET_THOMPSON_SAMPLING_RANKERS:
                 # Thompson sampling requires click/impression data
                 ranker_kwargs = {
                     'metrics': await RecommendationMetricsFactory(dynamodb_config["endpoint_url"]).get(

@@ -119,7 +119,8 @@
           "493a5556-9800-449f-8f8c-c27bb6c8c810"
         ],
         "rankers": [
-          "top30-items"
+          "top30-items",
+          "firefox-thompson-sampling-1day"
         ]
       }
     ]
@@ -136,7 +137,8 @@
           "493a5556-9800-449f-8f8c-c27bb6c8c810"
         ],
         "rankers": [
-          "top30-items"
+          "top30-items",
+          "firefox-thompson-sampling-1day"
         ]
       }
     ]
@@ -153,7 +155,8 @@
           "c66a1485-6c87-4c68-b29e-e7e838465ff7"
         ],
         "rankers": [
-          "top30-items"
+          "top30-items",
+          "firefox-thompson-sampling-1day"
         ]
       }
     ]
