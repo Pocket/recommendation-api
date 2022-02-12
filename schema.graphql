@@ -69,7 +69,7 @@ Represents a Recomendation from the curated corpus
 extend type CorpusItem @key(fields: "id") {
     id: ID! @external
 """
-Maybe Item score ventually also goes here
+Maybe Item score eventually also goes here
 """
 }
 
