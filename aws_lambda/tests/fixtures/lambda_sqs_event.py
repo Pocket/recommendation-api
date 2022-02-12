@@ -7,13 +7,12 @@ from aws_lambda.sqs_handler import MINIMUM_EXPIRES_AT_FROM_NOW
 body = {
   "id": "1234-5678-ABCD-CEDF",
   "version": 1,
-  "expires_at": 1644006655,
+  "expires_at": int(time.time() + MINIMUM_EXPIRES_AT_FROM_NOW + 3600),  # Expires 1 hour after minimum
   "candidates": [
     {
       "item_id": 3242933715,
       "publisher": "TheAtlantic",
       "feed_id": 1,
-      "expires_at": int(time.time() + MINIMUM_EXPIRES_AT_FROM_NOW + 3600),  # Expires 1 hour after minimum
     }
   ]
 }
