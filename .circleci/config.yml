@@ -63,6 +63,13 @@ jobs:
             - run:
                 name: push service
                 command: rover subgraph publish pocket-client-api@current --schema ./schema.graphql --routing-url https://recommendation-api.readitlater.com/ --name=recommendation-api
+      - when:
+          condition:
+            equal: [ dev, << pipeline.git.branch >> ]
+          steps:
+            - run:
+                name: push service to dev client graph
+                command: rover subgraph publish pocket-client-api@development --schema ./schema.graphql --routing-url https://recommendation-api.getpocket.dev/ --name=recommendation-api
 
   build:
     #Sets up the code for the docker image to build in
