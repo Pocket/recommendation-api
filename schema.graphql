@@ -49,10 +49,11 @@ type Query {
 
 type RankedCorpusItems @key(fields: "id") {
     id: ID!
-    name: String!
     description: String!
-    experiments: [RankedCorpusItemsExperiment!]
-    items: [CorpusItem!]
+    displayName: String!
+    experimentId: String!
+    corpusItems: [CorpusItem!]
+    requestId: String
 }
 
 type RankedCorpusItemsExperiment @key(fields: "id") {
