@@ -39,7 +39,7 @@ class FirefoxNewTabMetricsFactory():
         # Keys are namespaced by the slate that we are getting data from. First put them in a set to ensure unique keys.
         metrics = await self._query_metrics(recommendation_ids)
         if not metrics:
-            logging.error(f"No Firefox New Tab metrics for recommendation_ids={recommendation_ids}")
+            logging.warning(f"No Firefox New Tab metrics for recommendation_ids={recommendation_ids}")
 
         # Convert from dict to Pydantic model and key on id.
         parsed_metrics = [self._parse_from_record(m) for m in metrics]
