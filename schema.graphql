@@ -63,9 +63,6 @@ type RankedCorpusItemsExperiment @key(fields: "id") {
     rankers: [ID!]
 }
 
-"""
-Represents a Recomendation from the curated corpus
-"""
 extend type CorpusItem @key(fields: "id") {
     id: ID! @external
     # Maybe Item score eventually also goes here
