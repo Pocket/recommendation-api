@@ -3,7 +3,7 @@ import requests
 import json
 from datetime import date
 
-from app.models.corpus_item import CorpusItem
+from app.models.corpus_item_model import CorpusItemModel
 from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
 
 
@@ -34,5 +34,5 @@ class CurationAPIClient(object):
         return RankedCorpusItemsInstance(
             id=str(uuid.UUID(int=sum([ord(char) for char in "IAmTheWalrus"]))),
             description="I am the corpus slate, coo coo ca choo",
-            corpusItems = [CorpusItem(id=item.get('id')) for item in corpus_items],
+            corpusItems = [CorpusItemModel(id=item.get('id')) for item in corpus_items],
         )

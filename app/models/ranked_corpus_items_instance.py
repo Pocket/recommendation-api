@@ -2,7 +2,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from app.models.recommendation import RecommendationModel
+from app.models.corpus_item_model import CorpusItemModel
 
 
 class RankedCorpusItemsInstance(BaseModel):
@@ -14,6 +14,6 @@ class RankedCorpusItemsInstance(BaseModel):
     experimentId: str = None
     display_name: str = None
     description: str = None
-    corpusItems: List[RecommendationModel] = None
+    corpusItems: List[CorpusItemModel] = None
 
 
