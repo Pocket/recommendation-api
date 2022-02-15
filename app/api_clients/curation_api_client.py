@@ -26,7 +26,7 @@ class CurationAPIClient(object):
                 items(date: "{start_date}") {{
                   id
                 }}
-            }}        
+            }}
         }}
         """
         # Sounds like we want this to go directly to corpus API.
