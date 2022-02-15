@@ -1,8 +1,10 @@
 import uuid
 import requests
 import json
+import datetime
 from datetime import date
 
+from app.exceptions.invalid_date_exception import InvalidDateException
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
 
@@ -11,6 +13,10 @@ class CurationAPIClient(object):
     @classmethod
     async def get_ranked_corpus_items(cls, corpus_id: str, start_date: str=None, user_id=None):
         ranked_corpus_items_id = "NEW_TAB_EN_US"
+
+        if start_date and not datetime.strptime("%Y-%m-%d"):
+            raise InvalidDateException("Invalid date argument. Date must be formatted year-month-day like so: 1981-09-04")
+
         if not start_date:
             start_date = date.today().strftime("%Y-%m-%d")
 
