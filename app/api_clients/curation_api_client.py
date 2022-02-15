@@ -14,8 +14,13 @@ class CurationAPIClient(object):
         if not start_date:
             start_date = date.today().strftime("%Y-%m-%d")
 
+        request_headers = {
+            "apollographql-client-name": "recommendations-api",
+            "apollographql-client-version": "1"
+        }
+
         query = f"""
-        query Query {{
+        query RecsApiItemRequest {{
             scheduledSurface(id: "{ranked_corpus_items_id}") {{
                 id
                 items(date: "{start_date}") {{
@@ -27,7 +32,7 @@ class CurationAPIClient(object):
         # Sounds like we want this to go directly to corpus API.
         # Let's talk to backend about this
         url = 'https://client-api.getpocket.com'
-        response = requests.post(url, json={'query': query})
+        response = requests.post(url, headers=request_headers, json={'query': query})
         response_body = json.loads(response.text)
         corpus_items = response_body.get("data").get("scheduledSurface").get("items")
 
