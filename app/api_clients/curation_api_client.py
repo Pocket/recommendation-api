@@ -26,7 +26,6 @@ class CurationAPIClient(object):
             "apollographql-client-name": "recommendations-api",
             "apollographql-client-version": "1"
         }
-
         query = f"""
         query RecsApiItemRequest {{
             scheduledSurface(id: "{ranked_corpus_items_id}") {{
