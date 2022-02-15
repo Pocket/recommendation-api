@@ -4,6 +4,7 @@ import json
 
 from aws_xray_sdk.core import xray_recorder
 from app.models.metrics.metrics_model import MetricsModel
+from app.models.metrics.firefox_new_tab_metrics_model import FirefoxNewTabMetricsModel
 
 from app.config import ROOT_DIR
 from typing import List, Dict, Optional, Union
@@ -15,6 +16,11 @@ from app.models.personalized_topic_list import PersonalizedTopicList
 
 DEFAULT_ALPHA_PRIOR = 0.02
 DEFAULT_BETA_PRIOR = 1.0
+
+# These values were taken from: https://github.com/Pocket/feed-machine/blob/master/resources/models/b-0085-15k-age-05-syn-score-explore-locales-rr.json#L4-L5
+# They were experimentally derived in 2018: https://getpocket.atlassian.net/browse/P18-616
+DEFAULT_FIREFOX_BETA_PRIOR = 15600
+DEFAULT_FIREFOX_ALPHA_PRIOR = int(0.0085 * DEFAULT_FIREFOX_BETA_PRIOR)
 
 RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel']]
 RecommendationListType = List['RecommendationModel']
@@ -90,8 +96,10 @@ def blocklist(recs: RecommendationListType, blocklist: Optional[List[str]] = Non
 
 def thompson_sampling(
         recs: RankableListType,
-        metrics: Dict[(int or str), 'MetricsModel'],
-        trailing_period: int = 28) -> RankableListType:
+        metrics: Dict[(int or str), Union['MetricsModel', 'FirefoxNewTabMetricsModel']],
+        trailing_period: int = 28,
+        default_alpha_prior=DEFAULT_ALPHA_PRIOR,
+        default_beta_prior=DEFAULT_BETA_PRIOR) -> RankableListType:
     """
     Re-rank items using Thompson sampling which combines exploitation of known item CTR
     with exploration of new items with unknown CTR modeled by a prior
@@ -110,39 +118,42 @@ def thompson_sampling(
     if not recs:
         return recs
 
-    if trailing_period not in [1, 7, 14, 28]:
-        raise ValueError(f"trailing_period of {trailing_period} is not available")
-
     opens_column = f"trailing_{trailing_period}_day_opens"
     imprs_column = f"trailing_{trailing_period}_day_impressions"
+
+    if any(not (hasattr(m, opens_column) and hasattr(m, opens_column)) for m in metrics.values()):
+        raise ValueError(f"Missing attribute {opens_column} or {imprs_column} on some metrics: {metrics.values()}")
 
     # Currently we are using the hardcoded priors below.
     # TODO: We should return to having slate/lineup-specific priors. We could load slate-priors from
     #  MODELD-Prod-SlateMetrics, although that might require an additional database lookup. We might choose to use a
     #  'default' key that aggregates engagement data in the same table, such that no additional lookups are required.
-    alpha_prior, beta_prior = DEFAULT_ALPHA_PRIOR, DEFAULT_BETA_PRIOR
+    alpha_prior, beta_prior = default_alpha_prior, default_beta_prior
 
     scores = []
     # create prior distribution for CTR from parameters in click data table
     prior = beta(alpha_prior, beta_prior)
     for rec in recs:
-        try:
-            # Recommendations are keyed on item_id.  Note that the metrics model grabs the item_id
-            # when it parses the clickdata by splitting the primary key in dynamo
-            clickdata_id = rec.item.item_id
-        except AttributeError:
-            # Slates are keyed on their slate id, in this case the id field of the slate config model
-            # Similarly these are parsed as the prefix of the primary key in the slate metrics table
-            clickdata_id = rec.id
+        # When metrics data no longer keyed on item_id, we can simple do `metrics_model = metrics.get(rec.id)`.
+        if rec.id in metrics:
+            metrics_model = metrics[rec.id]
+        else:
+            try:
+                # Legacy recommendations are keyed on item_id.  Note that the metrics model grabs the item_id
+                # when it parses the clickdata by splitting the primary key in dynamo.
+                metrics_model = metrics.get(rec.item.item_id, None)
+            except AttributeError:
+                metrics_model = None
 
-        d = metrics.get(clickdata_id)
-        if d:
-            # TODO: Decide how many days we want to look back.
-            clicks = max(getattr(d, opens_column) + alpha_prior, 1e-18)
+        if metrics_model:
+            open_metric = getattr(metrics_model, opens_column)
+            imprs_metric = getattr(metrics_model, imprs_column)
+
+            opens = max(open_metric + alpha_prior, 1e-18)
             # posterior combines click data with prior (also a beta distribution)
-            no_clicks = max(getattr(d, imprs_column) - getattr(d, opens_column) + beta_prior, 1e-18)
+            no_opens = max(imprs_metric - open_metric + beta_prior, 1e-18)
             # sample from posterior for CTR given click data
-            score = beta.rvs(clicks, no_clicks)
+            score = beta.rvs(opens, no_opens)
             scores.append((rec, score))
         else:  # no click data, sample from module prior
             scores.append((rec, prior.rvs()))
@@ -155,6 +166,13 @@ thompson_sampling_1day = partial(thompson_sampling, trailing_period=1)
 thompson_sampling_7day = partial(thompson_sampling, trailing_period=7)
 thompson_sampling_14day = partial(thompson_sampling, trailing_period=14)
 thompson_sampling_28day = partial(thompson_sampling, trailing_period=28)
+
+firefox_thompson_sampling_1day = partial(
+    thompson_sampling,
+    trailing_period=1,
+    default_alpha_prior=DEFAULT_FIREFOX_ALPHA_PRIOR,
+    default_beta_prior=DEFAULT_FIREFOX_BETA_PRIOR,
+)
 
 
 def __personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
