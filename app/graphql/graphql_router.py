@@ -37,7 +37,7 @@ class Query(ObjectType):
                                           recommendation_count=recommendation_count)
 
     async def resolve_get_ranked_corpus_items(self, info, id: str) -> RankedCorpusItemsInstance:
-        return await CurationAPIClient.get_ranked_corpus_items(corpus_id=id, user_id=info.context.get('user_id'))
+        return await CurationAPIClient.get_scheduled_corpus_items(corpus_id=id, user_id=info.context.get('user_id'))
 
     async def resolve_list_slates(self, info, recommendation_count: int) -> [SlateModel]:
         return await SlateModel.get_all(user_id=info.context.get('user_id'), recommendation_count=recommendation_count)
