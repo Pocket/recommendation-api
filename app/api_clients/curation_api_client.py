@@ -14,7 +14,7 @@ class CurationAPIClient(object):
     async def get_ranked_corpus_items(cls, corpus_id: str, start_date: str=None, user_id=None):
         ranked_corpus_items_id = "NEW_TAB_EN_US"
 
-        if start_date and not datetime.strptime("%Y-%m-%d"):
+        if start_date and not datetime.strptime(start_date, "%Y-%m-%d"):
             raise InvalidDateException("Invalid date argument. Date must be formatted year-month-day like so: 1981-09-04")
 
         if not start_date:
