@@ -8,7 +8,7 @@ from app.json.utils import parse_to_dict
 from app.models.metrics.slate_metrics_factory import SlateMetricsFactory
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate_config import SlateConfigModel
-from app.rankers import get_ranker, PERSONALIZED_RANKERS, THOMPSON_SAMPLING_RANKERS
+from app.rankers import get_ranker, PERSONALIZED_RANKERS, POCKET_THOMPSON_SAMPLING_RANKERS
 from app.models.personalized_topic_list import PersonalizedTopicList
 
 
@@ -120,7 +120,7 @@ class SlateLineupConfigModel:
         # change the order of the slate_configs within the slate_lineup's experiment
         for ranker in experiment.rankers:
             ranker_kwargs = {}
-            if ranker in THOMPSON_SAMPLING_RANKERS:
+            if ranker in POCKET_THOMPSON_SAMPLING_RANKERS:
                 # thompson sampling requires slate metrics
                 ranker_kwargs = {
                     'metrics': await SlateMetricsFactory(dynamodb_endpoint=dynamodb["endpoint_url"]).get(
