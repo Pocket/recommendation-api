@@ -5,12 +5,12 @@ from datetime import date, datetime
 
 from app.exceptions.invalid_date_exception import InvalidDateException
 from app.models.corpus_item_model import CorpusItemModel
-from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
+from app.models.ranked_corpus_items_instance import RankedCorpusSlateInstance
 
 
 class CurationAPIClient(object):
     @classmethod
-    async def get_ranked_corpus_items(cls, corpus_id: str, start_date: str=None, user_id=None):
+    async def get_ranked_corpus_items(cls, slate_id: str, start_date: str=None, user_id=None):
         ranked_corpus_items_id = "NEW_TAB_EN_US"
 
         if start_date:
@@ -43,8 +43,8 @@ class CurationAPIClient(object):
         response_body = json.loads(response.text)
         corpus_items = response_body.get("data").get("scheduledSurface").get("items")
 
-        return RankedCorpusItemsInstance(
-            id=str(uuid.UUID(int=sum([ord(char) for char in "IAmTheWalrus"]))),
+        return RankedCorpusSlateInstance(
+            slateId=str(uuid.UUID(int=sum([ord(char) for char in "IAmTheWalrus"]))),
             description="I am the corpus slate, coo coo ca choo",
-            corpusItems = [CorpusItemModel(id=item.get('id')) for item in corpus_items],
+            corpusSlate = [CorpusItemModel(id=item.get('id')) for item in corpus_items],
         )

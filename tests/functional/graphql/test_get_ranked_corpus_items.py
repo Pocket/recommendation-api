@@ -11,7 +11,7 @@ from collections import namedtuple
 
 MockResponse = namedtuple('MockResponse', 'status')
 
-class TestGetRankedCorpusItems(TestDynamoDBBase):
+class TestGetRankedCorpusSlate(TestDynamoDBBase):
     client: Client
 
     async def asyncSetUp(self):
@@ -24,21 +24,21 @@ class TestGetRankedCorpusItems(TestDynamoDBBase):
         with TestClient(app):
             executed = self.client.execute(
                 '''
-                    query GetRankedCorpusItems {
-                      getRankedCorpusItems(id: "aaf47c0f-1361-4c8c-a89f-fa45e1dc2978") {
-                        id
-                        description 
-                        corpusItems {
-                            id
+                    query TestGetRankedCorpusSlate {
+                        getRankedCorpusItems(slateId: "aaf47c0f-1361-4c8c-a89f-fa45e1dc2978") {
+                          slateId
+                          description 
+                            corpusSlate {
+                                id
+                          }
                         }
-                      }
                     }
                 ''',
                 context_value={"user_id": "johnjacobjingleheimerschmidt"},
                 executor=AsyncioExecutor())
 
             response = executed.get('data').get('getRankedCorpusItems')
-            id = response.get('id')
+            id = response.get('slateId')
             assert id == "00000000-0000-0000-0000-000000000496"
             description = response.get('description')
             assert description == "I am the corpus slate, coo coo ca choo"
