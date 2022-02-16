@@ -5,13 +5,13 @@ from datetime import date, datetime
 
 from app.exceptions.invalid_date_exception import InvalidDateException
 from app.models.corpus_item_model import CorpusItemModel
-from app.models.ranked_corpus_items_instance import RankedCorpusSlateInstance
+from app.models.ranked_corpus_slate_instance import RankedCorpusSlateInstance
 
 
 class CurationAPIClient(object):
     @classmethod
-    async def get_ranked_corpus_items(cls, slate_id: str, start_date: str=None, user_id=None):
-        ranked_corpus_items_id = "NEW_TAB_EN_US"
+    async def get_ranked_corpus_slate(cls, slate_id: str, start_date: str=None, user_id=None):
+        ranked_corpus_slate_id = "NEW_TAB_EN_US"
 
         if start_date:
             try:
@@ -28,7 +28,7 @@ class CurationAPIClient(object):
         }
         query = f"""
         query RecsApiItemRequest {{
-            scheduledSurface(id: "{ranked_corpus_items_id}") {{
+            scheduledSurface(id: "{ranked_corpus_slate_id}") {{
                 id
                 items(date: "{start_date}") {{
                   id
@@ -41,10 +41,10 @@ class CurationAPIClient(object):
         url = 'https://client-api.getpocket.com'
         response = requests.post(url, headers=request_headers, json={'query': query})
         response_body = json.loads(response.text)
-        corpus_items = response_body.get("data").get("scheduledSurface").get("items")
+        corpus_slate = response_body.get("data").get("scheduledSurface").get("items")
 
         return RankedCorpusSlateInstance(
             slateId=str(uuid.UUID(int=sum([ord(char) for char in "IAmTheWalrus"]))),
             description="I am the corpus slate, coo coo ca choo",
-            corpusSlate = [CorpusItemModel(id=item.get('id')) for item in corpus_items],
+            corpusSlate = [CorpusItemModel(id=item.get('id')) for item in corpus_slate],
         )

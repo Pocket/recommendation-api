@@ -25,7 +25,7 @@ class TestGetRankedCorpusSlate(TestDynamoDBBase):
             executed = self.client.execute(
                 '''
                     query TestGetRankedCorpusSlate {
-                        getRankedCorpusItems(slateId: "aaf47c0f-1361-4c8c-a89f-fa45e1dc2978") {
+                        getRankedCorpusSlate(slateId: "aaf47c0f-1361-4c8c-a89f-fa45e1dc2978") {
                           slateId
                           description 
                             corpusSlate {
@@ -37,7 +37,7 @@ class TestGetRankedCorpusSlate(TestDynamoDBBase):
                 context_value={"user_id": "johnjacobjingleheimerschmidt"},
                 executor=AsyncioExecutor())
 
-            response = executed.get('data').get('getRankedCorpusItems')
+            response = executed.get('data').get('getRankedCorpusSlate')
             id = response.get('slateId')
             assert id == "00000000-0000-0000-0000-000000000496"
             description = response.get('description')
