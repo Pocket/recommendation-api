@@ -38,6 +38,35 @@ type Query {
         "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
         recommendationCount: Int = 10
     ): SlateLineup
+
+    """
+    Request a specific `RankedCorpusSlate` by ID: ultimately replaces `getSlate`
+    """
+    getRankedCorpusSlate(
+        slateId: String!
+    ): RankedCorpusSlate
+}
+
+type RankedCorpusSlate @key(fields: "id") {
+    id: ID!
+    description: String!
+    displayName: String!
+    experimentId: String!
+    corpusSlate: [CorpusItem!]
+    requestId: String
+}
+
+type RankedCorpusSlateExperiment @key(fields: "id") {
+    id: ID!
+    rankedCorpusSlateId: ID!
+    description: String!
+    candidateSets: [ID!]
+    rankers: [ID!]
+}
+
+extend type CorpusItem @key(fields: "id") {
+    id: ID! @external
+    # Maybe Item score eventually also goes here
 }
 
 """
@@ -137,7 +166,7 @@ type TopicRecommendations {
 }
 
 """
-Represents a Recomendation from Pocket
+Represents a Recomendation from Pocket Parser
 """
 type Recommendation @key(fields: "item { itemId }") {
     """
