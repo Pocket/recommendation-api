@@ -5,6 +5,7 @@ import json
 from aws_xray_sdk.core import xray_recorder
 
 from app.data_providers.slate_provider_schemata import ExperimentSchema
+from app.graphql.corpus_item import CorpusItem
 from app.models.metrics.metrics_model import MetricsModel
 from app.models.metrics.firefox_new_tab_metrics_model import FirefoxNewTabMetricsModel
 
@@ -27,8 +28,12 @@ DEFAULT_FIREFOX_ALPHA_PRIOR = int(0.0085 * DEFAULT_FIREFOX_BETA_PRIOR)
 RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel'], List['CorpusItem']]
 RecommendationListType = List['RecommendationModel']
 
+class ExperimentPreparation:
+    def __init__(self, schema: ExperimentSchema, items: [CorpusItem]):
+        self.schema = schema
+        self.items = items
 
-def top_n(n: int, experiment: ExperimentSchema) -> RankableListType:
+def top_n(n: int, experiment: ExperimentPreparation) -> RankableListType:
     """
     Gets the first n recommendations from the list of recommendations.
 
@@ -36,10 +41,10 @@ def top_n(n: int, experiment: ExperimentSchema) -> RankableListType:
     :param n: The number of items to return
     :return: first n recommendations from the list of recommendations
     """
-    if len(experiment) <= n:
-        logging.warning(f"less items than n: {len(experiment) =} <= {n =} ")
+    if len(experiment.items) <= n:
+        logging.warning(f"less items than n: {len(experiment.items) =} <= {n =} ")
 
-    return experiment[:n]
+    return experiment.items[:n]
 
 
 top5 = partial(top_n, 5)

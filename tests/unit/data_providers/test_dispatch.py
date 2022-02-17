@@ -6,7 +6,7 @@ from app.data_providers.slate_provider import SlateProvider, SlateProvidable
 from app.data_providers.slate_provider_schemata import ExperimentSchema, SlateSchema
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
-from app.rankers.algorithms import RankableListType, top5
+from app.rankers.algorithms import top5
 
 class MockSlateProvider(SlateProvidable):
     schema = SlateSchema(displayName="World's Fakest Slate", description="A selection of fake content for testing",
