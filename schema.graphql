@@ -40,25 +40,25 @@ type Query {
     ): SlateLineup
 
     """
-    Request a specific `RankedCorpusItems` by ID: ultimately replaces `getSlate`
+    Request a specific `RankedCorpusSlate` by ID: ultimately replaces `getSlate`
     """
-    getRankedCorpusItems(
-        id: String!
-    ): RankedCorpusItems
+    getRankedCorpusSlate(
+        slateId: String!
+    ): RankedCorpusSlate
 }
 
-type RankedCorpusItems @key(fields: "id") {
+type RankedCorpusSlate @key(fields: "id") {
     id: ID!
     description: String!
     displayName: String!
     experimentId: String!
-    corpusItems: [CorpusItem!]
+    corpusSlate: [CorpusItem!]
     requestId: String
 }
 
-type RankedCorpusItemsExperiment @key(fields: "id") {
+type RankedCorpusSlateExperiment @key(fields: "id") {
     id: ID!
-    rankedCorpusItemsId: ID!
+    rankedCorpusSlateId: ID!
     description: String!
     candidateSets: [ID!]
     rankers: [ID!]
@@ -166,7 +166,7 @@ type TopicRecommendations {
 }
 
 """
-Represents a Recomendation from Pocket Parser
+Represents a Recomendation from Pocket
 """
 type Recommendation @key(fields: "item { itemId }") {
     """
