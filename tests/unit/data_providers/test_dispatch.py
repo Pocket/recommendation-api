@@ -49,7 +49,7 @@ async def test_get_ranked_items__nominal():
     ranked_items = await Dispatch(
         api_client = MockCurationAPIClient(),
         slate_provider = MockSlateProvider()
-    ).get_ranked_items("example-corpus-id")
+    ).get_ranked_corpus_slate("example-corpus-id")
 
     # The TestSlateProvider specifies that the top5 ranker be applied.
     assert len(ranked_items) == 5

@@ -7,13 +7,13 @@ from app.data_providers.slate_provider import SlateProvider
 class Dispatch:
     def __init__(
             self,
-            api_client: CurationAPIClient = CurationAPIClient,
-            slate_provider: SlateProvider = SlateProvider
+            api_client: CurationAPIClient = CurationAPIClient(),
+            slate_provider: SlateProvider = SlateProvider()
     ):
         self.api_client = api_client
         self.slate_provider = slate_provider
 
-    async def get_ranked_items(self, slate_id, start_date=None, user_id=None):
+    async def get_ranked_corpus_slate(self, slate_id, start_date=None, user_id=None):
         corpus_slate_schema = self.slate_provider.get(slate_id)
 
         # Choose an Experiment
