@@ -32,18 +32,19 @@ class MockCurationAPIClient(CurationAPIFetchable):
         ],
     )
 
-    async def get_scheduled_corpus_items(cls, corpus_id: str, start_date: str = None,
+    async def get_ranked_corpus_slate(cls, corpus_id: str, start_date: str = None,
                                          user_id=None) -> RankedCorpusItemsInstance:
         return cls.mock_corpus
 
 @pytest.mark.asyncio
 async def test_get_ranked_items__no_rankers():
     mock_curation_api_client = MockCurationAPIClient()
-    ranked_items = await Dispatch(
+    ranked_items_response = await Dispatch(
         api_client=mock_curation_api_client,
         slate_provider=MockSlateProvider()
     ).get_ranked_corpus_slate("example-corpus-id")
 
+    ranked_items = ranked_items_response.corpusItems
     # The TestSlateProvider specifies that the top5 ranker be applied.
     assert len(ranked_items) == 7
 
@@ -57,10 +58,12 @@ async def test_get_ranked_items__nominal():
     #Add a ranker to the mock object
     mock_slate_provider.schema.experiments[0].rankers.append(top5)
 
-    ranked_items = await Dispatch(
+    ranked_items_response = await Dispatch(
         api_client = MockCurationAPIClient(),
         slate_provider = mock_slate_provider
     ).get_ranked_corpus_slate("example-corpus-id")
+
+    ranked_items = ranked_items_response.corpusItems
 
     # The TestSlateProvider specifies that the top5 ranker be applied.
     assert len(ranked_items) == 5

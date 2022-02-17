@@ -25,10 +25,9 @@ class TestGetRankedCorpusSlate(TestDynamoDBBase):
             executed = self.client.execute(
                 '''
                     query TestGetRankedCorpusSlate {
-                        getRankedCorpusSlate(slateId: "79655eb2-47a1-4a26-9235-29e4768ff0a1") {
-                          slateId
+                        getRankedCorpusSlate(slateId: "f99178fb-6bd0-4fa1-8109-cda181b697f6") {
                           description 
-                            corpusSlate {
+                            corpusItems {
                                 id
                           }
                         }
@@ -38,10 +37,8 @@ class TestGetRankedCorpusSlate(TestDynamoDBBase):
                 executor=AsyncioExecutor())
 
             response = executed.get('data').get('getRankedCorpusSlate')
-            id = response.get('slateId')
-            assert id == "00000000-0000-0000-0000-000000000496"
             description = response.get('description')
-            assert description == "I am the corpus slate, coo coo ca choo"
+            assert description == "A selection of content for display on the Firefox new tab"
 
     def populate_candidate_sets_table(self):
         self.candidate_set_table.put_item(Item={

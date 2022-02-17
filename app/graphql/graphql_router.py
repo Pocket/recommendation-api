@@ -1,7 +1,8 @@
 from graphene import ObjectType, String, Field, List, Int
 from graphene_federation import build_schema
 
-from app.api_clients.curation_api_client import CurationAPIClient
+from app.data_providers.curation_api_client import CurationAPIClient
+from app.data_providers.slate_provider import SlateProvider
 from app.graphql.ranked_corpus_slate import RankedCorpusSlate
 from app.models.ranked_corpus_slate_instance import RankedCorpusSlateInstance
 from app.data_providers.dispatch import Dispatch
@@ -40,7 +41,7 @@ class Query(ObjectType):
                                           recommendation_count=recommendation_count)
 
     async def resolve_get_ranked_corpus_slate(self, info, slate_id: str) -> RankedCorpusSlateInstance:
-        return await Dispatch().get_ranked_corpus_slate(slate_id=slate_id, user_id=info.context.get('user_id'))
+        return await Dispatch(api_client=CurationAPIClient(), slate_provider=SlateProvider()).get_ranked_corpus_slate(slate_id=slate_id, user_id=info.context.get('user_id'))
 
     async def resolve_list_slates(self, info, recommendation_count: int) -> [SlateModel]:
         return await SlateModel.get_all(user_id=info.context.get('user_id'), recommendation_count=recommendation_count)

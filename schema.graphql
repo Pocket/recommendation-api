@@ -52,7 +52,7 @@ type RankedCorpusSlate @key(fields: "id") {
     description: String!
     displayName: String!
     experimentId: String!
-    corpusSlate: [CorpusItem!]
+    corpusItems: [CorpusItem!]
     requestId: String
 }
 

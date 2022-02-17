@@ -27,7 +27,7 @@ class SlateProvider:
                 ExperimentSchema(
                     description="default",
                     eligible_corpora=[
-                        "493a5556-9800-449f-8f8c-c27bb6c8c810"
+                        "NEW_TAB_EN_US"
                     ],
                     rankers=[
                         top30,
@@ -44,7 +44,7 @@ class SlateProvider:
                 ExperimentSchema(
                     description="default",
                     eligible_corpora=[
-                        "493a5556-9800-449f-8f8c-c27bb6c8c810"
+                        "NEW_TAB_EN_GB"
                     ],
                     rankers=[
                         top30,
@@ -61,7 +61,7 @@ class SlateProvider:
                 ExperimentSchema(
                     description="default",
                     eligible_corpora=[
-                        "493a5556-9800-449f-8f8c-c27bb6c8c810"
+                        "NEW_TAB_EN_INTL"
                     ],
                     rankers=[
                         top30,
@@ -78,7 +78,7 @@ class SlateProvider:
                 ExperimentSchema(
                     description="default",
                     eligible_corpora=[
-                        "c66a1485-6c87-4c68-b29e-e7e838465ff7"
+                        "NEW_TAB_DE_DE"
                     ],
                     rankers=[
                         top30,

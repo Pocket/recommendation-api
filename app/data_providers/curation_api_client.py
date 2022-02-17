@@ -10,11 +10,11 @@ from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
 
 class CurationAPIFetchable(ABC):
     @abstractmethod
-    async def get_scheduled_corpus_items(cls, corpus_id: str, start_date: str, user_id) -> RankedCorpusItemsInstance:
+    async def get_ranked_corpus_slate(self, corpus_id: str, start_date: str, user_id) -> RankedCorpusItemsInstance:
         return NotImplemented
 
 class CurationAPIClient(CurationAPIFetchable):
-    async def get_scheduled_corpus_items(self, corpus_id: str, start_date: str=None, user_id=None) -> RankedCorpusItemsInstance:
+    async def get_ranked_corpus_slate(self, corpus_id: str, start_date: str=None, user_id=None) -> RankedCorpusItemsInstance:
         ranked_corpus_items_id = "NEW_TAB_EN_US"
         if not start_date:
             start_date = date.today().strftime("%Y-%m-%d")
@@ -41,8 +41,4 @@ class CurationAPIClient(CurationAPIFetchable):
         response_body = json.loads(response.text)
         corpus_items = response_body.get("data").get("scheduledSurface").get("items")
 
-        return RankedCorpusItemsInstance(
-            id=str(uuid.UUID(int=sum([ord(char) for char in "IAmTheWalrus"]))),
-            description="I am the corpus slate, coo coo ca choo",
-            corpusItems = [CorpusItemModel(id=item.get('id')) for item in corpus_items],
-        )
+        return corpus_items

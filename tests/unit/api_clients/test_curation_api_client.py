@@ -1,4 +1,4 @@
-from app.api_clients.curation_api_client import CurationAPIClient
+from app.data_providers.curation_api_client import CurationAPIClient
 
 def test_get_ranked_corpus_slate():
     try:

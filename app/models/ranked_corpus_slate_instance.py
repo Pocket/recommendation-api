@@ -14,6 +14,6 @@ class RankedCorpusSlateInstance(BaseModel):
     experimentId: str = None
     display_name: str = None
     description: str = None
-    corpusSlate: List[CorpusItemModel] = None
+    corpusItems: List[CorpusItemModel] = None
 
 

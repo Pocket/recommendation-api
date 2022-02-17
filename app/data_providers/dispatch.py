@@ -1,19 +1,21 @@
 import itertools
 import random
+import uuid
 from asyncio import gather
 
 from app.data_providers.curation_api_client import CurationAPIClient
 from app.data_providers.slate_provider import SlateProvider
+from app.models.corpus_item_model import CorpusItemModel
 from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
-from app.models.metrics.slate_metrics_factory import SlateMetricsFactory
+from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
 from app.rankers.algorithms import firefox_thompson_sampling_1day
 
 
 class Dispatch:
     def __init__(
             self,
-            api_client: CurationAPIClient = CurationAPIClient(),
-            slate_provider: SlateProvider = SlateProvider()
+            api_client: CurationAPIClient,
+            slate_provider: SlateProvider
     ):
         self.api_client = api_client
         self.slate_provider = slate_provider
@@ -27,12 +29,11 @@ class Dispatch:
 
         # Fetch Corporeal Candidates
         aggregate_corpus_response = await gather(*(
-            self.api_client.get_scheduled_corpus_items(corpus_id, start_date, user_id)
+            self.api_client.get_ranked_corpus_slate(corpus_id, start_date, user_id)
             for corpus_id in experiment.eligible_corpora)
         )
 
-        unranked_items = [individual_response.corpusItems for individual_response in aggregate_corpus_response]
-        flattened_unranked_items = list(itertools.chain(*unranked_items))
+        flattened_unranked_items = list(itertools.chain(*(aggregate_corpus_response)))
 
         # If no rankers, return the same list in the same order that the corpus api handed us
         ranked_items = flattened_unranked_items
@@ -46,12 +47,17 @@ class Dispatch:
             ranker_kwargs = {}
             if ranker is firefox_thompson_sampling_1day:
                 ranker_kwargs = {
-                    'metrics': await FirefoxNewTabMetricsFactory().get([rec.id for rec in recommendations])
+                    'metrics': await FirefoxNewTabMetricsFactory().get([rec.id for rec in ranked_items])
                 }
 
             ranked_items = ranker(ranked_items, **ranker_kwargs)
 
-        return ranked_items
+        return RankedCorpusItemsInstance(
+            id=slate_id,
+            description=corpus_slate_schema.description,
+            corpusItems=ranked_items,
+        )
+
 
 
     
