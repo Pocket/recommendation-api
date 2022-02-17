@@ -49,7 +49,7 @@ class Dispatch:
                     'metrics': await FirefoxNewTabMetricsFactory().get([rec.id for rec in recommendations])
                 }
 
-            ranked_items = ranker(experiment, **ranker_kwargs)
+            ranked_items = ranker(ranked_items, **ranker_kwargs)
 
         return ranked_items
 
