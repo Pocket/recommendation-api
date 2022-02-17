@@ -93,7 +93,7 @@ async def load_slate_configs():
         # wow i do not love this nested loop soup, BUT it does give us nice full context for the error message
         for slate_config in slate_configs:
             for experiment in slate_config.experiments:
-                for cs in experiment.candidate_sets:
+                for cs in experiment.eligible_corpora:
                     logging.info(f"Validating candidate set {cs}")
                     csm = candidate_set_factory(cs)
                     if not await csm.verify_candidate_set(cs):

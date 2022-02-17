@@ -1,4 +1,6 @@
 import uuid
+from abc import ABC, abstractmethod
+
 import requests
 import json
 from datetime import date
@@ -6,10 +8,13 @@ from datetime import date
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
 
+class CurationAPIFetchable(ABC):
+    @abstractmethod
+    async def get_scheduled_corpus_items(cls, corpus_id: str, start_date: str, user_id) -> RankedCorpusItemsInstance:
+        return NotImplemented
 
-class CurationAPIClient(object):
-    @classmethod
-    async def get_scheduled_corpus_items(cls, corpus_id: str, start_date: str=None, user_id=None):
+class CurationAPIClient(CurationAPIFetchable):
+    async def get_scheduled_corpus_items(self, corpus_id: str, start_date: str=None, user_id=None) -> RankedCorpusItemsInstance:
         ranked_corpus_items_id = "NEW_TAB_EN_US"
         if not start_date:
             start_date = date.today().strftime("%Y-%m-%d")

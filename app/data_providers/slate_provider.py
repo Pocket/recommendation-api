@@ -1,17 +1,17 @@
-from builtins import function
+from abc import ABC, abstractmethod
+from typing import Callable, Any
 
 from app.rankers.algorithms import *
-
 
 class ExperimentSchema:
     def __init__(
             self,
             description: str,
-            candidate_sets: [str],
-            rankers: [function]
+            eligible_corpora: [str],
+            rankers: Callable[[Any], RankableListType]
     ):
         self.description = description
-        self.candidate_sets = candidate_sets
+        self.eligible_corpora = eligible_corpora
         self.rankers = rankers
 
 
@@ -28,11 +28,20 @@ class SlateSchema:
         self.internalDescription = internalDescription
         self.experiments = experiments
 
+class SlateProvidable(ABC):
+    @abstractmethod
+    def get(self, slate_id) -> SlateSchema:
+        return NotImplemented
+
+class InvalidIdError(Exception):
+    message = "No Slate Schema with that id!"
 
 class SlateProvider:
-    @classmethod
-    def get(cls, slate_id):
-        return cls.slates.get(slate_id)
+    def get(self, slate_id):
+        slate_schema = self.slates.get(slate_id)
+        if not slate_schema:
+            raise InvalidIdError
+        return slate_schema
 
     slates = {
         "f99178fb-6bd0-4fa1-8109-cda181b697f6": SlateSchema(
@@ -42,7 +51,7 @@ class SlateProvider:
             experiments=[
                 ExperimentSchema(
                     description="default",
-                    candidate_sets=[
+                    eligible_corpora=[
                         "493a5556-9800-449f-8f8c-c27bb6c8c810"
                     ],
                     rankers=[
@@ -59,7 +68,7 @@ class SlateProvider:
             experiments=[
                 ExperimentSchema(
                     description="default",
-                    candidate_sets=[
+                    eligible_corpora=[
                         "493a5556-9800-449f-8f8c-c27bb6c8c810"
                     ],
                     rankers=[
@@ -76,7 +85,7 @@ class SlateProvider:
             experiments=[
                 ExperimentSchema(
                     description="default",
-                    candidate_sets=[
+                    eligible_corpora=[
                         "493a5556-9800-449f-8f8c-c27bb6c8c810"
                     ],
                     rankers=[
@@ -93,7 +102,7 @@ class SlateProvider:
             experiments=[
                 ExperimentSchema(
                     description="default",
-                    candidate_sets=[
+                    eligible_corpora=[
                         "c66a1485-6c87-4c68-b29e-e7e838465ff7"
                     ],
                     rankers=[

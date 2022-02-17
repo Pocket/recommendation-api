@@ -22,7 +22,7 @@ DEFAULT_BETA_PRIOR = 1.0
 DEFAULT_FIREFOX_BETA_PRIOR = 15600
 DEFAULT_FIREFOX_ALPHA_PRIOR = int(0.0085 * DEFAULT_FIREFOX_BETA_PRIOR)
 
-RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel']]
+RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel'], List['CorpusItem']]
 RecommendationListType = List['RecommendationModel']
 
 
