@@ -25,7 +25,7 @@ class TestGetRankedCorpusSlate(TestDynamoDBBase):
             executed = self.client.execute(
                 '''
                     query TestGetRankedCorpusSlate {
-                        getRankedCorpusSlate(slateId: "aaf47c0f-1361-4c8c-a89f-fa45e1dc2978") {
+                        getRankedCorpusSlate(slateId: "79655eb2-47a1-4a26-9235-29e4768ff0a1") {
                           slateId
                           description 
                             corpusSlate {
