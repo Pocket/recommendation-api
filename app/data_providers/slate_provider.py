@@ -1,32 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Callable, Any
 
+from app.data_providers.slate_provider_schemata import SlateSchema
 from app.rankers.algorithms import *
-
-class ExperimentSchema:
-    def __init__(
-            self,
-            description: str,
-            eligible_corpora: [str],
-            rankers: Callable[[Any], RankableListType]
-    ):
-        self.description = description
-        self.eligible_corpora = eligible_corpora
-        self.rankers = rankers
-
-
-class SlateSchema:
-    def __init__(
-            self,
-            displayName: str,
-            description: str,
-            internalDescription: str,
-            experiments: [ExperimentSchema],
-    ):
-        self.displayName = displayName
-        self.description = description
-        self.internalDescription = internalDescription
-        self.experiments = experiments
 
 class SlateProvidable(ABC):
     @abstractmethod

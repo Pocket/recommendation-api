@@ -3,6 +3,8 @@ import logging
 import json
 
 from aws_xray_sdk.core import xray_recorder
+
+from app.data_providers.slate_provider_schemata import ExperimentSchema
 from app.models.metrics.metrics_model import MetricsModel
 from app.models.metrics.firefox_new_tab_metrics_model import FirefoxNewTabMetricsModel
 
@@ -26,18 +28,18 @@ RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel'], 
 RecommendationListType = List['RecommendationModel']
 
 
-def top_n(n: int, items: RankableListType) -> RankableListType:
+def top_n(n: int, experiment: ExperimentSchema) -> RankableListType:
     """
     Gets the first n recommendations from the list of recommendations.
 
-    :param items: a list of recommendations in the desired order (pre-publisher spread)
+    :param experiment: a list of recommendations in the desired order (pre-publisher spread)
     :param n: The number of items to return
     :return: first n recommendations from the list of recommendations
     """
-    if len(items) <= n:
-        logging.warning(f"less items than n: {len(items) =} <= {n =} ")
+    if len(experiment) <= n:
+        logging.warning(f"less items than n: {len(experiment) =} <= {n =} ")
 
-    return items[:n]
+    return experiment[:n]
 
 
 top5 = partial(top_n, 5)

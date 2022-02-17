@@ -2,7 +2,14 @@ import random
 
 from app.data_providers.curation_api_client import CurationAPIClient
 from app.data_providers.slate_provider import SlateProvider
+from app.data_providers.slate_provider_schemata import ExperimentSchema
+from app.graphql.corpus_item import CorpusItem
 
+
+class ExperimentPreparation:
+    def __init__(self, schema: ExperimentSchema, items: [CorpusItem]):
+        self.schema = schema
+        self.items = items
 
 class Dispatch:
     def __init__(
@@ -25,7 +32,8 @@ class Dispatch:
         corpus_response = await self.api_client.get_scheduled_corpus_items(slate_id, start_date, user_id)
         unranked_items = corpus_response.corpusItems
 
-        ranked_items = []
+        # If no rankers, return the same list in the same order that the corpus api handed us
+        ranked_items = unranked_items
         # I do not check for duplicate rankers here. I know the old flow does.
         # This error is not catastrophic (at most, it reorders items a few times)
         # It's also not likely (an eng AND their reviewer would have to miss two identical lines next to each other)
