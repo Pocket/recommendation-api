@@ -28,23 +28,18 @@ DEFAULT_FIREFOX_ALPHA_PRIOR = int(0.0085 * DEFAULT_FIREFOX_BETA_PRIOR)
 RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel'], List['CorpusItem']]
 RecommendationListType = List['RecommendationModel']
 
-class ExperimentPreparation:
-    def __init__(self, schema: ExperimentSchema, items: [CorpusItem]):
-        self.schema = schema
-        self.items = items
-
-def top_n(n: int, experiment: ExperimentPreparation) -> RankableListType:
+def top_n(n: int, items: RankableListType) -> RankableListType:
     """
     Gets the first n recommendations from the list of recommendations.
 
-    :param experiment: a list of recommendations in the desired order (pre-publisher spread)
+    :param items: a list of recommendations in the desired order (pre-publisher spread)
     :param n: The number of items to return
     :return: first n recommendations from the list of recommendations
     """
-    if len(experiment.items) <= n:
-        logging.warning(f"less items than n: {len(experiment.items) =} <= {n =} ")
+    if len(items) <= n:
+        logging.warning(f"less items than n: {len(items) =} <= {n =} ")
 
-    return experiment.items[:n]
+    return items[:n]
 
 
 top5 = partial(top_n, 5)

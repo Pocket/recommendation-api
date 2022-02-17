@@ -3,7 +3,10 @@ import random
 from asyncio import gather
 
 from app.data_providers.curation_api_client import CurationAPIClient
-from app.data_providers.slate_provider import SlateProvider, ExperimentPreparation
+from app.data_providers.slate_provider import SlateProvider
+from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
+from app.models.metrics.slate_metrics_factory import SlateMetricsFactory
+from app.rankers.algorithms import firefox_thompson_sampling_1day
 
 
 class Dispatch:
@@ -40,8 +43,13 @@ class Dispatch:
         # And it's not insidious (would be easy to find and verify if we suspected it was happening)
         # So it's not worth complicating the code to check for IMO
         for ranker in experiment.rankers:
-            # TODO: Make this work for rankers that take data in addition to the unranked items
-            ranked_items = ranker(ExperimentPreparation(experiment, ranked_items))
+            ranker_kwargs = {}
+            if ranker is firefox_thompson_sampling_1day:
+                ranker_kwargs = {
+                    'metrics': await FirefoxNewTabMetricsFactory().get([rec.id for rec in recommendations])
+                }
+
+            ranked_items = ranker(experiment, **ranker_kwargs)
 
         return ranked_items
 
