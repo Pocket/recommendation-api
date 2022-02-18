@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ef0e0e31490bf9dd4f09c4e417d16570b4100cbdc4121f2d2d1bc8e3b66de66c"
+            "sha256": "fd37e35978bbfbac03b121ddb2230f0af9756dfaaa3a5dd32ac7fb05bb313003"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -640,11 +640,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:80743e57120665fa65665286369a0734bce0e7a629ad36507fb7a4b65e7d2e3b",
-                "sha256:93b1a3037230bf9aa07327b9fc58f527d5f4e22d36705b55d55ba3ece8606ca6"
+                "sha256:2347b2b432c891a863acadca2da9ac101eae6169b1d3dfee2ec605ecd50dbfe5",
+                "sha256:e4f30b9f84e5ab3decf945113119649fec09c1fc3507c6ebffec75646c56e62b"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==60.9.2"
+            "version": "==60.9.3"
         },
         "six": {
             "hashes": [
@@ -1040,11 +1040,11 @@
                 "essential"
             ],
             "hashes": [
-                "sha256:6ad72b537f47a0a7491d0950067ea003ad9fb62e092cd377173404640ad60ebf",
-                "sha256:bd7fecd8dbb02cd1b26b5929cc7e50e1f1a0a952b346c7b009c986b488dcb805"
+                "sha256:442d6bc6f39c63225ad840fa26fef3b530e637ecc08e2cbf42fe1f2cab28dcb4",
+                "sha256:b49ea714149b1f04918422470a9804d9d43f9533bf5a5a80cca9114fdac93988"
             ],
             "index": "pypi",
-            "version": "==1.21.1"
+            "version": "==1.21.2"
         },
         "botocore": {
             "hashes": [
@@ -1055,11 +1055,11 @@
         },
         "botocore-stubs": {
             "hashes": [
-                "sha256:07f6cb9ea98053fc21b50eaadc72d43b42f2f86a01ff45bfdcb1d9d5946d7074",
-                "sha256:385c35f722c5e3b1c7e5b1180df3f9ee2bb1a32f4e8fddb32811a33fad0533f9"
+                "sha256:7e9c639ebd8032de531a738022fe42fd8cb68498709aa6827877645285be94ab",
+                "sha256:d8903215c7212d011959b32960a48af82cc93238d648e1d50122e4d5345534de"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==1.24.1"
+            "version": "==1.24.2"
         },
         "certifi": {
             "hashes": [
