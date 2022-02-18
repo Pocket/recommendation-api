@@ -5,12 +5,13 @@ import pytest
 from app.data_providers.curation_api_client import CurationAPIFetchable
 from app.data_providers.dispatch import Dispatch
 from app.data_providers.metrics_client import MetricsFetchable
-from app.data_providers.slate_provider import SlateProvider, SlateProvidable
+from app.data_providers.slate_provider import SlateProvidable
 from app.data_providers.slate_provider_schemata import ExperimentSchema, SlateSchema
 from app.graphql.corpus_item import CorpusItem
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
 from app.rankers.algorithms import top5, top15
+
 
 class MockMetricsClient(MetricsFetchable):
     async def get_engagement_metrics(self, ranked_items, ranker):
