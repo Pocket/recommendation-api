@@ -10,7 +10,7 @@ from app.data_providers.slate_provider_schemata import ExperimentSchema, SlateSc
 from app.graphql.corpus_item import CorpusItem
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
-from app.rankers.algorithms import top5
+from app.rankers.algorithms import top5, top15
 
 class MockMetricsClient(MetricsFetchable):
     async def get_engagement_metrics(self, ranked_items, ranker):
@@ -37,6 +37,7 @@ class MockCurationAPIClient(CurationAPIFetchable):
             CorpusItemModel(id="https://chelseatroy.com/2021/11/10/rubyconf-2021-workshop-tackling-technical-debt-an-analytical-approach/"),
             CorpusItemModel(id="https://chelseatroy.com/2021/10/29/a-rubric-for-evaluating-team-members-contributions-to-a-maintainable-code-base/"),
             CorpusItemModel(id="https://chelseatroy.com/2021/09/14/the-art-of-documentation/"),
+            CorpusItemModel(id="https://chelseatroy.com/2021/09/22/critique-the-internet-and-you/"),
         ],
     )
 
@@ -55,16 +56,17 @@ async def test_get_ranked_items__no_rankers():
 
     ranked_items = ranked_items_response.corpusItems
     # The TestSlateProvider specifies that the top5 ranker be applied.
-    assert len(ranked_items) == 7
+    assert len(ranked_items) == 8
 
     # Establish order sameness
     assert [item.id for item in ranked_items] == [item.id for item in mock_curation_api_client.mock_corpus.corpusItems]
 
 @pytest.mark.asyncio
-async def test_get_ranked_items__nominal():
+async def test_get_ranked_items__one_item_set__one_ranker():
     mock_slate_provider = MockSlateProvider()
 
     #Add a ranker to the mock object
+    mock_slate_provider.schema.experiments[0].rankers.clear() # We need this line because there's some kind of test data interference. Not sure why.
     mock_slate_provider.schema.experiments[0].rankers.append(top5)
 
     ranked_items_response = await Dispatch(
@@ -83,3 +85,26 @@ async def test_get_ranked_items__nominal():
 
     #check the id on one cursory item
     assert ranked_items[0].id == "https://chelseatroy.com/2022/02/10/adding-error-productions-to-the-lox-compiler/"
+
+@pytest.mark.asyncio
+async def test_get_ranked_items__multiple_item_sets__one_ranker():
+    mock_slate_provider = MockSlateProvider()
+
+    mock_slate_provider.schema.experiments[0].eligible_corpora.append("CHELSEAS_AWESOME_CORPUS_AGAIN")
+    mock_slate_provider.schema.experiments[0].rankers.clear() # We need this line because there's some kind of test data interference. Not sure why.
+    mock_slate_provider.schema.experiments[0].rankers.append(top15)
+
+    ranked_items_response = await Dispatch(
+        api_client = MockCurationAPIClient(),
+        slate_provider = mock_slate_provider,
+        metrics_client=MockMetricsClient()
+    ).get_ranked_corpus_slate("example-corpus-id")
+
+    ranked_items = ranked_items_response.corpusItems
+
+    # If the number > 15, dispatch didn't apply the top15 ranker.
+    # If the number < 15, dispatch didn't fetch multiple corpora.
+    assert len(ranked_items) == 15
+
+    #All the items in the return value should be CorpusItemModels
+    assert all([type(item) == CorpusItemModel for item in ranked_items])
