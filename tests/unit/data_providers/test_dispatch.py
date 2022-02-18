@@ -4,12 +4,17 @@ import pytest
 
 from app.data_providers.curation_api_client import CurationAPIFetchable
 from app.data_providers.dispatch import Dispatch
+from app.data_providers.metrics_client import MetricsFetchable
 from app.data_providers.slate_provider import SlateProvider, SlateProvidable
 from app.data_providers.slate_provider_schemata import ExperimentSchema, SlateSchema
 from app.graphql.corpus_item import CorpusItem
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
 from app.rankers.algorithms import top5
+
+class MockMetricsClient(MetricsFetchable):
+    async def get_engagement_metrics(self, ranked_items, ranker):
+        return {}
 
 class MockSlateProvider(SlateProvidable):
     schema = SlateSchema(displayName="World's Fakest Slate", description="A selection of fake content for testing",
@@ -44,7 +49,8 @@ async def test_get_ranked_items__no_rankers():
     mock_curation_api_client = MockCurationAPIClient()
     ranked_items_response = await Dispatch(
         api_client=mock_curation_api_client,
-        slate_provider=MockSlateProvider()
+        slate_provider=MockSlateProvider(),
+        metrics_client=MockMetricsClient()
     ).get_ranked_corpus_slate("example-corpus-id")
 
     ranked_items = ranked_items_response.corpusItems
@@ -63,7 +69,8 @@ async def test_get_ranked_items__nominal():
 
     ranked_items_response = await Dispatch(
         api_client = MockCurationAPIClient(),
-        slate_provider = mock_slate_provider
+        slate_provider = mock_slate_provider,
+        metrics_client=MockMetricsClient()
     ).get_ranked_corpus_slate("example-corpus-id")
 
     ranked_items = ranked_items_response.corpusItems

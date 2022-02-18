@@ -4,6 +4,7 @@ import uuid
 from asyncio import gather
 
 from app.data_providers.curation_api_client import CurationAPIClient
+from app.data_providers.metrics_client import MetricsClient
 from app.data_providers.slate_provider import SlateProvider
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
@@ -15,10 +16,12 @@ class Dispatch:
     def __init__(
             self,
             api_client: CurationAPIClient,
-            slate_provider: SlateProvider
+            slate_provider: SlateProvider,
+            metrics_client: MetricsClient
     ):
         self.api_client = api_client
         self.slate_provider = slate_provider
+        self.metrics_client = metrics_client
 
     async def get_ranked_corpus_slate(self, slate_id, start_date=None, user_id=None) -> RankedCorpusItemsInstance:
         corpus_slate_schema = self.slate_provider.get(slate_id)
@@ -44,11 +47,7 @@ class Dispatch:
         # And it's not insidious (would be easy to find and verify if we suspected it was happening)
         # So it's not worth complicating the code to check for IMO
         for ranker in experiment.rankers:
-            ranker_kwargs = {}
-            if ranker is firefox_thompson_sampling_1day:
-                ranker_kwargs = {
-                    'metrics': await FirefoxNewTabMetricsFactory().get([rec.id for rec in ranked_items])
-                }
+            ranker_kwargs = await self.metrics_client.get_engagement_metrics(ranked_items, ranker)
 
             ranked_items = ranker(ranked_items, **ranker_kwargs)
 
