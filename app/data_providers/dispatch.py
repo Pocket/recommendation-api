@@ -13,6 +13,17 @@ from app.rankers.algorithms import firefox_thompson_sampling_1day
 
 
 class Dispatch:
+    """
+    This class is responsible for accepting:
+
+     a dependency to get items to rank (api_client),
+     a strategy for ranking them (slate_provider),
+     and the data to execute ranking (metrics_client),
+
+     and then using those three things to shape the list of items to the order and size we serve to a client.
+
+     If there are NO rankers, it sends the original list of items, with no reshaping, to the client.
+    """
     def __init__(
             self,
             api_client: CurationAPIClient,

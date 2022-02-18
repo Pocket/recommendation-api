@@ -13,6 +13,8 @@ class MetricsClient(MetricsFetchable):
 
     async def get_engagement_metrics(self, ranked_items, ranker):
         ranker_kwargs = {}
+
+        # If this turns into a skyscraper of conditionals I recommend we consider a jump table instead
         if ranker is firefox_thompson_sampling_1day:
             ranker_kwargs = {
                 'metrics': self.firefox_newtab_metrics_factory.get([rec.id for rec in ranked_items])
