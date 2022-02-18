@@ -4,7 +4,6 @@ from pydantic import BaseModel
 
 from app.models.corpus_item_model import CorpusItemModel
 
-
 class RankedCorpusItemsInstance(BaseModel):
     """
     Models a corpus slate

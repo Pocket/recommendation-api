@@ -20,7 +20,7 @@ class Dispatch:
         self.api_client = api_client
         self.slate_provider = slate_provider
 
-    async def get_ranked_corpus_slate(self, slate_id, start_date=None, user_id=None):
+    async def get_ranked_corpus_slate(self, slate_id, start_date=None, user_id=None) -> RankedCorpusItemsInstance:
         corpus_slate_schema = self.slate_provider.get(slate_id)
 
         # Choose an Experiment
@@ -33,7 +33,7 @@ class Dispatch:
             for corpus_id in experiment.eligible_corpora)
         )
 
-        flattened_unranked_items = list(itertools.chain(*(aggregate_corpus_response)))
+        flattened_unranked_items = list(itertools.chain(*aggregate_corpus_response))
 
         # If no rankers, return the same list in the same order that the corpus api handed us
         ranked_items = flattened_unranked_items

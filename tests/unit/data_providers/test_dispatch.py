@@ -1,9 +1,12 @@
+from typing import List
+
 import pytest
 
 from app.data_providers.curation_api_client import CurationAPIFetchable
 from app.data_providers.dispatch import Dispatch
 from app.data_providers.slate_provider import SlateProvider, SlateProvidable
 from app.data_providers.slate_provider_schemata import ExperimentSchema, SlateSchema
+from app.graphql.corpus_item import CorpusItem
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
 from app.rankers.algorithms import top5
@@ -33,8 +36,8 @@ class MockCurationAPIClient(CurationAPIFetchable):
     )
 
     async def get_ranked_corpus_slate(cls, corpus_id: str, start_date: str = None,
-                                         user_id=None) -> RankedCorpusItemsInstance:
-        return cls.mock_corpus
+                                         user_id=None) -> List[CorpusItem]:
+        return cls.mock_corpus.corpusItems
 
 @pytest.mark.asyncio
 async def test_get_ranked_items__no_rankers():

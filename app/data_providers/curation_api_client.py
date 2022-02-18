@@ -1,20 +1,22 @@
 import uuid
 from abc import ABC, abstractmethod
+from typing import List
 
 import requests
 import json
 from datetime import date
 
+from app.graphql.corpus_item import CorpusItem
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
 
 class CurationAPIFetchable(ABC):
     @abstractmethod
-    async def get_ranked_corpus_slate(self, corpus_id: str, start_date: str, user_id) -> RankedCorpusItemsInstance:
+    async def get_ranked_corpus_slate(self, corpus_id: str, start_date: str, user_id) -> List[CorpusItem]:
         return NotImplemented
 
 class CurationAPIClient(CurationAPIFetchable):
-    async def get_ranked_corpus_slate(self, corpus_id: str, start_date: str=None, user_id=None) -> RankedCorpusItemsInstance:
+    async def get_ranked_corpus_slate(self, corpus_id: str, start_date: str=None, user_id=None) -> List[CorpusItem]:
         ranked_corpus_items_id = "NEW_TAB_EN_US"
         if not start_date:
             start_date = date.today().strftime("%Y-%m-%d")
