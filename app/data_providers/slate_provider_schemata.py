@@ -7,7 +7,7 @@ class ExperimentSchema:
             self,
             description: str,
             eligible_corpora: [str],
-            rankers: Callable[[Any], List['CorpusItem']]
+            rankers: [Callable[[Any], List['CorpusItem']]]
     ):
         self.description = description
         self.eligible_corpora = eligible_corpora
