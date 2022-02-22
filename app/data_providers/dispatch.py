@@ -1,12 +1,13 @@
 import itertools
 import random
 from asyncio import gather
+from typing import Any
 
 from app.data_providers.curation_api_client import CurationAPIClient
 from app.data_providers.metrics_client import MetricsClient
 from app.data_providers.slate_provider import SlateProvider
 from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
-from snowplow_tracker import Tracker, Emitter, Subject
+from snowplow_tracker import Tracker, Emitter, Subject, payload
 
 
 class Dispatch:
@@ -53,11 +54,14 @@ class Dispatch:
             ranker_kwargs = await self.metrics_client.get_engagement_metrics(ranked_items, ranker)
             ranked_items = ranker(ranked_items, **ranker_kwargs)
 
-        # log to snowplow
         emitter = Emitter("some.uri.apparently")
-        subject = Subject.set_lang("en")
+        subject = Subject.set_user_id(user_id)
         tracker = Tracker(emitter, subject=subject)
-
+        tracker.track(
+            pb=payload.Payload().add_json(dict_={
+                "": Any
+            })
+        )
 
         return RankedCorpusItemsInstance(
             id=slate_id,
