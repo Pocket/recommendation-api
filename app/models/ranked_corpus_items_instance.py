@@ -16,3 +16,4 @@ class RankedCorpusItemsInstance(BaseModel):
     corpusItems: List[CorpusItemModel] = None
 
 
+
