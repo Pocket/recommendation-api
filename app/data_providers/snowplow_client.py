@@ -1,11 +1,14 @@
+import uuid
 from abc import ABC
-from typing import Any
 
 from snowplow_tracker import Emitter, Tracker, payload
 import os
 
+from app.graphql.corpus_item import CorpusItem
+
+
 class SnowplowFetchable(ABC):
-    async def log_event(self, user_id: int, items: [Any]) -> None:
+    async def log_event(self, user_id: int, items: [CorpusItem]) -> None:
         return NotImplemented
 
 class SnowplowClient(SnowplowFetchable):
@@ -13,17 +16,17 @@ class SnowplowClient(SnowplowFetchable):
         emitter = Emitter(os.getenv("SNOWPLOW_URI"))
         self.tracker = tracker if tracker else Tracker(emitter)
 
-    async def log_event(self, user_id: int, items: [Any]) -> None:
+    async def log_event(self, user_id: int, items: [CorpusItem]) -> None:
         tracking_payload = payload.Payload()
         tracking_payload.add_json(dict_={
-            "recommendation_id": "UUID",  # Generated literally here. Like uuid.uuid()
-            "slate_experiment_id": "UUID",  # possibly a null value for now
+            "recommendation_id": str(uuid.uuid4()),
+            "slate_experiment_id": None,  # A null value for now
             "user_id": int(user_id),
             "items": [
                 {
-                    "recommendation_item_id": "UUID",  # Generated literally here. Like uuid.uuid()
-                    "scheduled_corpus_item_id": "UUID"  # this comes straight from curation tools api on each item
-                }
+                    "recommendation_item_id": str(uuid.uuid4()),
+                    "scheduled_corpus_item_id": item.id,
+                } for item in items
             ],
         },
             encode_base64=False,

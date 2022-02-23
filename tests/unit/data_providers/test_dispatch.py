@@ -124,7 +124,7 @@ async def test_get_ranked_items__multiple_item_sets__one_ranker():
 @pytest.mark.asyncio
 async def test_get_ranked_items__logs_to_snowplow():
     mock_snowplow_client = MockSnowplowClient()
-    ranked_items_response = await Dispatch(
+    await Dispatch(
         api_client=MockCurationAPIClient(),
         slate_provider=(MockSlateProvider()),
         metrics_client=MockMetricsClient(),
