@@ -25,11 +25,14 @@ class CurationAPIClient(CurationAPIFetchable):
             "apollographql-client-version": "1"
         }
 
+        injection_protected_id = str(corpus_id)
+        injection_protected_start_date = str(start_date)
+
         query = f"""
         query RecsApiItemRequest {{
-            scheduledSurface(id: "{ranked_corpus_items_id}") {{
+            scheduledSurface(id: "{injection_protected_id}") {{
                 id
-                items(date: "{start_date}") {{
+                items(date: "{injection_protected_start_date}") {{
                   id
                 }}
             }}        
