@@ -59,7 +59,27 @@ class Dispatch:
         tracker = Tracker(emitter, subject=subject)
         tracker.track(
             pb=payload.Payload().add_json(dict_={
-                "": Any
+                "recommendation_id": "UUID",
+                "user_id": "Int",
+                "items": [
+                    {
+                        "recommendation_item_id": "UUID",
+                        "scheduled_corpus_item_id": "UUID"
+                    }
+                ],
+            })
+        )
+        tracker.track(
+            pb=payload.Payload().add_json(dict_={
+                "scheduled_corpus_item_id": "UUID",
+                "corpus_item_id": "UUID",
+                "date": "String"
+            })
+        )
+        tracker.track(
+            pb=payload.Payload().add_json(dict_={
+                "corpus_item_id": "UUID",
+                "url": "String"
             })
         )
 
