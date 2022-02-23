@@ -4,6 +4,7 @@ from graphene_federation import build_schema
 from app.data_providers.curation_api_client import CurationAPIClient
 from app.data_providers.metrics_client import MetricsClient
 from app.data_providers.slate_provider import SlateProvider
+from app.data_providers.snowplow_client import SnowplowClient
 from app.graphql.ranked_corpus_slate import RankedCorpusSlate
 from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
 from app.models.ranked_corpus_slate_instance import RankedCorpusSlateInstance
@@ -48,7 +49,8 @@ class Query(ObjectType):
             slate_provider=SlateProvider(),
             metrics_client=MetricsClient(
                 firefox_newtab_metrics_factory=FirefoxNewTabMetricsFactory()
-            )
+            ),
+            snowplow_client=SnowplowClient()
         ).get_ranked_corpus_slate(
             slate_id=slate_id,
             user_id=info.context.get('user_id')

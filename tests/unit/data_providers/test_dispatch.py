@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Any
 
 import pytest
 
@@ -7,6 +7,7 @@ from app.data_providers.dispatch import Dispatch
 from app.data_providers.metrics_client import MetricsFetchable
 from app.data_providers.slate_provider import SlateProvidable
 from app.data_providers.slate_provider_schemata import ExperimentSchema, SlateSchema
+from app.data_providers.snowplow_client import SnowplowFetchable
 from app.graphql.corpus_item import CorpusItem
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
@@ -46,13 +47,21 @@ class MockCurationAPIClient(CurationAPIFetchable):
                                          user_id=None) -> List[CorpusItem]:
         return cls.mock_corpus.corpusItems
 
+class MockSnowplowClient(SnowplowFetchable):
+    def __init__(self):
+        self.event_log_call_count = 0
+
+    async def log_event(self, user_id: int, items: [Any]) -> None:
+        self.event_log_call_count += 1
+
 @pytest.mark.asyncio
 async def test_get_ranked_items__no_rankers():
     mock_curation_api_client = MockCurationAPIClient()
     ranked_items_response = await Dispatch(
         api_client=mock_curation_api_client,
         slate_provider=MockSlateProvider(),
-        metrics_client=MockMetricsClient()
+        metrics_client=MockMetricsClient(),
+        snowplow_client=MockSnowplowClient()
     ).get_ranked_corpus_slate("example-corpus-id")
 
     ranked_items = ranked_items_response.corpusItems
@@ -73,7 +82,8 @@ async def test_get_ranked_items__one_item_set__one_ranker():
     ranked_items_response = await Dispatch(
         api_client = MockCurationAPIClient(),
         slate_provider = mock_slate_provider,
-        metrics_client=MockMetricsClient()
+        metrics_client=MockMetricsClient(),
+        snowplow_client=MockSnowplowClient()
     ).get_ranked_corpus_slate("example-corpus-id")
 
     ranked_items = ranked_items_response.corpusItems
@@ -98,7 +108,8 @@ async def test_get_ranked_items__multiple_item_sets__one_ranker():
     ranked_items_response = await Dispatch(
         api_client = MockCurationAPIClient(),
         slate_provider = mock_slate_provider,
-        metrics_client=MockMetricsClient()
+        metrics_client=MockMetricsClient(),
+        snowplow_client=MockSnowplowClient()
     ).get_ranked_corpus_slate("example-corpus-id")
 
     ranked_items = ranked_items_response.corpusItems
@@ -109,3 +120,16 @@ async def test_get_ranked_items__multiple_item_sets__one_ranker():
 
     #All the items in the return value should be CorpusItemModels
     assert all([type(item) == CorpusItemModel for item in ranked_items])
+
+@pytest.mark.asyncio
+async def test_get_ranked_items__logs_to_snowplow():
+    mock_snowplow_client = MockSnowplowClient()
+    ranked_items_response = await Dispatch(
+        api_client=MockCurationAPIClient(),
+        slate_provider=(MockSlateProvider()),
+        metrics_client=MockMetricsClient(),
+        snowplow_client=mock_snowplow_client
+    ).get_ranked_corpus_slate("example-corpus-id")
+
+    assert mock_snowplow_client.event_log_call_count == 1
+
