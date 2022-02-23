@@ -12,16 +12,20 @@ class SnowplowFetchable(ABC):
         return NotImplemented
 
 class SnowplowClient(SnowplowFetchable):
-    def __init__(self, tracker):
+    def __init__(self, tracker=None):
         emitter = Emitter(os.getenv("SNOWPLOW_URI"))
         self.tracker = tracker if tracker else Tracker(emitter)
 
-    async def log_event(self, user_id: int, items: [CorpusItem]) -> None:
+    async def log_event(
+            self,
+            user_id: int = 0, # I am assigning zero to "the null value user id" because according to the spec this has to be an int
+            items: [CorpusItem]=[]
+    ) -> None:
         tracking_payload = payload.Payload()
         tracking_payload.add_json(dict_={
             "recommendation_id": str(uuid.uuid4()),
             "slate_experiment_id": None,  # A null value for now
-            "user_id": int(user_id),
+            "user_id": user_id,
             "items": [
                 {
                     "recommendation_item_id": str(uuid.uuid4()),
