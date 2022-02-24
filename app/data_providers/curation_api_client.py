@@ -25,11 +25,14 @@ class CurationAPIClient(CurationAPIFetchable):
             "apollographql-client-version": "1"
         }
 
+        injection_protected_corpus_id = json.dumps(str(corpus_id))
+        injection_protected_start_date = json.dumps(str(start_date))
+
         query = f"""
         query RecsApiItemRequest {{
-            scheduledSurface(id: {json.dumps(str(corpus_id))}) {{
+            scheduledSurface(id: {injection_protected_corpus_id}) {{
                 id
-                items(date: {json.dumps(str(start_date))}) {{
+                items(date: {injection_protected_start_date}) {{
                   id
                 }}
             }}        
