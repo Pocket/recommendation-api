@@ -13,7 +13,7 @@ from xraysink.context import AsyncContext
 
 from app.cache import initialize_caches
 from app.config import ENV, ENV_PROD, ENV_DEV, service, sentry as sentry_config
-from app.graphql.graphql import schema
+from app.graphql.graphql_router import schema
 from app.graphql.user_middleware import UserMiddleware
 from app.graphql_app import GraphQLAppWithMiddleware, GraphQLSentryMiddleware
 from app.models.candidate_set import candidate_set_factory

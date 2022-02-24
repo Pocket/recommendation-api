@@ -2,7 +2,7 @@ from graphql.execution.executors.asyncio import AsyncioExecutor
 from graphene.test import Client
 from fastapi.testclient import TestClient
 
-from app.graphql.graphql import schema
+from app.graphql.graphql_router import schema
 from app.main import app, load_slate_configs
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 

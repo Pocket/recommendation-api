@@ -4,16 +4,16 @@ from pydantic import BaseModel
 
 from app.models.corpus_item_model import CorpusItemModel
 
-
-class RankedCorpusSlateInstance(BaseModel):
+class RankedCorpusItemsInstance(BaseModel):
     """
     Models a corpus slate
     """
-    slateId: str
+    id: str
     requestId: str = None
     experimentId: str = None
     display_name: str = None
     description: str = None
     corpusItems: List[CorpusItemModel] = None
+
 
 

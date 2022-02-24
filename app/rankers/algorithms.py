@@ -3,6 +3,9 @@ import logging
 import json
 
 from aws_xray_sdk.core import xray_recorder
+
+from app.data_providers.slate_provider_schemata import ExperimentSchema
+from app.graphql.corpus_item import CorpusItem
 from app.models.metrics.metrics_model import MetricsModel
 from app.models.metrics.firefox_new_tab_metrics_model import FirefoxNewTabMetricsModel
 
@@ -22,9 +25,8 @@ DEFAULT_BETA_PRIOR = 1.0
 DEFAULT_FIREFOX_BETA_PRIOR = 15600
 DEFAULT_FIREFOX_ALPHA_PRIOR = int(0.0085 * DEFAULT_FIREFOX_BETA_PRIOR)
 
-RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel']]
+RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel'], List['CorpusItem']]
 RecommendationListType = List['RecommendationModel']
-
 
 def top_n(n: int, items: RankableListType) -> RankableListType:
     """
