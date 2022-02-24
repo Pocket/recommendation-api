@@ -16,8 +16,7 @@ class CurationAPIFetchable(ABC):
         return NotImplemented
 
 class CurationAPIClient(CurationAPIFetchable):
-    async def get_ranked_corpus_slate(self, corpus_id: str, start_date: str=None, user_id=None) -> List[CorpusItem]:
-        ranked_corpus_items_id = "NEW_TAB_EN_US"
+    async def get_ranked_corpus_slate(self, corpus_id: str = "NEW_TAB_EN_US", start_date: str=None, user_id=None) -> List[CorpusItem]:
         if not start_date:
             start_date = date.today().strftime("%Y-%m-%d")
 
@@ -26,11 +25,14 @@ class CurationAPIClient(CurationAPIFetchable):
             "apollographql-client-version": "1"
         }
 
+        injection_protected_corpus_id = json.dumps(str(corpus_id))
+        injection_protected_start_date = json.dumps(str(start_date))
+
         query = f"""
         query RecsApiItemRequest {{
-            scheduledSurface(id: "{ranked_corpus_items_id}") {{
+            scheduledSurface(id: {injection_protected_corpus_id}) {{
                 id
-                items(date: "{start_date}") {{
+                items(date: {injection_protected_start_date}) {{
                   id
                 }}
             }}        

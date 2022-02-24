@@ -19,7 +19,8 @@ class MockMetricsClient(MetricsFetchable):
         return {}
 
 class MockSlateProvider(SlateProvidable):
-    schema = SlateSchema(displayName="World's Fakest Slate", description="A selection of fake content for testing",
+    def __init__(self):
+        self.schema = SlateSchema(displayName="World's Fakest Slate", description="A selection of fake content for testing",
                          internalDescription="We made this for our unit tests", experiments=[
             ExperimentSchema(description="default", eligible_corpora=["CHELSEAS_AWESOME_CORPUS"], rankers=[])])
 
@@ -76,7 +77,6 @@ async def test_get_ranked_items__one_item_set__one_ranker():
     mock_slate_provider = MockSlateProvider()
 
     #Add a ranker to the mock object
-    mock_slate_provider.schema.experiments[0].rankers.clear() # We need this line because there's some kind of test data interference. Not sure why.
     mock_slate_provider.schema.experiments[0].rankers.append(top5)
 
     ranked_items_response = await Dispatch(
@@ -102,7 +102,6 @@ async def test_get_ranked_items__multiple_item_sets__one_ranker():
     mock_slate_provider = MockSlateProvider()
 
     mock_slate_provider.schema.experiments[0].eligible_corpora.append("CHELSEAS_AWESOME_CORPUS_AGAIN")
-    mock_slate_provider.schema.experiments[0].rankers.clear() # We need this line because there's some kind of test data interference. Not sure why.
     mock_slate_provider.schema.experiments[0].rankers.append(top15)
 
     ranked_items_response = await Dispatch(
