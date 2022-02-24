@@ -20,7 +20,7 @@ class MockFirefoxNewtabMetricsFactory():
         )
     }
 
-    def get(self, recommendation_ids):
+    async def get(self, recommendation_ids):
         return self.mock_impressions
 
 @pytest.mark.asyncio
