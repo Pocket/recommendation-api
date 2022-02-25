@@ -29,8 +29,8 @@ class SnowplowClient(SnowplowFetchable):
             "items": [
                 {
                     "recommendation_item_id": str(uuid.uuid4()),
-                    "scheduled_corpus_item_id": item.id,
-                } for item in items
+                    "scheduled_corpus_item_id": corpus_item.id,
+                } for corpus_item in items
             ],
         },
             encode_base64=False,
