@@ -14,7 +14,7 @@ mypy_boto3_dynamodb = "*"
 pytest-mock = "*"
 aws_secretsmanager_caching = "*"
 # We define the essential stubs
-boto3-stubs = {extras = ["essential"], version = "==1.21.7"}
+boto3-stubs = {extras = ["essential"], version = "==1.21.8"}
 aioresponses = "*"
 pytest-asyncio = "*"
 
