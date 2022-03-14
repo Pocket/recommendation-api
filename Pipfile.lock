@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "645ae2777dccfef2bd8c82bca9cd7a4d1df6150a699912a26a885110dcc9fdef"
+            "sha256": "d40fc8288286773ca27260358a4aa780bbfce7a5e1368d735ef2108631678fb8"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -1064,11 +1064,11 @@
                 "essential"
             ],
             "hashes": [
-                "sha256:a3894f0d1ebced581338ed8593293b4ec4a4b047fe97b870b07113a2558f5e06",
-                "sha256:f2df89b19530f2076a4ad076098fdde9667ae4a11d613217bb08469c3e67296a"
+                "sha256:a6bfad4835adf0a7c1dc25a659ed075017c755cec81919a683693e7dbfaf9838",
+                "sha256:f091e469317f4bcf6ae53799a776edbeae6f64c6d5211eb85fa6f0e8aa1a1302"
             ],
             "index": "pypi",
-            "version": "==1.21.17"
+            "version": "==1.21.18"
         },
         "botocore": {
             "hashes": [
@@ -1079,11 +1079,11 @@
         },
         "botocore-stubs": {
             "hashes": [
-                "sha256:3683ed25434f835aec26005aa53f02f0a2042cceff9a4cc3a639e41d42235d5d",
-                "sha256:522980b3c747af5adf1163bb7107062df0ccf5403585fa71e8c478099be83732"
+                "sha256:25074f7d7fbc5436e7060f5adbd8b9cf16f5ec601212725d63eb1386673f2f48",
+                "sha256:ef94b9247f36231939fbcf79a2510fb99c1cdb8ca36e528ba4f5539a0eb6aa6d"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==1.24.17"
+            "version": "==1.24.18"
         },
         "certifi": {
             "hashes": [
@@ -1324,10 +1324,10 @@
         },
         "mypy-boto3-lambda": {
             "hashes": [
-                "sha256:437f05ffdc800353282a5ea250d9416b61b89104db6e8056b5346ba32dd52931",
-                "sha256:73d6dac0053779238aaf5e7883726b30a4853f2e87adee6743997aeccc2b1f5a"
+                "sha256:97f27a517b6933d329d856eb264b6d78126f3536cdfb8557e9a58d0abb56ad9e",
+                "sha256:ac4a67e79c94b68e56bb44c07efefce1a210849872a0db2e4a0116ba4e58747a"
             ],
-            "version": "==1.21.6"
+            "version": "==1.21.18"
         },
         "mypy-boto3-rds": {
             "hashes": [
