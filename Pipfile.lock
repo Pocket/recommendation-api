@@ -211,7 +211,7 @@
                 "sha256:2857e29ff0d34db842cd7ca3230549d1a697f96ee6d3fb071cfa6c7393832597",
                 "sha256:6881edbebdb17b39b4eaaa821b438bf6eddffb4468cf344f09f89def34a8b1df"
             ],
-            "markers": "python_version >= '3.5'",
+            "markers": "python_full_version >= '3.5.0'",
             "version": "==2.0.12"
         },
         "click": {
@@ -847,11 +847,11 @@
         },
         "xraysink": {
             "hashes": [
-                "sha256:00031d7bcf72ae343435cfe85f3e4657a411948755da1ce78f561ae81168217b",
-                "sha256:b1371a5fb5aa6b3d9deca13005dc85d3b37fc6b5ae6e0a8096182db50c8b8ea2"
+                "sha256:5fb77ddec5b3c05845fe0a63c29ff2625bad338c064112a3a89e3d9b3db11330",
+                "sha256:9b7fd90240ac8eb12879b8ef246c81fecb82ea4ba28e0ec573d175507f104048"
             ],
             "index": "pypi",
-            "version": "==1.4.0"
+            "version": "==1.5.1"
         },
         "yarl": {
             "hashes": [
@@ -1097,7 +1097,7 @@
                 "sha256:2857e29ff0d34db842cd7ca3230549d1a697f96ee6d3fb071cfa6c7393832597",
                 "sha256:6881edbebdb17b39b4eaaa821b438bf6eddffb4468cf344f09f89def34a8b1df"
             ],
-            "markers": "python_version >= '3.5'",
+            "markers": "python_full_version >= '3.5.0'",
             "version": "==2.0.12"
         },
         "coverage": {
