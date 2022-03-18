@@ -50,10 +50,10 @@ class SnowplowClient(SnowplowFetchable):
 
     async def tile_recommendation_mapping_dict(self, corpus_item, slate_id):
         return {
-            "tile_id": "Blocked on Info",
+            "tile_id": corpus_item.id,
             "scheduled_corpus_item_external_id": corpus_item.id,
             "slate_id": slate_id,
-            "slate_experiment_id": None,  # A null value for now
+            "slate_experiment_id": "placeholder",  # We can't send a null value
             "url": corpus_item.id  # For corpus items, the ID is a url
         }
 
@@ -61,7 +61,7 @@ class SnowplowClient(SnowplowFetchable):
         return {
             "recommendation_result_id": str(uuid.uuid4()),
             "slate_id": slate_id,
-            "slate_experiment_id": None,  # A null value for now
+            "slate_experiment_id": "placeholder",  # We can't send a null value
             "recommendation_result_items": [
                 {
                     "recommendation_item_id": str(uuid.uuid4()),

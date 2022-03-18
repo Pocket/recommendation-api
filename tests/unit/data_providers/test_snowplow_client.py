@@ -41,12 +41,15 @@ async def test_log_event():
 
     assert all([context[0].schema == "iglu:com.pocket/tile_recommendation_mapping/jsonschema/1-0-0" for context in mock_tracker.tracked_contexts[1:3]])
     assert all([context[0].data.get('slate_id') == "uuid-representing-a-slate" for context in mock_tracker.tracked_contexts[1:3]])
-    
+
     assert mock_tracker.tracked_contexts[1][0].data.get('scheduled_corpus_item_external_id') == "example-uuid-1"
+    assert mock_tracker.tracked_contexts[1][0].data.get('tile_id') == "example-uuid-1"
     assert mock_tracker.tracked_contexts[1][0].data.get('url') == "example-uuid-1"
     assert mock_tracker.tracked_contexts[2][0].data.get('scheduled_corpus_item_external_id') == "example-uuid-2"
+    assert mock_tracker.tracked_contexts[2][0].data.get('tile_id') == "example-uuid-2"
     assert mock_tracker.tracked_contexts[2][0].data.get('url') == "example-uuid-2"
     assert mock_tracker.tracked_contexts[3][0].data.get('scheduled_corpus_item_external_id') == "example-uuid-3"
+    assert mock_tracker.tracked_contexts[3][0].data.get('tile_id') == "example-uuid-3"
     assert mock_tracker.tracked_contexts[3][0].data.get('url') == "example-uuid-3"
 
     assert len(mock_tracker.tracked_events) == 4
