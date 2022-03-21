@@ -27,9 +27,10 @@ async def test_log_event():
     snowplow_tracking = SnowplowClient(tracker=mock_tracker)
 
     test_user_id = 14464
+    test_slate_uuid = "uuid-representing-a-slate"
     await snowplow_tracking.log_event(
         user_id=test_user_id,
-        slate_id="uuid-representing-a-slate",
+        slate_id=test_slate_uuid,
         items = [CorpusItem(id='example-uuid-1'), CorpusItem(id='example-uuid-2'), CorpusItem(id='example-uuid-3')]
     )
 
@@ -39,8 +40,11 @@ async def test_log_event():
     assert [item.get("scheduled_corpus_item_id") for item in mock_tracker.tracked_contexts[0][0].data.get("recommendation_result_items")] == \
            ['example-uuid-1', 'example-uuid-2', 'example-uuid-3']
 
-    assert all([context[0].schema == "iglu:com.pocket/tile_recommendation_mapping/jsonschema/1-0-0" for context in mock_tracker.tracked_contexts[1:3]])
-    assert all([context[0].data.get('slate_id') == "uuid-representing-a-slate" for context in mock_tracker.tracked_contexts[1:3]])
+    assert all([contexts[0].schema == "iglu:com.pocket/tile_recommendation_mapping/jsonschema/1-0-0" for contexts in mock_tracker.tracked_contexts[1:3]])
+    assert all([contexts[0].data.get('slate_id') == test_slate_uuid for contexts in mock_tracker.tracked_contexts[1:3]])
+
+    assert all([contexts[1].schema == "iglu:com.pocket/user/jsonschema/1-0-0" for contexts in mock_tracker.tracked_contexts[1:3]])
+    assert all([contexts[1].data.get('user_id') == test_user_id for contexts in mock_tracker.tracked_contexts[1:3]])
 
     assert mock_tracker.tracked_contexts[1][0].data.get('scheduled_corpus_item_external_id') == "example-uuid-1"
     assert mock_tracker.tracked_contexts[1][0].data.get('tile_id') == "example-uuid-1"

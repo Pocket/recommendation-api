@@ -36,10 +36,22 @@ class SnowplowClient(SnowplowFetchable):
                 }))
 
         for corpus_item in items:
-            self.tracker.track_self_describing_event(
-                context=[SelfDescribingJson(
+            context_collection = [
+                SelfDescribingJson(
                     'iglu:com.pocket/tile_recommendation_mapping/jsonschema/1-0-0',
-                    await self.tile_recommendation_mapping_dict(corpus_item, slate_id))],
+                    await self.tile_recommendation_mapping_dict(corpus_item, slate_id)),
+            ]
+
+            if user_id != 0:
+                context_collection += SelfDescribingJson(
+                    'iglu:com.pocket/user/jsonschema/1-0-0',
+                    {
+                        "user_id": user_id,
+                        "hashed_guid": corpus_item.id
+                    }),
+
+            self.tracker.track_self_describing_event(
+                context=context_collection,
                 event_json=SelfDescribingJson(
                     'iglu:com.pocket/object_update/jsonschema/1-0-6',
                     {
