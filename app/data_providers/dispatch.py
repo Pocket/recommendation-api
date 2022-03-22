@@ -55,7 +55,7 @@ class Dispatch:
             ranker_kwargs = await self.metrics_client.get_engagement_metrics(ranked_items, ranker)
             ranked_items = ranker(ranked_items, **ranker_kwargs)
 
-        await self.snowplow_client.log_event(user_id, slate_id, ranked_items)
+        await self.snowplow_client.log_event(slate_id, user_id, ranked_items)
 
         return RankedCorpusItemsInstance(
             id=slate_id,
