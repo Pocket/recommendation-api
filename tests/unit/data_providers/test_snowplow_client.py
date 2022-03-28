@@ -24,7 +24,7 @@ class MockTracker():
 async def test_log_event():
     mock_tracker = MockTracker()
 
-    snowplow_tracking = SnowplowClient(tracker=mock_tracker)
+    snowplow_tracking = SnowplowClient(tracker=mock_tracker, snowplow_uri="fake-snowplow-uri.dev")
 
     test_user_id = 14464
     test_slate_uuid = "uuid-representing-a-slate"

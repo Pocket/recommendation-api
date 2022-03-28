@@ -21,8 +21,8 @@ def _generate_tile_id(corpus_id: str, slate_id: str, date: str) -> str:
     return f"corpus_id={corpus_id}&slate_id={slate_id}&date={date}"
 
 class SnowplowClient(SnowplowFetchable):
-    def __init__(self, tracker=None):
-        emitter = Emitter(endpoint=os.getenv("SNOWPLOW_URI_DEV"), protocol='https')
+    def __init__(self, tracker=None, snowplow_uri=os.getenv("SNOWPLOW_URI_DEV")):
+        emitter = Emitter(endpoint=snowplow_uri, protocol='https')
         self.tracker = tracker if tracker else Tracker(emitter, app_id="recs-api")
 
     async def log_event(
