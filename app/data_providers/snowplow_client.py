@@ -12,8 +12,13 @@ class SnowplowFetchable(ABC):
         return NotImplemented
 
 
-def _generate_tile_id(corpus_id, slate_id, date):
-    return f"corpus_id={corpus_id}slate_id={slate_id}date={date}"
+def _generate_tile_id(corpus_id: str, slate_id: str, date: str) -> str:
+    """
+    This is the id that we send in the proxy as the tile_id for firefox to log in telemetry.
+    Sending it to snowplow here allows us to map it back to the appropriate items
+    for gathering engagement metrics.
+    """
+    return f"corpus_id={corpus_id}&slate_id={slate_id}&date={date}"
 
 class SnowplowClient(SnowplowFetchable):
     def __init__(self, tracker=None):
