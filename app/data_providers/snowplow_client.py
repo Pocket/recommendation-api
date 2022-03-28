@@ -12,6 +12,9 @@ class SnowplowFetchable(ABC):
         return NotImplemented
 
 
+def _generate_tile_id(corpus_id, slate_id, date):
+    return f"corpus_id={corpus_id}slate_id={slate_id}date={date}"
+
 class SnowplowClient(SnowplowFetchable):
     def __init__(self, tracker=None):
         emitter = Emitter(endpoint=os.getenv("SNOWPLOW_URI_DEV"), protocol='https')
@@ -22,6 +25,7 @@ class SnowplowClient(SnowplowFetchable):
             slate_id: str,
             # I am assigning zero to "the null value user id" because according to the spec this has to be an int
             user_id: int = 0,
+            start_date: str = None,
             items: [CorpusItem] = []
     ) -> None:
         self.tracker.track_self_describing_event(
@@ -39,7 +43,7 @@ class SnowplowClient(SnowplowFetchable):
             context_collection = [
                 SelfDescribingJson(
                     'iglu:com.pocket/tile_recommendation_mapping/jsonschema/1-0-0',
-                    await self.tile_recommendation_mapping_dict(corpus_item, slate_id)),
+                    await self.tile_recommendation_mapping_dict(corpus_item, slate_id, start_date)),
             ]
 
             if user_id != 0:
@@ -60,9 +64,9 @@ class SnowplowClient(SnowplowFetchable):
                     }))
         self.tracker.flush()
 
-    async def tile_recommendation_mapping_dict(self, corpus_item, slate_id):
+    async def tile_recommendation_mapping_dict(self, corpus_item, slate_id, date: str):
         return {
-            "tile_id": corpus_item.id,
+            "tile_id": _generate_tile_id(corpus_item.id, slate_id, date),
             "scheduled_corpus_item_external_id": corpus_item.id,
             "slate_id": slate_id,
             "slate_experiment_id": "placeholder",  # We can't send a null value

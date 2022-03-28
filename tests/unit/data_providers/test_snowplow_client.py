@@ -47,7 +47,7 @@ async def test_log_event():
     assert all([contexts[1].data.get('user_id') == test_user_id for contexts in mock_tracker.tracked_contexts[1:3]])
 
     assert mock_tracker.tracked_contexts[1][0].data.get('scheduled_corpus_item_external_id') == "example-uuid-1"
-    assert mock_tracker.tracked_contexts[1][0].data.get('tile_id') == "example-uuid-1"
+    assert mock_tracker.tracked_contexts[1][0].data.get('tile_id') == "corpus_id=example-uuid-1slate_id=uuid-representing-a-slatedate=None"
     assert mock_tracker.tracked_contexts[1][0].data.get('url') == "example-uuid-1"
     assert mock_tracker.tracked_contexts[2][0].data.get('scheduled_corpus_item_external_id') == "example-uuid-2"
     assert mock_tracker.tracked_contexts[2][0].data.get('tile_id') == "example-uuid-2"

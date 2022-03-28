@@ -33,7 +33,7 @@ class Dispatch:
         self.metrics_client = metrics_client
         self.snowplow_client = snowplow_client
 
-    async def get_ranked_corpus_slate(self, slate_id, start_date=None, user_id=None) -> RankedCorpusItemsInstance:
+    async def get_ranked_corpus_slate(self, slate_id: str, start_date: str = None, user_id: str = None) -> RankedCorpusItemsInstance:
         corpus_slate_schema = self.slate_provider.get(slate_id)
 
         # Choose an Experiment
@@ -55,7 +55,7 @@ class Dispatch:
             ranker_kwargs = await self.metrics_client.get_engagement_metrics(ranked_items, ranker)
             ranked_items = ranker(ranked_items, **ranker_kwargs)
 
-        await self.snowplow_client.log_event(slate_id, user_id, ranked_items)
+        await self.snowplow_client.log_event(slate_id, user_id, start_date, ranked_items)
 
         return RankedCorpusItemsInstance(
             id=slate_id,

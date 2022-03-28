@@ -52,7 +52,7 @@ class MockSnowplowClient(SnowplowFetchable):
     def __init__(self):
         self.event_log_call_count = 0
 
-    async def log_event(self, slate_id, user_id: int, items: [Any]) -> None:
+    async def log_event(self, slate_id, user_id: int, start_date: str, items: [Any]) -> None:
         self.event_log_call_count += 1
 
 @pytest.mark.asyncio
