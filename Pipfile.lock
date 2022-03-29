@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e463f7aaff7b66c29794a3f6be49412a9a19fe090267af0d34ea2728992fdf50"
+            "sha256": "17599d5d595854a0ea88c1eb62d14f1e355f4e2845ba121117852cf2532cf68f"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -216,11 +216,11 @@
         },
         "click": {
             "hashes": [
-                "sha256:6a7a62563bbfabfda3a38f3023a1db4a35978c0abd76f6c9605ecd6554d6d9b1",
-                "sha256:8458d7b1287c5fb128c90e23381cf99dcde74beaf6c7ff6384ce84d6fe090adb"
+                "sha256:19a4baa64da924c5e0cd889aba8e947f280309f1a2ce0947a3e3a7bcb7cc72d6",
+                "sha256:977c213473c7665d3aa092b41ff12063227751c41d7b17165013e10069cc5cd2"
             ],
-            "markers": "python_version >= '3.6'",
-            "version": "==8.0.4"
+            "markers": "python_version >= '3.7'",
+            "version": "==8.1.0"
         },
         "fastapi": {
             "hashes": [
@@ -1064,11 +1064,11 @@
                 "essential"
             ],
             "hashes": [
-                "sha256:3d1ffefc19a8c4ac6dc7100c45aa0a70cbf8b3076205e4cc81b9d5a53eb7c031",
-                "sha256:dfaffaa38c7b833f38f02c5ca63804e04cec467e0ec957e7bc2569c7cefbe7c8"
+                "sha256:93955b1a30a52b577dffac4f209a73d2ca3c72077a46c733a0df2fcd4ed11161",
+                "sha256:9f56ed7ca5c6e0cbce53b39fcc4b9b27c9269d3795a47294692930607e47d7a1"
             ],
             "index": "pypi",
-            "version": "==1.21.27.post1"
+            "version": "==1.21.28"
         },
         "botocore": {
             "hashes": [
@@ -1079,11 +1079,11 @@
         },
         "botocore-stubs": {
             "hashes": [
-                "sha256:629cdc21e643c6afeb5c849e9903ae5e3a3f08909628c5f6dd684c2be41aaa85",
-                "sha256:e37c2cd55989c68bcd7670d5ad7fbdc174db80074af1a46eefede95e08b8536e"
+                "sha256:42f8e94c5a25712c50e81a69e69096ca3637b6a9de9adbef948d19cfb88bdbbf",
+                "sha256:b338693cb91601d6b89aae509ed8285fcd298d9000a991c5c004eadbf82f535d"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==1.24.27.post1"
+            "version": "==1.24.28"
         },
         "certifi": {
             "hashes": [
