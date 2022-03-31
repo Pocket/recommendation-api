@@ -45,6 +45,7 @@ aiomcache = "==0.6.*"
 ujson = "*"
 httptools = "*"
 snowplow-tracker = "0.10.0"
+importlib-resources = "*"
 
 [requires]
 python_version = "3.8"
