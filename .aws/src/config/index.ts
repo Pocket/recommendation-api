@@ -11,6 +11,7 @@ const domain = isDev
   : `${domainPrefix}.readitlater.com`;
 
 // ticket POC-98
+// Note: Metaflow stack has an output PocketUserTopicProfileStoreRoleArn which could be imported.
 const userTopicProfileStore = 'UserTopicProfileStore'
 
 // aiocache currently does not support data partitioning, so there's little benefit to having more than 1 node.
