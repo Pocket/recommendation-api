@@ -291,7 +291,8 @@ class RecommendationAPI extends TerraformStack {
                             `${dynamodb.metadataTable.dynamodb.arn}/*`,
                             `${dynamodb.recommendationMetricsTable.arn}/*`,
                             `${dynamodb.slateMetricsTable.arn}/*`,
-                            `${dynamodb.candidateSetsTable.dynamodb.arn}/*`
+                            `${dynamodb.candidateSetsTable.dynamodb.arn}/*`,
+                            `arn:aws:dynamodb:${region.name}:${caller.accountId}:table/${config.metaFlowUserTopicProfileStore}`
                         ],
                         effect: 'Allow'
                     },

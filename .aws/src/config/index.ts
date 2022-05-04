@@ -9,7 +9,7 @@ const branch = isDev ? 'dev' : 'main';
 const domain = isDev
   ? `${domainPrefix}.getpocket.dev`
   : `${domainPrefix}.readitlater.com`;
-
+const userTopicProfileStore = 'UserTopicProfileStore'
 // aiocache currently does not support data partitioning, so there's little benefit to having more than 1 node.
 const cacheNodes = isDev ? 1 : 1;
 const cacheSize = isDev ? 'cache.t2.micro' : 'cache.t3.medium';
@@ -29,6 +29,7 @@ export const config = {
   domain,
   recommendationMetricsDynamodbName: `MODELD-${environment}-RecMetrics`,
   slateMetricsDynamodbName: `MODELD-${environment}-SlateMetrics`,
+  metaFlowUserTopicProfileStore: `personalizer-${environment}-${userTopicProfileStore}`,
   cacheNodes,
   cacheSize,
   stateMachines: [
