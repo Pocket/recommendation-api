@@ -106,7 +106,7 @@ type Topic {
     """
     The query that was used internally for elasticsearch to find items
     """
-    query: [String!]!
+    query: String!
 
     """
     The label the curator uses internally to get items onto this topic
