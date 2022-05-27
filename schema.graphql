@@ -25,7 +25,7 @@ type Query {
     listSlates(
         "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 0"
         recommendationCount: Int = 0
-    ): [Slate!]!
+    ): [Slate!]!  @deprecated(reason: "This query has not been used in the last month, and its purpose is unclear.")
 
     """
     Request a specific `SlateLineup` by id
