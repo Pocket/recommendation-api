@@ -44,7 +44,7 @@ type Query {
     """
     getRankedCorpusSlate(
         slateId: String!
-    ): RankedCorpusSlate
+    ): RankedCorpusSlate  @deprecated(reason: "This query is experimental and might not work as expected")
 }
 
 type RankedCorpusSlate @key(fields: "id") {
