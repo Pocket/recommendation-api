@@ -20,7 +20,7 @@ query list_slates{
   }
 }
 ```
-
+ 
 To get self-improvement slates with recommendations: 
 ```graphql
 query test_query {
