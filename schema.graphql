@@ -1,14 +1,12 @@
-"""
-CorpusItem is defined here:
-https://studio.apollographql.com/graph/pocket-client-api/schema/reference/objects/CorpusItem
-"""
 extend type CorpusItem @key(fields: "id") {
     """
     The ID of the corpus item
-    """
-    id: String! @external
-}
 
+    CorpusItem is defined here:
+    https://studio.apollographql.com/graph/pocket-client-api/schema/reference/objects/CorpusItem
+    """
+    id: ID! @external
+}
 
 type CorpusRecommendation @key(fields: "id") {
     """
@@ -76,14 +74,14 @@ type CorpusSlateLineup @key(fields: "id") {
     slates(count: Int = 10): [CorpusSlate!]!
 }
 
-type TopicInput {
+input TopicInput {
     """
     The id of the topic
     """
     id: ID!
 }
 
-type UpdateUserContentProfileInput {
+input UpdateUserContentProfileInput {
     """
     Topics that the user expressed interest in.
     """
@@ -123,11 +121,6 @@ type RankedCorpusSlateExperiment @key(fields: "id") {
     description: String!
     candidateSets: [ID!]
     rankers: [ID!]
-}
-
-extend type CorpusItem @key(fields: "id") {
-    id: ID! @external
-    # Maybe Item score eventually also goes here
 }
 
 """
