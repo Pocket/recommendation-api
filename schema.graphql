@@ -1,73 +1,3 @@
-type Query {
-    homeSlateLineup: CorpusSlateLineup
-
-    setupMomentSlate: CorpusSlate
-
-    setupMomentTopics: [Topic!]!
-
-    """
-    Get the recomendations for a specific topic
-    """
-    getTopicRecommendations(slug: String!, algorithmicCount: Int = 20, curatedCount: Int = 5): TopicRecommendations  @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
-
-    """
-    List all topics that the user can express a preference for.
-    """
-    userContentProfileTopics: [Topic!]!
-
-    """
-    List all available topics that we have recomendarions for.
-    """
-    listTopics: [Topic!]! @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
-
-    """
-    Request a specific `Slate` by id
-    """
-    getSlate(
-        "The {Slate.id} of the slate to return"
-        slateId: String!,
-        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
-        recommendationCount: Int = 10
-    ): Slate
-
-    """
-    List all available slates
-    """
-    listSlates(
-        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 0"
-        recommendationCount: Int = 0
-    ): [Slate!]!  @deprecated(reason: "This query has not been used in the last month, and its purpose is unclear.")
-
-    """
-    Request a specific `SlateLineup` by id
-    """
-    getSlateLineup(
-        "The {SlateLineup.id} of the SlateLineup to return"
-        slateLineupId: String!,
-        "Maximum number of slates to return in {SlateLineup.slates}, defaults to 8"
-        slateCount: Int = 8,
-        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
-        recommendationCount: Int = 10
-    ): SlateLineup
-
-    """
-    Request a specific `RankedCorpusSlate` by ID: ultimately replaces `getSlate`
-    """
-    getRankedCorpusSlate(
-        slateId: String!
-    ): RankedCorpusSlate  @deprecated(reason: "This query is experimental and might not work as expected")
-}
-
-type Mutation {
-    """
-    User content Profile are sent through a mutation in addition to a Snowplow event.
-    """
-    updateUserContentProfile(
-        input: UpdateUserContentProfileInput!
-    ): UserContentProfile
-}
-
-
 """
 CorpusItem is defined here:
 https://studio.apollographql.com/graph/pocket-client-api/schema/reference/objects/CorpusItem
@@ -404,4 +334,73 @@ extend type Item @key(fields: "itemId") {
     The ID of the item that is used by apollo federation to reference the Item entity.
     """
     itemId: String! @external
+}
+
+type Query {
+    homeSlateLineup: CorpusSlateLineup
+
+    setupMomentSlate: CorpusSlate
+
+    setupMomentTopics: [Topic!]!
+
+    """
+    Get the recomendations for a specific topic
+    """
+    getTopicRecommendations(slug: String!, algorithmicCount: Int = 20, curatedCount: Int = 5): TopicRecommendations  @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
+
+    """
+    List all topics that the user can express a preference for.
+    """
+    userContentProfileTopics: [Topic!]!
+
+    """
+    List all available topics that we have recomendarions for.
+    """
+    listTopics: [Topic!]! @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
+
+    """
+    Request a specific `Slate` by id
+    """
+    getSlate(
+        "The {Slate.id} of the slate to return"
+        slateId: String!,
+        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
+        recommendationCount: Int = 10
+    ): Slate
+
+    """
+    List all available slates
+    """
+    listSlates(
+        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 0"
+        recommendationCount: Int = 0
+    ): [Slate!]!  @deprecated(reason: "This query has not been used in the last month, and its purpose is unclear.")
+
+    """
+    Request a specific `SlateLineup` by id
+    """
+    getSlateLineup(
+        "The {SlateLineup.id} of the SlateLineup to return"
+        slateLineupId: String!,
+        "Maximum number of slates to return in {SlateLineup.slates}, defaults to 8"
+        slateCount: Int = 8,
+        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
+        recommendationCount: Int = 10
+    ): SlateLineup
+
+    """
+    Request a specific `RankedCorpusSlate` by ID: ultimately replaces `getSlate`
+    """
+    getRankedCorpusSlate(
+        slateId: String!
+    ): RankedCorpusSlate  @deprecated(reason: "This query is experimental and might not work as expected")
+}
+
+type Mutation {
+    """
+    User content Profile are sent through a mutation in addition to a Snowplow event.
+    """
+    updateUserContentProfile(
+        input: UpdateUserContentProfileInput!
+    ): UserContentProfile
 }
