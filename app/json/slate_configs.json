@@ -272,6 +272,7 @@
           "recit-personalized/curated"
         ],
         "rankers": [
+          "user-impression-filter",
           "top30-items",
           "thompson-sampling-28day",
           "pubspread"
