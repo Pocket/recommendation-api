@@ -11,6 +11,7 @@ class TestTopicMetadata(TestDynamoDBBase):
         executed = await TopicModel.get_all()
         assert executed == [
             TopicModel(id='a187ffb4-5c6f-4079-bad9-asd23234234',
+                       name='Business',
                        display_name='Business',
                        slug='business',
                        query='money stonks',
@@ -21,6 +22,7 @@ class TestTopicMetadata(TestDynamoDBBase):
                        page_type=PageType.editorial_collection
                        ),
             TopicModel(id='a187ffb4-5c6f-4079-bad9-92442e97bdd1',
+                       name='tech',
                        display_name='tech',
                        slug='tech',
                        query='query',
@@ -34,6 +36,7 @@ class TestTopicMetadata(TestDynamoDBBase):
     async def test_main_get_topic(self):
         executed = await TopicModel.get_topic('business')
         assert executed == TopicModel(id='a187ffb4-5c6f-4079-bad9-asd23234234',
+                                      name='Business',
                                       display_name='Business',
                                       slug='business',
                                       query='money stonks',
