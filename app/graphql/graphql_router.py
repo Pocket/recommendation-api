@@ -34,6 +34,10 @@ class Query(ObjectType):
         CorpusSlate,
     )
 
+    user_content_profile_topics = Field(
+        List(Topic),
+    )
+
     get_ranked_corpus_slate = Field(RankedCorpusSlate, slate_id=String(required=True, description="A ranked list of recommendation items"))
 
     list_slates = Field(List(Slate), recommendation_count=Int(default_value=0,
@@ -94,9 +98,15 @@ class Query(ObjectType):
             ],
         )
 
+    async def resolve_user_content_profile_topics(self, info) -> [Topic]:
+        topics = await TopicModel.get_all()
+        exclude_topic_names = ['Gaming', 'Sports', 'Education']
+        return [t for t in topics if t.name not in exclude_topic_names]
+
 ##
 # Graphene requires that you define your schema programmatically.
 # Looks like Graphene 3 will support loading from a .graphql file.
 # For now this file should stay in sync with *.graphql
 ##
 schema = build_schema(query=Query)
+
