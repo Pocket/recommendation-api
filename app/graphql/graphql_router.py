@@ -1,11 +1,11 @@
 from graphene import ObjectType, String, Field, List, Int
 from graphene_federation import build_schema
-import graphql
 
 from app.data_providers.curation_api_client import CurationAPIClient
 from app.data_providers.metrics_client import MetricsClient
 from app.data_providers.slate_provider import SlateProvider
 from app.graphql.ranked_corpus_slate import RankedCorpusSlate
+from app.graphql.update_user_content_profile_mutation import UpdateUserContentProfile
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
 from app.models.ranked_corpus_slate_instance import RankedCorpusSlateInstance
@@ -100,13 +100,18 @@ class Query(ObjectType):
 
     async def resolve_user_content_profile_topics(self, info) -> [Topic]:
         topics = await TopicModel.get_all()
-        exclude_topic_names = ['Gaming', 'Sports', 'Education']
+        exclude_topic_names = ['Gaming', 'Sports', 'Education', 'Coronavirus']
         return [t for t in topics if t.name not in exclude_topic_names]
+
+
+class Mutation(ObjectType):
+    update_user_content_profile = UpdateUserContentProfile.Field()
+
 
 ##
 # Graphene requires that you define your schema programmatically.
 # Looks like Graphene 3 will support loading from a .graphql file.
 # For now this file should stay in sync with *.graphql
 ##
-schema = build_schema(query=Query)
+schema = build_schema(query=Query, mutation=Mutation)
 
