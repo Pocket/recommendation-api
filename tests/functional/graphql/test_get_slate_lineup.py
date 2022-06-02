@@ -1,9 +1,13 @@
+import json
+import os
+from functools import partial
+
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from graphene.test import Client
 from fastapi.testclient import TestClient
 
 from app.graphql.graphql_router import schema
-from app.main import app, load_slate_configs
+from app.main import app
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 
 from unittest.mock import patch
@@ -20,7 +24,8 @@ class TestGetSlateLineup(TestDynamoDBBase):
         self.client = Client(schema)
 
     @patch('aiohttp.ClientSession.get', to_return=MockResponse(status=200))
-    def test_get_slate_lineup(self, mock_clientsession_get):
+    @patch('app.models.user_impressed_list.UserImpressedList.get', to_return=[])
+    def test_get_slate_lineup(self, mock_userimpressedlist_get, mock_clientsession_get):
         with TestClient(
                 app):  # This context manager forces the FastAPI startup event to run, which we use to populate our slate lineup configuration
             executed = self.client.execute(

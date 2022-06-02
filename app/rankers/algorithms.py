@@ -229,6 +229,20 @@ def __personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
     return output_configs
 
 
+@xray_recorder.capture('rankers_algorithms_user_impression_filter')
+def user_impression_filter(recs: RecommendationListType, user_impressed_list: List[int]) -> RecommendationListType:
+    """
+    removes items that a user has already seen too many times or saw too many days previous
+
+    :param user_impressed_list a list of integer item_ids loaded from the feature store per user
+    :return: filtered list of recs for the user
+    """
+    filtered = [rec for rec in recs if int(rec.item_id) not in user_impressed_list]
+
+    return filtered
+
+
+
 @xray_recorder.capture('rankers_algorithms_spread_publishers')
 def spread_publishers(recs: RecommendationListType, spread: int = 3) -> RecommendationListType:
     """

@@ -9,7 +9,7 @@ from tests.unit.utils import generate_recommendations, generate_curated_configs,
 from app.config import ROOT_DIR
 from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, rank_topics, \
     thompson_sampling_1day, thompson_sampling_7day, thompson_sampling_14day, blocklist, top1_topics, top3_topics, \
-    firefox_thompson_sampling_1day
+    firefox_thompson_sampling_1day, user_impression_filter
 from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
 from operator import itemgetter
 
@@ -318,3 +318,44 @@ class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
 
         for topic_ranker in [top1_topics, top3_topics, rank_topics]:
             self.assertRaises(ValueError, topic_ranker, input_configs, full_topic_profile)
+
+
+class TestAlgorithmsImpressionFilter(unittest.TestCase):
+
+    def test_impression_filter_remove(self):
+        item_ids = ["234", "345", "456"]
+        recs = generate_recommendations(item_ids)
+        impressed_items = [123, 456, 999]
+
+        filtered_recs = user_impression_filter(recs, impressed_items)
+
+        # check for filtering of impressed items
+        filtered_item_ids = [r.item_id for r in filtered_recs]
+        for i in impressed_items:
+            assert i not in filtered_item_ids
+
+        # check for presence of unfiltered items
+        for i in recs:
+            if int(i.item_id) not in impressed_items:
+                assert i.item_id in filtered_item_ids
+
+    def test_no_impressed_list(self):
+
+        item_ids = ["234", "345", "456"]
+        recs = generate_recommendations(item_ids)
+        filtered_recs = user_impression_filter(recs, [])
+
+        # check for presence of original items
+        assert recs == filtered_recs
+
+
+    def test_no_overlap(self):
+
+        item_ids = ["234", "345", "456"]
+        impressed_item_ids = [9*int(i) for i in item_ids]
+        recs = generate_recommendations(item_ids)
+        filtered_recs = user_impression_filter(recs, impressed_item_ids)
+
+        # check for presence of original items
+        assert recs == filtered_recs
+
