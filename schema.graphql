@@ -332,19 +332,20 @@ extend type Item @key(fields: "itemId") {
 type Query {
     homeSlateLineup: CorpusSlateLineup
 
+    """
+    Get stories during Setup Moment onboarding that are personalized with user preferences provided during onboarding.
+    """
     setupMomentSlate: CorpusSlate
-
-    setupMomentTopics: [Topic!]!
-
-    """
-    Get the recomendations for a specific topic
-    """
-    getTopicRecommendations(slug: String!, algorithmicCount: Int = 20, curatedCount: Int = 5): TopicRecommendations  @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
 
     """
     List all topics that the user can express a preference for.
     """
     userContentProfileTopics: [Topic!]!
+
+    """
+    Get the recomendations for a specific topic
+    """
+    getTopicRecommendations(slug: String!, algorithmicCount: Int = 20, curatedCount: Int = 5): TopicRecommendations  @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
 
     """
     List all available topics that we have recomendarions for.
