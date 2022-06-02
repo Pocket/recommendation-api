@@ -330,8 +330,6 @@ extend type Item @key(fields: "itemId") {
 }
 
 type Query {
-    homeSlateLineup: CorpusSlateLineup
-
     """
     Get stories during Setup Moment onboarding that are personalized with user preferences provided during onboarding.
     """
