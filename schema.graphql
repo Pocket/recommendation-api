@@ -81,14 +81,14 @@ input TopicInput {
     id: ID!
 }
 
-input UpdateUserContentProfileInput {
+input UpdateUserRecommendationPreferencesInput {
     """
     Topics that the user expressed interest in.
     """
     preferredTopics: [TopicInput!]!
 }
 
-type UserContentProfile {
+type UserRecommendationPreferences {
     """
     Topics that the user expressed interest in.
     """
@@ -390,9 +390,9 @@ type Query {
 
 type Mutation {
     """
-    User content Profile are sent through a mutation in addition to a Snowplow event.
+    Updates user preferences for content recommendations across Pocket.
     """
-    updateUserContentProfile(
-        input: UpdateUserContentProfileInput!
-    ): UserContentProfile
+    updateUserRecommendationPreferences(
+        input: UpdateUserRecommendationPreferencesInput!
+    ): UserRecommendationPreferences
 }
