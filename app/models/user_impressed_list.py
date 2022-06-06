@@ -25,9 +25,7 @@ class UserImpressedList:
 
         impressed_items = await self._query_item_list(user_id)
         if not impressed_items:
-            error_message = f"No returned impressed item list for user_id={user_id}"
-            logging.info(error_message)
-            raise PersonalizationError(error_message)
+            logging.info(f"No returned impressed item list for user_id={user_id}")
 
         return impressed_items
 
