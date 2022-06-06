@@ -88,11 +88,11 @@ class Query(ObjectType):
                     corpusItem=CorpusItemModel(id='b809c66c-4f8b-4e56-a9d4-67bb6f601a5b'),
                 ),
                 CorpusRecommendationModel(
-                    id='ca42bad7-6346-457b-b23b-ef583a3d3f5c',
+                    id='3177b6b1-8499-4395-9ad3-f4321cb2c8c8',
                     corpusItem=CorpusItemModel(id='69e9c46a-6859-4e77-a6c9-aa49ba5825bb'),
                 ),
                 CorpusRecommendationModel(
-                    id='ca42bad7-6346-457b-b23b-ef583a3d3f5c',
+                    id='3177b6b1-8499-4395-9ad3-f4321cb2c8c8',
                     corpusItem=CorpusItemModel(id='a43317f0-44c1-4ae8-ad14-e9e792a5ade7'),
                 ),
             ],
