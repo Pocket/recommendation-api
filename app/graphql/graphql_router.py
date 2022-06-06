@@ -92,7 +92,7 @@ class Query(ObjectType):
                     corpusItem=CorpusItemModel(id='69e9c46a-6859-4e77-a6c9-aa49ba5825bb'),
                 ),
                 CorpusRecommendationModel(
-                    id='3177b6b1-8499-4395-9ad3-f4321cb2c8c8',
+                    id='7c09a422-d6d1-40b6-9e98-6171b259fc29',
                     corpusItem=CorpusItemModel(id='a43317f0-44c1-4ae8-ad14-e9e792a5ade7'),
                 ),
             ],
