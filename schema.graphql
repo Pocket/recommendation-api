@@ -95,17 +95,6 @@ type UserRecommendationPreferences {
     preferredTopics: [Topic!]
 }
 
-extend type User @key(fields: "id") {
-    #Note more properties exist here but are defined in another service.
-
-    """
-    User id, provided by the user service.
-    """
-    id: ID! @external
-
-    contentProfile: UserContentProfile
-}
-
 type RankedCorpusSlate @key(fields: "id") {
     id: ID!
     description: String!
