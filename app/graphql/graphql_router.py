@@ -34,7 +34,7 @@ class Query(ObjectType):
         CorpusSlate,
     )
 
-    user_content_profile_topics = Field(
+    recommendation_preference_topics = Field(
         List(Topic),
     )
 
@@ -98,7 +98,7 @@ class Query(ObjectType):
             ],
         )
 
-    async def resolve_user_content_profile_topics(self, info) -> [Topic]:
+    async def resolve_recommendation_preference_topics(self, info) -> [Topic]:
         topics = await TopicModel.get_all()
         exclude_topic_names = ['Gaming', 'Sports', 'Education', 'Coronavirus']
         return [t for t in topics if t.name not in exclude_topic_names]

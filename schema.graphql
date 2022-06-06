@@ -338,7 +338,7 @@ type Query {
     """
     List all topics that the user can express a preference for.
     """
-    userContentProfileTopics: [Topic!]!
+    recommendationPreferenceTopics: [Topic!]!
 
     """
     Get the recomendations for a specific topic
