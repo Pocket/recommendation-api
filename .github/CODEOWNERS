@@ -1,2 +1,1 @@
-app/json/*.json @pocket/datalearning
-*               @pocket/dataengineering
+*               @pocket/dataproducts
