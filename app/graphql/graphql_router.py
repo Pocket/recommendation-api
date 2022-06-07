@@ -5,7 +5,7 @@ from app.data_providers.curation_api_client import CurationAPIClient
 from app.data_providers.metrics_client import MetricsClient
 from app.data_providers.slate_provider import SlateProvider
 from app.graphql.ranked_corpus_slate import RankedCorpusSlate
-from app.graphql.update_user_content_profile_mutation import UpdateUserContentProfile
+from app.graphql.update_user_recommendation_preferences_mutation import UpdateUserRecommendationPreferences
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
 from app.models.ranked_corpus_slate_instance import RankedCorpusSlateInstance
@@ -34,7 +34,7 @@ class Query(ObjectType):
         CorpusSlate,
     )
 
-    user_content_profile_topics = Field(
+    recommendation_preference_topics = Field(
         List(Topic),
     )
 
@@ -88,24 +88,24 @@ class Query(ObjectType):
                     corpusItem=CorpusItemModel(id='b809c66c-4f8b-4e56-a9d4-67bb6f601a5b'),
                 ),
                 CorpusRecommendationModel(
-                    id='ca42bad7-6346-457b-b23b-ef583a3d3f5c',
+                    id='3177b6b1-8499-4395-9ad3-f4321cb2c8c8',
                     corpusItem=CorpusItemModel(id='69e9c46a-6859-4e77-a6c9-aa49ba5825bb'),
                 ),
                 CorpusRecommendationModel(
-                    id='ca42bad7-6346-457b-b23b-ef583a3d3f5c',
+                    id='7c09a422-d6d1-40b6-9e98-6171b259fc29',
                     corpusItem=CorpusItemModel(id='a43317f0-44c1-4ae8-ad14-e9e792a5ade7'),
                 ),
             ],
         )
 
-    async def resolve_user_content_profile_topics(self, info) -> [Topic]:
+    async def resolve_recommendation_preference_topics(self, info) -> [Topic]:
         topics = await TopicModel.get_all()
         exclude_topic_names = ['Gaming', 'Sports', 'Education', 'Coronavirus']
         return [t for t in topics if t.name not in exclude_topic_names]
 
 
 class Mutation(ObjectType):
-    update_user_content_profile = UpdateUserContentProfile.Field()
+    update_user_recommendation_preferences = UpdateUserRecommendationPreferences.Field()
 
 
 ##

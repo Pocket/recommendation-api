@@ -81,29 +81,18 @@ input TopicInput {
     id: ID!
 }
 
-input UpdateUserContentProfileInput {
+input UpdateUserRecommendationPreferencesInput {
     """
     Topics that the user expressed interest in.
     """
     preferredTopics: [TopicInput!]!
 }
 
-type UserContentProfile {
+type UserRecommendationPreferences {
     """
     Topics that the user expressed interest in.
     """
     preferredTopics: [Topic!]
-}
-
-extend type User @key(fields: "id") {
-    #Note more properties exist here but are defined in another service.
-
-    """
-    User id, provided by the user service.
-    """
-    id: ID! @external
-
-    contentProfile: UserContentProfile
 }
 
 type RankedCorpusSlate @key(fields: "id") {
@@ -338,7 +327,7 @@ type Query {
     """
     List all topics that the user can express a preference for.
     """
-    userContentProfileTopics: [Topic!]!
+    recommendationPreferenceTopics: [Topic!]!
 
     """
     Get the recomendations for a specific topic
@@ -390,9 +379,9 @@ type Query {
 
 type Mutation {
     """
-    User content Profile are sent through a mutation in addition to a Snowplow event.
+    Updates user preferences for content recommendations across Pocket.
     """
-    updateUserContentProfile(
-        input: UpdateUserContentProfileInput!
-    ): UserContentProfile
+    updateUserRecommendationPreferences(
+        input: UpdateUserRecommendationPreferencesInput!
+    ): UserRecommendationPreferences
 }
