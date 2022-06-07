@@ -3,7 +3,7 @@ import graphene
 from app.graphql.topic_input import TopicInput
 
 
-class UpdateUserContentProfileInput(graphene.InputObjectType):
+class UpdateUserRecommendationPreferencesInput(graphene.InputObjectType):
     preferredTopics = graphene.List(
         TopicInput,
         required=True,

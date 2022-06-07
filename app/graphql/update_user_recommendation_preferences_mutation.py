@@ -1,13 +1,13 @@
 import graphene
 
 from app.graphql.topic import Topic
-from app.graphql.update_user_content_profile_input import UpdateUserContentProfileInput
+from app.graphql.update_user_recommendation_preferences_input import UpdateUserRecommendationPreferencesInput
 from app.models.topic import TopicModel
 
 
-class UpdateUserContentProfile(graphene.Mutation):
+class UpdateUserRecommendationPreferences(graphene.Mutation):
     class Arguments:
-        input = UpdateUserContentProfileInput(required=True)
+        input = UpdateUserRecommendationPreferencesInput(required=True)
 
     preferred_topics = graphene.List(Topic, description="Topics that the user expressed interest in")
 
@@ -16,4 +16,4 @@ class UpdateUserContentProfile(graphene.Mutation):
         input_topic_ids = {t.id for t in input.preferredTopics}
         output_topics = [t for t in topics if t.id in input_topic_ids]
 
-        return UpdateUserContentProfile(preferred_topics=output_topics)
+        return UpdateUserRecommendationPreferences(preferred_topics=output_topics)

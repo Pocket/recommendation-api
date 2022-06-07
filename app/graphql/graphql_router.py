@@ -5,7 +5,7 @@ from app.data_providers.curation_api_client import CurationAPIClient
 from app.data_providers.metrics_client import MetricsClient
 from app.data_providers.slate_provider import SlateProvider
 from app.graphql.ranked_corpus_slate import RankedCorpusSlate
-from app.graphql.update_user_content_profile_mutation import UpdateUserContentProfile
+from app.graphql.update_user_recommendation_preferences_mutation import UpdateUserRecommendationPreferences
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
 from app.models.ranked_corpus_slate_instance import RankedCorpusSlateInstance
@@ -105,7 +105,7 @@ class Query(ObjectType):
 
 
 class Mutation(ObjectType):
-    update_user_content_profile = UpdateUserContentProfile.Field()
+    update_user_recommendation_preferences = UpdateUserRecommendationPreferences.Field()
 
 
 ##
