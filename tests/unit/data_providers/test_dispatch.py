@@ -56,7 +56,7 @@ async def test_get_ranked_items__no_rankers():
         metrics_client=MockMetricsClient()
     ).get_ranked_corpus_slate("example-corpus-id")
 
-    ranked_items = ranked_items_response.corpusItems
+    ranked_items = ranked_items_response.recommendations
     # The TestSlateProvider specifies that the top5 ranker be applied.
     assert len(ranked_items) == 8
 
