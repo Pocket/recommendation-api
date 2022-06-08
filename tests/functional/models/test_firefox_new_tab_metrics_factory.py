@@ -63,7 +63,7 @@ class TestFirefoxNewTabMetricsFactory:
         """
         Test the case where the queried records exist in the Feature Group.
         """
-        client = await self._get_mocked_feature_store_client(monkeypatch)
+        client = self._get_mocked_feature_store_client(monkeypatch)
         recommendation_ids = [f"00000000-0000-0000-0000-00000000000{i}" for i in range(10)]
 
         new_tab_engagement = await FirefoxNewTabMetricsFactory().get(recommendation_ids=recommendation_ids)
@@ -91,7 +91,7 @@ class TestFirefoxNewTabMetricsFactory:
         """
         Test that None is returned when querying a record that does not exist.
         """
-        client = await self._get_mocked_feature_store_client(monkeypatch)
+        client = self._get_mocked_feature_store_client(monkeypatch)
         # The fixture data does not have a record with id == -1
         existing_recommendation_ids = [f"00000000-0000-0000-0000-00000000000{i}" for i in range(0, 2)]
         queried_recommendation_ids = list(existing_recommendation_ids) + ['non-existing-uuid']
@@ -111,7 +111,7 @@ class TestFirefoxNewTabMetricsFactory:
         """
         Test that querying a non-existing feature group raises an exception.
         """
-        client = await self._get_mocked_feature_store_client(monkeypatch)
+        client = self._get_mocked_feature_store_client(monkeypatch)
         content_ids = [str(i) for i in range(2)]
         FirefoxNewTabMetricsFactory._FEATURE_GROUP_VERSION = 123  # This version does not exist.
 

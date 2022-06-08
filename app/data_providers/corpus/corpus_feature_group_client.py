@@ -20,6 +20,9 @@ class CorpusFeatureGroupClient(CorpusFetchable):
     _FEATURE_GROUP_VERSION = 1
     _FEATURE_NAMES: List[str] = ['corpus_items']
 
+    def __init__(self, aioboto3_session: aioboto3.session.Session = None):
+        self.aioboto3_session = aioboto3_session if aioboto3_session else aioboto3.Session()
+
     async def get_ranked_corpus_items(
             self,
             corpus_id: str = SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID,
@@ -50,7 +53,7 @@ class CorpusFeatureGroupClient(CorpusFetchable):
                  for the user corresponding to user_id
         """
 
-        async with aioboto3.client('sagemaker-featurestore-runtime') as featurestore:
+        async with self.aioboto3_session.client('sagemaker-featurestore-runtime') as featurestore:
             record = await featurestore.get_record(
                 FeatureGroupName=self.get_feature_group_name(),
                 RecordIdentifierValueAsString=str(corpus_candidate_set_id),
