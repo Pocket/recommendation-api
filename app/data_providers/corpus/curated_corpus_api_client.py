@@ -5,11 +5,16 @@ import json
 from datetime import date
 
 from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
-from app.graphql.corpus_item import CorpusItem
+from app.models.corpus_item_model import CorpusItemModel
 
 
 class CuratedCorpusAPIClient(CorpusFetchable):
-    async def get_ranked_corpus_items(self, corpus_id: str = "NEW_TAB_EN_US", start_date: str=None, user_id=None) -> List[CorpusItem]:
+    async def get_ranked_corpus_items(
+            self,
+            corpus_id: str = "NEW_TAB_EN_US",
+            start_date: str = None,
+            user_id=None
+    ) -> List[CorpusItemModel]:
         if not start_date:
             start_date = date.today().strftime("%Y-%m-%d")
 
