@@ -1,11 +1,14 @@
-import pytest
+import random
+import uuid
 
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from graphene.test import Client
 from fastapi.testclient import TestClient
 
+from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.graphql.graphql_router import schema
-from app.main import app, load_slate_configs
+from app.main import app
+from app.models.corpus_item_model import CorpusItemModel
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 
 from unittest.mock import patch
@@ -22,7 +25,11 @@ class TestSetupMomentSlate(TestDynamoDBBase):
         self.client = Client(schema)
 
     @patch('aiohttp.ClientSession.get', to_return=MockResponse(status=200))
-    def test_setup_moment_slate(self, mock_client_session_get):
+    @patch.object(CorpusFeatureGroupClient, 'get_ranked_corpus_items')
+    def test_setup_moment_slate(self, mock_get_ranked_corpus_items, mock_client_session_get):
+        corpus_items_fixture = self._get_corpus_items_fixture()
+        mock_get_ranked_corpus_items.return_value = corpus_items_fixture
+
         with TestClient(app):
             executed = self.client.execute(
                 '''
@@ -45,5 +52,11 @@ class TestSetupMomentSlate(TestDynamoDBBase):
             response = executed.get('data').get('setupMomentSlate')
             assert response['headline'] == 'Save an article you find interesting'
 
-            recommendations = response['recommendations']
-            assert recommendations[0]['id'] != recommendations[1]['id']
+            # Currently, CorpusItems from the Feature Group are returned in the same order.
+            recs = response['recommendations']
+            assert len(recs) == 30  # top-30 ranker is applied
+            assert [rec['corpusItem']['id'] for rec in recs] == [item.id for item in corpus_items_fixture][:30]
+
+    def _get_corpus_items_fixture(self, n=100) -> [CorpusItemModel]:
+        corpus_topics = ["HEALTH_FITNESS", "SELF_IMPROVEMENT", "FOOD", "SELF_IMPROVEMENT", "TRAVEL"]
+        return [CorpusItemModel(id=uuid.uuid4().hex, topic=random.choice(corpus_topics)) for _ in range(n)]

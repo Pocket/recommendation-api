@@ -9,6 +9,7 @@ from app.data_providers.slate_provider import SlateProvidable
 from app.data_providers.slate_provider_schemata import ExperimentSchema, SlateSchema
 from app.graphql.corpus_item import CorpusItem
 from app.models.corpus_item_model import CorpusItemModel
+from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
 from app.rankers.algorithms import top5, top15
 
@@ -56,12 +57,13 @@ async def test_get_ranked_items__no_rankers():
         metrics_client=MockMetricsClient()
     ).get_ranked_corpus_slate("example-corpus-id")
 
-    ranked_items = ranked_items_response.recommendations
+    recommendations = ranked_items_response.recommendations
     # The TestSlateProvider specifies that the top5 ranker be applied.
-    assert len(ranked_items) == 8
+    assert len(recommendations) == 8
 
     # Establish order sameness
-    assert [item.id for item in ranked_items] == [item.id for item in mock_curation_api_client.mock_corpus.corpusItems]
+    assert [rec.corpus_item.id for rec in recommendations] == \
+           [item.id for item in mock_curation_api_client.mock_corpus.corpusItems]
 
 @pytest.mark.asyncio
 async def test_get_ranked_items__one_item_set__one_ranker():
@@ -76,16 +78,17 @@ async def test_get_ranked_items__one_item_set__one_ranker():
         metrics_client=MockMetricsClient()
     ).get_ranked_corpus_slate("example-corpus-id")
 
-    ranked_items = ranked_items_response.corpusItems
+    recommendations = ranked_items_response.recommendations
 
     # The TestSlateProvider specifies that the top5 ranker be applied.
-    assert len(ranked_items) == 5
+    assert len(recommendations) == 5
 
     #All the items in the return value should be CorpusItemModels
-    assert all([type(item) == CorpusItemModel for item in ranked_items])
+    assert all([type(item) == CorpusRecommendationModel for item in recommendations])
 
     #check the id on one cursory item
-    assert ranked_items[0].id == "https://chelseatroy.com/2022/02/10/adding-error-productions-to-the-lox-compiler/"
+    assert recommendations[0].corpus_item.id ==\
+           "https://chelseatroy.com/2022/02/10/adding-error-productions-to-the-lox-compiler/"
 
 @pytest.mark.asyncio
 async def test_get_ranked_items__multiple_item_sets__one_ranker():
@@ -100,11 +103,11 @@ async def test_get_ranked_items__multiple_item_sets__one_ranker():
         metrics_client=MockMetricsClient()
     ).get_ranked_corpus_slate("example-corpus-id")
 
-    ranked_items = ranked_items_response.corpusItems
+    recommendations = ranked_items_response.recommendations
 
     # If the number > 15, dispatch didn't apply the top15 ranker.
     # If the number < 15, dispatch didn't fetch multiple corpora.
-    assert len(ranked_items) == 15
+    assert len(recommendations) == 15
 
     #All the items in the return value should be CorpusItemModels
-    assert all([type(item) == CorpusItemModel for item in ranked_items])
+    assert all([type(rec) == CorpusRecommendationModel for rec in recommendations])
