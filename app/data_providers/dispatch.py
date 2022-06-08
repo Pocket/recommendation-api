@@ -1,15 +1,14 @@
 import itertools
 import random
+from typing import Optional
 import uuid
 from asyncio import gather
 
-from app.data_providers.corpus.curated_corpus_api_client import CuratedCorpusAPIClient
-from app.data_providers.metrics_client import MetricsClient
+from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
+from app.data_providers.metrics_client import MetricsFetchable
 from app.data_providers.slate_provider import SlateProvider
-from app.models.corpus_item_model import CorpusItemModel
-from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
-from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
-from app.rankers.algorithms import firefox_thompson_sampling_1day
+from app.models.corpus_recommendation_model import CorpusRecommendationModel
+from app.models.corpus_slate_model import CorpusSlateModel
 
 
 class Dispatch:
@@ -26,15 +25,15 @@ class Dispatch:
     """
     def __init__(
             self,
-            api_client: CuratedCorpusAPIClient,
+            api_client: CorpusFetchable,
             slate_provider: SlateProvider,
-            metrics_client: MetricsClient
+            metrics_client: Optional[MetricsFetchable] = None
     ):
         self.api_client = api_client
         self.slate_provider = slate_provider
         self.metrics_client = metrics_client
 
-    async def get_ranked_corpus_slate(self, slate_id, start_date=None, user_id=None) -> RankedCorpusItemsInstance:
+    async def get_ranked_corpus_slate(self, slate_id, start_date=None, user_id=None) -> CorpusSlateModel:
         corpus_slate_schema = self.slate_provider.get(slate_id)
 
         # Choose an Experiment
@@ -58,14 +57,19 @@ class Dispatch:
         # And it's not insidious (would be easy to find and verify if we suspected it was happening)
         # So it's not worth complicating the code to check for IMO
         for ranker in experiment.rankers:
-            ranker_kwargs = await self.metrics_client.get_engagement_metrics(ranked_items, ranker)
+            ranker_kwargs = {}
+            if self.metrics_client:
+                ranker_kwargs = await self.metrics_client.get_engagement_metrics(ranked_items, ranker)
 
             ranked_items = ranker(ranked_items, **ranker_kwargs)
 
-        return RankedCorpusItemsInstance(
+        recommendations = [CorpusRecommendationModel(id=uuid.uuid4().hex, corpus_item=item) for item in ranked_items]
+
+        return CorpusSlateModel(
             id=slate_id,
-            description=corpus_slate_schema.description,
-            corpusItems=ranked_items,
+            headline=corpus_slate_schema.displayName,
+            subheadline=corpus_slate_schema.description,
+            recommendations=recommendations,
         )
 
 

@@ -6,4 +6,4 @@ from app.models.corpus_item_model import CorpusItemModel
 class CorpusRecommendationModel (BaseModel):
     id: str
 
-    corpusItem: CorpusItemModel
+    corpus_item: CorpusItemModel
