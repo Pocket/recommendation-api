@@ -3,7 +3,7 @@ import random
 import uuid
 from asyncio import gather
 
-from app.data_providers.curation_api_client import CurationAPIClient
+from app.data_providers.corpus.curated_corpus_api_client import CuratedCorpusAPIClient
 from app.data_providers.metrics_client import MetricsClient
 from app.data_providers.slate_provider import SlateProvider
 from app.models.corpus_item_model import CorpusItemModel
@@ -26,7 +26,7 @@ class Dispatch:
     """
     def __init__(
             self,
-            api_client: CurationAPIClient,
+            api_client: CuratedCorpusAPIClient,
             slate_provider: SlateProvider,
             metrics_client: MetricsClient
     ):
@@ -43,7 +43,7 @@ class Dispatch:
 
         # Fetch Corporeal Candidates
         aggregate_corpus_response = await gather(*(
-            self.api_client.get_ranked_corpus_slate(corpus_id, start_date, user_id)
+            self.api_client.get_ranked_corpus_items(corpus_id, start_date, user_id)
             for corpus_id in experiment.eligible_corpora)
         )
 

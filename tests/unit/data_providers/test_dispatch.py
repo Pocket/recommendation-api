@@ -2,7 +2,7 @@ from typing import List
 
 import pytest
 
-from app.data_providers.curation_api_client import CurationAPIFetchable
+from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
 from app.data_providers.dispatch import Dispatch
 from app.data_providers.metrics_client import MetricsFetchable
 from app.data_providers.slate_provider import SlateProvidable
@@ -27,7 +27,7 @@ class MockSlateProvider(SlateProvidable):
         #offers up this slate regardless of the slate_id sent in. We test the SlateSchema logic in that class's tests.
         return self.schema
 
-class MockCurationAPIClient(CurationAPIFetchable):
+class MockCuratedCorpusAPIClient(CorpusFetchable):
     mock_corpus = RankedCorpusItemsInstance(
         id="CHELSEAS_AWESOME_CORPUS",
         description="I mean, pretty sure the id covers it ;)",
@@ -43,13 +43,13 @@ class MockCurationAPIClient(CurationAPIFetchable):
         ],
     )
 
-    async def get_ranked_corpus_slate(cls, corpus_id: str, start_date: str = None,
-                                         user_id=None) -> List[CorpusItem]:
+    async def get_ranked_corpus_items(cls, corpus_id: str, start_date: str = None,
+                                      user_id=None) -> List[CorpusItem]:
         return cls.mock_corpus.corpusItems
 
 @pytest.mark.asyncio
 async def test_get_ranked_items__no_rankers():
-    mock_curation_api_client = MockCurationAPIClient()
+    mock_curation_api_client = MockCuratedCorpusAPIClient()
     ranked_items_response = await Dispatch(
         api_client=mock_curation_api_client,
         slate_provider=MockSlateProvider(),
@@ -71,7 +71,7 @@ async def test_get_ranked_items__one_item_set__one_ranker():
     mock_slate_provider.schema.experiments[0].rankers.append(top5)
 
     ranked_items_response = await Dispatch(
-        api_client = MockCurationAPIClient(),
+        api_client = MockCuratedCorpusAPIClient(),
         slate_provider = mock_slate_provider,
         metrics_client=MockMetricsClient()
     ).get_ranked_corpus_slate("example-corpus-id")
@@ -95,7 +95,7 @@ async def test_get_ranked_items__multiple_item_sets__one_ranker():
     mock_slate_provider.schema.experiments[0].rankers.append(top15)
 
     ranked_items_response = await Dispatch(
-        api_client = MockCurationAPIClient(),
+        api_client = MockCuratedCorpusAPIClient(),
         slate_provider = mock_slate_provider,
         metrics_client=MockMetricsClient()
     ).get_ranked_corpus_slate("example-corpus-id")

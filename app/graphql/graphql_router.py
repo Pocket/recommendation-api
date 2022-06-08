@@ -1,7 +1,7 @@
 from graphene import ObjectType, String, Field, List, Int
 from graphene_federation import build_schema
 
-from app.data_providers.curation_api_client import CurationAPIClient
+from app.data_providers.corpus.curated_corpus_api_client import CuratedCorpusAPIClient
 from app.data_providers.metrics_client import MetricsClient
 from app.data_providers.slate_provider import SlateProvider
 from app.graphql.ranked_corpus_slate import RankedCorpusSlate
@@ -57,7 +57,7 @@ class Query(ObjectType):
 
     async def resolve_get_ranked_corpus_slate(self, info, slate_id: str) -> RankedCorpusSlateInstance:
         return await Dispatch(
-            api_client=CurationAPIClient(),
+            api_client=CuratedCorpusAPIClient(),
             slate_provider=SlateProvider(),
             metrics_client=MetricsClient(
                 firefox_newtab_metrics_factory=FirefoxNewTabMetricsFactory()
