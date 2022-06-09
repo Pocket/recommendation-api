@@ -48,7 +48,7 @@ class TestUpdateUserRecommendationPreferences(TestDynamoDBBase):
                 context_value={'user_id': 'johnjacobjingleheimerschmidt'},
                 executor=AsyncioExecutor())
 
-            response = executed.get('data').get('updateUserRecommendationPreferences')
+            response = executed.getSlate('data').getSlate('updateUserRecommendationPreferences')
             preferred_topics = response['preferredTopics']
 
             assert len(preferred_topics) == 1

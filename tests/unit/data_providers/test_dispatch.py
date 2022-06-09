@@ -3,7 +3,7 @@ from typing import List
 import pytest
 
 from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
-from app.data_providers.dispatch import Dispatch
+from app.data_providers.dispatch import RankingDispatch
 from app.data_providers.metrics_client import MetricsFetchable
 from app.data_providers.slate_provider import SlateProvidable
 from app.data_providers.slate_provider_schemata import ExperimentSchema, SlateSchema
@@ -51,8 +51,8 @@ class MockCuratedCorpusAPIClient(CorpusFetchable):
 @pytest.mark.asyncio
 async def test_get_ranked_items__no_rankers():
     mock_curation_api_client = MockCuratedCorpusAPIClient()
-    ranked_items_response = await Dispatch(
-        api_client=mock_curation_api_client,
+    ranked_items_response = await RankingDispatch(
+        corpus_client=mock_curation_api_client,
         slate_provider=MockSlateProvider(),
         metrics_client=MockMetricsClient()
     ).get_ranked_corpus_slate("example-corpus-id")
@@ -72,8 +72,8 @@ async def test_get_ranked_items__one_item_set__one_ranker():
     #Add a ranker to the mock object
     mock_slate_provider.schema.experiments[0].rankers.append(top5)
 
-    ranked_items_response = await Dispatch(
-        api_client = MockCuratedCorpusAPIClient(),
+    ranked_items_response = await RankingDispatch(
+        corpus_client= MockCuratedCorpusAPIClient(),
         slate_provider = mock_slate_provider,
         metrics_client=MockMetricsClient()
     ).get_ranked_corpus_slate("example-corpus-id")
@@ -97,8 +97,8 @@ async def test_get_ranked_items__multiple_item_sets__one_ranker():
     mock_slate_provider.schema.experiments[0].eligible_corpora.append("CHELSEAS_AWESOME_CORPUS_AGAIN")
     mock_slate_provider.schema.experiments[0].rankers.append(top15)
 
-    ranked_items_response = await Dispatch(
-        api_client = MockCuratedCorpusAPIClient(),
+    ranked_items_response = await RankingDispatch(
+        corpus_client= MockCuratedCorpusAPIClient(),
         slate_provider = mock_slate_provider,
         metrics_client=MockMetricsClient()
     ).get_ranked_corpus_slate("example-corpus-id")

@@ -10,10 +10,10 @@ from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
 from aws_lambda.config.index import sentry, dynamodb as dynamodb_config
 
 sentry_sdk.init(
-    dsn=sentry.get('dsn'),
+    dsn=sentry.getSlate('dsn'),
     integrations=[AwsLambdaIntegration()],
-    release=sentry.get('release'),
-    environment=sentry.get('environment')
+    release=sentry.getSlate('release'),
+    environment=sentry.getSlate('environment')
 )
 
 logger = logging.getLogger()
@@ -34,16 +34,16 @@ def handler(event: Dict[str, Any], context=None):
     """
     records = event['Records']
 
-    dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config.get('endpoint_url'))
-    table = dynamodb.Table(dynamodb_config.get('recommendation_api_candidate_sets_table'))
+    dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config.getSlate('endpoint_url'))
+    table = dynamodb.Table(dynamodb_config.getSlate('recommendation_api_candidate_sets_table'))
     with table.batch_writer() as batch:
         for record in records:
             candidate_set = json.loads(record['body'])
             sentry_sdk.set_context('candidate_set',
                                    {
-                                       'id': candidate_set.get('id'),
-                                       'flow': candidate_set.get('flow'),
-                                       'run': candidate_set.get('run'),
+                                       'id': candidate_set.getSlate('id'),
+                                       'flow': candidate_set.getSlate('flow'),
+                                       'run': candidate_set.getSlate('run'),
                                    })
             batch.put_item(Item=get_dynamodb_item(candidate_set))
 

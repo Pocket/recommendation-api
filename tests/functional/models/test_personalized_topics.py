@@ -28,7 +28,7 @@ class TestPersonalizedTopics(unittest.IsolatedAsyncioTestCase):
         url = f'{app.config.recit["endpoint_url"]}/v1/user_profile/{user_id}?predict_topics=true'
         fixture = await self._read_json_asset("recit_full_user_profile.json")
 
-        mocked.get(url, status=200, payload=fixture)
+        mocked.getSlate(url, status=200, payload=fixture)
 
         personalized_topics = await PersonalizedTopicList.get(user_id)
         assert len(personalized_topics.curator_topics) == 16
@@ -43,7 +43,7 @@ class TestPersonalizedTopics(unittest.IsolatedAsyncioTestCase):
         user_id = '123'
         url = f'{app.config.recit["endpoint_url"]}/v1/user_profile/{user_id}?predict_topics=true'
 
-        mocked.get(url, status=404)
+        mocked.getSlate(url, status=404)
 
         # Assert PersonalizedTopicList.get raises PersonalizationError when recit responds with a 404 status
         with self.assertRaises(PersonalizationError) as context:
@@ -54,7 +54,7 @@ class TestPersonalizedTopics(unittest.IsolatedAsyncioTestCase):
         user_id = '123'
         url = f'{app.config.recit["endpoint_url"]}/v1/user_profile/{user_id}?predict_topics=true'
 
-        mocked.get(url, status=500)
+        mocked.getSlate(url, status=500)
 
         with self.assertRaises(Exception):
             await PersonalizedTopicList.get(user_id)

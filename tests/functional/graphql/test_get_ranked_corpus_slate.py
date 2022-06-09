@@ -43,8 +43,8 @@ class TestGetRankedCorpusSlate(TestDynamoDBBase):
                 context_value={"user_id": "johnjacobjingleheimerschmidt"},
                 executor=AsyncioExecutor())
 
-            response = executed.get('data').get('getRankedCorpusSlate')
-            description = response.get('description')
+            response = executed.getSlate('data').getSlate('getRankedCorpusSlate')
+            description = response.getSlate('description')
             assert description == "A selection of content for display on the Firefox new tab"
 
     def populate_candidate_sets_table(self):

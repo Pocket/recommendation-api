@@ -41,7 +41,7 @@ class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
     async def clear_caches(self):
         # Clear memcached
         for alias in (candidate_set_alias, metrics_alias):
-            cache = caches.get(alias)
+            cache = caches.getSlate(alias)
             await cache.clear()
             # aiocache doesn't support deleting caches.
             # If we don't delete them, an error is raised "attached to a different loop", because

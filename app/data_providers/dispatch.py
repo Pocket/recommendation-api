@@ -4,6 +4,7 @@ from typing import Optional
 import uuid
 from asyncio import gather
 
+from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
 from app.data_providers.metrics_client import MetricsFetchable
 from app.data_providers.slate_provider import SlateProvider
@@ -11,7 +12,33 @@ from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
 
 
-class Dispatch:
+class SetupMomentDispatch:
+    """
+    This is a shortcut dispatch halper for launching Setup Moment more quickly. We will want to migrate
+    setup moment to RankingDispatch as soon as we want to include rankers or experimentation.
+    """
+
+    SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID = 'deea0f06-9dc9-44a5-b864-fea4a4d0beb7'
+    DISPLAY_NAME = 'display name'
+    SUB_HEADLINE = 'sub headline'
+    CORPUS_IDS = ['foo']
+
+    def __init__(self, corpus_client: CorpusFeatureGroupClient):
+        self.corpus_client = corpus_client
+
+    async def get_ranked_corpus_slate(self) -> CorpusSlateModel:
+        items = self.corpus_client.get_corpus_items(self.CORPUS_IDS)
+        recommendations = [CorpusRecommendationModel(id=uuid.uuid4().hex, corpus_item=item) for item in items]
+
+        return CorpusSlateModel(
+            id=self.SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID,
+            headline=self.DISPLAY_NAME,
+            subheadline=self.SUB_HEADLINE,
+            recommendations=recommendations,
+        )
+
+
+class RankingDispatch:
     """
     This class is responsible for accepting:
 
@@ -25,45 +52,28 @@ class Dispatch:
     """
     def __init__(
             self,
-            api_client: CorpusFetchable,
+            corpus_client: CorpusFetchable,
             slate_provider: SlateProvider,
-            metrics_client: Optional[MetricsFetchable] = None
+            metrics_client: MetricsFetchable
     ):
-        self.api_client = api_client
+        self.corpus_client = corpus_client
         self.slate_provider = slate_provider
         self.metrics_client = metrics_client
 
-    async def get_ranked_corpus_slate(self, slate_id, start_date=None, user_id=None) -> CorpusSlateModel:
-        corpus_slate_schema = self.slate_provider.get(slate_id)
-
-        # Choose an Experiment
-        # TODO: Implement weighting
-        experiment = random.choice(corpus_slate_schema.experiments)
+    async def get_ranked_corpus_slate(self, slate_id) -> CorpusSlateModel:
+        """
+        From a slate identifier find the appropriate experiment. Then fetch the candidate set and sort the corpus items.
+        :param slate_id: defined in `slate_configs.json`
+        :return: CorpusSlateModel
+        """
+        corpus_slate_schema = self.slate_provider.getSlate(slate_id)
+        experiment = self.slate_provider.get_random_experiment(slate_id)
 
         # Fetch Corporeal Candidates
-        aggregate_corpus_response = await gather(*(
-            self.api_client.get_ranked_corpus_items(corpus_id, start_date, user_id)
-            for corpus_id in experiment.eligible_corpora)
-        )
+        items = self.corpus_client.get_corpus_items(experiment.corpus_ids())
+        items = self.metrics_client.rank_items(items, experiment.rankers)
 
-        flattened_unranked_items = list(itertools.chain(*aggregate_corpus_response))
-
-        # If no rankers, return the same list in the same order that the corpus api handed us
-        ranked_items = flattened_unranked_items
-
-        # I do not check for duplicate rankers here. I know the old flow does.
-        # This error is not catastrophic (at most, it reorders items a few times)
-        # It's also not likely (an eng AND their reviewer would have to miss two identical lines next to each other)
-        # And it's not insidious (would be easy to find and verify if we suspected it was happening)
-        # So it's not worth complicating the code to check for IMO
-        for ranker in experiment.rankers:
-            ranker_kwargs = {}
-            if self.metrics_client:
-                ranker_kwargs = await self.metrics_client.get_engagement_metrics(ranked_items, ranker)
-
-            ranked_items = ranker(ranked_items, **ranker_kwargs)
-
-        recommendations = [CorpusRecommendationModel(id=uuid.uuid4().hex, corpus_item=item) for item in ranked_items]
+        recommendations = [CorpusRecommendationModel(id=uuid.uuid4().hex, corpus_item=item) for item in items]
 
         return CorpusSlateModel(
             id=slate_id,
@@ -71,6 +81,3 @@ class Dispatch:
             subheadline=corpus_slate_schema.description,
             recommendations=recommendations,
         )
-
-
-    

@@ -1,3 +1,5 @@
+import itertools
+from asyncio import gather
 from typing import Dict, List
 
 import json
@@ -15,19 +17,22 @@ class CorpusFeatureGroupClient(CorpusFetchable):
     """
     Corpus candidate set for showing stories during setup moment onboarding.
     """
-    SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID = 'deea0f06-9dc9-44a5-b864-fea4a4d0beb7'
-
     _FEATURE_GROUP_VERSION = 1
     _FEATURE_NAMES: List[str] = ['corpus_items']
 
-    def __init__(self, aioboto3_session: aioboto3.session.Session = None):
-        self.aioboto3_session = aioboto3_session if aioboto3_session else aioboto3.Session()
+    def __init__(self, user_id: int, aioboto3_session: aioboto3.session.Session):
+        self.user_id = user_id
+        self.aioboto3_session = aioboto3_session
 
-    async def get_ranked_corpus_items(
+    async def get_corpus_items(self, corpus_ids: [str]) -> List[CorpusItemModel]:
+        # Fetch Corporeal Candidates
+        aggregate_corpus_response = await gather(*(self.fetch(corpus_id) for corpus_id in corpus_ids))
+
+        return list(itertools.chain(*aggregate_corpus_response))
+
+    async def fetch(
             self,
-            corpus_id: str = SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID,
-            start_date: str = None,
-            user_id=None,
+            corpus_id: str,
     ) -> List[CorpusItemModel]:
         corpus_items_dicts = await self._query_corpus_items(corpus_id)
         corpus_items = [self.corpus_item_from_dict(d) for d in corpus_items_dicts]

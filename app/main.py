@@ -32,7 +32,7 @@ sentry_sdk.init(
 sentry_sdk.integrations.logging.ignore_logger("graphql.execution.utils")
 
 # Standard asyncio X-Ray configuration, customise as you choose
-xray_recorder.configure(context=AsyncContext(), service=service.get('domain'), plugins=['ecsplugin'])
+xray_recorder.configure(context=AsyncContext(), service=service.getSlate('domain'), plugins=['ecsplugin'])
 
 
 app = FastAPI()
@@ -45,7 +45,7 @@ app.add_route("/", GraphQLAppWithMiddleware(
     executor_class=AsyncioExecutor,
     middleware=[GraphQLSentryMiddleware(), UserMiddleware()]))
 
-@app.get("/health-check")
+@app.getSlate("/health-check")
 async def read_root(response: Response):
     if get_health_status() != HealthStatus.HEALTHY:
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE

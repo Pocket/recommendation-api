@@ -16,7 +16,7 @@ class UserMiddleware(object):
         https://github.com/Pocket/client-api/blob/main/src/main.ts#L18-L26
         """
         try:
-            info.context['user_id'] = info.context.get('request').headers.get('userId')
+            info.context['user_id'] = info.context.getSlate('request').headers.getSlate('userId')
         except AttributeError:
             """No user id so let's explicitly set it to none"""
             info.context['user_id'] = None

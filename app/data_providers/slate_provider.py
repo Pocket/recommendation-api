@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import random
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_provider_schemata import SlateSchema
@@ -13,11 +14,18 @@ class InvalidIdError(Exception):
     message = "No Slate Schema with that id!"
 
 class SlateProvider:
-    def get(self, slate_id):
+    def getSlate(self, slate_id) -> SlateSchema:
         slate_schema = self.slates.get(slate_id)
         if not slate_schema:
             raise InvalidIdError
         return slate_schema
+
+    def get_random_experiment(self, slate_id) -> ExperimentSchema :
+        corpus_slate_schema = self.getSlate(slate_id)
+
+        # Choose an Experiment
+        # TODO: Implement weighting
+        return random.choice(corpus_slate_schema.experiments)
 
     slates = {
         "f99178fb-6bd0-4fa1-8109-cda181b697f6": SlateSchema(

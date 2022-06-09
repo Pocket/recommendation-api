@@ -44,7 +44,7 @@ class TestGetSlateLineup(TestDynamoDBBase):
             # No get defaults here. This chain of 'gets' is deliberately not robust.
             # We want to test that THIS structure exists in the JSON in its entirety
             # because our clients depend on this structure.
-            slate_list = executed.get('data').get('getSlateLineup').get('slates')
+            slate_list = executed.getSlate('data').getSlate('getSlateLineup').getSlate('slates')
 
             # Testing that multiple slates come back
             assert len(slate_list) > 1
