@@ -13,7 +13,7 @@ class UserRecommendationPreferencesProvider:
     _FEATURE_GROUP_VERSION = 1
 
     def __init__(self, aioboto3_session: aioboto3.session.Session = None):
-        self.aioboto3_session = aioboto3_session if aioboto3_session else aioboto3.Session()
+        self.aioboto3_session = aioboto3_session
 
     async def put(self, model: UserRecommendationPreferencesModel):
         """

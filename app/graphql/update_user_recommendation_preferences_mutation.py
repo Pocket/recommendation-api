@@ -1,5 +1,6 @@
 import datetime
 
+import aioboto3
 import graphene
 
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
@@ -22,6 +23,6 @@ class UpdateUserRecommendationPreferences(graphene.Mutation):
             preferred_topics=await TopicModel.get_topics({t.id for t in input.preferredTopics})
         )
 
-        await UserRecommendationPreferencesProvider().put(model)
+        await UserRecommendationPreferencesProvider(aioboto3_session=aioboto3.Session()).put(model)
 
         return UpdateUserRecommendationPreferences(preferred_topics=model.preferred_topics)
