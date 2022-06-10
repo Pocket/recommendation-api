@@ -88,7 +88,7 @@ async def load_slate_configs():
     # Check for GUID re-use
     validate_unique_guids(slate_lineup_configs, slate_configs)
 
-    # Validate slate_lineup and slate configs on prod and dev, not locally.
+    # Validate slate_lineup and slate configs on prod, not locally or in dev.
     if ENV == ENV_PROD:
         # wow i do not love this nested loop soup, BUT it does give us nice full context for the error message
         for slate_config in slate_configs:
