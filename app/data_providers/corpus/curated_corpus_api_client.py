@@ -1,3 +1,5 @@
+import itertools
+from asyncio import gather
 from typing import List
 
 import requests
@@ -9,14 +11,17 @@ from app.models.corpus_item_model import CorpusItemModel
 
 
 class CuratedCorpusAPIClient(CorpusFetchable):
-    async def get_ranked_corpus_items(
+    async def get_corpus_items(self, corpus_ids: [str]):
+        # Fetch Corporeal Candidates
+        aggregate_corpus_response = await gather(*(self.fetch(corpus_id) for corpus_id in corpus_ids))
+
+        return list(itertools.chain(*aggregate_corpus_response))
+
+    async def fetch(
             self,
             corpus_id: str = "NEW_TAB_EN_US",
-            start_date: str = None,
-            user_id=None
     ) -> List[CorpusItemModel]:
-        if not start_date:
-            start_date = date.today().strftime("%Y-%m-%d")
+        start_date = date.today().strftime("%Y-%m-%d")
 
         request_headers = {
             "apollographql-client-name": "recommendations-api",

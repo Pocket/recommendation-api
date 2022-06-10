@@ -25,7 +25,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
         self.client = Client(schema)
 
     @patch('aiohttp.ClientSession.get', to_return=MockResponse(status=200))
-    @patch.object(CorpusFeatureGroupClient, 'get_ranked_corpus_items')
+    @patch.object(CorpusFeatureGroupClient, 'get_corpus_items')
     def test_setup_moment_slate(self, mock_get_ranked_corpus_items, mock_client_session_get):
         corpus_items_fixture = self._get_corpus_items_fixture()
         mock_get_ranked_corpus_items.return_value = corpus_items_fixture
@@ -54,8 +54,8 @@ class TestSetupMomentSlate(TestDynamoDBBase):
 
             # Currently, CorpusItems from the Feature Group are returned in the same order.
             recs = response['recommendations']
-            assert len(recs) == 30  # top-30 ranker is applied
-            assert [rec['corpusItem']['id'] for rec in recs] == [item.id for item in corpus_items_fixture][:30]
+            assert len(recs) == 100
+            assert [rec['corpusItem']['id'] for rec in recs] == [item.id for item in corpus_items_fixture]
 
     def _get_corpus_items_fixture(self, n=100) -> [CorpusItemModel]:
         corpus_topics = ["HEALTH_FITNESS", "SELF_IMPROVEMENT", "FOOD", "SELF_IMPROVEMENT", "TRAVEL"]

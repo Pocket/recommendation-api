@@ -1,23 +1,33 @@
 from abc import ABC, abstractmethod
+import random
 
-from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_provider_schemata import SlateSchema
 from app.rankers.algorithms import *
 
+
 class SlateProvidable(ABC):
     @abstractmethod
-    def get(self, slate_id) -> SlateSchema:
+    def get_slate(self, slate_id) -> SlateSchema:
         return NotImplemented
+
 
 class InvalidIdError(Exception):
     message = "No Slate Schema with that id!"
 
+
 class SlateProvider:
-    def get(self, slate_id):
+    def get_slate(self, slate_id) -> SlateSchema:
         slate_schema = self.slates.get(slate_id)
         if not slate_schema:
             raise InvalidIdError
         return slate_schema
+
+    def get_random_experiment(self, slate_id) -> ExperimentSchema :
+        corpus_slate_schema = self.get_slate(slate_id)
+
+        # Choose an Experiment
+        # TODO: Implement weighting
+        return random.choice(corpus_slate_schema.experiments)
 
     slates = {
         "f99178fb-6bd0-4fa1-8109-cda181b697f6": SlateSchema(
@@ -88,20 +98,4 @@ class SlateProvider:
                 )
             ]
         ),
-        "2d6bd5a3-fbd5-454c-9eac-cd39780b18fc": SlateSchema(
-            displayName="Save an article you find interesting",
-            description="Save one article",
-            internalDescription="Stories shown during Setup Moment onboarding",
-            experiments=[
-                ExperimentSchema(
-                    description="default",
-                    eligible_corpora=[
-                        CorpusFeatureGroupClient.SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID,
-                    ],
-                    rankers=[
-                        top30,
-                    ]
-                )
-            ]
-        )
     }

@@ -6,6 +6,7 @@ from botocore.exceptions import BotoCoreError
 
 import app.config
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
+from app.data_providers.dispatch import SetupMomentDispatch
 from app.models.corpus_item_model import CorpusItemModel
 from tests.mocks.feature_store_mock import FeatureStoreMock
 
@@ -24,14 +25,14 @@ class TestCorpusFeatureGroupClient:
         )
 
         # This is the client that's under test.
-        self.client = CorpusFeatureGroupClient(self.feature_store_mock.aioboto3)
+        self.client = CorpusFeatureGroupClient(aioboto3_session=self.feature_store_mock.aioboto3)
 
     async def test_get_existing_records(self):
         """
         Test the case where the queried records exist in the Feature Group.
         """
-        corpus_items = await self.client.get_ranked_corpus_items(
-            corpus_id=CorpusFeatureGroupClient.SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID
+        corpus_items = await self.client.get_corpus_items(
+            corpus_ids=[SetupMomentDispatch.SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID]
         )
 
         # Assert corpus_items reflect the corpus_candidate_sets.json fixture data.
@@ -45,4 +46,4 @@ class TestCorpusFeatureGroupClient:
         Test that a ValueError is raised when querying a record that does not exist.
         """
         with pytest.raises(ValueError):
-            await self.client.get_ranked_corpus_items(corpus_id='i-do-not-exist')
+            await self.client.get_corpus_items(corpus_ids=['i-do-not-exist'])
