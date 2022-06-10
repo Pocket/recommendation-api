@@ -1,5 +1,5 @@
 import json
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 
 import aioboto3
 from aws_xray_sdk.core import xray_recorder
@@ -11,6 +11,7 @@ from app.models.user_recommendation_preferences import UserRecommendationPrefere
 
 class UserRecommendationPreferencesProvider:
     _FEATURE_GROUP_VERSION = 1
+    _FEATURE_NAMES: List[str] = ['user_id', 'updated_at', 'preferred_topics']
 
     def __init__(self, aioboto3_session: aioboto3.session.Session = None):
         self.aioboto3_session = aioboto3_session
@@ -37,6 +38,30 @@ class UserRecommendationPreferencesProvider:
                 FeatureGroupName=self.get_feature_group_name(),
                 Record=self._feature_store_record_from_model(model)
             )
+
+    @xray_recorder.capture_async('UserRecommendationPreferencesProvider._get_feature_store_record')
+    async def _get_feature_store_record(self, user_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Queries user recommendation preferences from the Feature Group.
+
+        :param user_id:
+        :return: List with all items that should be filtered from slates/lineups returned by the recommendation-api
+                 for the user corresponding to user_id
+        """
+
+        async with self.aioboto3_session.client('sagemaker-featurestore-runtime') as featurestore:
+            record = await featurestore.get_record(
+                FeatureGroupName=self.get_feature_group_name(),
+                RecordIdentifierValueAsString=str(user_id),
+                FeatureNames=self._FEATURE_NAMES
+            )
+
+        if "Record" not in record:
+            # We do not have any preferences yet for this user_id.
+            return None
+
+        # Map list of features to dict.
+        return {feature['FeatureName']: feature['ValueAsString'] for feature in record}
 
     @classmethod
     def _feature_store_record_from_model(cls, model: UserRecommendationPreferencesModel) -> List[Dict[str, Any]]:
