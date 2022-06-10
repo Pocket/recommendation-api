@@ -11,7 +11,7 @@ from app.models.corpus_item_model import CorpusItemModel
 from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
 from app.models.ranked_corpus_slate_instance import RankedCorpusSlateInstance
 from app.models.corpus_slate_model import CorpusSlateModel
-from app.data_providers.dispatch import RankingDispatch
+from app.data_providers.dispatch import RankingDispatch, SetupMomentDispatch
 from app.graphql.ranked_corpus_items import RankedCorpusItems
 from app.graphql.corpus_slate import CorpusSlate
 from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
@@ -79,8 +79,11 @@ class Query(ObjectType):
                                                                      slate_count=slate_count)
 
     async def resolve_setup_moment_slate(self, info) -> CorpusSlateModel:
-        corpus_client = CorpusFeatureGroupClient(user_id=info.context.getSlate('user_id'), aioboto3.Session());
-        return await RankingDispatch(corpus_client=corpus_client).get_ranked_corpus_slate()
+        corpus_client = CorpusFeatureGroupClient(
+            user_id=info.context.getSlate('user_id'),
+            aioboto3_session=aioboto3.Session(),
+        )
+        return await SetupMomentDispatch(corpus_client=corpus_client).get_ranked_corpus_slate()
 
     async def resolve_recommendation_preference_topics(self, info) -> [Topic]:
         topics = await TopicModel.get_all()
