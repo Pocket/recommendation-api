@@ -49,3 +49,4 @@ class TestUserRecommendationPreferencesProvider:
         preferred_topics_feature = json.loads(features['preferred_topics'])
         assert len(preferred_topics_feature) == 1
         assert preferred_topics_feature[0]['id'] == model.preferred_topics[0].id
+        assert preferred_topics_feature[0]['corpus_topic_id'] == model.preferred_topics[0].corpus_topic_id
