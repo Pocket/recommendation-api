@@ -10,6 +10,9 @@ ENV_PROD = "production"
 
 ENV = os.getenv("ENVIRONMENT", ENV_DEV)
 
+# For (local) development, set this variable to "false" in .env to allow the app to start faster.
+CANDIDATE_SET_VALIDATION_ENABLED = os.getenv("CANDIDATE_SET_VALIDATION_ENABLED") != "false"
+
 service = {
     'domain': 'recommendation-api.readitlater.com' if ENV == ENV_PROD else 'recommendation-api.getpocket.dev'
 }

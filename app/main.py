@@ -12,7 +12,7 @@ from xraysink.asgi.middleware import xray_middleware
 from xraysink.context import AsyncContext
 
 from app.cache import initialize_caches
-from app.config import ENV, ENV_PROD, ENV_DEV, service, sentry as sentry_config
+from app.config import ENV, ENV_PROD, ENV_DEV, service, sentry as sentry_config, CANDIDATE_SET_VALIDATION_ENABLED
 from app.graphql.graphql_router import schema
 from app.graphql.user_middleware import UserMiddleware
 from app.graphql_app import GraphQLAppWithMiddleware, GraphQLSentryMiddleware
@@ -89,7 +89,7 @@ async def load_slate_configs():
     validate_unique_guids(slate_lineup_configs, slate_configs)
 
     # Validate slate_lineup and slate configs on prod and dev, not locally.
-    if ENV in {ENV_PROD, ENV_DEV}:
+    if ENV in {ENV_PROD, ENV_DEV} and CANDIDATE_SET_VALIDATION_ENABLED:
         # wow i do not love this nested loop soup, BUT it does give us nice full context for the error message
         for slate_config in slate_configs:
             for experiment in slate_config.experiments:
