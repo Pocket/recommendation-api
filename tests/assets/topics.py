@@ -1,3 +1,5 @@
+from typing import List
+
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 
 from app.models.topic import PageType, TopicModel
@@ -27,7 +29,22 @@ technology_topic = TopicModel(
     page_type=PageType.topic_page
 )
 
+gaming_topic = TopicModel(
+    id='fea00efc-ee03-48f5-95dc-148550c0b69c',
+    name='Gaming',
+    display_name='Gaming',
+    slug='gaming',
+    query='hobbies video games gaming gamer',
+    curator_label='Gaming',
+    is_displayed=False,
+    is_promoted=False,
+    page_type=PageType.topic_page
+)
 
-def populate_topics(table: DynamoDBServiceResource.Table):
-    table.put_item(Item=business_topic.dict())
-    table.put_item(Item=technology_topic.dict())
+
+def populate_topics(table: DynamoDBServiceResource.Table, topics: List[TopicModel] = None):
+    if topics is None:
+        topics = [business_topic, technology_topic]
+
+    for topic in topics:
+        table.put_item(Item=topic.dict())
