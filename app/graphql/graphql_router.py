@@ -76,10 +76,7 @@ class Query(ObjectType):
                                                                      slate_count=slate_count)
 
     async def resolve_setup_moment_slate(self, info) -> CorpusSlateModel:
-        corpus_client = CorpusFeatureGroupClient(
-            user_id=info.context.get('user_id'),
-            aioboto3_session=aioboto3.Session(),
-        )
+        corpus_client = CorpusFeatureGroupClient(aioboto3_session=aioboto3.Session())
         return await SetupMomentDispatch(corpus_client=corpus_client).get_ranked_corpus_slate()
 
     async def resolve_recommendation_preference_topics(self, info) -> [Topic]:

@@ -15,9 +15,9 @@ class SetupMomentDispatch:
     """
 
     SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID = 'deea0f06-9dc9-44a5-b864-fea4a4d0beb7'
-    DISPLAY_NAME = 'display name'
+    DISPLAY_NAME = 'Save an article you find interesting'
     SUB_HEADLINE = 'sub headline'
-    CORPUS_IDS = ['foo']
+    CORPUS_IDS = ['deea0f06-9dc9-44a5-b864-fea4a4d0beb7']
 
     def __init__(self, corpus_client: CorpusFeatureGroupClient):
         self.corpus_client = corpus_client

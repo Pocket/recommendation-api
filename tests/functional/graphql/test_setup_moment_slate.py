@@ -54,8 +54,8 @@ class TestSetupMomentSlate(TestDynamoDBBase):
 
             # Currently, CorpusItems from the Feature Group are returned in the same order.
             recs = response['recommendations']
-            assert len(recs) == 30  # top-30 ranker is applied
-            assert [rec['corpusItem']['id'] for rec in recs] == [item.id for item in corpus_items_fixture][:30]
+            assert len(recs) == 100
+            assert [rec['corpusItem']['id'] for rec in recs] == [item.id for item in corpus_items_fixture]
 
     def _get_corpus_items_fixture(self, n=100) -> [CorpusItemModel]:
         corpus_topics = ["HEALTH_FITNESS", "SELF_IMPROVEMENT", "FOOD", "SELF_IMPROVEMENT", "TRAVEL"]
