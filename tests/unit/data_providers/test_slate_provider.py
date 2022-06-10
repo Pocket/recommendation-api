@@ -12,6 +12,7 @@ def test_get__invalid_id():
     except InvalidIdError:
         pass
 
+
 def test_get__nominal():
     provider = SlateProvider()
 

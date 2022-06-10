@@ -9,7 +9,6 @@ from aws_xray_sdk.core import xray_recorder
 
 from app import config
 from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
-from app.graphql.corpus_item import CorpusItem
 from app.models.corpus_item_model import CorpusItemModel
 
 
@@ -48,7 +47,7 @@ class CorpusFeatureGroupClient(CorpusFetchable):
         # Convert keys to lowercase.
         return CorpusItemModel.parse_obj({k.lower(): v for k, v in obj.items()})
 
-    @xray_recorder.capture_async('UserImpressedList._query_item_list')
+    @xray_recorder.capture_async('CorpusFeatureGroupClient._query_item_list')
     async def _query_corpus_items(self, corpus_candidate_set_id: str) -> List[Dict[str, str]]:
         """
         Queries impressed items to be filtered from the Feature Group.

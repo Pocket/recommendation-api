@@ -10,7 +10,7 @@ from app.models.corpus_slate_model import CorpusSlateModel
 
 class SetupMomentDispatch:
     """
-    This is a shortcut dispatch halper for launching Setup Moment more quickly. We will want to migrate
+    This is a shortcut dispatch helper for launching Setup Moment more quickly. We will want to migrate
     setup moment to RankingDispatch as soon as we want to include rankers or experimentation.
     """
 

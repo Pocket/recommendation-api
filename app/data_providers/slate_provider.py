@@ -1,17 +1,19 @@
 from abc import ABC, abstractmethod
 import random
 
-from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_provider_schemata import SlateSchema
 from app.rankers.algorithms import *
+
 
 class SlateProvidable(ABC):
     @abstractmethod
     def get(self, slate_id) -> SlateSchema:
         return NotImplemented
 
+
 class InvalidIdError(Exception):
     message = "No Slate Schema with that id!"
+
 
 class SlateProvider:
     def getSlate(self, slate_id) -> SlateSchema:
@@ -96,20 +98,4 @@ class SlateProvider:
                 )
             ]
         ),
-        "2d6bd5a3-fbd5-454c-9eac-cd39780b18fc": SlateSchema(
-            displayName="Save an article you find interesting",
-            description="Save one article",
-            internalDescription="Stories shown during Setup Moment onboarding",
-            experiments=[
-                ExperimentSchema(
-                    description="default",
-                    eligible_corpora=[
-                        CorpusFeatureGroupClient.SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID,
-                    ],
-                    rankers=[
-                        top30,
-                    ]
-                )
-            ]
-        )
     }

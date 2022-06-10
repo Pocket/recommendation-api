@@ -63,10 +63,7 @@ class Query(ObjectType):
             metrics_client=MetricsClient(
                 firefox_newtab_metrics_factory=FirefoxNewTabMetricsFactory()
             )
-        ).get_ranked_corpus_slate(
-            slate_id=slate_id,
-            user_id=info.context.get('user_id')
-        )
+        ).get_ranked_corpus_slate(slate_id=slate_id)
 
     async def resolve_list_slates(self, info, recommendation_count: int) -> [SlateModel]:
         return await SlateModel.get_all(user_id=info.context.get('user_id'), recommendation_count=recommendation_count)

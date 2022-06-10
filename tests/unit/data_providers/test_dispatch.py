@@ -7,7 +7,6 @@ from app.data_providers.dispatch import RankingDispatch
 from app.data_providers.metrics_client import MetricsFetchable
 from app.data_providers.slate_provider import SlateProvidable
 from app.data_providers.slate_provider_schemata import ExperimentSchema, SlateSchema
-from app.graphql.corpus_item import CorpusItem
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
@@ -45,7 +44,7 @@ class MockCuratedCorpusAPIClient(CorpusFetchable):
     )
 
     async def get_ranked_corpus_items(cls, corpus_id: str, start_date: str = None,
-                                      user_id=None) -> List[CorpusItem]:
+                                      user_id=None) -> List[CorpusItemModel]:
         return cls.mock_corpus.corpusItems
 
 @pytest.mark.asyncio

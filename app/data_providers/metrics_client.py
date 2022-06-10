@@ -2,12 +2,13 @@ from abc import ABC
 from typing import List, Callable
 
 from app.models.corpus_item_model import CorpusItemModel
-from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
 from app.rankers.algorithms import firefox_thompson_sampling_1day
+
 
 class MetricsFetchable(ABC):
     async def rank_items(self, items: List[CorpusItemModel], rankers: List[Callable]):
         return NotImplemented
+
 
 class MetricsClient(MetricsFetchable):
     def __init__(self, firefox_newtab_metrics_factory):

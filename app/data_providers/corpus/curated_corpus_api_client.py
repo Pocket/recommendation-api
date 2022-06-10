@@ -1,4 +1,5 @@
 import itertools
+from asyncio import gather
 from typing import List
 
 import requests
@@ -20,8 +21,7 @@ class CuratedCorpusAPIClient(CorpusFetchable):
             self,
             corpus_id: str = "NEW_TAB_EN_US",
     ) -> List[CorpusItemModel]:
-        if not start_date:
-            start_date = date.today().strftime("%Y-%m-%d")
+        start_date = date.today().strftime("%Y-%m-%d")
 
         request_headers = {
             "apollographql-client-name": "recommendations-api",
