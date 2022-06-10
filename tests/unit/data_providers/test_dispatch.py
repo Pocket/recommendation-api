@@ -61,7 +61,9 @@ class MockCuratedCorpusAPIClient(CorpusFetchable):
     )
 
     async def get_corpus_items(cls, corpus_ids: [str]) -> List[CorpusItemModel]:
-        return cls.mock_corpus.corpusItems
+        # In this test we just have one corpus. We will return it _n_ times.
+        return cls.mock_corpus.corpusItems * len(corpus_ids)
+
 
 @pytest.mark.asyncio
 async def test_get_ranked_items__no_rankers():
@@ -109,7 +111,7 @@ async def test_get_ranked_items__one_item_set__one_ranker():
 async def test_get_ranked_items__multiple_item_sets__one_ranker():
     mock_slate_provider = MockSlateProvider()
 
-    mock_slate_provider.schema.experiments[0].eligible_corpora.append("CHELSEAS_AWESOME_CORPUS_AGAIN")
+    mock_slate_provider.schema.experiments[0].eligible_corpora.append("CHELSEAS_AWESOME_CORPUS")
     mock_slate_provider.schema.experiments[0].rankers.append(top15)
 
     ranked_items_response = await RankingDispatch(
