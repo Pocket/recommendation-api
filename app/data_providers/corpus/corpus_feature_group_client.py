@@ -17,10 +17,8 @@ class CorpusFeatureGroupClient(CorpusFetchable):
     Corpus candidate set for showing stories during setup moment onboarding.
     """
     _FEATURE_GROUP_VERSION = 1
-    _FEATURE_NAMES: List[str] = ['corpus_items']
 
-    def __init__(self, user_id: int, aioboto3_session: aioboto3.session.Session):
-        self.user_id = user_id
+    def __init__(self, aioboto3_session: aioboto3.session.Session):
         self.aioboto3_session = aioboto3_session
 
     async def get_corpus_items(self, corpus_ids: [str]) -> List[CorpusItemModel]:
@@ -53,15 +51,14 @@ class CorpusFeatureGroupClient(CorpusFetchable):
         Queries impressed items to be filtered from the Feature Group.
 
         :param corpus_candidate_set_id: Feature record ID to query
-        :return: List with all items that should be filtered from slates/lineups returned by the recommendation-api
-                 for the user corresponding to user_id
+        :return: List of corpus item dicts, with keys id, topic.
         """
 
         async with self.aioboto3_session.client('sagemaker-featurestore-runtime') as featurestore:
             record = await featurestore.get_record(
                 FeatureGroupName=self.get_feature_group_name(),
                 RecordIdentifierValueAsString=str(corpus_candidate_set_id),
-                FeatureNames=self._FEATURE_NAMES
+                FeatureNames=['corpus_items']
             )
 
         if "Record" not in record:
