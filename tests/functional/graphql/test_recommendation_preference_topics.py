@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 
 from app.graphql.graphql_router import schema
 from app.main import app, load_slate_configs
-from tests.assets.topics import populate_topics
+from tests.assets.topics import populate_topics, technology_topic, gaming_topic
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 
 from unittest.mock import patch
@@ -15,7 +15,7 @@ from collections import namedtuple
 MockResponse = namedtuple('MockResponse', 'status')
 
 
-class TestSetupMomentSlate(TestDynamoDBBase):
+class TestRecommendationPreferenceTopics(TestDynamoDBBase):
     client: Client
 
     async def asyncSetUp(self):
@@ -23,8 +23,8 @@ class TestSetupMomentSlate(TestDynamoDBBase):
         self.client = Client(schema)
 
     @patch('aiohttp.ClientSession.get', to_return=MockResponse(status=200))
-    def test_setup_moment_slate(self, mock_client_session_get):
-        populate_topics(self.metadata_table)
+    def test_recommendation_preference_topics(self, mock_client_session_get):
+        populate_topics(self.metadata_table, topics=[technology_topic, gaming_topic])
 
         with TestClient(app):
             executed = self.client.execute(
