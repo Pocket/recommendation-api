@@ -3,7 +3,7 @@ import uuid
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
 from app.data_providers.metrics_client import MetricsFetchable
-from app.data_providers.slate_provider import SlateProvider
+from app.data_providers.slate_provider import SlateProvider, SlateProvidable
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
 
@@ -62,7 +62,7 @@ class RankingDispatch:
         :param slate_id: defined in `slate_configs.json`
         :return: CorpusSlateModel
         """
-        corpus_slate_schema = self.slate_provider.getSlate(slate_id)
+        corpus_slate_schema = self.slate_provider.get_slate(slate_id)
         experiment = self.slate_provider.get_random_experiment(slate_id)
 
         # Fetch Corporeal Candidates

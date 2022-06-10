@@ -14,7 +14,7 @@ class MetricsClient(MetricsFetchable):
     def __init__(self, firefox_newtab_metrics_factory):
         self.firefox_newtab_metrics_factory = firefox_newtab_metrics_factory
 
-    async def rank_items(self, items: List[CorpusItemModel], rankers: List[Callable]):
+    async def rank_items(self, items: List[CorpusItemModel], rankers: List[Callable]) -> List[CorpusItemModel]:
         # I do not check for duplicate rankers here. I know the old flow does.
         # This error is not catastrophic (at most, it reorders items a few times)
         # It's also not likely (an eng AND their reviewer would have to miss two identical lines next to each other)

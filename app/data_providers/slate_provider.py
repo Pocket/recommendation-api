@@ -7,7 +7,7 @@ from app.rankers.algorithms import *
 
 class SlateProvidable(ABC):
     @abstractmethod
-    def get(self, slate_id) -> SlateSchema:
+    def get_slate(self, slate_id) -> SlateSchema:
         return NotImplemented
 
 
@@ -16,14 +16,14 @@ class InvalidIdError(Exception):
 
 
 class SlateProvider:
-    def getSlate(self, slate_id) -> SlateSchema:
+    def get_slate(self, slate_id) -> SlateSchema:
         slate_schema = self.slates.get(slate_id)
         if not slate_schema:
             raise InvalidIdError
         return slate_schema
 
     def get_random_experiment(self, slate_id) -> ExperimentSchema :
-        corpus_slate_schema = self.getSlate(slate_id)
+        corpus_slate_schema = self.get_slate(slate_id)
 
         # Choose an Experiment
         # TODO: Implement weighting
