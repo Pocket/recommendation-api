@@ -1,8 +1,12 @@
+import datetime
+
 import graphene
 
+from app.data_providers.user_recommendation_preferences import UserRecommendationPreferencesProvider
 from app.graphql.topic import Topic
 from app.graphql.update_user_recommendation_preferences_input import UpdateUserRecommendationPreferencesInput
 from app.models.topic import TopicModel
+from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
 
 
 class UpdateUserRecommendationPreferences(graphene.Mutation):
@@ -12,8 +16,12 @@ class UpdateUserRecommendationPreferences(graphene.Mutation):
     preferred_topics = graphene.List(Topic, description="Topics that the user expressed interest in")
 
     async def mutate(root, info, input):
-        topics = await TopicModel.get_all()
-        input_topic_ids = {t.id for t in input.preferredTopics}
-        output_topics = [t for t in topics if t.id in input_topic_ids]
+        model = UserRecommendationPreferencesModel(
+            user_id=info.context.get('user_id'),
+            updated_at=datetime.datetime.utcnow(),
+            preferred_topics=await TopicModel.get_topics({t.id for t in input.preferredTopics})
+        )
 
-        return UpdateUserRecommendationPreferences(preferred_topics=output_topics)
+        await UserRecommendationPreferencesProvider().put(model)
+
+        return UpdateUserRecommendationPreferences(preferred_topics=model.preferred_topics)
