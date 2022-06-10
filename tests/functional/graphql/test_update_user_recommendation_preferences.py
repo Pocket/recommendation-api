@@ -58,12 +58,3 @@ class TestUpdateUserRecommendationPreferences(TestDynamoDBBase):
 
             assert len(preferred_topics) == 1
             assert preferred_topics[0]['name'] == 'Technology'
-
-            # Assert that the data provider was called with the right data.
-            assert mock_data_provider_put.call_count == 1
-            model_arg = mock_data_provider_put.call_args[0][0]
-            assert model_arg.user_id == user_id
-            self.assertAlmostEqual(model_arg.updated_at, datetime.utcnow(), delta=timedelta(minutes=1))
-            assert len(model_arg.preferred_topics) == 1
-            assert model_arg.preferred_topics[0].name == 'Technology'
-
