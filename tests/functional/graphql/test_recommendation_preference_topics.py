@@ -38,7 +38,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
                 ''',
                 executor=AsyncioExecutor())
 
-            response = executed.getSlate('data').getSlate('recommendationPreferenceTopics')
+            response = executed.get('data').get('recommendationPreferenceTopics')
 
             # 'Gaming' is filtered out, so the only topic remaining is 'Technology'.
             assert len(response) == 1

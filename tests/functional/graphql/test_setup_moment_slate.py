@@ -49,7 +49,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
                 context_value={'user_id': 'johnjacobjingleheimerschmidt'},
                 executor=AsyncioExecutor())
 
-            response = executed.getSlate('data').getSlate('setupMomentSlate')
+            response = executed.get('data').get('setupMomentSlate')
             assert response['headline'] == 'Save an article you find interesting'
 
             # Currently, CorpusItems from the Feature Group are returned in the same order.

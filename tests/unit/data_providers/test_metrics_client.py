@@ -30,7 +30,7 @@ async def test_get_engagement_metrics__firefox_thompson_sampling():
         [CorpusItem(id="example-corpus-item-id")],
         firefox_thompson_sampling_1day
     )
-    assert metrics.getSlate('metrics') == mock_metrics_factory.mock_impressions
+    assert metrics.get('metrics') == mock_metrics_factory.mock_impressions
 
 @pytest.mark.asyncio
 async def test_get_engagement_metrics__anything_besides_firefox_thompson_sampling():
