@@ -29,6 +29,9 @@ class FirefoxNewTabMetricsFactory():
         'TRAILING_1_DAY_IMPRESSIONS',
     ]
 
+    def __init__(self, aioboto3_session: aioboto3.session.Session = None):
+        self.aioboto3_session = aioboto3_session if aioboto3_session else aioboto3.Session()
+
     async def get(self, recommendation_ids: List[str]) -> Dict[str, 'FirefoxNewTabMetricsModel']:
         """
         Get engagement metrics for a Firefox New Tab slate experiment.
@@ -73,7 +76,7 @@ class FirefoxNewTabMetricsFactory():
         """
         metrics = []
 
-        async with aioboto3.client('sagemaker-featurestore-runtime') as featurestore:
+        async with self.aioboto3_session.client('sagemaker-featurestore-runtime') as featurestore:
             # TODO: Update aioboto3 to v9 to improve performance with featurestore's batch_get_record.
             #       - boto3 1.17.92 introduces BatchGetRecord
             #       - aioboto3 8.3.0 pins aiobotocore[boto3]==1.2.2

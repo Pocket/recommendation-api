@@ -4,7 +4,7 @@ from aws_xray_sdk.core import xray_recorder
 from boto3.dynamodb.conditions import Key
 from enum import Enum
 from pydantic import BaseModel
-from typing import Dict, Optional
+from typing import Dict, Optional, Set
 
 from app.config import dynamodb as dynamodb_config
 
@@ -53,6 +53,16 @@ class TopicModel(BaseModel):
             table = await dynamodb.Table(dynamodb_config['metadata']['table'])
             response = await table.scan()
         return sorted(list(map(TopicModel.from_dict, response['Items'])), key=lambda topic: topic.slug)
+
+    @staticmethod
+    async def get_topics(topics_ids: Set[str]) -> ['TopicModel']:
+        """
+        Retrieves all topics from dynamo db
+
+        :return: a list of TopicModel objects
+        """
+        all_topics = await TopicModel.get_all()
+        return [t for t in all_topics if t.id in topics_ids]
 
     @staticmethod
     @xray_recorder.capture_async('models_topic_get_topic')

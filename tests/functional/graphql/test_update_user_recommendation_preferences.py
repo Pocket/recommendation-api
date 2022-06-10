@@ -1,9 +1,12 @@
+from datetime import datetime, timedelta
+
 import pytest
 
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from graphene.test import Client
 from fastapi.testclient import TestClient
 
+from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.graphql.graphql_router import schema
 from app.main import app, load_slate_configs
 from tests.assets.topics import populate_topics
@@ -23,8 +26,10 @@ class TestUpdateUserRecommendationPreferences(TestDynamoDBBase):
         self.client = Client(schema)
 
     @patch('aiohttp.ClientSession.get', to_return=MockResponse(status=200))
-    def test_update_user_recommendation_preferences(self, mock_client_session_get):
+    @patch.object(UserRecommendationPreferencesProvider, 'put')
+    def test_update_user_recommendation_preferences(self, mock_data_provider_put, mock_client_session_get):
         topics = populate_topics(self.metadata_table)
+        user_id = 'johnjacobjingleheimerschmidt'
 
         with TestClient(app):
             executed = self.client.execute(
@@ -45,7 +50,7 @@ class TestUpdateUserRecommendationPreferences(TestDynamoDBBase):
                         ]
                     }
                 },
-                context_value={'user_id': 'johnjacobjingleheimerschmidt'},
+                context_value={'user_id': user_id},
                 executor=AsyncioExecutor())
 
             response = executed.get('data').get('updateUserRecommendationPreferences')

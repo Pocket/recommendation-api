@@ -1,8 +1,9 @@
 from graphene import ObjectType, String, Field, List, Int
 from graphene_federation import build_schema
-
-from app.data_providers.curation_api_client import CurationAPIClient
-from app.data_providers.metrics_client import MetricsClient
+import aioboto3
+from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
+from app.data_providers.corpus.curated_corpus_api_client import CuratedCorpusAPIClient
+from app.data_providers.metrics_client import MetricsClient, MetricsFetchable
 from app.data_providers.slate_provider import SlateProvider
 from app.graphql.ranked_corpus_slate import RankedCorpusSlate
 from app.graphql.update_user_recommendation_preferences_mutation import UpdateUserRecommendationPreferences
@@ -10,7 +11,7 @@ from app.models.corpus_item_model import CorpusItemModel
 from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
 from app.models.ranked_corpus_slate_instance import RankedCorpusSlateInstance
 from app.models.corpus_slate_model import CorpusSlateModel
-from app.data_providers.dispatch import Dispatch
+from app.data_providers.dispatch import RankingDispatch, SetupMomentDispatch
 from app.graphql.ranked_corpus_items import RankedCorpusItems
 from app.graphql.corpus_slate import CorpusSlate
 from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
@@ -56,16 +57,13 @@ class Query(ObjectType):
                                           recommendation_count=recommendation_count)
 
     async def resolve_get_ranked_corpus_slate(self, info, slate_id: str) -> RankedCorpusSlateInstance:
-        return await Dispatch(
-            api_client=CurationAPIClient(),
+        return await RankingDispatch(
+            corpus_client=CuratedCorpusAPIClient(),
             slate_provider=SlateProvider(),
             metrics_client=MetricsClient(
                 firefox_newtab_metrics_factory=FirefoxNewTabMetricsFactory()
             )
-        ).get_ranked_corpus_slate(
-            slate_id=slate_id,
-            user_id=info.context.get('user_id')
-        )
+        ).get_ranked_corpus_slate(slate_id=slate_id)
 
     async def resolve_list_slates(self, info, recommendation_count: int) -> [SlateModel]:
         return await SlateModel.get_all(user_id=info.context.get('user_id'), recommendation_count=recommendation_count)
@@ -77,26 +75,9 @@ class Query(ObjectType):
                                                                      recommendation_count=recommendation_count,
                                                                      slate_count=slate_count)
 
-    async def resolve_setup_moment_slate(self, info) -> CorpusSlate:
-        return CorpusSlate(
-            id='2d6bd5a3-fbd5-454c-9eac-cd39780b18fc',
-            headline='Save an article you find interesting',
-            subheadline='Save one article',
-            recommendations=[
-                CorpusRecommendationModel(
-                    id='ca42bad7-6346-457b-b23b-ef583a3d3f5c',
-                    corpusItem=CorpusItemModel(id='b809c66c-4f8b-4e56-a9d4-67bb6f601a5b'),
-                ),
-                CorpusRecommendationModel(
-                    id='3177b6b1-8499-4395-9ad3-f4321cb2c8c8',
-                    corpusItem=CorpusItemModel(id='69e9c46a-6859-4e77-a6c9-aa49ba5825bb'),
-                ),
-                CorpusRecommendationModel(
-                    id='7c09a422-d6d1-40b6-9e98-6171b259fc29',
-                    corpusItem=CorpusItemModel(id='a43317f0-44c1-4ae8-ad14-e9e792a5ade7'),
-                ),
-            ],
-        )
+    async def resolve_setup_moment_slate(self, info) -> CorpusSlateModel:
+        corpus_client = CorpusFeatureGroupClient(aioboto3_session=aioboto3.Session())
+        return await SetupMomentDispatch(corpus_client=corpus_client).get_ranked_corpus_slate()
 
     async def resolve_recommendation_preference_topics(self, info) -> [Topic]:
         topics = await TopicModel.get_all()
