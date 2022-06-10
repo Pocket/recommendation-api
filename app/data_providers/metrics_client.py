@@ -31,6 +31,6 @@ class MetricsClient(MetricsFetchable):
         # If this turns into a skyscraper of conditionals I recommend we consider a jump table instead
         if ranker is firefox_thompson_sampling_1day:
             ranker_kwargs = {
-                'metrics': await self.firefox_newtab_metrics_factory.getSlate([rec.id for rec in ranked_items])
+                'metrics': await self.firefox_newtab_metrics_factory.get([rec.id for rec in ranked_items])
             }
         return ranker_kwargs

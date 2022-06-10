@@ -46,6 +46,6 @@ class CuratedCorpusAPIClient(CorpusFetchable):
         url = 'https://client-api.getpocket.com'
         response = requests.post(url, headers=request_headers, json={'query': query})
         response_body = json.loads(response.text)
-        corpus_items = response_body.getSlate("data").getSlate("scheduledSurface").getSlate("items")
+        corpus_items = response_body.get("data").get("scheduledSurface").get("items")
 
         return corpus_items

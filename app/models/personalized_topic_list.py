@@ -33,7 +33,7 @@ class PersonalizedTopicList(BaseModel):
         # TODO: There should really just be one session shared, not sure how to do this in gunicorn thou
         async with aiohttp.ClientSession() as session:
             url = f'{app.config.recit["endpoint_url"]}/v1/user_profile/{user_id}?predict_topics=true'
-            async with session.getSlate(url) as resp:
+            async with session.get(url) as resp:
                 if resp.status == 200:
                     j1 = await resp.json()
                     return PersonalizedTopicList.parse_recit_response(user_id, j1)

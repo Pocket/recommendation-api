@@ -81,7 +81,7 @@ class RecItCandidateSet(CandidateSetModel):
 
         #TODO: There should really just be one session shared, not sure how to do this in gunicorn thou
         async with aiohttp.ClientSession() as session:
-            async with session.getSlate(f'{recit_config["endpoint_url"]}/v1/module/{recit_module_name}/0',
+            async with session.get(f'{recit_config["endpoint_url"]}/v1/module/{recit_module_name}/0',
                                         params={"user_id": user_id, "limit": RECIT_LIMIT}) as resp:
                 if resp.status == 200:
                     return RecItCandidateSet.parse_recit_response(cs_id, await resp.json())
@@ -138,10 +138,10 @@ class DynamoDBCandidateSet(CandidateSetModel):
         :param cs_id: Candidate Set id
         :return: Candidate Set dict
         """
-        cache = caches.getSlate(app.cache.candidate_set_alias)
+        cache = caches.get(app.cache.candidate_set_alias)
 
         key = f'candidate_set:{cs_id}'
-        value = await cache.getSlate(key)
+        value = await cache.get(key)
         if value is not None:
             return value
 

@@ -53,7 +53,7 @@ class Query(ObjectType):
         return await TopicModel.get_all()
 
     async def resolve_get_slate(self, info, slate_id: str, recommendation_count: int = None) -> SlateModel:
-        return await SlateModel.get_slate(slate_id=slate_id, user_id=info.context.getSlate('user_id'),
+        return await SlateModel.get_slate(slate_id=slate_id, user_id=info.context.get('user_id'),
                                           recommendation_count=recommendation_count)
 
     async def resolve_get_ranked_corpus_slate(self, info, slate_id: str) -> RankedCorpusSlateInstance:
@@ -65,22 +65,22 @@ class Query(ObjectType):
             )
         ).get_ranked_corpus_slate(
             slate_id=slate_id,
-            user_id=info.context.getSlate('user_id')
+            user_id=info.context.get('user_id')
         )
 
     async def resolve_list_slates(self, info, recommendation_count: int) -> [SlateModel]:
-        return await SlateModel.get_all(user_id=info.context.getSlate('user_id'), recommendation_count=recommendation_count)
+        return await SlateModel.get_all(user_id=info.context.get('user_id'), recommendation_count=recommendation_count)
 
     async def resolve_get_slate_lineup(self, info, slate_lineup_id: str, recommendation_count: int = 10,
                                        slate_count: int = 8) -> SlateLineupModel:
         return await SlateLineupModel.get_slate_lineup_with_fallback(slate_lineup_id=slate_lineup_id,
-                                                                     user_id=info.context.getSlate('user_id'),
+                                                                     user_id=info.context.get('user_id'),
                                                                      recommendation_count=recommendation_count,
                                                                      slate_count=slate_count)
 
     async def resolve_setup_moment_slate(self, info) -> CorpusSlateModel:
         corpus_client = CorpusFeatureGroupClient(
-            user_id=info.context.getSlate('user_id'),
+            user_id=info.context.get('user_id'),
             aioboto3_session=aioboto3.Session(),
         )
         return await SetupMomentDispatch(corpus_client=corpus_client).get_ranked_corpus_slate()
