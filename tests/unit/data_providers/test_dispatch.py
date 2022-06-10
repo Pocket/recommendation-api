@@ -15,6 +15,9 @@ from app.rankers.algorithms import top5, top15
 
 class MockMetricsClient(MetricsFetchable):
     async def rank_items(self, items: List[CorpusItemModel], rankers: List[Callable]) -> List[CorpusItemModel]:
+        for ranker in rankers:
+            items = ranker(items)
+
         return items
 
     async def get_engagement_metrics(self, ranked_items, ranker):
