@@ -1,8 +1,4 @@
-import itertools
-import random
-from typing import Optional
 import uuid
-from asyncio import gather
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
@@ -27,7 +23,7 @@ class SetupMomentDispatch:
         self.corpus_client = corpus_client
 
     async def get_ranked_corpus_slate(self) -> CorpusSlateModel:
-        items = self.corpus_client.get_corpus_items(self.CORPUS_IDS)
+        items = await self.corpus_client.get_corpus_items(self.CORPUS_IDS)
         recommendations = [CorpusRecommendationModel(id=uuid.uuid4().hex, corpus_item=item) for item in items]
 
         return CorpusSlateModel(
@@ -70,8 +66,8 @@ class RankingDispatch:
         experiment = self.slate_provider.get_random_experiment(slate_id)
 
         # Fetch Corporeal Candidates
-        items = self.corpus_client.get_corpus_items(experiment.corpus_ids())
-        items = self.metrics_client.rank_items(items, experiment.rankers)
+        items = await self.corpus_client.get_corpus_items(experiment.corpus_ids())
+        items = await self.metrics_client.rank_items(items, experiment.rankers)
 
         recommendations = [CorpusRecommendationModel(id=uuid.uuid4().hex, corpus_item=item) for item in items]
 
