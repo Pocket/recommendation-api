@@ -2,7 +2,7 @@ import datetime
 
 import graphene
 
-from app.data_providers.user_recommendation_preferences import UserRecommendationPreferencesProvider
+from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.graphql.topic import Topic
 from app.graphql.update_user_recommendation_preferences_input import UpdateUserRecommendationPreferencesInput
 from app.models.topic import TopicModel
