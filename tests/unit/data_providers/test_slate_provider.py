@@ -7,15 +7,16 @@ def test_get__invalid_id():
     provider = SlateProvider()
 
     try:
-        provider.get("DEFINITELY-not-a-valid-id")
+        provider.get_slate("DEFINITELY-not-a-valid-id")
         fail("invalid id should raise an exception")
     except InvalidIdError:
         pass
 
+
 def test_get__nominal():
     provider = SlateProvider()
 
-    german_new_tab_config = provider.get("79655eb2-47a1-4a26-9235-29e4768ff0a1")
+    german_new_tab_config = provider.get_slate("79655eb2-47a1-4a26-9235-29e4768ff0a1")
 
     # I tried to pick something we won't change here so we're just testing the get behavior and not
     # our actual documentation strings. PROBABLY the language code should stay in the description though.

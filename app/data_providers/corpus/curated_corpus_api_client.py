@@ -1,24 +1,27 @@
-import uuid
-from abc import ABC, abstractmethod
+import itertools
+from asyncio import gather
 from typing import List
 
 import requests
 import json
 from datetime import date
 
-from app.graphql.corpus_item import CorpusItem
+from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
 from app.models.corpus_item_model import CorpusItemModel
-from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
 
-class CurationAPIFetchable(ABC):
-    @abstractmethod
-    async def get_ranked_corpus_slate(self, corpus_id: str, start_date: str, user_id) -> List[CorpusItem]:
-        return NotImplemented
 
-class CurationAPIClient(CurationAPIFetchable):
-    async def get_ranked_corpus_slate(self, corpus_id: str = "NEW_TAB_EN_US", start_date: str=None, user_id=None) -> List[CorpusItem]:
-        if not start_date:
-            start_date = date.today().strftime("%Y-%m-%d")
+class CuratedCorpusAPIClient(CorpusFetchable):
+    async def get_corpus_items(self, corpus_ids: [str]):
+        # Fetch Corporeal Candidates
+        aggregate_corpus_response = await gather(*(self.fetch(corpus_id) for corpus_id in corpus_ids))
+
+        return list(itertools.chain(*aggregate_corpus_response))
+
+    async def fetch(
+            self,
+            corpus_id: str = "NEW_TAB_EN_US",
+    ) -> List[CorpusItemModel]:
+        start_date = date.today().strftime("%Y-%m-%d")
 
         request_headers = {
             "apollographql-client-name": "recommendations-api",

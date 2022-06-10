@@ -41,7 +41,7 @@ class SlateLineupModel(BaseModel):
             )
 
         except PersonalizationError as e:
-            slate_lineup_id = app.config.personalization_fallback_slate_lineup.get(slate_lineup_id,None)
+            slate_lineup_id = app.config.personalization_fallback_slate_lineup.get(slate_lineup_id, None)
             if slate_lineup_id:
                 # Retry getting a lineup, but this time with the fallback slate_lineup_id
                 experiment, slates = await SlateLineupModel.__get_slate_lineup(

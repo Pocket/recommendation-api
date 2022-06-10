@@ -13,6 +13,9 @@ class ExperimentSchema:
         self.eligible_corpora = eligible_corpora
         self.rankers = rankers
 
+    def corpus_ids(self):
+        return [c for c in self.eligible_corpora]
+
 
 class SlateSchema:
     def __init__(
