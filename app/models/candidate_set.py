@@ -82,7 +82,7 @@ class RecItCandidateSet(CandidateSetModel):
         #TODO: There should really just be one session shared, not sure how to do this in gunicorn thou
         async with aiohttp.ClientSession() as session:
             async with session.get(f'{recit_config["endpoint_url"]}/v1/module/{recit_module_name}/0',
-                                        params={"user_id": user_id, "limit": RECIT_LIMIT}) as resp:
+                                   params={"user_id": user_id, "limit": RECIT_LIMIT}) as resp:
                 if resp.status == 200:
                     return RecItCandidateSet.parse_recit_response(cs_id, await resp.json())
                 else:
