@@ -2,6 +2,7 @@ import json
 from typing import Dict, List, Any, Optional
 
 import aioboto3
+import dateutil.parser
 from aws_xray_sdk.core import xray_recorder
 
 from app import config
@@ -22,6 +23,16 @@ class UserRecommendationPreferencesProvider:
         :param model:
         """
         await self._put_feature_store_record(model)
+
+    async def fetch(self, user_id: str) -> UserRecommendationPreferencesModel:
+        """
+        Gets user recommendation preferences for a given user id.
+        :param user_id:
+        :return:
+        """
+        feature_store_record = await self._get_feature_store_record(user_id)
+        model = await self._model_from_feature_store_record(feature_store_record)
+        return model
 
     @classmethod
     def get_feature_group_name(cls):
@@ -56,12 +67,22 @@ class UserRecommendationPreferencesProvider:
                 FeatureNames=self._FEATURE_NAMES
             )
 
-        if "Record" not in record:
+        if 'Record' not in record:
             # We do not have any preferences yet for this user_id.
             return None
 
         # Map list of features to dict.
-        return {feature['FeatureName']: feature['ValueAsString'] for feature in record}
+        return {feature['FeatureName']: feature['ValueAsString'] for feature in record['Record']}
+
+    @xray_recorder.capture_async('UserRecommendationPreferencesProvider._model_from_feature_store_record')
+    async def _model_from_feature_store_record(self, record: Optional[Dict[str, Any]]) -> UserRecommendationPreferencesModel:
+        preferred_topics = json.loads(record['preferred_topics'])
+
+        return UserRecommendationPreferencesModel(
+            user_id=record['user_id'],
+            updated_at=dateutil.parser.isoparse(record['updated_at']),
+            preferred_topics=await TopicModel.get_topics({t['id'] for t in preferred_topics})
+        )
 
     @classmethod
     def _feature_store_record_from_model(cls, model: UserRecommendationPreferencesModel) -> List[Dict[str, Any]]:
@@ -72,7 +93,7 @@ class UserRecommendationPreferencesProvider:
             },
             {
                 'FeatureName': 'updated_at',
-                'ValueAsString': model.updated_at.strftime("%Y-%m-%dT%H:%M:%SZ")
+                'ValueAsString': model.updated_at.strftime('%Y-%m-%dT%H:%M:%SZ')
             },
             {
                 'FeatureName': 'preferred_topics',

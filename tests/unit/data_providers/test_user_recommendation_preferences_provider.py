@@ -1,11 +1,13 @@
 import datetime
 import json
 import os
+
+import aioboto3
 import pytest
 
 from aws_xray_sdk import global_sdk_config
 
-import app.config
+from app.config import ROOT_DIR
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
 from tests.assets.topics import technology_topic
@@ -21,13 +23,13 @@ class TestUserRecommendationPreferencesProvider:
         self.feature_store_mock = FeatureStoreMock(
             feature_group_name=UserRecommendationPreferencesProvider.get_feature_group_name(),
             identifier_feature_name='user_id',
-            records_json_path=os.path.join(app.config.ROOT_DIR, 'tests/assets/json/corpus_candidate_sets.json')
+            records_json_path=os.path.join(ROOT_DIR, 'tests/assets/json/user_recommendation_preferences.json')
         )
 
         # This is the client that's under test.
         self.client = UserRecommendationPreferencesProvider(self.feature_store_mock.aioboto3)
 
-    async def test_new_user(self):
+    async def test_put(self):
         """
         Test the case where the queried records exist in the Feature Group.
         """
@@ -50,3 +52,11 @@ class TestUserRecommendationPreferencesProvider:
         assert len(preferred_topics_feature) == 1
         assert preferred_topics_feature[0]['id'] == model.preferred_topics[0].id
         assert preferred_topics_feature[0]['corpus_topic_id'] == model.preferred_topics[0].corpus_topic_id
+
+    async def test_fetch(self):
+        """
+        Test the case where the queried records exist in the Feature Group.
+        """
+        model = await self.client.fetch('12341234')
+
+        print(model)
