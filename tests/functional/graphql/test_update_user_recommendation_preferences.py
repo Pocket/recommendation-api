@@ -22,9 +22,8 @@ class TestUpdateUserRecommendationPreferences(TestDynamoDBBase):
         populate_topics(self.metadata_table)
         self.client = Client(schema)
 
-    @patch('aiohttp.ClientSession.get', to_return=MockResponse(status=200))
     @patch.object(UserRecommendationPreferencesProvider, 'put')
-    def test_update_user_recommendation_preferences(self, mock_data_provider_put, mock_client_session_get):
+    def test_update_user_recommendation_preferences(self, mock_data_provider_put):
         topics = populate_topics(self.metadata_table)
         user_id = 'johnjacobjingleheimerschmidt'
 
