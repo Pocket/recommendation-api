@@ -1,17 +1,18 @@
 import datetime
 import json
 import os
+from unittest.mock import MagicMock
 
 import aioboto3
 import pytest
-
 from aws_xray_sdk import global_sdk_config
 
 from app.config import ROOT_DIR
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
-from tests.assets.topics import technology_topic
+from tests.assets.topics import technology_topic, business_topic
 from tests.mocks.feature_store_mock import FeatureStoreMock
+from tests.mocks.topic_provider import MockTopicProvider
 
 
 @pytest.mark.asyncio  # This pytest-asyncio decorator allows us to use an async side_effect
@@ -27,7 +28,10 @@ class TestUserRecommendationPreferencesProvider:
         )
 
         # This is the client that's under test.
-        self.client = UserRecommendationPreferencesProvider(self.feature_store_mock.aioboto3)
+        self.client = UserRecommendationPreferencesProvider(
+            aioboto3_session=self.feature_store_mock.aioboto3,
+            topic_provider=MockTopicProvider(aioboto3_session=MagicMock())
+        )
 
     async def test_put(self):
         """
@@ -59,4 +63,6 @@ class TestUserRecommendationPreferencesProvider:
         """
         model = await self.client.fetch('12341234')
 
-        print(model)
+        # Assert model matches fixture data in user_recommendation_preferences.json
+        assert model.user_id == '12341234'
+        assert model.preferred_topics == [business_topic, technology_topic]

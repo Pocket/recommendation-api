@@ -1,6 +1,7 @@
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from graphene.test import Client
 from app.graphql.graphql_router import schema
+from tests.assets.topics import populate_topics, technology_topic
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 
 
@@ -9,27 +10,15 @@ class TestGraphQLMetadata(TestDynamoDBBase):
 
     async def asyncSetUp(self):
         await super().asyncSetUp()
-        self.populate_metadata_table()
+        populate_topics(self.metadata_table, topics=[technology_topic])
         self.client = Client(schema)
 
     def test_main_list_topics(self):
-        executed = self.client.execute('''{ listTopics { displayName} }''', executor=AsyncioExecutor())
+        executed = self.client.execute('''{ listTopics { name } }''', executor=AsyncioExecutor())
         assert executed == {
             'data': {
                 'listTopics': [{
-                    'displayName': 'tech'
+                    'name': 'Technology'
                 }]
             }
         }
-
-    def populate_metadata_table(self):
-        self.metadata_table.put_item(Item={
-            'id': 'a187ffb4-5c6f-4079-bad9-92442e97bdd1',
-            "display_name": 'tech',
-            "page_type": 'topic_page',
-            "slug": 'tech',
-            "query": 'query',
-            "curator_label": 'technology',
-            "is_displayed": True,
-            "is_promoted": False
-        })

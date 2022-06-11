@@ -10,7 +10,7 @@
     },
     {
       "FeatureName": "preferred_topics",
-      "ValueAsString": "[{\"id\": \"1bf756c0-632f-49e8-9cce-324f38f4cc71\", \"corpus_topic_id\": \"BUSINESS\"}, {\"id\": \"45f8e740-42e0-4f54-8363-21310a084f1f\", \"corpus_topic_id\": \"SELF_IMPROVEMENT\"}]"
+      "ValueAsString": "[{\"id\": \"1bf756c0-632f-49e8-9cce-324f38f4cc71\", \"corpus_topic_id\": \"BUSINESS\"}, {\"id\": \"25c716f1-e1b2-43db-bf52-1a5553d9fb74\", \"corpus_topic_id\": \"TECHNOLOGY\"}]"
     }
   ]
 ]

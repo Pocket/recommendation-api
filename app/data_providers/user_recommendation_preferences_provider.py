@@ -6,6 +6,7 @@ import dateutil.parser
 from aws_xray_sdk.core import xray_recorder
 
 from app import config
+from app.data_providers.topic_provider import TopicProvider
 from app.models.topic import TopicModel
 from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
 
@@ -14,8 +15,9 @@ class UserRecommendationPreferencesProvider:
     _FEATURE_GROUP_VERSION = 1
     _FEATURE_NAMES: List[str] = ['user_id', 'updated_at', 'preferred_topics']
 
-    def __init__(self, aioboto3_session: aioboto3.session.Session = None):
+    def __init__(self, aioboto3_session: aioboto3.session.Session, topic_provider: TopicProvider):
         self.aioboto3_session = aioboto3_session
+        self.topic_provider = topic_provider
 
     async def put(self, model: UserRecommendationPreferencesModel):
         """
@@ -75,13 +77,15 @@ class UserRecommendationPreferencesProvider:
         return {feature['FeatureName']: feature['ValueAsString'] for feature in record['Record']}
 
     @xray_recorder.capture_async('UserRecommendationPreferencesProvider._model_from_feature_store_record')
-    async def _model_from_feature_store_record(self, record: Optional[Dict[str, Any]]) -> UserRecommendationPreferencesModel:
+    async def _model_from_feature_store_record(
+        self, record: Optional[Dict[str, Any]],
+    ) -> UserRecommendationPreferencesModel:
         preferred_topics = json.loads(record['preferred_topics'])
 
         return UserRecommendationPreferencesModel(
             user_id=record['user_id'],
             updated_at=dateutil.parser.isoparse(record['updated_at']),
-            preferred_topics=await TopicModel.get_topics({t['id'] for t in preferred_topics})
+            preferred_topics=await self.topic_provider.get_topics([t['id'] for t in preferred_topics])
         )
 
     @classmethod
