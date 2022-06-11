@@ -32,7 +32,6 @@ technology_topic = TopicModel(
 
 gaming_topic = TopicModel(
     id='fea00efc-ee03-48f5-95dc-148550c0b69c',
-    corpus_topic_id='GAMING',
     name='Gaming',
     display_name='Gaming',
     slug='gaming',
