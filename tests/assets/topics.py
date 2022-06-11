@@ -7,7 +7,6 @@ from app.models.topic import PageType, TopicModel
 
 business_topic = TopicModel(
     id='1bf756c0-632f-49e8-9cce-324f38f4cc71',
-    corpus_topic_id='BUSINESS',
     name='Business',
     display_name='Business',
     slug='business',
@@ -21,7 +20,6 @@ business_topic = TopicModel(
 
 technology_topic = TopicModel(
     id='25c716f1-e1b2-43db-bf52-1a5553d9fb74',
-    corpus_topic_id='TECHNOLOGY',
     name='Technology',
     display_name='Technology',
     slug='tech',
@@ -57,4 +55,7 @@ def populate_topics(table: DynamoDBServiceResource.Table, topics: List[TopicMode
         topics = all_topic_fixtures
 
     for topic in topics:
-        table.put_item(Item=topic.dict())
+        topic_dict = topic.dict()
+        # Simulate corpus_topic_id being stored in DynamoDB, without it being present on the model yet.
+        topic_dict['corpus_topic_id'] = topic.name.upper()
+        table.put_item(Item=topic_dict)

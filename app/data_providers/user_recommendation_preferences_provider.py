@@ -107,4 +107,4 @@ class UserRecommendationPreferencesProvider:
 
     @classmethod
     def _topic_feature_from_topic(cls, topic: TopicModel) -> Dict[str, str]:
-        return {'id': topic.id, 'corpus_topic_id': topic.corpus_topic_id}
+        return {'id': topic.id}
