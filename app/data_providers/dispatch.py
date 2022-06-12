@@ -4,8 +4,10 @@ from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureG
 from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
 from app.data_providers.metrics_client import MetricsFetchable
 from app.data_providers.slate_provider import SlateProvider, SlateProvidable
+from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
+from app.rankers.algorithms import user_preferred_topics
 
 
 class SetupMomentDispatch:
@@ -19,11 +21,20 @@ class SetupMomentDispatch:
     SUB_HEADLINE = 'sub headline'
     CORPUS_IDS = ['deea0f06-9dc9-44a5-b864-fea4a4d0beb7']
 
-    def __init__(self, corpus_client: CorpusFeatureGroupClient):
+    def __init__(
+            self,
+            corpus_client: CorpusFeatureGroupClient,
+            user_recommendation_preferences_provider: UserRecommendationPreferencesProvider,
+    ):
         self.corpus_client = corpus_client
+        self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
 
-    async def get_ranked_corpus_slate(self) -> CorpusSlateModel:
+    async def get_ranked_corpus_slate(self, user_id: str) -> CorpusSlateModel:
         items = await self.corpus_client.get_corpus_items(self.CORPUS_IDS)
+
+        user_recommendation_preferences = await self.user_recommendation_preferences_provider.fetch(user_id)
+        items = user_preferred_topics(items, preferred_topics=user_recommendation_preferences.preferred_topics)
+
         recommendations = [CorpusRecommendationModel(id=uuid.uuid4().hex, corpus_item=item) for item in items]
 
         return CorpusSlateModel(

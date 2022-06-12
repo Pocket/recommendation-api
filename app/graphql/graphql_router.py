@@ -6,6 +6,7 @@ from app.data_providers.corpus.curated_corpus_api_client import CuratedCorpusAPI
 from app.data_providers.metrics_client import MetricsClient, MetricsFetchable
 from app.data_providers.slate_provider import SlateProvider
 from app.data_providers.topic_provider import TopicProvider
+from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.graphql.ranked_corpus_slate import RankedCorpusSlate
 from app.graphql.update_user_recommendation_preferences_mutation import UpdateUserRecommendationPreferences
 from app.models.corpus_item_model import CorpusItemModel
@@ -77,8 +78,16 @@ class Query(ObjectType):
                                                                      slate_count=slate_count)
 
     async def resolve_setup_moment_slate(self, info) -> CorpusSlateModel:
-        corpus_client = CorpusFeatureGroupClient(aioboto3_session=aioboto3.Session())
-        return await SetupMomentDispatch(corpus_client=corpus_client).get_ranked_corpus_slate()
+        aioboto3_session = aioboto3.Session()
+        corpus_client = CorpusFeatureGroupClient(aioboto3_session=aioboto3_session)
+        user_recommendation_preferences_provider = UserRecommendationPreferencesProvider(
+            aioboto3_session=aioboto3_session,
+            topic_provider=TopicProvider(aioboto3_session)
+        )
+        return await SetupMomentDispatch(
+            corpus_client=corpus_client,
+            user_recommendation_preferences_provider=user_recommendation_preferences_provider
+        ).get_ranked_corpus_slate(user_id=info.context.get('user_id'))
 
     async def resolve_recommendation_preference_topics(self, info) -> [Topic]:
         topics = await TopicProvider(aioboto3_session=aioboto3.Session()).get_all()

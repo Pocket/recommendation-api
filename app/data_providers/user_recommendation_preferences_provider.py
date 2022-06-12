@@ -32,6 +32,9 @@ class UserRecommendationPreferencesProvider:
         :param user_id:
         :return:
         """
+        if user_id is None:
+            raise ValueError('user_id is required in UserRecommendationPreferencesProvider.fetch')
+
         feature_store_record = await self._get_feature_store_record(user_id)
         model = await self._model_from_feature_store_record(feature_store_record)
         return model
