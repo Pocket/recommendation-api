@@ -7,7 +7,7 @@ from app.data_providers.slate_provider import SlateProvider, SlateProvidable
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
-from app.rankers.algorithms import user_preferred_topics
+from app.rankers.algorithms import rank_by_preferred_topics
 
 
 class SetupMomentDispatch:
@@ -33,7 +33,7 @@ class SetupMomentDispatch:
         items = await self.corpus_client.get_corpus_items(self.CORPUS_IDS)
 
         user_recommendation_preferences = await self.user_recommendation_preferences_provider.fetch(user_id)
-        items = user_preferred_topics(items, preferred_topics=user_recommendation_preferences.preferred_topics)
+        items = rank_by_preferred_topics(items, preferred_topics=user_recommendation_preferences.preferred_topics)
 
         recommendations = [CorpusRecommendationModel(id=uuid.uuid4().hex, corpus_item=item) for item in items]
 

@@ -243,7 +243,7 @@ def user_impression_filter(recs: RecommendationListType, user_impressed_list: Li
     return filtered
 
 
-def user_preferred_topics(
+def rank_by_preferred_topics(
         recs: CorpusRecommendationListType,
         preferred_topics: List[TopicModel],
 ) -> CorpusRecommendationListType:
