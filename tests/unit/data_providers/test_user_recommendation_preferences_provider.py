@@ -3,7 +3,6 @@ import json
 import os
 from unittest.mock import MagicMock
 
-import aioboto3
 import pytest
 from aws_xray_sdk import global_sdk_config
 

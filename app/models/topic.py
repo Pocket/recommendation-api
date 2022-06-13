@@ -16,6 +16,7 @@ class TopicModel(BaseModel):
     Models a topic, e.g. Technology, Gaming.
     """
     id: str
+    corpus_topic_id: str
     name: str
     display_name: str
     page_type: PageType

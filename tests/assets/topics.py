@@ -7,6 +7,7 @@ from app.models.topic import PageType, TopicModel
 
 business_topic = TopicModel(
     id='1bf756c0-632f-49e8-9cce-324f38f4cc71',
+    corpus_topic_id='BUSINESS',
     name='Business',
     display_name='Business',
     slug='business',
@@ -20,6 +21,7 @@ business_topic = TopicModel(
 
 technology_topic = TopicModel(
     id='25c716f1-e1b2-43db-bf52-1a5553d9fb74',
+    corpus_topic_id='TECHNOLOGY',
     name='Technology',
     display_name='Technology',
     slug='tech',
@@ -32,6 +34,7 @@ technology_topic = TopicModel(
 
 gaming_topic = TopicModel(
     id='fea00efc-ee03-48f5-95dc-148550c0b69c',
+    corpus_topic_id='GAMING',
     name='Gaming',
     display_name='Gaming',
     slug='gaming',

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import random
 
-from app.data_providers.slate_provider_schemata import SlateSchema
+from app.data_providers.slate_provider_schemata import SlateSchema, ExperimentSchema
 from app.rankers.algorithms import *
 
 
@@ -22,7 +22,7 @@ class SlateProvider:
             raise InvalidIdError
         return slate_schema
 
-    def get_random_experiment(self, slate_id) -> ExperimentSchema :
+    def get_random_experiment(self, slate_id) -> ExperimentSchema:
         corpus_slate_schema = self.get_slate(slate_id)
 
         # Choose an Experiment

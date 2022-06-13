@@ -4,8 +4,7 @@ import json
 
 from aws_xray_sdk.core import xray_recorder
 
-from app.data_providers.slate_provider_schemata import ExperimentSchema
-from app.graphql.corpus_item import CorpusItem
+from app.models.corpus_item_model import CorpusItemModel
 from app.models.metrics.metrics_model import MetricsModel
 from app.models.metrics.firefox_new_tab_metrics_model import FirefoxNewTabMetricsModel
 
@@ -16,6 +15,7 @@ from scipy.stats import beta
 
 from app.models.slate_config import SlateConfigModel
 from app.models.personalized_topic_list import PersonalizedTopicList
+from app.models.topic import TopicModel
 
 DEFAULT_ALPHA_PRIOR = 0.02
 DEFAULT_BETA_PRIOR = 1.0
@@ -27,6 +27,7 @@ DEFAULT_FIREFOX_ALPHA_PRIOR = int(0.0085 * DEFAULT_FIREFOX_BETA_PRIOR)
 
 RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel'], List['CorpusItem']]
 RecommendationListType = List['RecommendationModel']
+CorpusRecommendationListType = List[CorpusItemModel]
 
 def top_n(n: int, items: RankableListType) -> RankableListType:
     """
@@ -241,6 +242,19 @@ def user_impression_filter(recs: RecommendationListType, user_impressed_list: Li
 
     return filtered
 
+
+def rank_by_preferred_topics(
+        recs: CorpusRecommendationListType,
+        preferred_topics: List[TopicModel],
+) -> CorpusRecommendationListType:
+    """
+    Sorts recommendations in-order such that recs with a preferred topic rank above recs with a non-preferred topic.
+    :param recs:
+    :param preferred_topics: List of topics that the user has expressed a preference for.
+    :return: ordered list of recommendations with preferred topics ranking higher.
+    """
+    preferred_corpus_topic_ids = {topic.corpus_topic_id for topic in preferred_topics}
+    return sorted(recs, key=lambda rec: rec.topic in preferred_corpus_topic_ids, reverse=True)
 
 
 @xray_recorder.capture('rankers_algorithms_spread_publishers')
