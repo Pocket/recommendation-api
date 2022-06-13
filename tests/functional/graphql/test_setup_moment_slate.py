@@ -63,7 +63,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
                   setupMomentSlate {
                     headline
                     subheadline
-                    recommendations {
+                    recommendations(count: 100) {
                       id
                       corpusItem {
                         id
@@ -89,3 +89,39 @@ class TestSetupMomentSlate(TestDynamoDBBase):
             non_pref_corpus_item_ids = [c.id for c in corpus_items_fixture if c.topic not in pref_corpus_topic_ids]
             assert [rec['corpusItem']['id'] for rec in recs[:len(pref_corpus_item_ids)]] == pref_corpus_item_ids
             assert [rec['corpusItem']['id'] for rec in recs[len(pref_corpus_item_ids):]] == non_pref_corpus_item_ids
+
+    @patch.object(CorpusFeatureGroupClient, 'get_corpus_items')
+    @patch.object(UserRecommendationPreferencesProvider, 'fetch')
+    def test_default_count(self, mock_fetch_user_recommendation_preferences, mock_get_ranked_corpus_items):
+        corpus_items_fixture = _corpus_items_fixture(n=100)
+        mock_get_ranked_corpus_items.return_value = corpus_items_fixture
+
+        mock_fetch_user_recommendation_preferences.return_value = \
+            _user_recommendation_preferences_fixture(self.user_id, [])
+
+        with TestClient(app):
+            executed = self.client.execute(
+                '''
+                query SetupMomentSlate {
+                  setupMomentSlate {
+                    headline
+                    subheadline
+                    recommendations {
+                      id
+                      corpusItem {
+                        id
+                      }
+                    }
+                  }
+                }
+                ''',
+                context_value={'user_id': self.user_id},
+                executor=AsyncioExecutor())
+
+            response = executed['data']['setupMomentSlate']
+            recs = response['recommendations']
+
+            # Assert that 10 (the default for count) corpus items are being returned.
+            assert len(recs) == 10
+            # Because the user doesn't have any preferred topics, the order of recommendations should be unchanged.
+            assert [rec['corpusItem']['id'] for rec in recs] == [item.id for item in corpus_items_fixture[:10]]

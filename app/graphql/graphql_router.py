@@ -1,23 +1,22 @@
+import graphql
 from graphene import ObjectType, String, Field, List, Int
 from graphene_federation import build_schema
 import aioboto3
+
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.corpus.curated_corpus_api_client import CuratedCorpusAPIClient
-from app.data_providers.metrics_client import MetricsClient, MetricsFetchable
+from app.data_providers.metrics_client import MetricsClient
 from app.data_providers.slate_provider import SlateProvider
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.graphql.ranked_corpus_slate import RankedCorpusSlate
 from app.graphql.update_user_recommendation_preferences_mutation import UpdateUserRecommendationPreferences
-from app.models.corpus_item_model import CorpusItemModel
+from app.graphql.util import get_field_argument
 from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
 from app.models.ranked_corpus_slate_instance import RankedCorpusSlateInstance
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.data_providers.dispatch import RankingDispatch, SetupMomentDispatch
-from app.graphql.ranked_corpus_items import RankedCorpusItems
 from app.graphql.corpus_slate import CorpusSlate
-from app.models.ranked_corpus_items_instance import RankedCorpusItemsInstance
-from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.topic import TopicModel
 from app.models.slate import SlateModel
 from app.models.slate_lineup import SlateLineupModel
@@ -77,17 +76,24 @@ class Query(ObjectType):
                                                                      recommendation_count=recommendation_count,
                                                                      slate_count=slate_count)
 
-    async def resolve_setup_moment_slate(self, info) -> CorpusSlateModel:
+    async def resolve_setup_moment_slate(self, info: graphql.ResolveInfo, **kwargs) -> CorpusSlateModel:
         aioboto3_session = aioboto3.Session()
         corpus_client = CorpusFeatureGroupClient(aioboto3_session=aioboto3_session)
         user_recommendation_preferences_provider = UserRecommendationPreferencesProvider(
             aioboto3_session=aioboto3_session,
             topic_provider=TopicProvider(aioboto3_session)
         )
+
+        recommendation_count = int(get_field_argument(
+            info.field_asts, ['setupMomentSlate', 'recommendations'], 'count', default_value=CorpusSlate.DEFAULT_COUNT))
+
         return await SetupMomentDispatch(
             corpus_client=corpus_client,
             user_recommendation_preferences_provider=user_recommendation_preferences_provider
-        ).get_ranked_corpus_slate(user_id=info.context.get('user_id'))
+        ).get_ranked_corpus_slate(
+            user_id=info.context.get('user_id'),
+            recommendation_count=recommendation_count,
+        )
 
     async def resolve_recommendation_preference_topics(self, info) -> [Topic]:
         topics = await TopicProvider(aioboto3_session=aioboto3.Session()).get_all()
