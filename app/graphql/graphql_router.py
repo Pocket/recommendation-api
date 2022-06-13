@@ -5,6 +5,7 @@ from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureG
 from app.data_providers.corpus.curated_corpus_api_client import CuratedCorpusAPIClient
 from app.data_providers.metrics_client import MetricsClient, MetricsFetchable
 from app.data_providers.slate_provider import SlateProvider
+from app.data_providers.topic_provider import TopicProvider
 from app.graphql.ranked_corpus_slate import RankedCorpusSlate
 from app.graphql.update_user_recommendation_preferences_mutation import UpdateUserRecommendationPreferences
 from app.models.corpus_item_model import CorpusItemModel
@@ -50,7 +51,7 @@ class Query(ObjectType):
                                                       description="Maximum number of recommendations to return, defaults to 10"))
 
     async def resolve_list_topics(self, info) -> [TopicModel]:
-        return await TopicModel.get_all()
+        return await TopicProvider(aioboto3_session=aioboto3.Session()).get_all()
 
     async def resolve_get_slate(self, info, slate_id: str, recommendation_count: int = None) -> SlateModel:
         return await SlateModel.get_slate(slate_id=slate_id, user_id=info.context.get('user_id'),
@@ -80,7 +81,7 @@ class Query(ObjectType):
         return await SetupMomentDispatch(corpus_client=corpus_client).get_ranked_corpus_slate()
 
     async def resolve_recommendation_preference_topics(self, info) -> [Topic]:
-        topics = await TopicModel.get_all()
+        topics = await TopicProvider(aioboto3_session=aioboto3.Session()).get_all()
         exclude_topic_names = ['Gaming', 'Sports', 'Education', 'Coronavirus']
         return [t for t in topics if t.name not in exclude_topic_names]
 

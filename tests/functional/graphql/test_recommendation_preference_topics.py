@@ -22,8 +22,7 @@ class TestRecommendationPreferenceTopics(TestDynamoDBBase):
         await super().asyncSetUp()
         self.client = Client(schema)
 
-    @patch('aiohttp.ClientSession.get', to_return=MockResponse(status=200))
-    def test_recommendation_preference_topics(self, mock_client_session_get):
+    def test_recommendation_preference_topics(self):
         populate_topics(self.metadata_table, topics=[technology_topic, gaming_topic])
 
         with TestClient(app):

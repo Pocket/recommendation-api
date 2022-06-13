@@ -24,9 +24,8 @@ class TestSetupMomentSlate(TestDynamoDBBase):
         await super().asyncSetUp()
         self.client = Client(schema)
 
-    @patch('aiohttp.ClientSession.get', to_return=MockResponse(status=200))
     @patch.object(CorpusFeatureGroupClient, 'get_corpus_items')
-    def test_setup_moment_slate(self, mock_get_ranked_corpus_items, mock_client_session_get):
+    def test_setup_moment_slate(self, mock_get_ranked_corpus_items):
         corpus_items_fixture = self._get_corpus_items_fixture()
         mock_get_ranked_corpus_items.return_value = corpus_items_fixture
 

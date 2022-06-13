@@ -4,8 +4,9 @@ from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 
 from app.models.topic import PageType, TopicModel
 
+
 business_topic = TopicModel(
-    id='a187ffb4-5c6f-4079-bad9-asd23234234',
+    id='1bf756c0-632f-49e8-9cce-324f38f4cc71',
     name='Business',
     display_name='Business',
     slug='business',
@@ -18,7 +19,7 @@ business_topic = TopicModel(
 )
 
 technology_topic = TopicModel(
-    id='a187ffb4-5c6f-4079-bad9-92442e97bdd1',
+    id='25c716f1-e1b2-43db-bf52-1a5553d9fb74',
     name='Technology',
     display_name='Technology',
     slug='tech',
@@ -41,10 +42,19 @@ gaming_topic = TopicModel(
     page_type=PageType.topic_page
 )
 
+all_topic_fixtures = [
+    business_topic,
+    gaming_topic,
+    technology_topic,
+]
+
 
 def populate_topics(table: DynamoDBServiceResource.Table, topics: List[TopicModel] = None):
     if topics is None:
-        topics = [business_topic, technology_topic]
+        topics = all_topic_fixtures
 
     for topic in topics:
-        table.put_item(Item=topic.dict())
+        topic_dict = topic.dict()
+        # Simulate corpus_topic_id being stored in DynamoDB, without it being present on the model yet.
+        topic_dict['corpus_topic_id'] = topic.name.upper()
+        table.put_item(Item=topic_dict)
