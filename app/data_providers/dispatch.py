@@ -29,12 +29,13 @@ class SetupMomentDispatch:
         self.corpus_client = corpus_client
         self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
 
-    async def get_ranked_corpus_slate(self, user_id: str) -> CorpusSlateModel:
+    async def get_ranked_corpus_slate(self, user_id: str, recommendation_count: int) -> CorpusSlateModel:
         items = await self.corpus_client.get_corpus_items(self.CORPUS_IDS)
 
         user_recommendation_preferences = await self.user_recommendation_preferences_provider.fetch(user_id)
         items = rank_by_preferred_topics(items, preferred_topics=user_recommendation_preferences.preferred_topics)
 
+        items = items[:recommendation_count]
         recommendations = [CorpusRecommendationModel(id=uuid.uuid4().hex, corpus_item=item) for item in items]
 
         return CorpusSlateModel(
