@@ -63,7 +63,7 @@ class RecommendationAPI extends TerraformStack {
      */
     private getCodeDeploySnsTopic() {
         return new DataAwsSnsTopic(this, 'backend_notifications', {
-            name: `Backend-${config.environment}-ChatBot`
+            name: `DataAndLearning-${config.environment}-ChatBot`
         });
     }
 
