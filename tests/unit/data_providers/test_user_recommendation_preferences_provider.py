@@ -64,3 +64,12 @@ class TestUserRecommendationPreferencesProvider:
         # Assert model matches fixture data in user_recommendation_preferences.json
         assert model.user_id == '12341234'
         assert model.preferred_topics == [business_topic, technology_topic]
+
+    async def test_fetch_non_existing_user(self):
+        """
+        Test the case where the queried records exist in the Feature Group.
+        """
+        model = await self.client.fetch('9999')
+
+        # Assert model matches fixture data in user_recommendation_preferences.json
+        assert model is None

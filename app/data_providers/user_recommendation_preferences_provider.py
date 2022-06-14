@@ -26,7 +26,7 @@ class UserRecommendationPreferencesProvider:
         """
         await self._put_feature_store_record(model)
 
-    async def fetch(self, user_id: str) -> UserRecommendationPreferencesModel:
+    async def fetch(self, user_id: str) -> Optional[UserRecommendationPreferencesModel]:
         """
         Gets user recommendation preferences for a given user id.
         :param user_id:
@@ -36,6 +36,9 @@ class UserRecommendationPreferencesProvider:
             raise ValueError('user_id is required in UserRecommendationPreferencesProvider.fetch')
 
         feature_store_record = await self._get_feature_store_record(user_id)
+        if not feature_store_record:
+            return None
+
         model = await self._model_from_feature_store_record(feature_store_record)
         return model
 

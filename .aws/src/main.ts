@@ -297,6 +297,7 @@ class RecommendationAPI extends TerraformStack {
                     },
                     {
                         actions: [
+                            'sagemaker:PutRecord',
                             'sagemaker:BatchGetRecord',
                             'sagemaker:GetRecord',
                             'sagemaker:DescribeFeatureGroup',
