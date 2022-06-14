@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
@@ -35,6 +36,8 @@ class SetupMomentDispatch:
         user_recommendation_preferences = await self.user_recommendation_preferences_provider.fetch(user_id)
         if user_recommendation_preferences:
             items = rank_by_preferred_topics(items, preferred_topics=user_recommendation_preferences.preferred_topics)
+        else:
+            logging.info(f'SetupMoment is unpersonalized for user {user_id} because no preferences were found.')
 
         items = items[:recommendation_count]
         recommendations = [CorpusRecommendationModel(id=uuid.uuid4().hex, corpus_item=item) for item in items]
