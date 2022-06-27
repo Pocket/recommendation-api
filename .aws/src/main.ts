@@ -332,6 +332,7 @@ class RecommendationAPI extends TerraformStack {
                     evaluationPeriods: 4,
                     period: 300, // 5 mins
                     actions: config.isDev ? [] : [pagerDuty!.snsCriticalAlarmTopic.arn],
+                    alarmDescription: 'Runbook: https://getpocket.atlassian.net/l/c/sfMGntZ0'
                 },
                 httpLatency: {
                     // If the latency is greater than 500 ms for 1 hour continuously i.e
@@ -341,6 +342,7 @@ class RecommendationAPI extends TerraformStack {
                     evaluationPeriods: 4,
                     threshold: 0.5, // 500ms
                     actions: config.isDev ? [] : [pagerDuty!.snsNonCriticalAlarmTopic.arn],
+                    alarmDescription: 'Runbook: https://getpocket.atlassian.net/l/c/dChZ24T1',
                 },
             }
         });
