@@ -44,7 +44,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
     async def asyncSetUp(self):
         await super().asyncSetUp()
         self.client = Client(schema)
-        self.user_id = 'johnjacobjingleheimerschmidt'
+        self.user_id = '123456789'
 
     @patch.object(CorpusFeatureGroupClient, 'get_corpus_items')
     @patch.object(UserRecommendationPreferencesProvider, 'fetch')
