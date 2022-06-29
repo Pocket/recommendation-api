@@ -7,6 +7,11 @@ from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureG
 from app.data_providers.corpus.curated_corpus_api_client import CuratedCorpusAPIClient
 from app.data_providers.metrics_client import MetricsClient
 from app.data_providers.slate_provider import SlateProvider
+from app.data_providers.snowplow_corpus_slate_tracker import (
+    SnowplowCorpusSlateTracker,
+    create_snowplow_tracker,
+    SnowplowConfig,
+)
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.graphql.ranked_corpus_slate import RankedCorpusSlate
@@ -83,13 +88,15 @@ class Query(ObjectType):
             aioboto3_session=aioboto3_session,
             topic_provider=TopicProvider(aioboto3_session)
         )
+        slate_tracker = SnowplowCorpusSlateTracker(tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
 
         recommendation_count = int(get_field_argument(
             info.field_asts, ['setupMomentSlate', 'recommendations'], 'count', default_value=CorpusSlate.DEFAULT_COUNT))
 
         return await SetupMomentDispatch(
             corpus_client=corpus_client,
-            user_recommendation_preferences_provider=user_recommendation_preferences_provider
+            user_recommendation_preferences_provider=user_recommendation_preferences_provider,
+            slate_tracker=slate_tracker,
         ).get_ranked_corpus_slate(
             user_id=info.context.get('user_id'),
             recommendation_count=recommendation_count,
