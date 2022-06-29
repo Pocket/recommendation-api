@@ -43,7 +43,7 @@ class SetupMomentDispatch:
             logging.info(f'SetupMoment is unpersonalized for user {user_id} because no preferences were found.')
 
         items = items[:recommendation_count]
-        recommendations = [CorpusRecommendationModel(id=uuid.uuid4().hex, corpus_item=item) for item in items]
+        recommendations = [CorpusRecommendationModel(id=str(uuid.uuid4()), corpus_item=item) for item in items]
 
         corpus_slate = CorpusSlateModel(
             id=self.SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID,
