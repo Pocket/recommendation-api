@@ -19,12 +19,15 @@ class CorpusSlateTrackable(ABC):
 
 
 class SnowplowConfig:
+    APP_ID = f'pocket-data-products-recommendation-api-{ENV}'
+
     PROD_ENDPOINT_URL = 'com-getpocket-prod1.collector.snplow.net'
     DEV_ENDPOINT_URL = 'com-getpocket-prod1.mini.snplow.net'
     ENDPOINT_URL = PROD_ENDPOINT_URL if ENV == ENV_PROD else DEV_ENDPOINT_URL
 
     CORPUS_SLATE_SCHEMA = 'iglu:com.pocket/corpus_slate/jsonschema/1-0-0'
-    OBJECT_UPDATE_SCHEMA = 'iglu:com.pocket/object_update/jsonschema/1-0-0'
+    USER_SCHEMA = 'iglu:com.pocket/user/jsonschema/1-0-0'
+    OBJECT_UPDATE_SCHEMA = 'iglu:com.pocket/object_update/jsonschema/1-0-7'
 
 
 class SnowplowCorpusSlateTracker(CorpusSlateTrackable):
@@ -39,10 +42,15 @@ class SnowplowCorpusSlateTracker(CorpusSlateTrackable):
 
     @xray_recorder.capture_async('data_providers.SnowplowCorpusSlateTracker.track')
     async def track(self, corpus_slate: CorpusSlateModel, user_id: Optional[str]):
+        context = [self._get_corpus_slate_entity(corpus_slate)]
+
+        if user_id is not None:
+            context.append(self._get_user_entity(user_id))
+
         # NOTE: This blocks the eventloop. I could not find any asyncio Snowplow tracker.
         self.tracker.track_self_describing_event(
             event_json=self._get_object_update_event(object='corpus_slate', trigger='corpus_slate_recommendation'),
-            context=[self._get_corpus_slate_entity(corpus_slate)],
+            context=context,
             event_subject=self._get_subject(user_id),
         )
 
@@ -58,7 +66,26 @@ class SnowplowCorpusSlateTracker(CorpusSlateTrackable):
     def _get_corpus_slate_entity(self, corpus_slate: CorpusSlateModel) -> SelfDescribingJson:
         return SelfDescribingJson(
             schema=self.snowplow_config.CORPUS_SLATE_SCHEMA,
-            data=corpus_slate.dict()
+            data={
+                'id': corpus_slate.id,
+                'recommendations': [
+                    {
+                        'id': recommendation.id,
+                        'corpus_item': {
+                            'id': recommendation.corpus_item.id,
+                        }
+                    }
+                    for recommendation in corpus_slate.recommendations
+                ]
+            }
+        )
+
+    def _get_user_entity(self, user_id: str) -> SelfDescribingJson:
+        return SelfDescribingJson(
+            schema=self.snowplow_config.USER_SCHEMA,
+            data={
+                'user_id': int(user_id),
+            }
         )
 
 
@@ -73,4 +100,4 @@ def create_snowplow_tracker() -> Tracker:
         SnowplowConfig.ENDPOINT_URL,
         protocol='https',
     )
-    return Tracker(emitter)
+    return Tracker(emitter, app_id=SnowplowConfig.APP_ID)
