@@ -9,6 +9,7 @@ from app.data_providers.unleash_provider import UnleashProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
+from app.models.user_session_ids import UserSessionIds
 from app.rankers.algorithms import rank_by_preferred_topics
 
 
@@ -21,7 +22,8 @@ class SetupMomentDispatch:
     SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID = 'deea0f06-9dc9-44a5-b864-fea4a4d0beb7'
     DISPLAY_NAME = 'Save an article you find interesting'
     SUB_HEADLINE = 'sub headline'
-    CORPUS_IDS = ['deea0f06-9dc9-44a5-b864-fea4a4d0beb7']
+    RECENT_SYNDICATED_CORPUS_SET_IDS = ['deea0f06-9dc9-44a5-b864-fea4a4d0beb7']
+    SETUP_MOMENT_HAND_PICKED_CORPUS_SET_IDS = ['57d544d6-0758-4cd1-a7b4-86f454c8eae8']
 
     def __init__(
             self,
@@ -33,11 +35,23 @@ class SetupMomentDispatch:
         self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
         self.unleash_provider = unleash_provider
 
-    async def get_ranked_corpus_slate(self, user_id: str, recommendation_count: int) -> CorpusSlateModel:
-        items = await self.corpus_client.get_corpus_items(self.CORPUS_IDS)
+    async def get_ranked_corpus_slate(
+            self,
+            user_session_ids: UserSessionIds,
+            recommendation_count: int,
+    ) -> CorpusSlateModel:
+        assignment = await self.unleash_provider.get_assignment(
+            name='temp.recommendation-api.set-moment-slate.hand-picked-content', user_session_ids=user_session_ids)
 
-        await self.unleash_provider.get_assignments(user_id=user_id)
+        if assignment and assignment.variant == 'hand-picked-content':
+            corpus_set_ids = self.SETUP_MOMENT_HAND_PICKED_CORPUS_SET_IDS
+        else:
+            # Control variant
+            corpus_set_ids = self.RECENT_SYNDICATED_CORPUS_SET_IDS
 
+        items = await self.corpus_client.get_corpus_items(corpus_set_ids)
+
+        user_id = str(user_session_ids.user_id)
         user_recommendation_preferences = await self.user_recommendation_preferences_provider.fetch(user_id)
         if user_recommendation_preferences:
             items = rank_by_preferred_topics(items, preferred_topics=user_recommendation_preferences.preferred_topics)
