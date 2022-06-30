@@ -5,6 +5,7 @@ from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureG
 from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
 from app.data_providers.metrics_client import MetricsFetchable
 from app.data_providers.slate_provider import SlateProvider, SlateProvidable
+from app.data_providers.unleash_provider import UnleashProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
@@ -26,12 +27,16 @@ class SetupMomentDispatch:
             self,
             corpus_client: CorpusFeatureGroupClient,
             user_recommendation_preferences_provider: UserRecommendationPreferencesProvider,
+            unleash_provider: UnleashProvider,
     ):
         self.corpus_client = corpus_client
         self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
+        self.unleash_provider = unleash_provider
 
     async def get_ranked_corpus_slate(self, user_id: str, recommendation_count: int) -> CorpusSlateModel:
         items = await self.corpus_client.get_corpus_items(self.CORPUS_IDS)
+
+        await self.unleash_provider.get_assignments(user_id=user_id)
 
         user_recommendation_preferences = await self.user_recommendation_preferences_provider.fetch(user_id)
         if user_recommendation_preferences:

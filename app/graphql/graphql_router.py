@@ -3,11 +3,13 @@ from graphene import ObjectType, String, Field, List, Int
 from graphene_federation import build_schema
 import aioboto3
 
+from app.data_providers.PocketGraphClientSession import PocketGraphClientSession, PocketGraphConfig
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.corpus.curated_corpus_api_client import CuratedCorpusAPIClient
 from app.data_providers.metrics_client import MetricsClient
 from app.data_providers.slate_provider import SlateProvider
 from app.data_providers.topic_provider import TopicProvider
+from app.data_providers.unleash_provider import UnleashProvider, UnleashConfig
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.graphql.ranked_corpus_slate import RankedCorpusSlate
 from app.graphql.update_user_recommendation_preferences_mutation import UpdateUserRecommendationPreferences
@@ -87,13 +89,17 @@ class Query(ObjectType):
         recommendation_count = int(get_field_argument(
             info.field_asts, ['setupMomentSlate', 'recommendations'], 'count', default_value=CorpusSlate.DEFAULT_COUNT))
 
-        return await SetupMomentDispatch(
-            corpus_client=corpus_client,
-            user_recommendation_preferences_provider=user_recommendation_preferences_provider
-        ).get_ranked_corpus_slate(
-            user_id=info.context.get('user_id'),
-            recommendation_count=recommendation_count,
-        )
+        async with PocketGraphClientSession(config=PocketGraphConfig()) as pocket_graph_client_session:
+            unleash_provider = UnleashProvider(pocket_graph_client_session, unleash_config=UnleashConfig())
+
+            return await SetupMomentDispatch(
+                corpus_client=corpus_client,
+                user_recommendation_preferences_provider=user_recommendation_preferences_provider,
+                unleash_provider=unleash_provider,
+            ).get_ranked_corpus_slate(
+                user_id=info.context.get('user_id'),
+                recommendation_count=recommendation_count,
+            )
 
     async def resolve_recommendation_preference_topics(self, info) -> [Topic]:
         topics = await TopicProvider(aioboto3_session=aioboto3.Session()).get_all()
