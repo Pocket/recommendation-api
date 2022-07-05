@@ -32,7 +32,7 @@ class SnowplowCorpusSlateTracker:
         self.snowplow_config = snowplow_config
 
     @xray_recorder.capture_async('data_providers.SnowplowCorpusSlateTracker.track')
-    async def track(self, corpus_slate: CorpusSlateModel, user_id: Optional[str]):
+    async def track(self, corpus_slate: CorpusSlateModel, user_id: str):
         context = [self._get_corpus_slate_entity(corpus_slate)]
 
         if user_id is not None:
