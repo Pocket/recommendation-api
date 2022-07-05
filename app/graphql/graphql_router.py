@@ -97,7 +97,7 @@ class Query(ObjectType):
                 user_recommendation_preferences_provider=user_recommendation_preferences_provider,
                 unleash_provider=unleash_provider,
             ).get_ranked_corpus_slate(
-                user_id=info.context.get('user_id'),
+                user_session_ids=info.context.get('user_session_ids'),
                 recommendation_count=recommendation_count,
             )
 

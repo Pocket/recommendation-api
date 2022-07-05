@@ -14,6 +14,7 @@ from app.main import app
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.topic import TopicModel
 from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
+from app.models.user_session_ids import UserSessionIds
 from tests.assets.topics import technology_topic, gaming_topic
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 
@@ -44,7 +45,13 @@ class TestSetupMomentSlate(TestDynamoDBBase):
     async def asyncSetUp(self):
         await super().asyncSetUp()
         self.client = Client(schema)
-        self.user_id = 'johnjacobjingleheimerschmidt'
+        self.user_id = 123456
+        self.user_session_ids = UserSessionIds(
+            user_id=self.user_id,
+            hashed_user_id='aaaaabbbbccc123123',
+            guid='9999888',
+            hashed_guid='dddddeeefffff99988',
+        )
 
     @patch.object(CorpusFeatureGroupClient, 'get_corpus_items')
     @patch.object(UserRecommendationPreferencesProvider, 'fetch')
@@ -53,7 +60,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
         mock_get_ranked_corpus_items.return_value = corpus_items_fixture
 
         preferred_topics = [technology_topic, gaming_topic]
-        preferences_fixture = _user_recommendation_preferences_fixture(self.user_id, preferred_topics)
+        preferences_fixture = _user_recommendation_preferences_fixture(str(self.user_id), preferred_topics)
         mock_fetch_user_recommendation_preferences.return_value = preferences_fixture
 
         with TestClient(app):
@@ -72,7 +79,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
                   }
                 }
                 ''',
-                context_value={'user_id': self.user_id},
+                context_value={'user_session_ids': self.user_session_ids},
                 executor=AsyncioExecutor())
 
             response = executed['data']['setupMomentSlate']
@@ -97,7 +104,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
         mock_get_ranked_corpus_items.return_value = corpus_items_fixture
 
         mock_fetch_user_recommendation_preferences.return_value = \
-            _user_recommendation_preferences_fixture(self.user_id, [])
+            _user_recommendation_preferences_fixture(str(self.user_id), [])
 
         with TestClient(app):
             executed = self.client.execute(
@@ -115,9 +122,10 @@ class TestSetupMomentSlate(TestDynamoDBBase):
                   }
                 }
                 ''',
-                context_value={'user_id': self.user_id},
+                context_value={'user_session_ids': self.user_session_ids},
                 executor=AsyncioExecutor())
 
+            assert not executed.get('errors')
             response = executed['data']['setupMomentSlate']
             recs = response['recommendations']
 
