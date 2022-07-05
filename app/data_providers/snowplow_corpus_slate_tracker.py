@@ -9,15 +9,6 @@ from app.models.corpus_slate_model import CorpusSlateModel
 from app.config import ENV, ENV_PROD
 
 
-class CorpusSlateTrackable(ABC):
-    """
-    Abstract class to track the recommendation of a CorpusSlate.
-    """
-
-    async def track(self, corpus_slate: CorpusSlateModel, user_id: Optional[str]):
-        return NotImplemented
-
-
 class SnowplowConfig:
     APP_ID = f'pocket-data-products-recommendation-api-{ENV}'
 
@@ -30,7 +21,7 @@ class SnowplowConfig:
     OBJECT_UPDATE_SCHEMA = 'iglu:com.pocket/object_update/jsonschema/1-0-7'
 
 
-class SnowplowCorpusSlateTracker(CorpusSlateTrackable):
+class SnowplowCorpusSlateTracker:
     """
     Implements tracking the recommendation of a CorpusSlate in SnowPlow, with the goal of tracking any metadata that
     to CorpusRecommendation.id that we are interested in. Clients will only emit the CorpusRecommendation id in events.
