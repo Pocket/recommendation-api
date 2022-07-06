@@ -1,7 +1,7 @@
 from typing import Optional
 
 from aws_xray_sdk.core import xray_recorder
-from snowplow_tracker import Tracker, Subject, SelfDescribingJson
+from aio_snowplow_tracker import Tracker, Subject, SelfDescribingJson
 
 from app.data_providers.snowplow.config import SnowplowConfig
 from app.models.corpus_slate_model import CorpusSlateModel
@@ -19,8 +19,7 @@ class SnowplowCorpusSlateTracker:
 
     @xray_recorder.capture_async('data_providers.SnowplowCorpusSlateTracker.track')
     async def track(self, corpus_slate: CorpusSlateModel, user_id: str):
-        # NOTE: This blocks the eventloop. I could not find any asyncio Snowplow tracker.
-        self.tracker.track_self_describing_event(
+        await self.tracker.track_self_describing_event(
             event_json=self._get_object_update_event(object='corpus_slate', trigger='corpus_slate_recommendation'),
             event_subject=self._get_subject(user_id),
             context=[

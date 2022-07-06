@@ -1,5 +1,5 @@
-from snowplow_tracker import Tracker, Emitter
-from snowplow_tracker.typing import HttpProtocol
+from aio_snowplow_tracker import Tracker, Emitter
+from aio_snowplow_tracker.typing import HttpProtocol
 
 from app.config import ENV, ENV_PROD, ENV_DEV, ENV_LOCAL
 
