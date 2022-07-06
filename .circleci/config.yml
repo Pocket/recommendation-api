@@ -97,28 +97,7 @@ jobs:
 
   test_app:
     docker:
-      - image: python:3.8
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-      - image: library/memcached:1.6
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-        name: memcached
-      - image: localstack/localstack:0.12.1
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-        environment:
-          DEBUG: 1
-          SERVICES: 'dynamodb'
-          DATA_DIR: /tmp/localstack/data
-          EXTRA_CORS_ALLOWED_HEADERS: Content-Disposition, Content-Type, x-amz-acl
-          EXTRA_CORS_EXPOSE_HEADERS: ETag
-          HOSTNAME_EXTERNAL: localstack
-          PORT_WEB_UI: 8080
-      - image: pocket/snowplow-micro:latest
+      - image: cimg/python:3.8
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
@@ -130,26 +109,14 @@ jobs:
       WORKON_HOME: '~/.venv'
     steps:
       - checkout
-      - restore_cache:
-          key: deps-test-{{ checksum "<<parameters.pipenv_path>>Pipfile.lock" }}
       - run:
-          name: Build environment and install requirements
-          command: |
-            pip install pipenv
-            pipenv install --dev
-      - save_cache:
-          key: deps-test-{{ checksum "<<parameters.pipenv_path>>Pipfile.lock" }}
-          paths:
-            - "~/.venv"
-      - run:
-          name: run setup.sh
-          command: export $(egrep -v '^#' .docker/local.env | xargs -0) && ./.circleci/scripts/setup.sh --hosts --aws
+          name: Build images of services declared in docker-compose.yml
+          command: docker-compose build
       - run:
           name: Run tests
           command: |
             mkdir test-reports
-            export $(egrep -v '^#' .docker/local.env | xargs -0)
-            pipenv run pytest tests/ --junitxml=test-reports/junit.xml
+            docker-compose -f docker-compose.yml -f docker-compose-cirlceci.yml up --exit-code-from app_dev --abort-on-container-exit app_dev
       - store_test_results:
           path: test-reports
 

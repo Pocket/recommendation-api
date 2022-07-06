@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  app_dev:
+    command:
+    - "python"
+    - "-m"
+    - "pytest"
+    - "/opt/project/tests"
+    - "--junitxml=test-results/junit.xml"
+    environment:
+      PYTHONPATH: "/opt/project"
+      PYTHONUNBUFFERED: "1"
+    volumes:
+    - ".:/opt/project:rw"
+    working_dir: "/opt/project"

@@ -31,20 +31,3 @@ class SnowplowMicroClient:
 
     def _format_url(self, url_path):
         return urljoin(f'{self.config.PROTOCOL}://{self.config.ENDPOINT_URL}', url_path)
-
-# export function assertValidSnowplowObjectUpdateEvents(
-#   events,
-#   triggers: CuratedCorpusItemUpdate['trigger'][],
-#   object: CuratedCorpusItemUpdate['object']
-# ) {
-#   const parsedEvents = events
-#     .map(parseSnowplowData)
-#     .map((parsedEvent) => parsedEvent.data);
-#
-#   expect(parsedEvents).to.include.deep.members(
-#     triggers.map((trigger) => ({
-#       schema: config.snowplow.schemas.objectUpdate,
-#       data: { trigger, object },
-#     }))
-#   );
-# }
