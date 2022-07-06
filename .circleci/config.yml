@@ -111,11 +111,12 @@ jobs:
       - checkout
       - run:
           name: Build images of services declared in docker-compose.yml
-          command: docker-compose build
+          command: |
+            touch .env
+            docker-compose build
       - run:
           name: Run tests
           command: |
-            touch .env
             mkdir test-reports
             docker-compose -f docker-compose.yml -f docker-compose-cirlceci.yml up --exit-code-from app_dev --abort-on-container-exit app_dev
       - store_test_results:
