@@ -15,7 +15,6 @@ services:
       - "8000:8000"
     volumes:
       - "./app:/app:ro"
-      - "./app:/opt/project/src:ro" # PyCharm overrides app to /opt/project/src
     depends_on:
       - localstack
       - memcached

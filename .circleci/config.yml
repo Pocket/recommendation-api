@@ -96,16 +96,11 @@ jobs:
             - app_prod
 
   test_app:
-    docker:
-      - image: cimg/python:3.8
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
+    machine:
+      image: ubuntu-2004:202104-01
+      docker_layer_caching: true
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 20.10.14
-          docker_layer_caching: true
       - run:
           name: Build images of services declared in docker-compose.yml
           command: |
