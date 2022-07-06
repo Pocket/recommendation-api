@@ -24,7 +24,7 @@ graphene-federation = "*"
 starlette = "*"
 sentry-sdk = "*"
 graphene-pydantic = "==0.1.0"
-aioboto3 = "<9"
+aioboto3 = "*"
 gunicorn = "*"
 uvicorn = "==0.14.0"
 # Locking fastapi to prevent a conflict with pydantic:

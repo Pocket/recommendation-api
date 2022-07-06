@@ -28,6 +28,7 @@ class AbstractMetricsFactory(ABC):
 
     def __init__(self, dynamodb_endpoint: str):
         self._dynamodb_endpoint = dynamodb_endpoint
+        self.aioboto3_session = aioboto3.Session()
 
     async def get(self, module_id: str, ids: List[str]) -> Dict[str, 'MetricsModel']:
         """
@@ -102,7 +103,7 @@ class AbstractMetricsFactory(ABC):
         """
         metrics = {}
 
-        async with aioboto3.resource('dynamodb', endpoint_url=self._dynamodb_endpoint) as dynamodb:
+        async with self.aioboto3_session.resource('dynamodb', endpoint_url=self._dynamodb_endpoint) as dynamodb:
             for keychunk in _chunks(metrics_keys):
                 request = {
                     self._dynamodb_table: {
