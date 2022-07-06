@@ -118,6 +118,10 @@ jobs:
           EXTRA_CORS_EXPOSE_HEADERS: ETag
           HOSTNAME_EXTERNAL: localstack
           PORT_WEB_UI: 8080
+      - image: pocket/snowplow-micro:latest
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     parameters:
       pipenv_path:
         default: "./"

@@ -19,6 +19,7 @@ services:
     depends_on:
       - localstack
       - memcached
+      - snowplow
 
   localstack:
     image: localstack/localstack:0.12.11
@@ -44,3 +45,9 @@ services:
     image: library/memcached:1.6
     ports:
       - '11211:11211'
+
+  snowplow:
+    image: pocket/snowplow-micro:latest
+    platform: linux/amd64
+    ports:
+      - '9090:9090'

@@ -7,11 +7,8 @@ from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureG
 from app.data_providers.corpus.curated_corpus_api_client import CuratedCorpusAPIClient
 from app.data_providers.metrics_client import MetricsClient
 from app.data_providers.slate_provider import SlateProvider
-from app.data_providers.snowplow_corpus_slate_tracker import (
-    SnowplowCorpusSlateTracker,
-    create_snowplow_tracker,
-    SnowplowConfig,
-)
+from app.data_providers.snowplow.config import SnowplowConfig, create_snowplow_tracker
+from app.data_providers.snowplow.snowplow_corpus_slate_tracker import SnowplowCorpusSlateTracker
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.graphql.ranked_corpus_slate import RankedCorpusSlate

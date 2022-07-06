@@ -3,7 +3,7 @@ import uuid
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
-from app.data_providers.snowplow_corpus_slate_tracker import SnowplowCorpusSlateTracker
+from app.data_providers.snowplow.snowplow_corpus_slate_tracker import SnowplowCorpusSlateTracker
 from app.data_providers.metrics_client import MetricsFetchable
 from app.data_providers.slate_provider import SlateProvider, SlateProvidable
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
