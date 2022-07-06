@@ -31,7 +31,7 @@ phases:
     commands:
       - echo Installing utilities necessary. Eventually we will bake these into an image..
       # Within our terraform files we execute jq, and aws-cli and python
-      - apk add jq aws-cli perl-utils nodejs npm git bash curl
+      - apk add jq aws-cli perl-utils nodejs-current npm git bash curl
 
   pre_build:
     commands:

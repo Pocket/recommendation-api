@@ -2,14 +2,14 @@ import {Resource} from "cdktf";
 import {Construct} from "constructs";
 import {config} from "./config";
 import {ApplicationDynamoDBTable} from "@pocket-tools/terraform-modules";
-import {DataAwsDynamodbTable} from "@cdktf/provider-aws";
+import {dynamodb} from "@cdktf/provider-aws";
 
 export class DynamoDB extends Resource {
 
   public readonly candidatesTable: ApplicationDynamoDBTable
   public readonly metadataTable: ApplicationDynamoDBTable
-  public readonly recommendationMetricsTable: DataAwsDynamodbTable
-  public readonly slateMetricsTable: DataAwsDynamodbTable
+  public readonly recommendationMetricsTable: dynamodb.DataAwsDynamodbTable
+  public readonly slateMetricsTable: dynamodb.DataAwsDynamodbTable
   public readonly candidateSetsTable: ApplicationDynamoDBTable;
 
   constructor(scope: Construct, name: string) {
@@ -140,12 +140,10 @@ export class DynamoDB extends Resource {
             type: 'S'
           }
         ],
-        ttl: [
-          {
-            attributeName: 'expires_at',
-            enabled: true
-          }
-        ],
+        ttl: {
+          attributeName: 'expires_at',
+          enabled: true
+        },
         globalSecondaryIndex: [],
       },
       readCapacity: {
@@ -162,13 +160,13 @@ export class DynamoDB extends Resource {
   }
 
   private getRecommendationMetricsTable() {
-    return new DataAwsDynamodbTable(this, `rec_metrics`, {
+    return new dynamodb.DataAwsDynamodbTable(this, `rec_metrics`, {
       name: config.recommendationMetricsDynamodbName,
     });
   }
 
   private getSlateMetricsTable() {
-    return new DataAwsDynamodbTable(this, `slate_metrics`, {
+    return new dynamodb.DataAwsDynamodbTable(this, `slate_metrics`, {
       name: config.slateMetricsDynamodbName,
     });
   }
