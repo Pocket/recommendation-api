@@ -1,20 +1,104 @@
 import unittest
 import os
 import json
+import random
 
 import pytest
+from app.models.corpus_item_model import CorpusItemModel
+from app.models.topic import TopicModel, PageType
 
 from tests.assets.engagement_metrics import generate_metrics, generate_firefox_metrics, generate_metrics_model_dict
 from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_nontopic_configs, generate_lineup_configs
 from app.config import ROOT_DIR
 from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, rank_topics, \
     thompson_sampling_1day, thompson_sampling_7day, thompson_sampling_14day, blocklist, top1_topics, top3_topics, \
-    firefox_thompson_sampling_1day, user_impression_filter
+    firefox_thompson_sampling_1day, user_impression_filter, rank_by_preferred_topics
 from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
 from operator import itemgetter
 
 ANDROID_DISCOVER_LINEUP_ID = "b50524d6-4df9-4f15-a0d0-13ccc8bdf4ed"
 WEB_HOME_LINEUP_ID = "05027beb-0053-4020-8bdc-4da2fcc0cb68"
+
+
+class TestAlgorithmsRankPreferredTopics(unittest.TestCase):
+    @staticmethod
+    def _prepare_recs():
+        topics = [TopicModel(id=f'topicid{i}',
+                    corpus_topic_id=f'topicid{i}',
+                    name=f'topic{i}',
+                    display_name=f'topic{i}',
+                    slug=f'topic{i}',
+                    query=f'topic{i}',
+                    curator_label=f'topic{i}',
+                    is_displayed=False,
+                    is_promoted=False,
+                    page_type=PageType.topic_page) for i in range(5)]
+        # 5 topics x 3 articles
+        recs = []
+        for i in range(5):
+            for j in range(3):
+                recs.append(CorpusItemModel(id=(i+1)*(j+1), topic=topics[i].corpus_topic_id))
+
+        return topics, recs
+
+    def test_rank_preferred_topics_3_3(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = [topics[0], topics[2], topics[4]]
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 3)
+
+        assert len(reordered) == 3
+        assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
+
+    def test_rank_preferred_topics_3_2(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = [topics[0], topics[2]]
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 3)
+
+        assert len(reordered) == 3
+        assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
+        for pref in user_prefs:
+            topic_recs_len = len([r for r in reordered if r.topic == pref.corpus_topic_id])
+            assert topic_recs_len == 2 or topic_recs_len == 1
+
+    def test_rank_preferred_topics_3_1(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = [topics[0]]
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 3)
+
+        assert len(reordered) == 3
+        assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
+
+    def test_rank_preferred_topics_5_3(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = [topics[0], topics[2], topics[4]]
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 5)
+
+        assert len(reordered) == 5
+        assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
+        for pref in user_prefs:
+            topic_recs_len = len([r for r in reordered if r.topic == pref.corpus_topic_id])
+            assert topic_recs_len == 2 or topic_recs_len == 1
+
+    def test_rank_preferred_topics_5_1(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = [topics[0]]
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 5)
+
+        assert len(reordered) == 5
+        assert len([r for r in reordered if r.topic == user_prefs[0].corpus_topic_id]) == 3
+
+    def test_rank_preferred_topics_no_prefs_returns_smth(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = []
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 3)
+
+        assert len(reordered) == 3
 
 
 class TestAlgorithmsSpreadPublishers(unittest.TestCase):
