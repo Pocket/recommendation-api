@@ -9,8 +9,8 @@ from app.models.corpus_slate_model import CorpusSlateModel
 
 class SnowplowCorpusSlateTracker:
     """
-    Implements tracking the recommendation of a CorpusSlate in SnowPlow, with the goal of tracking any metadata that
-    to CorpusRecommendation.id that we are interested in. Clients will only emit the CorpusRecommendation id in events.
+    Implements tracking the recommendation of a CorpusSlate in SnowPlow, with the goal of tracking any metadata for a
+    CorpusRecommendation that we are interested in. Clients will only emit `CorpusRecommendation.id` in events.
     """
 
     def __init__(self, tracker: Tracker, snowplow_config: SnowplowConfig):
