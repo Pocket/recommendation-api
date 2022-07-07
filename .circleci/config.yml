@@ -114,7 +114,7 @@ jobs:
             chmod 777 tests/test-reports
             docker-compose run app_dev pytest tests --junitxml=tests/test-reports/xml_results/junit.xml
       - store_test_results:
-          path: test-reports
+          path: tests/test-reports
 
   test_lambda:
     parameters:
