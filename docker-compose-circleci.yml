@@ -6,7 +6,7 @@ services:
     - "-m"
     - "pytest"
     - "/opt/project/tests"
-    - "--junitxml=test-results/junit.xml"
+    - "--junitxml=/tmp/junit.xml"
     environment:
       PYTHONPATH: "/opt/project"
       PYTHONUNBUFFERED: "1"
