@@ -112,7 +112,7 @@ jobs:
           command: |
             mkdir test-reports
             chmod 777 test-reports
-            docker-compose -f docker-compose.yml -f docker-compose-cirlceci.yml up --exit-code-from app_dev --abort-on-container-exit app_dev
+            docker-compose -f docker-compose.yml -f docker-compose-circleci.yml up --exit-code-from app_dev --abort-on-container-exit app_dev
       - store_test_results:
           path: test-reports
 
