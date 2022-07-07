@@ -110,9 +110,9 @@ jobs:
       - run:
           name: Run tests
           command: |
-            mkdir test-reports
-            chmod 777 test-reports
-            docker-compose -f docker-compose.yml -f docker-compose-circleci.yml up --exit-code-from app_dev --abort-on-container-exit app_dev
+            mkdir tests/test-reports
+            chmod 777 tests/test-reports
+            docker-compose run app_dev pytest tests --junitxml=tests/test-reports/xml_results/junit.xml
       - store_test_results:
           path: test-reports
 
