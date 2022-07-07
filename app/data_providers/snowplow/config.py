@@ -28,8 +28,6 @@ def create_snowplow_tracker() -> Tracker:
     Helper method to instantiate a Snowplow Tracker.
     :return:
     """
-    # NOTE: Snowplow has an 'Emitter' and a 'AsyncEmitter'. The latter works with threads, and it still blocks the
-    # eventloop. I did not find any implementation of an asyncio Snowplow tracker.
     emitter = Emitter(
         SnowplowConfig.ENDPOINT_URL,
         protocol=SnowplowConfig.PROTOCOL,
