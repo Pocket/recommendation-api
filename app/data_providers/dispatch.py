@@ -37,7 +37,7 @@ class SetupMomentDispatch:
         if user_recommendation_preferences:
             items = rank_by_preferred_topics(items, user_recommendation_preferences.preferred_topics, recommendation_count)
         else:
-            logging.warning(f'SetupMoment is unpersonalized for user {user_id} because no preferences were found.')
+            logging.info(f'SetupMoment is unpersonalized for user {user_id} because no preferences were found.')
 
         items = items[:recommendation_count]
         recommendations = [CorpusRecommendationModel(id=uuid.uuid4().hex, corpus_item=item) for item in items]
