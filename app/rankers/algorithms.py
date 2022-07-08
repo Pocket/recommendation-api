@@ -253,6 +253,7 @@ def rank_by_preferred_topics(
     """
     Recommends items with preferred topics, rotating the topics. Items for each topic are ordered randomly.
     In case there's not enough items for the preferred topics, it adds the rest of the candidates in the provided order.
+
     :param recs: candidates
     :param preferred_topics: List of topics that the user has expressed a preference for.
     :param count: a number of items to recommend

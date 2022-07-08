@@ -41,7 +41,7 @@ class TestAlgorithmsRankPreferredTopics(unittest.TestCase):
 
         return topics, recs
 
-    def test_rank_preferred_topics_3_3(self):
+    def test_even_split_3_items(self):
         topics, recs = self._prepare_recs()
         user_prefs = [topics[0], topics[2], topics[4]]
 
@@ -50,7 +50,7 @@ class TestAlgorithmsRankPreferredTopics(unittest.TestCase):
         assert len(reordered) == 3
         assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
 
-    def test_rank_preferred_topics_3_2(self):
+    def test_uneven_split_3_items(self):
         topics, recs = self._prepare_recs()
         user_prefs = [topics[0], topics[2]]
 
@@ -62,7 +62,7 @@ class TestAlgorithmsRankPreferredTopics(unittest.TestCase):
             topic_recs_len = len([r for r in reordered if r.topic == pref.corpus_topic_id])
             assert topic_recs_len == 2 or topic_recs_len == 1
 
-    def test_rank_preferred_topics_3_1(self):
+    def test_single_topic(self):
         topics, recs = self._prepare_recs()
         user_prefs = [topics[0]]
 
@@ -71,7 +71,7 @@ class TestAlgorithmsRankPreferredTopics(unittest.TestCase):
         assert len(reordered) == 3
         assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
 
-    def test_rank_preferred_topics_5_3(self):
+    def test_uneven_split_5_items(self):
         topics, recs = self._prepare_recs()
         user_prefs = [topics[0], topics[2], topics[4]]
 
@@ -83,7 +83,7 @@ class TestAlgorithmsRankPreferredTopics(unittest.TestCase):
             topic_recs_len = len([r for r in reordered if r.topic == pref.corpus_topic_id])
             assert topic_recs_len == 2 or topic_recs_len == 1
 
-    def test_rank_preferred_topics_5_1(self):
+    def test_not_enough_preferred_topic_items(self):
         topics, recs = self._prepare_recs()
         user_prefs = [topics[0]]
 
