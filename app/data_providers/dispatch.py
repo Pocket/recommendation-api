@@ -42,7 +42,7 @@ class SetupMomentDispatch:
         items = await self.corpus_client.get_corpus_items(self.CORPUS_IDS)
 
         user_recommendation_preferences = await self.user_recommendation_preferences_provider.fetch(user_id)
-        if user_recommendation_preferences:
+        if user_recommendation_preferences and user_recommendation_preferences.preferred_topics:
             topics = user_recommendation_preferences.preferred_topics
         else:
             logging.info(f'SetupMoment is unpersonalized for user {user_id} because no preferences were found.')

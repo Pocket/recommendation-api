@@ -47,7 +47,7 @@ gaming_topic = TopicModel(
 
 health_topic = TopicModel(
     id='26a3efb4-0f82-415a-9f47-7893df85853f',
-    corpus_topic_id='HEALTH',
+    corpus_topic_id='HEALTH_FITNESS',
     name='Health & Fitness',
     display_name='Health',
     slug='Health',
@@ -60,7 +60,7 @@ health_topic = TopicModel(
 
 entertainment_topic = TopicModel(
     id='c6242e35-4ef7-494f-ae9f-51f95b836424',
-    corpus_topic_id='Entertainment',
+    corpus_topic_id='ENTERTAINMENT',
     name='Entertainment',
     display_name='Entertainment',
     slug='Entertainment',
