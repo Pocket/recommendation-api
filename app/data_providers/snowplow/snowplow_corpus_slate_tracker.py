@@ -41,12 +41,12 @@ class SnowplowCorpusSlateTracker:
         return SelfDescribingJson(
             schema=self.snowplow_config.CORPUS_SLATE_SCHEMA,
             data={
-                'id': corpus_slate.id,
+                'corpus_slate_id': corpus_slate.id,
                 'recommendations': [
                     {
-                        'id': recommendation.id,
+                        'corpus_recommendation_id': recommendation.id,
                         'corpus_item': {
-                            'id': recommendation.corpus_item.id,
+                            'corpus_item_id': recommendation.corpus_item.id,
                         }
                     }
                     for recommendation in corpus_slate.recommendations
