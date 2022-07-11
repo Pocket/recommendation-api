@@ -32,7 +32,7 @@ class TestCorpusFeatureGroupClient:
         Test the case where the queried records exist in the Feature Group.
         """
         corpus_items = await self.client.get_corpus_items(
-            corpus_ids=[SetupMomentDispatch.SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID]
+            corpus_ids=SetupMomentDispatch.CORPUS_CANDIDATE_SET_IDS
         )
 
         # Assert corpus_items reflect the corpus_candidate_sets.json fixture data.
