@@ -5,6 +5,7 @@ from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureG
 from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
 from app.data_providers.metrics_client import MetricsFetchable
 from app.data_providers.slate_provider import SlateProvider, SlateProvidable
+from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
@@ -21,12 +22,19 @@ class SetupMomentDispatch:
     DISPLAY_NAME = 'Save an article you find interesting'
     SUB_HEADLINE = 'sub headline'
     CORPUS_IDS = ['deea0f06-9dc9-44a5-b864-fea4a4d0beb7']
+    # Health & Fitness, Entertainment, Business
+    DEFAULT_TOPICS = ['26a3efb4-0f82-415a-9f47-7893df85853f',
+                      'c6242e35-4ef7-494f-ae9f-51f95b836424',
+                      '1bf756c0-632f-49e8-9cce-324f38f4cc71']
+
 
     def __init__(
             self,
             corpus_client: CorpusFeatureGroupClient,
             user_recommendation_preferences_provider: UserRecommendationPreferencesProvider,
+            topic_provider: TopicProvider
     ):
+        self.topic_provider = topic_provider
         self.corpus_client = corpus_client
         self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
 
@@ -35,10 +43,12 @@ class SetupMomentDispatch:
 
         user_recommendation_preferences = await self.user_recommendation_preferences_provider.fetch(user_id)
         if user_recommendation_preferences:
-            items = rank_by_preferred_topics(items, user_recommendation_preferences.preferred_topics, recommendation_count)
+            topics = user_recommendation_preferences.preferred_topics
         else:
             logging.info(f'SetupMoment is unpersonalized for user {user_id} because no preferences were found.')
+            topics = await self.topic_provider.get_topics(self.DEFAULT_TOPICS)
 
+        items = rank_by_preferred_topics(items, topics, recommendation_count)
         items = items[:recommendation_count]
         recommendations = [CorpusRecommendationModel(id=uuid.uuid4().hex, corpus_item=item) for item in items]
 
