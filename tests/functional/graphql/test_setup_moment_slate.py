@@ -137,6 +137,6 @@ class TestSetupMomentSlate(TestDynamoDBBase):
 
             # Assert that 10 (the default for count) corpus items are being returned.
             assert len(recs) == 10
-            # Because the user doesn't have any preferred topics, the order of recommendations should be unchanged.
+            # Because the user doesn't have any preferred topics, default ones should be recommended.
             assert {rec['corpusItem']['topic'] for rec in recs} == \
                    {health_topic.corpus_topic_id, business_topic.corpus_topic_id, entertainment_topic.corpus_topic_id}
