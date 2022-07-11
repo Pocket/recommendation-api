@@ -71,11 +71,27 @@ entertainment_topic = TopicModel(
     page_type=PageType.topic_page
 )
 
+travel_topic = TopicModel(
+    id='7dc49254-686d-46e1-aa94-7ac3e7767f66',
+    corpus_topic_id='TRAVEL',
+    name='Trave',
+    display_name='Travel',
+    slug='Travel',
+    query='Travel',
+    curator_label='Travel',
+    is_displayed=True,
+    is_promoted=True,
+    page_type=PageType.topic_page
+)
+
 
 all_topic_fixtures = [
     business_topic,
     gaming_topic,
     technology_topic,
+    health_topic,
+    travel_topic,
+    entertainment_topic,
 ]
 
 
