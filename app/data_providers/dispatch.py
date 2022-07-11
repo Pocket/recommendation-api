@@ -18,10 +18,9 @@ class SetupMomentDispatch:
     setup moment to RankingDispatch as soon as we want to include rankers or experimentation.
     """
 
-    SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID = 'deea0f06-9dc9-44a5-b864-fea4a4d0beb7'
     DISPLAY_NAME = 'Save an article you find interesting'
     SUB_HEADLINE = 'sub headline'
-    CORPUS_IDS = ['deea0f06-9dc9-44a5-b864-fea4a4d0beb7']
+    CORPUS_CANDIDATE_SET_IDS = ['57d544d6-0758-4cd1-a7b4-86f454c8eae8']
 
     def __init__(
             self,
@@ -34,7 +33,7 @@ class SetupMomentDispatch:
         self.slate_tracker = slate_tracker
 
     async def get_ranked_corpus_slate(self, user_id: str, recommendation_count: int) -> CorpusSlateModel:
-        items = await self.corpus_client.get_corpus_items(self.CORPUS_IDS)
+        items = await self.corpus_client.get_corpus_items(self.CORPUS_CANDIDATE_SET_IDS)
 
         user_recommendation_preferences = await self.user_recommendation_preferences_provider.fetch(user_id)
         if user_recommendation_preferences:
@@ -46,7 +45,7 @@ class SetupMomentDispatch:
         recommendations = [CorpusRecommendationModel(id=str(uuid.uuid4()), corpus_item=item) for item in items]
 
         corpus_slate = CorpusSlateModel(
-            id=self.SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID,
+            id=str(uuid.uuid4()),
             headline=self.DISPLAY_NAME,
             subheadline=self.SUB_HEADLINE,
             recommendations=recommendations,
