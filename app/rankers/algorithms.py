@@ -1,6 +1,8 @@
+from collections import defaultdict
 from functools import partial
 import logging
 import json
+import random
 
 from aws_xray_sdk.core import xray_recorder
 
@@ -246,15 +248,49 @@ def user_impression_filter(recs: RecommendationListType, user_impressed_list: Li
 def rank_by_preferred_topics(
         recs: CorpusRecommendationListType,
         preferred_topics: List[TopicModel],
+        count: int
 ) -> CorpusRecommendationListType:
     """
-    Sorts recommendations in-order such that recs with a preferred topic rank above recs with a non-preferred topic.
-    :param recs:
+    Recommends items with preferred topics, rotating the topics. Items for each topic are ordered randomly.
+    In case there's not enough items for the preferred topics, it adds the rest of the candidates also rotating topics.
+
+    :param recs: candidates
     :param preferred_topics: List of topics that the user has expressed a preference for.
-    :return: ordered list of recommendations with preferred topics ranking higher.
+    :param count: a number of items to recommend
+    :return: ordered list of recommendations with preferred topics.
     """
-    preferred_corpus_topic_ids = {topic.corpus_topic_id for topic in preferred_topics}
-    return sorted(recs, key=lambda rec: rec.topic in preferred_corpus_topic_ids, reverse=True)
+    pref_topics = {topic.corpus_topic_id for topic in preferred_topics}
+    res = _spread_topics(count, recs, pref_topics)
+
+    if len(res) < count:
+        extra_topics = {r.topic for r in recs if r.topic not in pref_topics}
+        extra_res = _spread_topics(count - len(res), recs, extra_topics)
+        res.extend(extra_res)
+
+    return res[:count]
+
+
+def _spread_topics(count, recs, topic_ids):
+    recs_by_topic = defaultdict(list)
+    for rec in recs:
+        if rec.topic in topic_ids:
+            recs_by_topic[rec.topic].append(rec)
+
+    res = []
+    while len(res) < count and len(recs_by_topic) > 0:
+        for topic in topic_ids:
+            if topic not in recs_by_topic:
+                continue
+
+            topic_recs = recs_by_topic[topic]
+            position = random.randint(0, len(topic_recs) - 1) if len(topic_recs) > 0 else 0
+            item = topic_recs.pop(position)
+            res.append(item)
+
+            if len(topic_recs) == 0:
+                del recs_by_topic[topic]
+
+    return res[:count]
 
 
 @xray_recorder.capture('rankers_algorithms_spread_publishers')
