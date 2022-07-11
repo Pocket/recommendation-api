@@ -18,15 +18,14 @@ class SetupMomentDispatch:
     setup moment to RankingDispatch as soon as we want to include rankers or experimentation.
     """
 
-    SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID = 'deea0f06-9dc9-44a5-b864-fea4a4d0beb7'
     DISPLAY_NAME = 'Save an article you find interesting'
     SUB_HEADLINE = 'sub headline'
-    CORPUS_IDS = ['deea0f06-9dc9-44a5-b864-fea4a4d0beb7']
     # Health & Fitness, Entertainment, Business
     DEFAULT_TOPICS = ['26a3efb4-0f82-415a-9f47-7893df85853f',
                       'c6242e35-4ef7-494f-ae9f-51f95b836424',
                       '1bf756c0-632f-49e8-9cce-324f38f4cc71']
 
+    CORPUS_CANDIDATE_SET_IDS = ['57d544d6-0758-4cd1-a7b4-86f454c8eae8']
 
     def __init__(
             self,
@@ -39,7 +38,7 @@ class SetupMomentDispatch:
         self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
 
     async def get_ranked_corpus_slate(self, user_id: str, recommendation_count: int) -> CorpusSlateModel:
-        items = await self.corpus_client.get_corpus_items(self.CORPUS_IDS)
+        items = await self.corpus_client.get_corpus_items(self.CORPUS_CANDIDATE_SET_IDS)
 
         user_recommendation_preferences = await self.user_recommendation_preferences_provider.fetch(user_id)
         if user_recommendation_preferences and user_recommendation_preferences.preferred_topics:
@@ -53,7 +52,7 @@ class SetupMomentDispatch:
         recommendations = [CorpusRecommendationModel(id=uuid.uuid4().hex, corpus_item=item) for item in items]
 
         return CorpusSlateModel(
-            id=self.SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID,
+            id=str(uuid.uuid4()),
             headline=self.DISPLAY_NAME,
             subheadline=self.SUB_HEADLINE,
             recommendations=recommendations,
