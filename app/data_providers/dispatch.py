@@ -20,10 +20,12 @@ class SetupMomentDispatch:
 
     DISPLAY_NAME = 'Save an article you find interesting'
     SUB_HEADLINE = 'sub headline'
-    # Health & Fitness, Entertainment, Business
-    DEFAULT_TOPICS = ['26a3efb4-0f82-415a-9f47-7893df85853f',
-                      'c6242e35-4ef7-494f-ae9f-51f95b836424',
-                      '1bf756c0-632f-49e8-9cce-324f38f4cc71']
+    DEFAULT_TOPICS = [
+        '26a3efb4-0f82-415a-9f47-7893df85853f',  # Health & Fitness
+        'c6242e35-4ef7-494f-ae9f-51f95b836424',  # Entertainment
+        '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
+        '7dc49254-686d-46e1-aa94-7ac3e7767f66',  # Travel
+    ]
 
     CORPUS_CANDIDATE_SET_IDS = ['57d544d6-0758-4cd1-a7b4-86f454c8eae8']
 
