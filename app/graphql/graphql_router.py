@@ -81,9 +81,10 @@ class Query(ObjectType):
     async def resolve_setup_moment_slate(self, info: graphql.ResolveInfo, **kwargs) -> CorpusSlateModel:
         aioboto3_session = aioboto3.Session()
         corpus_client = CorpusFeatureGroupClient(aioboto3_session=aioboto3_session)
+        topic_provider = TopicProvider(aioboto3_session)
         user_recommendation_preferences_provider = UserRecommendationPreferencesProvider(
             aioboto3_session=aioboto3_session,
-            topic_provider=TopicProvider(aioboto3_session)
+            topic_provider=topic_provider
         )
         slate_tracker = SnowplowCorpusSlateTracker(tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
 
@@ -94,6 +95,7 @@ class Query(ObjectType):
             corpus_client=corpus_client,
             user_recommendation_preferences_provider=user_recommendation_preferences_provider,
             slate_tracker=slate_tracker,
+            topic_provider=topic_provider,
         ).get_ranked_corpus_slate(
             user_id=info.context.get('user_id'),
             recommendation_count=recommendation_count,
