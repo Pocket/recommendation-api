@@ -25,7 +25,7 @@ from collections import namedtuple
 MockResponse = namedtuple('MockResponse', 'status')
 
 
-corpus_topics = [health_topic, business_topic, entertainment_topic, technology_topic, gaming_topic]
+corpus_topics = [health_topic, business_topic, entertainment_topic, technology_topic, gaming_topic, travel_topic]
 corpus_topic_ids = [t.corpus_topic_id for t in corpus_topics]
 topics_by_id = {t.id: t for t in corpus_topics}
 
@@ -138,5 +138,6 @@ class TestSetupMomentSlate(TestDynamoDBBase):
             # Assert that 10 (the default for count) corpus items are being returned.
             assert len(recs) == 10
             # Because the user doesn't have any preferred topics, default ones should be recommended.
-            assert {rec['corpusItem']['topic'] for rec in recs} == \
-                   {health_topic.corpus_topic_id, business_topic.corpus_topic_id, entertainment_topic.corpus_topic_id}
+            assert {rec['corpusItem']['topic'] for rec in recs} <= \
+                   {health_topic.corpus_topic_id, entertainment_topic.corpus_topic_id, technology_topic.corpus_topic_id,
+                    travel_topic.corpus_topic_id}
