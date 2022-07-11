@@ -252,35 +252,43 @@ def rank_by_preferred_topics(
 ) -> CorpusRecommendationListType:
     """
     Recommends items with preferred topics, rotating the topics. Items for each topic are ordered randomly.
-    In case there's not enough items for the preferred topics, it adds the rest of the candidates in the provided order.
+    In case there's not enough items for the preferred topics, it adds the rest of the candidates also rotating topics.
 
     :param recs: candidates
     :param preferred_topics: List of topics that the user has expressed a preference for.
     :param count: a number of items to recommend
     :return: ordered list of recommendations with preferred topics.
     """
-    topic_ids = {topic.corpus_topic_id for topic in preferred_topics}
+    pref_topics = {topic.corpus_topic_id for topic in preferred_topics}
+    res = _spread_topics(count, recs, pref_topics)
+
+    if len(res) < count:
+        extra_topics = {r.topic for r in recs if r.topic not in pref_topics}
+        extra_res = _spread_topics(count - len(res), recs, extra_topics)
+        res.extend(extra_res)
+
+    return res[:count]
+
+
+def _spread_topics(count, recs, topic_ids):
     recs_by_topic = defaultdict(list)
     for rec in recs:
         if rec.topic in topic_ids:
             recs_by_topic[rec.topic].append(rec)
 
     res = []
-    recommended = set()
     while len(res) < count and len(recs_by_topic) > 0:
         for topic in topic_ids:
             if topic not in recs_by_topic:
                 continue
+
             topic_recs = recs_by_topic[topic]
             position = random.randint(0, len(topic_recs) - 1) if len(topic_recs) > 0 else 0
             item = topic_recs.pop(position)
             res.append(item)
-            recommended.add(item.id)
+
             if len(topic_recs) == 0:
                 del recs_by_topic[topic]
-
-    if len(res) < count:
-        res.extend(r for r in recs if r.id not in recommended)
 
     return res[:count]
 

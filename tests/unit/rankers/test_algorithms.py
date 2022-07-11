@@ -1,13 +1,12 @@
 import unittest
 import os
 import json
-import random
 
 import pytest
 from app.models.corpus_item_model import CorpusItemModel
-from app.models.topic import TopicModel, PageType
 
 from tests.assets.engagement_metrics import generate_metrics, generate_firefox_metrics, generate_metrics_model_dict
+from tests.assets.topics import *
 from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_nontopic_configs, generate_lineup_configs
 from app.config import ROOT_DIR
 from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, rank_topics, \
@@ -23,16 +22,7 @@ WEB_HOME_LINEUP_ID = "05027beb-0053-4020-8bdc-4da2fcc0cb68"
 class TestAlgorithmsRankPreferredTopics(unittest.TestCase):
     @staticmethod
     def _prepare_recs():
-        topics = [TopicModel(id=f'topicid{i}',
-                    corpus_topic_id=f'topicid{i}',
-                    name=f'topic{i}',
-                    display_name=f'topic{i}',
-                    slug=f'topic{i}',
-                    query=f'topic{i}',
-                    curator_label=f'topic{i}',
-                    is_displayed=False,
-                    is_promoted=False,
-                    page_type=PageType.topic_page) for i in range(5)]
+        topics = [business_topic, technology_topic, gaming_topic, health_topic, entertainment_topic]
         # 5 topics x 3 articles
         recs = []
         for i in range(5):
@@ -90,15 +80,19 @@ class TestAlgorithmsRankPreferredTopics(unittest.TestCase):
         reordered = rank_by_preferred_topics(recs, user_prefs, 5)
 
         assert len(reordered) == 5
-        assert len([r for r in reordered if r.topic == user_prefs[0].corpus_topic_id]) == 3
+        assert all(r.topic == user_prefs[0].corpus_topic_id for r in reordered[:3])
+        assert all(r.topic != user_prefs[0].corpus_topic_id for r in reordered[3:5])
+        assert len({r.topic for r in reordered[3:5] if r.topic != user_prefs[0].corpus_topic_id}) == 2
 
-    def test_rank_preferred_topics_no_prefs_returns_smth(self):
+    def test_rank_preferred_topics_no_prefs_returns_default(self):
         topics, recs = self._prepare_recs()
         user_prefs = []
 
         reordered = rank_by_preferred_topics(recs, user_prefs, 3)
 
+        rec_topics = {r.topic for r in reordered}
         assert len(reordered) == 3
+        assert len(rec_topics) == 3
 
 
 class TestAlgorithmsSpreadPublishers(unittest.TestCase):
