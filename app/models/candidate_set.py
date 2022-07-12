@@ -159,7 +159,8 @@ class DynamoDBCandidateSet(CandidateSetModel):
         :param cs_id: string id of the candidate set
         :return: dictionary database response
         """
-        async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
+        session = aioboto3.Session()
+        async with session.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
             table = await dynamodb.Table(dynamodb_config['candidate_sets']['table'])
             key_condition = Key('id').eq(cs_id)
             response = await table.query(KeyConditionExpression=key_condition)
