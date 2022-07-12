@@ -17,6 +17,7 @@ aws_secretsmanager_caching = "*"
 boto3-stubs = {extras = ["essential"], version = "==1.21.46"}
 aioresponses = "*"
 pytest-asyncio = "*"
+pytest-aiohttp = "*"
 
 [packages]
 graphene = "==2.*"
