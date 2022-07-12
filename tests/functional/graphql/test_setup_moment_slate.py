@@ -8,12 +8,9 @@ from graphene.test import Client
 from fastapi.testclient import TestClient
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
-<<<<<<< HEAD
 from app.data_providers.snowplow.config import SnowplowConfig
-=======
 from app.data_providers.dispatch import SetupMomentDispatch
 from app.data_providers.topic_provider import TopicProvider
->>>>>>> origin/main
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.graphql.graphql_router import schema
 from app.main import app
@@ -149,9 +146,6 @@ class TestSetupMomentSlate(TestDynamoDBBase):
 
             # Assert that 10 (the default for count) corpus items are being returned.
             assert len(recs) == default_recommendation_count
-            # Because the user doesn't have any preferred topics, the order of recommendations should be unchanged.
-            assert [rec['corpusItem']['id'] for rec in recs] == [item.id for item in corpus_items_fixture[:10]]
-
             # Because the user doesn't have any preferred topics, default ones should be recommended.
             assert {rec['corpusItem']['topic'] for rec in recs} <= \
                    {health_topic.corpus_topic_id, entertainment_topic.corpus_topic_id, technology_topic.corpus_topic_id,
