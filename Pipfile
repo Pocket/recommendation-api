@@ -14,32 +14,36 @@ mypy_boto3_dynamodb = "*"
 pytest-mock = "*"
 aws_secretsmanager_caching = "*"
 # We define the essential stubs
-boto3-stubs = {extras = ["essential"], version = "==1.16.15.0"}
+boto3-stubs = {extras = ["essential"], version = "==1.21.46"}
 aioresponses = "*"
+pytest-asyncio = "*"
 
 [packages]
-graphene = "*"
+graphene = "==2.*"
 graphene-federation = "*"
 starlette = "*"
 sentry-sdk = "*"
 graphene-pydantic = "==0.1.0"
-aioboto3 = "*"
+aioboto3 = "<9"
 gunicorn = "*"
-uvicorn = "*"
+uvicorn = "==0.14.0"
 # Locking fastapi to prevent a conflict with pydantic:
 #   pydantic<2.0.0,>=1.6.2 (from fastapi==0.65.1)
 #   pydantic<=1.6,>=1.0 (from graphene-pydantic==0.1.0)
 fastapi = "==0.64.0"
 uvloop = "*"
-httptools = "*"
-gql = "*"
+gql = "==2.*"
 xraysink = "*"
 aws-xray-sdk = "*"
 scipy = "*"
 jsonschema = "*"
 aiocache = {extras = ["memcached"], version = "*"}
+# aiocache depends on aiomcache, but our stack isn't compatible with version >= 0.7:
+#   TypeError: __init__() got an unexpected keyword argument 'loop'
+aiomcache = "==0.6.*"
 # aiocache will automatically use ujson when available. ujson supports decimal types, and json does not.
 ujson = "*"
+httptools = "*"
 
 [requires]
 python_version = "3.8"

@@ -46,7 +46,7 @@ class SlateConfigModel:
     SLATE_CONFIGS_BY_ID = {}
 
     def __init__(self, slate_id: str, display_name: str, description: str,
-                 curator_topic_label: Optional[CuratorTopic] = None, experiments=None):
+                 curator_topic_label: Optional[str] = None, experiments=None):
         self.id = slate_id
         self.displayName = display_name
         self.description = description
@@ -110,6 +110,9 @@ class SlateConfigModel:
             raise ValueError(f'slate id {slate_id} was not found in the slate configs')
 
         return slate_config
+
+    def __repr__(self):
+        return f"<SlateConfigModel {self.displayName} [{self.id}] >"
 
 
 def validate_slate_config(slate_configs: List[SlateConfigModel]) -> None:

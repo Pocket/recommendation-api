@@ -2,6 +2,16 @@ def get_ranker(name):
     return get_all_rankers()[name]
 
 
+PERSONALIZED_TOPIC_RANKERS = {"top1-topics", "top3-topics", "rank-topics"}
+
+POCKET_THOMPSON_SAMPLING_RANKERS = {"thompson-sampling-1day", "thompson-sampling-7day",
+                             "thompson-sampling-14day", "thompson-sampling-28day"}
+
+FIREFOX_THOMPSON_SAMPLING_RANKERS = {"firefox-thompson-sampling-1day"}
+
+PERSONALIZED_IMPRESSION_RANKERS = {"user-impression-filter"}
+
+
 def get_all_rankers():
     # Importing algorithms within the function here ensures that when rankers are imported
     # they do not cause unwanted circular imports.
@@ -21,19 +31,35 @@ def get_all_rankers():
         top15,
         top30,
         top45,
-        thompson_sampling,
+        thompson_sampling_1day,
+        thompson_sampling_7day,
+        thompson_sampling_14day,
+        thompson_sampling_28day,
+        firefox_thompson_sampling_1day,
         spread_publishers,
         top1_topics,
-        top3_topics
+        top3_topics,
+        rank_topics,
+        user_impression_filter
     )
 
     return {
-        'top5': top5,
-        'top15': top15,
-        'top30': top30,
-        'top45': top45,
-        'thompson-sampling': thompson_sampling,
+        'top5-items': top5,
+        'top15-items': top15,
+        'top30-items': top30,
+        'top45-items': top45,
+        'top5-slates': top5,
+        'top15-slates': top15,
+        'top30-slates': top30,
+        'top45-slates': top45,
+        'thompson-sampling-1day': thompson_sampling_1day,
+        'thompson-sampling-7day': thompson_sampling_7day,
+        'thompson-sampling-14day': thompson_sampling_14day,
+        'thompson-sampling-28day': thompson_sampling_28day,
+        'firefox-thompson-sampling-1day': firefox_thompson_sampling_1day,
         'top1-topics': top1_topics,
         'top3-topics': top3_topics,
-        'pubspread': spread_publishers
+        'rank-topics': rank_topics,
+        'pubspread': spread_publishers,
+        'user-impression-filter': user_impression_filter
     }

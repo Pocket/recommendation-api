@@ -1,5 +1,22 @@
 [
   {
+    "id": "aaf47c0f-1361-4c8c-a89f-fa45e1dc2978",
+    "description": "Android Discover Tab Personalizedv2 Curated",
+    "experiments": [
+      {
+        "description": "Initial layout",
+        "rankers": [],
+        "slates": [
+          "631d8077-1462-4397-ad0a-aa340c27570a",
+          "0f322865-64e6-472d-8147-b3d6637a7d67",
+          "626397d3-fa4e-4299-8d07-cbeaa269ebc1",
+          "8fa462a6-81d1-47ee-8de3-1e5e0030e6d6",
+          "2f2a3568-901f-4655-8735-daf67e8ecc5d"
+        ]
+      }
+    ]
+  },
+  {
     "id": "20481076-2261-4916-801a-fd186986367b",
     "description": "Android Discover Tab Personalized Curated",
     "experiments": [
@@ -8,6 +25,39 @@
         "rankers": [],
         "slates": [
           "631d8077-1462-4397-ad0a-aa340c27570a",
+          "0f322865-64e6-472d-8147-b3d6637a7d67",
+          "626397d3-fa4e-4299-8d07-cbeaa269ebc1",
+          "8fa462a6-81d1-47ee-8de3-1e5e0030e6d6",
+          "2f2a3568-901f-4655-8735-daf67e8ecc5d"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "e0c0cf7e-3a02-4a2f-a614-5a0cad4e3273",
+    "description": "Android Discover Tab Personalized Algorithmic Topic",
+    "experiments": [
+      {
+        "description": "default layout",
+        "rankers": [
+          "top1-topics"
+        ],
+        "slates": [
+          "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
+          "e6c8db8d-cae7-4947-a57e-872dec639472",
+          "8aaac382-9c27-42ab-9470-ac1dfc666262",
+          "ce96db55-f32e-48f1-929f-216eb2e8c082",
+          "884414d5-502d-4e1a-8e70-1dc8eb4a345a",
+          "44dff273-3604-40e9-a0b5-bf3852581990",
+          "494eaa68-f048-4f52-bb9a-5e7d2526f5cb",
+          "e6600ffe-b65a-42d3-b570-f460f3d7326e",
+          "72ce0827-9dbc-470f-9722-39476daaeb0f",
+          "9901851d-ea76-4667-8dc7-0c1677ecb910",
+          "ab6048ca-5c61-4e87-aefd-7a612b60ab7b",
+          "8a495385-9972-4d0e-b93e-4234f4897939",
+          "fa61096a-b681-4251-b299-2fda06c49ebf",
+          "47688fcf-2bbb-4e0e-a02e-1f68c248a67e",
+          "d024ce9c-ed96-453f-a81e-8a0b850681e7",
           "0f322865-64e6-472d-8147-b3d6637a7d67",
           "626397d3-fa4e-4299-8d07-cbeaa269ebc1",
           "8fa462a6-81d1-47ee-8de3-1e5e0030e6d6",
@@ -50,8 +100,42 @@
     ]
   },
   {
+    "id": "f3c65847-5a0b-416d-8b14-4ca37bc08f4d",
+    "description": "Android Discover Tab Experiment Control",
+    "experiments": [
+      {
+        "description": "Initial layout",
+        "rankers": [],
+        "slates": [
+          "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
+          "0f322865-64e6-472d-8147-b3d6637a7d67",
+          "626397d3-fa4e-4299-8d07-cbeaa269ebc1",
+          "8fa462a6-81d1-47ee-8de3-1e5e0030e6d6",
+          "2f2a3568-901f-4655-8735-daf67e8ecc5d"
+        ]
+      }
+    ]
+  },
+  {
     "id": "af3a5196-be16-4bf7-b131-70981e43b132",
     "description": "Android Discover Tab",
+    "experiments": [
+      {
+        "description": "Initial layout",
+        "rankers": [],
+        "slates": [
+          "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
+          "0f322865-64e6-472d-8147-b3d6637a7d67",
+          "626397d3-fa4e-4299-8d07-cbeaa269ebc1",
+          "8fa462a6-81d1-47ee-8de3-1e5e0030e6d6",
+          "2f2a3568-901f-4655-8735-daf67e8ecc5d"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "e39bc22a-6b70-4ed2-8247-4b3f1a516bd1",
+    "description": "iOS Discover Tab",
     "experiments": [
       {
         "description": "Initial layout",
@@ -124,7 +208,7 @@
       {
         "description": "SlateLineup test 1",
         "rankers": [
-          "thompson-sampling"
+          "thompson-sampling-28day"
         ],
         "slates": [
           "de254c5d-57a7-4553-850f-153ee385014d",
@@ -139,7 +223,7 @@
       {
         "description": "SlateLineup test 2",
         "rankers": [
-          "thompson-sampling"
+          "thompson-sampling-28day"
         ],
         "slates": [
           "de254c5d-57a7-4553-850f-153ee385014d",
@@ -466,7 +550,7 @@
   },
   {
     "id": "05027beb-0053-4020-8bdc-4da2fcc0cb68",
-    "description": "Web Home - Personalized Curated",
+    "description": "Web Home - wh_persv2 Experiment Personalized Curated",
     "experiments": [
       {
         "description": "default layout",
@@ -491,6 +575,25 @@
           "ea40bef5-4406-488d-ad9d-915dfa1f0794",
           "e0d7063a-9421-4148-b548-446e9fbc8566",
           "9389d944-fdcf-4394-9ca3-4604c0af4fac"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "76b3f758-6aa3-430b-bcf1-8867897692b2",
+    "description": "Web Home - wh_persv2 Experiment Control",
+    "experiments": [
+      {
+        "description": "default layout",
+        "rankers": [],
+        "slates": [
+          "0737b00e-a21e-4875-a4c7-3e14926d4acf",
+          "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
+          "0f322865-64e6-472d-8147-b3d6637a7d67",
+          "2f2a3568-901f-4655-8735-daf67e8ecc5d",
+          "505c0126-d54d-42ef-8fe7-0f6a6f24e3a5",
+          "7cb4f497-fd05-42c5-9f78-3650e9ddba21",
+          "e9df8a81-19af-48e2-a90f-05e9a37491ca"
         ]
       }
     ]

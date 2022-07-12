@@ -1,18 +1,98 @@
-import posixpath
 import unittest
 import os
 import json
 
-from app.models.metrics.metrics_model import MetricsModel
-from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_uncurated_configs, generate_lineup_configs
+import pytest
+from app.models.corpus_item_model import CorpusItemModel
+
+from tests.assets.engagement_metrics import generate_metrics, generate_firefox_metrics, generate_metrics_model_dict
+from tests.assets.topics import *
+from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_nontopic_configs, generate_lineup_configs
 from app.config import ROOT_DIR
-from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, blocklist, top1_topics, top3_topics
+from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, rank_topics, \
+    thompson_sampling_1day, thompson_sampling_7day, thompson_sampling_14day, blocklist, top1_topics, top3_topics, \
+    firefox_thompson_sampling_1day, user_impression_filter, rank_by_preferred_topics
 from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
-from app.models.slate_lineup_config import SlateLineupConfigModel
 from operator import itemgetter
 
 ANDROID_DISCOVER_LINEUP_ID = "b50524d6-4df9-4f15-a0d0-13ccc8bdf4ed"
 WEB_HOME_LINEUP_ID = "05027beb-0053-4020-8bdc-4da2fcc0cb68"
+
+
+class TestAlgorithmsRankPreferredTopics(unittest.TestCase):
+    @staticmethod
+    def _prepare_recs():
+        topics = [business_topic, technology_topic, gaming_topic, health_topic, entertainment_topic]
+        # 5 topics x 3 articles
+        recs = []
+        for i in range(5):
+            for j in range(3):
+                recs.append(CorpusItemModel(id=(i+1)*(j+1), topic=topics[i].corpus_topic_id))
+
+        return topics, recs
+
+    def test_even_split_3_items(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = [topics[0], topics[2], topics[4]]
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 3)
+
+        assert len(reordered) == 3
+        assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
+
+    def test_uneven_split_3_items(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = [topics[0], topics[2]]
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 3)
+
+        assert len(reordered) == 3
+        assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
+        for pref in user_prefs:
+            topic_recs_len = len([r for r in reordered if r.topic == pref.corpus_topic_id])
+            assert topic_recs_len == 2 or topic_recs_len == 1
+
+    def test_single_topic(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = [topics[0]]
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 3)
+
+        assert len(reordered) == 3
+        assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
+
+    def test_uneven_split_5_items(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = [topics[0], topics[2], topics[4]]
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 5)
+
+        assert len(reordered) == 5
+        assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
+        for pref in user_prefs:
+            topic_recs_len = len([r for r in reordered if r.topic == pref.corpus_topic_id])
+            assert topic_recs_len == 2 or topic_recs_len == 1
+
+    def test_not_enough_preferred_topic_items(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = [topics[0]]
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 5)
+
+        assert len(reordered) == 5
+        assert all(r.topic == user_prefs[0].corpus_topic_id for r in reordered[:3])
+        assert all(r.topic != user_prefs[0].corpus_topic_id for r in reordered[3:5])
+        assert len({r.topic for r in reordered[3:5] if r.topic != user_prefs[0].corpus_topic_id}) == 2
+
+    def test_rank_preferred_topics_no_prefs_returns_default(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = []
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 3)
+
+        rec_topics = {r.topic for r in reordered}
+        assert len(reordered) == 3
+        assert len(rec_topics) == 3
 
 
 class TestAlgorithmsSpreadPublishers(unittest.TestCase):
@@ -148,25 +228,16 @@ class TestAlgorithmsBlocklist(unittest.TestCase):
         assert [x.item.item_id for x in filtered] == ['1', '33', '66', '999']
 
 
-class TestAlgorithmsThompsonSampling(unittest.TestCase):
+class TestAlgorithmsThompsonSampling:
+
     def test_it_can_rank_items_with_missing_metrics(self):
         recs = generate_recommendations(['333', '999'])
 
-        metrics = {
-            '999': MetricsModel(
-                id='home/999',
-                trailing_1_day_opens=0,
-                trailing_1_day_impressions=0,
-                trailing_7_day_opens=0,
-                trailing_7_day_impressions=0,
-                trailing_14_day_opens=0,
-                trailing_14_day_impressions=0,
-                trailing_28_day_opens=99,
-                trailing_28_day_impressions=999,
-                created_at=0,
-                expires_at=0
-            ),
-        }
+        metrics = generate_metrics_model_dict(
+            id='home/999',
+            trailing_28_day_opens=99,
+            trailing_28_day_impressions=999,
+        )
 
         sampled_recs = thompson_sampling(recs, metrics)
         # this needs to be a set since order isn't guaranteed in single trial
@@ -174,28 +245,44 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
 
     def test_invalid_prior(self):
         recs = generate_recommendations(['999'])
-        metrics = {
-            'default': MetricsModel(
-                id='home/default',
-                trailing_1_day_opens=0,
-                trailing_1_day_impressions=0,
-                trailing_7_day_opens=0,
-                trailing_7_day_impressions=0,
-                trailing_14_day_opens=0,
-                trailing_14_day_impressions=0,
-                trailing_28_day_opens=99,
-                trailing_28_day_impressions=-14,
-                created_at=0,
-                expires_at=0,
-            ),
-        }
+        metrics = generate_metrics_model_dict(
+            id = 'home/default',
+            trailing_28_day_opens=99,
+            trailing_28_day_impressions=-14,
+        )
 
         sampled_recs = thompson_sampling(recs, metrics)
         # this needs to be a set since order isn't guaranteed in single trial
         assert {item.item_id for item in sampled_recs} == {"999"}
 
-    # Moved from a previous thompson sampling test file
-    def test_rank_by_ctr_over_n_trials(self, ntrials=99):
+    def test_invalid_trailing_period(self):
+        """
+        An exception should be raised is the trailing period does not exist on any metrics model
+        :return:
+        """
+        # Invalid trailing_period
+        with pytest.raises(ValueError):
+            thompson_sampling(
+                generate_recommendations(['999']),
+                metrics=generate_metrics_model_dict(),
+                trailing_period=123  # Model does not have 123 day trailing metrics
+            )
+        # Invalid trailing_period for Firefox New Tab metrics
+        with pytest.raises(ValueError):
+            thompson_sampling(
+                generate_recommendations(['000-999']),
+                metrics=generate_firefox_metrics(['000-999']),
+                trailing_period=7  # MetricsModel has 7 day trailing period, but FirefoxNewTabMetricsModel does not.
+            )
+
+    @pytest.mark.parametrize("thompson_sampling_function,metrics", [
+        (thompson_sampling, generate_metrics(28)),  # 28 day is the default
+        (thompson_sampling_1day, generate_metrics(1)),
+        (thompson_sampling_7day, generate_metrics(7)),
+        (thompson_sampling_14day, generate_metrics(14)),
+        (firefox_thompson_sampling_1day, generate_firefox_metrics(["333333", "666666", "999999"])),
+    ])
+    def test_rank_by_ctr_over_n_trials(self, thompson_sampling_function, metrics, ntrials = 99):
         """
         This routine tests the Thompson sampling ranker by
         aggregating results over multiple trials.  In a single run of the
@@ -203,55 +290,14 @@ class TestAlgorithmsThompsonSampling(unittest.TestCase):
         ranks converge to descending by CTR
         :param ntrials is the number of trials for the aggregation
         """
-        recs = generate_recommendations(["333333", "666666", "999999", "222222"])
 
-        metrics = {
-            '999999': MetricsModel(
-                id='home/999999',
-                trailing_1_day_opens=0,
-                trailing_1_day_impressions=0,
-                trailing_7_day_opens=0,
-                trailing_7_day_impressions=0,
-                trailing_14_day_opens=0,
-                trailing_14_day_impressions=0,
-                trailing_28_day_opens=99,
-                trailing_28_day_impressions=999,
-                created_at=0,
-                expires_at=0
-            ),
-            '666666': MetricsModel(
-                id='home/666666',
-                trailing_1_day_opens=0,
-                trailing_1_day_impressions=0,
-                trailing_7_day_opens=0,
-                trailing_7_day_impressions=0,
-                trailing_14_day_opens=0,
-                trailing_14_day_impressions=0,
-                trailing_28_day_opens=66,
-                trailing_28_day_impressions=999,
-                created_at=0,
-                expires_at=0
-            ),
-            '333333': MetricsModel(
-                id='home/333333',
-                trailing_1_day_opens=0,
-                trailing_1_day_impressions=0,
-                trailing_7_day_opens=0,
-                trailing_7_day_impressions=0,
-                trailing_14_day_opens=0,
-                trailing_14_day_impressions=0,
-                trailing_28_day_opens=33,
-                trailing_28_day_impressions=999,
-                created_at=0,
-                expires_at=0
-            )
-        }
+        recs = generate_recommendations(["333333", "666666", "999999", "222222"])
 
         # goal of test is to rank by CTR over ntrials
         # order should be 999999, 666666, 333333
         ranks = {}
         for i in range(ntrials):
-            sampled_recs = thompson_sampling(recs, metrics)
+            sampled_recs = thompson_sampling_function(recs, metrics)
             c = 1
             for rec in sampled_recs:
                 # compute average positional rank over the trials
@@ -293,11 +339,14 @@ class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
                                for t in full_topic_profile.curator_topics
                                if t.curator_topic_label in input_topics]
 
-        for test_limit, topic_ranker in zip([1, 3], [top1_topics, top3_topics]):
+        for test_limit, topic_ranker in zip([1, 3, None], [top1_topics, top3_topics, rank_topics]):
+            if test_limit:
+                num_pers_topics = test_limit
+            else:
+                num_pers_topics = len(personalized_topics)
             output_configs = topic_ranker(input_configs, full_topic_profile)
             ordered_output_topics = [c.curator_topic_label for c in output_configs]
-            print(len(output_configs), test_limit)
-            assert len(output_configs) == test_limit
+            assert len(output_configs) == num_pers_topics
             assert ordered_output_topics == personalized_topics[:test_limit]
 
     def test_hybrid_lineups(self):
@@ -310,6 +359,8 @@ class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
         for lineup_id in [ANDROID_DISCOVER_LINEUP_ID, WEB_HOME_LINEUP_ID]:
             input_configs, description = generate_lineup_configs(lineup_id)
             non_topic_slots = [i for i, c in enumerate(input_configs) if c.curator_topic_label is None]
+            topic_slates = [c.curator_topic_label for c in input_configs if c.curator_topic_label]
+            num_topic_slates = len(topic_slates)
             # these are already sorted by RecIt
             first_personalizable_slot = min(set(range(len(input_configs))).difference(set(non_topic_slots)))
             other_slates_before = [t for i,t in enumerate(input_configs)
@@ -320,23 +371,69 @@ class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
 
             print("Testing: ", description)
 
-            for topic_limit, topic_ranker in zip([1, 3], [top1_topics, top3_topics]):
+            for topic_limit, topic_ranker in zip([1, 3, None], [top1_topics, top3_topics, rank_topics]):
                 print(f"first personalizable lineup slot is {first_personalizable_slot}, topic limit is {topic_limit}")
+                if topic_limit:
+                    num_pers_topics = topic_limit
+                else:
+                    num_pers_topics = num_topic_slates
                 # one non-topic slate should be at start of lineup
                 output_configs = topic_ranker(input_configs, full_topic_profile)
                 ordered_output_topics = [c.curator_topic_label for c in output_configs]
 
-                assert len(output_configs) == len(other_slates_before) + topic_limit + len(other_slates_after)
+
+                assert len(output_configs) == len(other_slates_before) + num_pers_topics + len(other_slates_after)
                 # if non-personalizable slates are first they should preserve their positions
                 assert output_configs[:len(other_slates_before)] == other_slates_before
-                # returned topic slates should be highest ranked
-                assert ordered_output_topics[first_personalizable_slot:first_personalizable_slot+topic_limit] == personalized_topics[:topic_limit]
+                # returned topic slates should be highest ranked, but only include topics that are in the lineup
+                assert ordered_output_topics[first_personalizable_slot:first_personalizable_slot+num_pers_topics] == [t for t in personalized_topics if t in topic_slates][:topic_limit]
                 # check any trailing slates that are also not personalizable
-                assert output_configs[(first_personalizable_slot + topic_limit):] == other_slates_after
+                assert output_configs[(first_personalizable_slot + num_pers_topics):] == other_slates_after
 
     def test_no_topic_slates(self):
         full_topic_profile = self._read_json_asset("recit_full_user_profile.json")
-        input_configs = generate_uncurated_configs()
+        input_configs = generate_nontopic_configs()
 
-        for topic_ranker in [top1_topics, top3_topics]:
+        for topic_ranker in [top1_topics, top3_topics, rank_topics]:
             self.assertRaises(ValueError, topic_ranker, input_configs, full_topic_profile)
+
+
+class TestAlgorithmsImpressionFilter(unittest.TestCase):
+
+    def test_impression_filter_remove(self):
+        item_ids = ["234", "345", "456"]
+        recs = generate_recommendations(item_ids)
+        impressed_items = [123, 456, 999]
+
+        filtered_recs = user_impression_filter(recs, impressed_items)
+
+        # check for filtering of impressed items
+        filtered_item_ids = [r.item_id for r in filtered_recs]
+        for i in impressed_items:
+            assert i not in filtered_item_ids
+
+        # check for presence of unfiltered items
+        for i in recs:
+            if int(i.item_id) not in impressed_items:
+                assert i.item_id in filtered_item_ids
+
+    def test_no_impressed_list(self):
+
+        item_ids = ["234", "345", "456"]
+        recs = generate_recommendations(item_ids)
+        filtered_recs = user_impression_filter(recs, [])
+
+        # check for presence of original items
+        assert recs == filtered_recs
+
+
+    def test_no_overlap(self):
+
+        item_ids = ["234", "345", "456"]
+        impressed_item_ids = [9*int(i) for i in item_ids]
+        recs = generate_recommendations(item_ids)
+        filtered_recs = user_impression_filter(recs, impressed_item_ids)
+
+        # check for presence of original items
+        assert recs == filtered_recs
+

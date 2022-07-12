@@ -8,7 +8,7 @@ from app.json.utils import parse_to_dict
 from app.models.metrics.slate_metrics_factory import SlateMetricsFactory
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate_config import SlateConfigModel
-from app.rankers import get_ranker
+from app.rankers import get_ranker, PERSONALIZED_TOPIC_RANKERS, POCKET_THOMPSON_SAMPLING_RANKERS
 from app.models.personalized_topic_list import PersonalizedTopicList
 
 
@@ -28,7 +28,7 @@ class SlateLineupConfigModel:
     # store loaded slate_lineup configs (loaded at app startup)
     SLATE_LINEUP_CONFIGS_BY_ID = {}
 
-    def __init__(self, slate_lineup_id: str, description: str, experiments=None):
+    def __init__(self, slate_lineup_id: str, description: str, experiments: Optional[List['SlateLineupExperimentModel']] = None):
         self.id = slate_lineup_id
         self.description = description
         self.experiments = experiments or []
@@ -120,14 +120,14 @@ class SlateLineupConfigModel:
         # change the order of the slate_configs within the slate_lineup's experiment
         for ranker in experiment.rankers:
             ranker_kwargs = {}
-            if ranker == 'thompson-sampling':
+            if ranker in POCKET_THOMPSON_SAMPLING_RANKERS:
                 # thompson sampling requires slate metrics
                 ranker_kwargs = {
                     'metrics': await SlateMetricsFactory(dynamodb_endpoint=dynamodb["endpoint_url"]).get(
                         slate_lineup_id,
                         [s.id for s in slate_configs])
                 }
-            elif ranker in {"top1-topics", "top3-topics"}:
+            elif ranker in PERSONALIZED_TOPIC_RANKERS:
                 ranker_kwargs = {
                     "personalized_topics": await PersonalizedTopicList.get(user_id)
                 }

@@ -35,13 +35,13 @@ class TestRecommendationMetricsModel(TestDynamoDBBase):
         assert "111111" not in metrics
 
         # Change clicks from 66 to 67 for "1234-ABCD/666666"
-        self.recommendationMetricsTable.update_item(
+        self.recommendation_metrics_table.update_item(
             Key={"recommendations_pk": "666666/1234-ABCD"},
             UpdateExpression="set trailing_28_day_opens=:c, trailing_28_day_impressions=:i",
             ExpressionAttributeValues={':c': Decimal(67), ':i': Decimal(1000)})
 
         # Insert a new item, that wasn't there before.
-        self.recommendationMetricsTable.put_item(Item={
+        self.recommendation_metrics_table.put_item(Item={
             "recommendations_pk": "111111/1234-ABCD",
             "trailing_28_day_opens": "1",
             "trailing_28_day_impressions": "5",
@@ -79,7 +79,7 @@ class TestRecommendationMetricsModel(TestDynamoDBBase):
         assert metrics["111111"].trailing_28_day_opens == 1
 
     async def _put_metrics_fixtures(self):
-        self.recommendationMetricsTable.put_item(Item={
+        self.recommendation_metrics_table.put_item(Item={
             "recommendations_pk": "default/1234-ABCD",  # TODO: Should this be /1234-ABCD? The doc only mention rollups per item.
             "trailing_28_day_opens": "200",
             "trailing_28_day_impressions": "5000",
@@ -93,7 +93,7 @@ class TestRecommendationMetricsModel(TestDynamoDBBase):
             "expires_at": "0"
         })
 
-        self.recommendationMetricsTable.put_item(Item={
+        self.recommendation_metrics_table.put_item(Item={
             "recommendations_pk": "999999/1234-ABCD",
             "trailing_28_day_opens": "99",
             "trailing_28_day_impressions": "999",
@@ -107,7 +107,7 @@ class TestRecommendationMetricsModel(TestDynamoDBBase):
             "expires_at": "0"
         })
 
-        self.recommendationMetricsTable.put_item(Item={
+        self.recommendation_metrics_table.put_item(Item={
             "recommendations_pk": "666666/1234-ABCD",
             "trailing_28_day_opens": "66",
             "trailing_28_day_impressions": "999",
@@ -121,7 +121,7 @@ class TestRecommendationMetricsModel(TestDynamoDBBase):
             "expires_at": "0"
         })
 
-        self.recommendationMetricsTable.put_item(Item={
+        self.recommendation_metrics_table.put_item(Item={
             "recommendations_pk": "333333/1234-ABCD",
             "trailing_28_day_opens": "33",
             "trailing_28_day_impressions": "999",

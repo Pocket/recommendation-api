@@ -88,17 +88,23 @@
                 "type": "string",
                 "enum": [
                   "pubspread",
-                  "top15",
-                  "top30",
-                  "thompson-sampling",
+                  "top5-slates",
+                  "top15-slates",
+                  "top30-slates",
+                  "top45-slates",
+                  "thompson-sampling-1day",
+                  "thompson-sampling-7day",
+                  "thompson-sampling-14day",
+                  "thompson-sampling-28day",
                   "top1-topics",
-                  "top3-topics"
+                  "top3-topics",
+                  "rank-topics"
                 ],
                 "title": "The Items Schema",
                 "default": "",
                 "examples": [
                   "pubspread",
-                  "top30"
+                  "top30-slates"
                 ],
                 "pattern": "^(.+)$"
               }

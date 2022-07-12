@@ -1,11 +1,11 @@
 import {Resource} from "cdktf";
 import {Construct} from "constructs";
 import {config} from "./config";
-import {ApplicationDynamoDBTable, PocketVPC} from "@pocket/terraform-modules";
-import {PocketSQSWithLambdaTarget} from "@pocket/terraform-modules/dist/src/pocket/PocketSQSWithLambdaTarget";
-import {LAMBDA_RUNTIMES} from "@pocket/terraform-modules/dist/src/base/ApplicationVersionedLambda";
-import {DataAwsSecretsmanagerSecretVersion, DataAwsSsmParameter} from "../.gen/providers/aws";
-import {PocketPagerDuty} from "@pocket/terraform-modules/dist/src/pocket/PocketPagerDuty";
+import {ApplicationDynamoDBTable, PocketVPC} from "@pocket-tools/terraform-modules";
+import {PocketSQSWithLambdaTarget} from "@pocket-tools/terraform-modules";
+import {LAMBDA_RUNTIMES} from "@pocket-tools/terraform-modules";
+import {ssm} from "@cdktf/provider-aws";
+import {PocketPagerDuty} from "@pocket-tools/terraform-modules";
 
 
 export class SqsLambda extends Resource {
@@ -13,7 +13,7 @@ export class SqsLambda extends Resource {
     scope: Construct,
     private name: string,
     candidateSetsTable: ApplicationDynamoDBTable,
-    pagerDuty: PocketPagerDuty
+    pagerDuty?: PocketPagerDuty
   ) {
     super(scope, name);
 
@@ -68,14 +68,14 @@ export class SqsLambda extends Resource {
             period: 10800, // 3 hours
             threshold: 1,
             comparisonOperator: 'LessThanThreshold',
-            actions: [pagerDuty.snsNonCriticalAlarmTopic.arn],
+            actions: config.isDev ? [] : [pagerDuty!.snsNonCriticalAlarmTopic.arn],
             treatMissingData: 'breaching'
           },
           errors: {
             evaluationPeriods: 3,
             period: 3600, // 1 hour
             threshold: 20,
-            actions: [pagerDuty.snsNonCriticalAlarmTopic.arn]
+            actions: config.isDev ? [] : [pagerDuty!.snsNonCriticalAlarmTopic.arn]
           }
         }
       },
@@ -84,11 +84,11 @@ export class SqsLambda extends Resource {
   }
 
   private getEnvVariableValues() {
-    const sentryDsn = new DataAwsSsmParameter(this, 'sentry-dsn', {
+    const sentryDsn = new ssm.DataAwsSsmParameter(this, 'sentry-dsn', {
       name: `/${config.name}/${config.environment}/SENTRY_DSN`
     });
 
-    const serviceHash = new DataAwsSsmParameter(this, 'service-hash', {
+    const serviceHash = new ssm.DataAwsSsmParameter(this, 'service-hash', {
       name: `${config.circleCIPrefix}/SERVICE_HASH`
     });
 

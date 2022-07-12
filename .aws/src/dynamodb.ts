@@ -1,15 +1,15 @@
 import {Resource} from "cdktf";
 import {Construct} from "constructs";
 import {config} from "./config";
-import {ApplicationDynamoDBTable} from "@pocket/terraform-modules";
-import {DataAwsDynamodbTable} from "../.gen/providers/aws";
+import {ApplicationDynamoDBTable} from "@pocket-tools/terraform-modules";
+import {dynamodb} from "@cdktf/provider-aws";
 
 export class DynamoDB extends Resource {
 
   public readonly candidatesTable: ApplicationDynamoDBTable
   public readonly metadataTable: ApplicationDynamoDBTable
-  public readonly recommendationMetricsTable: DataAwsDynamodbTable
-  public readonly slateMetricsTable: DataAwsDynamodbTable
+  public readonly recommendationMetricsTable: dynamodb.DataAwsDynamodbTable
+  public readonly slateMetricsTable: dynamodb.DataAwsDynamodbTable
   public readonly candidateSetsTable: ApplicationDynamoDBTable;
 
   constructor(scope: Construct, name: string) {
@@ -22,6 +22,9 @@ export class DynamoDB extends Resource {
   }
 
   /**
+   * @deprecated Delete this table if PR #409 is deployed without issues for a week:
+   * https://github.com/Pocket/recommendation-api/pull/409
+   *
    * Sets up the dynamodb table where the candidates will live
    * @private
    */
@@ -67,7 +70,8 @@ export class DynamoDB extends Resource {
         tracking: 70,
         max: 100,
         min: 5
-      }
+      },
+      preventDestroyTable: false,
     });
   }
 
@@ -136,12 +140,10 @@ export class DynamoDB extends Resource {
             type: 'S'
           }
         ],
-        ttl: [
-          {
-            attributeName: 'expires_at',
-            enabled: true
-          }
-        ],
+        ttl: {
+          attributeName: 'expires_at',
+          enabled: true
+        },
         globalSecondaryIndex: [],
       },
       readCapacity: {
@@ -158,13 +160,13 @@ export class DynamoDB extends Resource {
   }
 
   private getRecommendationMetricsTable() {
-    return new DataAwsDynamodbTable(this, `rec_metrics`, {
+    return new dynamodb.DataAwsDynamodbTable(this, `rec_metrics`, {
       name: config.recommendationMetricsDynamodbName,
     });
   }
 
   private getSlateMetricsTable() {
-    return new DataAwsDynamodbTable(this, `slate_metrics`, {
+    return new dynamodb.DataAwsDynamodbTable(this, `slate_metrics`, {
       name: config.slateMetricsDynamodbName,
     });
   }

@@ -12,10 +12,13 @@ from app.config import dynamodb as dynamodb_config
 # Needs to exist for pydantic to resolve the model field "item: ItemModel" in the RecommendationModel
 from app.graphql.item import Item
 from app.models.candidate_set import candidate_set_factory
+from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
 from app.models.metrics.recommendation_metrics_factory import RecommendationMetricsFactory
 from app.models.item import ItemModel
 from app.models.slate_experiment import SlateExperimentModel
-from app.rankers import get_ranker
+from app.models.user_impressed_list import UserImpressedList
+from app.rankers import get_ranker, POCKET_THOMPSON_SAMPLING_RANKERS, FIREFOX_THOMPSON_SAMPLING_RANKERS, \
+    PERSONALIZED_IMPRESSION_RANKERS
 
 
 class RecommendationType(Enum):
@@ -58,25 +61,6 @@ class RecommendationModel(BaseModel):
         return recommendation
 
     @staticmethod
-    @xray_recorder.capture_async('model_recommendations_get_recommendations')
-    async def get_recommendations(topic_id: str, recommendation_type: RecommendationType) -> ['RecommendationModel']:
-        """
-        Retrieves recommendations for the given `topic_id` of the given type from dynamo db.
-        :param topic_id: id of the topic we want recommendations for
-        :param recommendation_type: the type of recommendations we want, e.g. algorithmic, curated
-        :return: list of RecommendationModel objects
-        """
-        async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
-            table = await dynamodb.Table(dynamodb_config['candidates']['table'])
-            key_condition = Key('topic_id-type').eq(topic_id + '|' + recommendation_type.value)
-            response = await table.query(IndexName='topic_id-type', Limit=1, KeyConditionExpression=key_condition,
-                                         ScanIndexForward=False)
-        if not response['Items']:
-            return []
-        # assume 'candidates' below contains publisher
-        return list(map(RecommendationModel.candidate_dict_to_recommendation, response['Items'][0]['candidates']))
-
-    @staticmethod
     async def get_recommendations_from_experiment(
             slate_id: str, experiment: SlateExperimentModel, user_id: str) -> ['RecommendationModel']:
         """
@@ -98,38 +82,24 @@ class RecommendationModel(BaseModel):
 
         # apply rankers from the slate experiment on the candidate set's candidates
         for ranker in experiment.rankers:
-            if ranker == 'thompson-sampling':
-                # thompson sampling takes two specific arguments so it needs to be handled differently
-                recommendations = await RecommendationModel.__thompson_sample(slate_id, recommendations)
-                continue
-            recommendations = get_ranker(ranker)(recommendations)
+            ranker_kwargs = {}
+            if ranker in POCKET_THOMPSON_SAMPLING_RANKERS:
+                # Thompson sampling requires click/impression data
+                ranker_kwargs = {
+                    'metrics': await RecommendationMetricsFactory(dynamodb_config["endpoint_url"]).get(
+                        slate_id,
+                        [recommendation.item.item_id for recommendation in recommendations])
+                }
+            elif ranker in FIREFOX_THOMPSON_SAMPLING_RANKERS:
+                # firefox Thompson sampling requires click/impression data from it's own data source
+                ranker_kwargs = {
+                    'metrics': await FirefoxNewTabMetricsFactory().get([rec.id for rec in recommendations])
+                }
+            elif ranker in PERSONALIZED_IMPRESSION_RANKERS:
+                # impression filtering requires personalized impressed item lists from it's own data source
+                ranker_kwargs = {
+                    'user_impressed_list': await UserImpressedList().get(user_id)
+                }
+            recommendations = get_ranker(ranker)(recommendations, **ranker_kwargs)
 
         return recommendations
-
-    @staticmethod
-    async def __thompson_sample(slate_id: str, recommendations: ['RecommendationModel']) -> ['RecommendationModel']:
-        """
-        Special processing for handling the thompson sampling ranker. Retrieves click data for the items being ranked
-        and uses that for thompson sampling algorithm with beta distributions.
-
-        Thompson sampling is a probabilistic approach to estimating the CTR of an item.  It combines historical data
-        about item CTR on a specific recommendation surface with per-item click and impression data to form
-        a distribution for each item's CTR.  For new items, the distribution relies more on the historical data.  For
-        items with available click data, the distribution will reflect the observed performance and improve in
-        its accuracy.
-
-        Items are ranked by sampling from the corresponding CTR distribution which is updated daily.
-        This allows us to balance the need to explore new items' performance, and rank highly items
-        that have already demonstrated high performance (in terms of CTR).
-
-        :param slate_id:
-        :param recommendations: a list of RecommendationModel instances
-        :return: a list of RecommendationModel instances
-        """
-        item_ids = [recommendation.item.item_id for recommendation in recommendations]
-        try:
-            click_data = await RecommendationMetricsFactory(dynamodb_config["endpoint_url"]).get(slate_id, item_ids)
-        except ValueError:
-            logging.warning(f'No click data found for {slate_id = } {item_ids = }')
-            click_data = {}
-        return get_ranker('thompson-sampling')(recommendations, click_data)

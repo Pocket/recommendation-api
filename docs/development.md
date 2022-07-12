@@ -23,7 +23,7 @@ You will see:
 
 1. This is an API on the GraphQL protocol. When you visit localhost:8000, you will have:
 
-![GraphQL playground](/docs/images/graphql_playground.png)
+![GraphQL playground](images/graphql_playground.png)
 
 ## Adding Python dependencies using Pipenv
 Run `pipenv install <package>` to add a package to Pipfile and Pipfile.lock,
@@ -41,20 +41,40 @@ by an update in pip and/or SciPy in the near future. Until then:
         - `cd recsapi`
         - `pipenv install <package>` or `pipenv update <package>` for all necessary packages
 
-## Debugging the app in PyCharm 
+## Debugging the app locally in PyCharm
+The steps below allow you to run the app locally, without any risk of impacting AWS resources.
+DynamoDB is simulated using [LocalStack](https://github.com/localstack/localstack).
+Unfortunately, [currently does not support](https://docs.localstack.cloud/aws/feature-coverage/)
+Feature Groups which RecommendationAPI uses to get engagement metrics for the Firefox New Tab.
+
 1. Complete the 'Basic setup' above.
 2. Follow the steps to
 [configure an interpreter using Docker-Compose](https://getpocket.atlassian.net/wiki/spaces/PE/pages/1956937762/PyCharm+Interpreter+Setup#Docker-Compose)
 on Confluence.
     - Set 'Service' to 'app_dev' when adding the interpreter.
-3. Click Run > Edit configurations.
-4. Add a Python configuration using the + icon in the top-left. (See screenshot below.)
-    - Set 'Script path' to `<project root path>/app/main.py`.
-    - Set the Python interpreter to the Remote Python interpreter created in step 2.
-    - Set 'Working directory' to `<project root path>/app/`.
-5. To test your setup, set a breakpoint in app/main.py in the healthcheck, and visit http://localhost/health-check.
+3. Choose the 'main' run configuration in PyCharm from the dropdown menu in the top-right.
+4. To test your setup, set a breakpoint in app/main.py on `app = FastAPI()`, and visit http://localhost:8000.
+5. Try running a query from [README.md](../README.md).
 
-![main configuration](/docs/images/main-configuration.png)
+![main configuration](images/main-configuration.png)
+
+## Debugging the app in PyCharm using data stores in AWS
+The steps bellow allow you to run the app locally, while using AWS resources such as DynamoDB and Feature Groups in Pocket-Dev.
+Data is not guaranteed to exist consistently in this environment, so you might have to insert any required records first. 
+
+:warning: The same procedure could be used to debug the app using production resources, but this could have unintended
+production impact because RecommendationAPI writes to memcached. If the need for this arises, a Docker Compose configuration
+could be created that sets up memcached locally, but uses AWS for other resources.
+
+1. Follow the steps under 'Debugging the app locally in PyCharm' first to ensure you are able to run the app locally. 
+2. Follow the steps to
+[configure an interpreter using Docker-Compose](https://getpocket.atlassian.net/wiki/spaces/PE/pages/1956937762/PyCharm+Interpreter+Setup#Docker-Compose)
+on Confluence.
+    - Set 'Configuration files' to `./docker-compose-dev.yml`.
+    - Set 'Service' to 'app_dev'.
+3. Choose the 'main Pocket-Dev' run configuration in PyCharm from the dropdown menu in the top-right.
+4. Generate/insert data in Pocket-Dev.
+5. Run `source <(maws -o awscli)` and choose the `pocket-dev-PocketSSODataLearning` profile.
 
 ## Running/debugging app tests in PyCharm
 Follow steps 1-2 from the above section 'Debugging the app in PyCharm', to add a Docker-Compose interpreter.
@@ -69,7 +89,7 @@ With the remote interpreter selected as the project default, there are many ways
         - Set the 'Python interpreter' to the Remote interpreter.
         - Set the working directory to the project root.
 
-![pytest configuration](/docs/images/pytest-configuration.png)
+![pytest configuration](images/pytest-configuration.png)
 
 ## Running/debugging aws_lambda tests
 Create a Pipenv virtual environment:
@@ -99,7 +119,7 @@ Now use the aws_lambda Pipenv interpreter in the recommendation-api PyCharm proj
         - Set the 'Python interpreter' to the Pipenv (aws_lambda) interpreter.
         - Set the working directory to `<project root path>/aws_lambda`.
 
-![aws_lambda pytest configuration](/docs/images/aws-lambda-pytest-configuration.png)
+![aws_lambda pytest configuration](images/aws-lambda-pytest-configuration.png)
 
 ### Error: You must specify a region
 The tests pass reliably in CircleCI, but we currently don't have a local Docker environment

@@ -20,9 +20,6 @@ dynamodb = {
     'metadata': {
         'table': os.getenv('RECOMMENDATION_API_METADATA_TABLE', 'recommendation_api_metadata'),
     },
-    'candidates': {
-        'table': os.getenv('RECOMMENDATION_API_CANDIDATES_TABLE', 'recommendation_api_candidates'),
-    },
     'candidate_sets': {
         'table': os.getenv('RECOMMENDATION_API_CANDIDATE_SETS_TABLE', 'recommendation_api_candidate_sets'),
     },
@@ -65,4 +62,10 @@ qa_slate_map = {
     "0c09627b-a409-4768-b87d-7e1d29259785": "e8251442-ef97-422f-ad65-0f28e6f7a0d6",
     # Our most-read Collections -> QA duplicate of this slate
     "0f322865-64e6-472d-8147-b3d6637a7d67": "b70d65c6-9171-40bf-bddb-5a60d42dd03f",
+}
+
+# This will redirect to the slate lineup value if the slate lineup id raises a PersonalizationError exception
+personalization_fallback_slate_lineup = {
+    # Web Home - Personalized Curated --> Web Home - Fallback Curated
+    '05027beb-0053-4020-8bdc-4da2fcc0cb68': '249850f0-61c0-46f9-a16a-f0553c222800',
 }

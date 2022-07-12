@@ -13,7 +13,7 @@ from xraysink.context import AsyncContext
 
 from app.cache import initialize_caches
 from app.config import ENV, ENV_PROD, ENV_DEV, service, sentry as sentry_config
-from app.graphql.graphql import schema
+from app.graphql.graphql_router import schema
 from app.graphql.user_middleware import UserMiddleware
 from app.graphql_app import GraphQLAppWithMiddleware, GraphQLSentryMiddleware
 from app.models.candidate_set import candidate_set_factory
@@ -26,8 +26,7 @@ from app.health_status import get_health_status, set_health_status, HealthStatus
 sentry_sdk.init(
     dsn=sentry_config['dsn'],
     release=sentry_config['release'],
-    environment=sentry_config['environment'],
-    traces_sample_rate=0.1
+    environment=sentry_config['environment']
 )
 # Ignore graphql.execution.utils to prevent duplicate Sentry events. Exceptions are handled by GraphQLSentryMiddleware.
 sentry_sdk.integrations.logging.ignore_logger("graphql.execution.utils")
@@ -89,8 +88,8 @@ async def load_slate_configs():
     # Check for GUID re-use
     validate_unique_guids(slate_lineup_configs, slate_configs)
 
-    # Validate slate_lineup and slate configs on prod and dev, not locally.
-    if ENV in {ENV_PROD, ENV_DEV}:
+    # Validate slate_lineup and slate configs on prod, not locally or in dev.
+    if ENV == ENV_PROD:
         # wow i do not love this nested loop soup, BUT it does give us nice full context for the error message
         for slate_config in slate_configs:
             for experiment in slate_config.experiments:
