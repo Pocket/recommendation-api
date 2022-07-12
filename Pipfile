@@ -17,6 +17,7 @@ aws_secretsmanager_caching = "*"
 boto3-stubs = {extras = ["essential"], version = "==1.21.46"}
 aioresponses = "*"
 pytest-asyncio = "*"
+pytest-aiohttp = "*"
 
 [packages]
 graphene = "==2.*"
@@ -44,6 +45,7 @@ aiomcache = "==0.6.*"
 # aiocache will automatically use ujson when available. ujson supports decimal types, and json does not.
 ujson = "*"
 httptools = "*"
+aio-snowplow-tracker = "*"
 
 [requires]
 python_version = "3.8"

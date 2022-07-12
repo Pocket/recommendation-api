@@ -96,58 +96,25 @@ jobs:
             - app_prod
 
   test_app:
-    docker:
-      - image: python:3.8
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-      - image: library/memcached:1.6
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-        name: memcached
-      - image: localstack/localstack:0.12.1
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-        environment:
-          DEBUG: 1
-          SERVICES: 'dynamodb'
-          DATA_DIR: /tmp/localstack/data
-          EXTRA_CORS_ALLOWED_HEADERS: Content-Disposition, Content-Type, x-amz-acl
-          EXTRA_CORS_EXPOSE_HEADERS: ETag
-          HOSTNAME_EXTERNAL: localstack
-          PORT_WEB_UI: 8080
-    parameters:
-      pipenv_path:
-        default: "./"
-        type: string
-    environment:
-      WORKON_HOME: '~/.venv'
+    machine:
+      image: ubuntu-2004:202104-01
+      docker_layer_caching: true
     steps:
       - checkout
-      - restore_cache:
-          key: deps-test-{{ checksum "<<parameters.pipenv_path>>Pipfile.lock" }}
       - run:
-          name: Build environment and install requirements
+          name: Build images of services declared in docker-compose.yml
           command: |
-            pip install pipenv
-            pipenv install --dev
-      - save_cache:
-          key: deps-test-{{ checksum "<<parameters.pipenv_path>>Pipfile.lock" }}
-          paths:
-            - "~/.venv"
-      - run:
-          name: run setup.sh
-          command: export $(egrep -v '^#' .docker/local.env | xargs -0) && ./.circleci/scripts/setup.sh --hosts --aws
+            echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USERNAME --password-stdin
+            touch .env
+            docker-compose build
       - run:
           name: Run tests
           command: |
-            mkdir test-reports
-            export $(egrep -v '^#' .docker/local.env | xargs -0)
-            pipenv run pytest tests/ --junitxml=test-reports/junit.xml
+            mkdir tests/test-reports
+            chmod 777 tests/test-reports
+            docker-compose run app_dev pytest tests --junitxml=tests/test-reports/xml_results/junit.xml
       - store_test_results:
-          path: test-reports
+          path: tests/test-reports
 
   test_lambda:
     parameters:
