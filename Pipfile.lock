@@ -18,11 +18,11 @@
     "default": {
         "aio-snowplow-tracker": {
             "hashes": [
-                "sha256:147f011b731cb83fa853a0c0b8a0af8925d1f8977c6f1843f2f4d2eedd626f1a",
-                "sha256:24d4b1078446ae1c5e8e3f99d9fe8e3978dc80cb23ed3e7404f8630980f57f86"
+                "sha256:449e464f0dee429699814c75106bf2d6966afa0012878d3615c08db872370a95",
+                "sha256:bc88833b2804c475b22171e91e141ea09ff00087c2835547a49701c52bdecdb6"
             ],
             "index": "pypi",
-            "version": "==1.0.1"
+            "version": "==1.0.2"
         },
         "aioboto3": {
             "hashes": [
@@ -199,6 +199,7 @@
                 "sha256:6fa0622f308cfd1da758966fc98b52fbd74b80606d14586c8ad82c7a6c4f32d0",
                 "sha256:8fa32fcc8be38327bd667237223d71e5e4b2475f39d6882aca4dbad19fff8c29"
             ],
+            "markers": "python_version >= '3.6'",
             "version": "==1.21.21"
         },
         "botocore": {
@@ -1087,11 +1088,11 @@
         },
         "botocore-stubs": {
             "hashes": [
-                "sha256:b670126522350d3b6c940e51230d3ffbf31c7e7f284a72ccb482782e1b372e94",
-                "sha256:ed28b646dd1db91d1073c50accc558a9be9418a58882ef0f89eb39599704b501"
+                "sha256:439217d194bf610e5d62ad8ccab02204d6320cfa51b8ccb35fd2779986c4e0ae",
+                "sha256:77fb83cd600f39ce5101ae954fa14048196f62e0f331558903b88bca4e9f423b"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==1.27.27"
+            "version": "==1.27.28"
         },
         "certifi": {
             "hashes": [
