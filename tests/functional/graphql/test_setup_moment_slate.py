@@ -16,6 +16,7 @@ from app.graphql.graphql_router import schema
 from app.main import app
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.topic import TopicModel
+from app.models.user import User
 from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
 from tests.assets.topics import *
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
@@ -56,7 +57,12 @@ class TestSetupMomentSlate(TestDynamoDBBase):
     async def asyncSetUp(self):
         await super().asyncSetUp()
         self.client = Client(schema)
-        self.user_id = '123456789'
+        self.user = User(
+            user_id=1,
+            hashed_user_id='1-hashed',
+            guid=9876,
+            hashed_guid='9876-hashed'
+        )
 
         self.snowplow_micro = SnowplowMicroClient(config=SnowplowConfig())
         self.snowplow_micro.reset_snowplow_events()
@@ -68,7 +74,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
         mock_get_ranked_corpus_items.return_value = corpus_items_fixture
 
         preferred_topics = [technology_topic, gaming_topic]
-        preferences_fixture = _user_recommendation_preferences_fixture(self.user_id, preferred_topics)
+        preferences_fixture = _user_recommendation_preferences_fixture(str(self.user.user_id), preferred_topics)
         mock_fetch_user_recommendation_preferences.return_value = preferences_fixture
 
         with TestClient(app):
@@ -88,7 +94,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
                   }
                 }
                 ''',
-                context_value={'user_id': self.user_id},
+                context_value={'user': self.user},
                 executor=AsyncioExecutor())
 
             response = executed['data']['setupMomentSlate']
@@ -112,13 +118,14 @@ class TestSetupMomentSlate(TestDynamoDBBase):
     @patch.object(CorpusFeatureGroupClient, 'get_corpus_items')
     @patch.object(UserRecommendationPreferencesProvider, 'fetch')
     @patch.object(TopicProvider, 'get_topics')
-    def test_default_count(self, mock_get_topics, mock_fetch_user_recommendation_preferences, mock_get_ranked_corpus_items):
+    def test_default_count(
+            self, mock_get_topics, mock_fetch_user_recommendation_preferences, mock_get_ranked_corpus_items):
         corpus_items_fixture = _corpus_items_fixture(n=100)
         mock_get_ranked_corpus_items.return_value = corpus_items_fixture
         default_recommendation_count = 10  # Number of recommendations that is expected to be returned by default.
 
         mock_fetch_user_recommendation_preferences.return_value = \
-            _user_recommendation_preferences_fixture(self.user_id, [])
+            _user_recommendation_preferences_fixture(str(self.user.user_id), [])
         mock_get_topics.return_value = _get_topics_fixture(SetupMomentDispatch.DEFAULT_TOPICS)
 
         with TestClient(app):
@@ -138,7 +145,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
                   }
                 }
                 ''',
-                context_value={'user_id': self.user_id},
+                context_value={'user': self.user},
                 executor=AsyncioExecutor())
 
             response = executed['data']['setupMomentSlate']
@@ -172,4 +179,4 @@ class TestSetupMomentSlate(TestDynamoDBBase):
             if context_data['schema'] == SnowplowConfig.CORPUS_SLATE_SCHEMA:
                 assert len(context_data['data']['recommendations']) == expected_recommendation_count
             elif context_data['schema'] == SnowplowConfig.USER_SCHEMA:
-                assert context_data['data']['user_id'] == int(self.user_id)
+                assert context_data['data']['user_id'] == int(self.user.user_id)

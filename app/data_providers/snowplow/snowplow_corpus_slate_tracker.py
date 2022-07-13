@@ -5,6 +5,7 @@ from aio_snowplow_tracker import Tracker, Subject, SelfDescribingJson
 
 from app.data_providers.snowplow.config import SnowplowConfig
 from app.models.corpus_slate_model import CorpusSlateModel
+from app.models.user import User
 
 
 class SnowplowCorpusSlateTracker:
@@ -18,18 +19,18 @@ class SnowplowCorpusSlateTracker:
         self.snowplow_config = snowplow_config
 
     @xray_recorder.capture_async('data_providers.SnowplowCorpusSlateTracker.track')
-    async def track(self, corpus_slate: CorpusSlateModel, user_id: str):
+    async def track(self, corpus_slate: CorpusSlateModel, user: User):
         await self.tracker.track_self_describing_event(
             event_json=self._get_object_update_event(object='corpus_slate', trigger='corpus_slate_recommendation'),
-            event_subject=self._get_subject(user_id),
+            event_subject=self._get_subject(user),
             context=[
                 self._get_corpus_slate_entity(corpus_slate),
-                self._get_user_entity(user_id),
+                self._get_user_entity(user),
             ],
         )
 
-    def _get_subject(self, user_id: Optional[str]):
-        return Subject().set_user_id(user_id)
+    def _get_subject(self, user: User):
+        return Subject().set_user_id(str(user.user_id))
 
     def _get_object_update_event(self, object: str, trigger: str) -> SelfDescribingJson:
         return SelfDescribingJson(
@@ -54,10 +55,8 @@ class SnowplowCorpusSlateTracker:
             }
         )
 
-    def _get_user_entity(self, user_id: str) -> SelfDescribingJson:
+    def _get_user_entity(self, user: User) -> SelfDescribingJson:
         return SelfDescribingJson(
             schema=self.snowplow_config.USER_SCHEMA,
-            data={
-                'user_id': int(user_id),
-            }
+            data=user.dict(),
         )

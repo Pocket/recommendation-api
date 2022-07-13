@@ -97,7 +97,7 @@ class Query(ObjectType):
             slate_tracker=slate_tracker,
             topic_provider=topic_provider,
         ).get_ranked_corpus_slate(
-            user_id=info.context.get('user_id'),
+            user=info.context['user'],
             recommendation_count=recommendation_count,
         )
 
