@@ -60,8 +60,6 @@ class TestSetupMomentSlate(TestDynamoDBBase):
         self.user = User(
             user_id=1,
             hashed_user_id='1-hashed',
-            guid=9876,
-            hashed_guid='9876-hashed'
         )
 
         self.snowplow_micro = SnowplowMicroClient(config=SnowplowConfig())

@@ -56,7 +56,9 @@ class SnowplowCorpusSlateTracker:
         )
 
     def _get_user_entity(self, user: User) -> SelfDescribingJson:
+        user_entity = {k: v for k, v in user.dict().items() if v is not None}
+
         return SelfDescribingJson(
             schema=self.snowplow_config.USER_SCHEMA,
-            data=user.dict(),
+            data=user_entity,
         )
