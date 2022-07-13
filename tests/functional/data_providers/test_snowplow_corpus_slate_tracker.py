@@ -22,7 +22,6 @@ async def test_track_failure_response(
     await slate_tracker.track(corpus_slate_10_business_recs, user=user_1)
 
     # Assert that a 501 status code was logged.
-    # TODO: We should change this level from 'warning' to 'error' in aio_snowplow_tracker.
-    warning_logs = [r for r in caplog.records if r.levelname == 'WARNING']
-    assert len(warning_logs) == 1
-    assert "status code: 501" in warning_logs[0].message
+    error_logs = [r for r in caplog.records if r.levelname == 'ERROR']
+    assert len(error_logs) == 1
+    assert "status code: 501" in error_logs[0].message
