@@ -13,7 +13,10 @@ import {config} from './config';
 import {DynamoDB} from "./dynamodb";
 import {PocketALBApplication, PocketECSCodePipeline} from "@pocket-tools/terraform-modules";
 import {PocketPagerDuty} from "@pocket-tools/terraform-modules";
-import {PagerdutyProvider} from "@cdktf/provider-pagerduty";
+import {
+  DataPagerdutyEscalationPolicy,
+  PagerdutyProvider,
+} from "@cdktf/provider-pagerduty";
 import {SqsLambda} from "./sqsLambda";
 import {Elasticache} from "./elasticache";
 
@@ -103,26 +106,19 @@ class RecommendationAPI extends TerraformStack {
         }
 
 
-        const incidentManagement = new DataTerraformRemoteState(
+        const mozillaEscalation = new DataPagerdutyEscalationPolicy(
             this,
-            'incident_management',
+            'mozilla_sre_escalation_policy',
             {
-                organization: 'Pocket',
-                workspaces: {
-                    name: 'incident-management'
-                }
+              name: 'IT SRE: Escalation Policy'
             }
         );
 
         return new PocketPagerDuty(this, 'pagerduty', {
             prefix: config.prefix,
             service: {
-                criticalEscalationPolicyId: incidentManagement.get(
-                    'policy_data_eng_critical_id'
-                ),
-                nonCriticalEscalationPolicyId: incidentManagement.get(
-                    'policy_data_eng_non_critical_id'
-                )
+                criticalEscalationPolicyId: mozillaEscalation.id,
+                nonCriticalEscalationPolicyId: mozillaEscalation.id,
             }
         });
     }
