@@ -146,7 +146,6 @@ class TestSetupMomentSlate(TestDynamoDBBase):
                 context_value={'user': self.user},
                 executor=AsyncioExecutor())
 
-            assert not executed.get('errors')
             response = executed['data']['setupMomentSlate']
             recs = response['recommendations']
 

@@ -1,5 +1,4 @@
-from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import List
 
 from aws_xray_sdk.core import xray_recorder
 
@@ -7,37 +6,6 @@ from app.data_providers.PocketGraphClientSession import PocketGraphClientSession
 from app.config import ENV, ENV_PROD
 from app.models.ab_test_assignment import AbTestAssignmentModel
 from app.models.user import User
-from app.models.user_session_ids import UserSessionIds
-
-
-class AbTestProvidable(ABC):
-    """
-    Abstract class to determine to which A/B tests the user is assigned, and which variant the user should receive.
-    """
-
-    async def get_assignment(self, name: str, user_session_ids: UserSessionIds) -> Optional[AbTestAssignmentModel]:
-        """
-        Get a single A/B test assignment by name
-        :param name:
-        :param user_session_ids:
-        :return: A/B test assignment for the given name, or None if the experiment does not exist.
-        """
-        assignments = await self.get_assignments(names=[name], user_session_ids=user_session_ids)
-        if assignments:
-            return assignments[0]
-        else:
-            return None
-
-    @abstractmethod
-    async def get_assignments(self, names: List[str], user_session_ids: UserSessionIds) -> List[AbTestAssignmentModel]:
-        """
-        Get A/B test assignments with given experiment names for a user.
-        :param names: Assignment names
-        :param user_session_ids: User and session ids in hashed and integer representation.
-        :return: A/B test assignments for the given names. If no experiment exists for any given name, it will be
-        missing from the return value.
-        """
-        return NotImplemented
 
 
 class UnleashConfig:
@@ -49,7 +17,7 @@ class UnleashError(Exception):
     pass
 
 
-class UnleashProvider(AbTestProvidable):
+class UnleashProvider:
     """
     Implements getting A/B test assignments from Unleash
 
