@@ -1,6 +1,6 @@
 from app.data_providers.PocketGraphClientSession import PocketGraphClientSession, PocketGraphConfig
 from app.data_providers.unleash_provider import UnleashProvider, UnleashConfig
-from app.models.ab_test_assignment import AbTestAssignmentModel
+from app.models.unleash_assignment import UnleashAssignmentModel
 from app.models.user import User
 
 from tests.mocks.pocket_graph import *
@@ -29,5 +29,5 @@ async def test_get_assignments(pocket_graph_server: TestServer, user_1: User):
     }
 
     # pocket_graph_server returns data from `tests/assets/json/unleash_assignments.json`
-    assert unleash_assignments == [AbTestAssignmentModel(assigned=True, name='test.getstarted', variant='v0')]
+    assert unleash_assignments == [UnleashAssignmentModel(assigned=True, name='test.getstarted', variant='v0')]
 

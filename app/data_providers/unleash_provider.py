@@ -4,7 +4,7 @@ from aws_xray_sdk.core import xray_recorder
 
 from app.data_providers.PocketGraphClientSession import PocketGraphClientSession
 from app.config import ENV, ENV_PROD
-from app.models.ab_test_assignment import AbTestAssignmentModel
+from app.models.unleash_assignment import UnleashAssignmentModel
 from app.models.user import User
 
 
@@ -35,7 +35,7 @@ class UnleashProvider:
         self.unleash_config = unleash_config
 
     @xray_recorder.capture_async('data_providers.UnleashProvider.get_assignments')
-    async def get_assignments(self, names: List[str], user: User) -> List[AbTestAssignmentModel]:
+    async def get_assignments(self, names: List[str], user: User) -> List[UnleashAssignmentModel]:
         """
         Returns Unleash assignments with certain assignment names.
         :param names:
@@ -49,7 +49,7 @@ class UnleashProvider:
 
         return [assignment for assignment in all_assignments if assignment.name in names]
 
-    async def _get_all_assignments(self, user: User) -> List[AbTestAssignmentModel]:
+    async def _get_all_assignments(self, user: User) -> List[UnleashAssignmentModel]:
         """
         Get all Unleash assignments for the given user/session.
         :param user:
@@ -86,6 +86,6 @@ class UnleashProvider:
 
             if resp.status == 200:
                 assignments_data = response_json['data']['unleashAssignments']['assignments']
-                return [AbTestAssignmentModel.parse_obj(assignment) for assignment in assignments_data]
+                return [UnleashAssignmentModel.parse_obj(assignment) for assignment in assignments_data]
             else:
                 raise UnleashError(f"unleashAssignments responded with {resp.status}: {response_json.get('errors')}")
