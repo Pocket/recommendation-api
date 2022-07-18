@@ -3,7 +3,6 @@ from graphene import ObjectType, String, Field, List, Int
 from graphene_federation import build_schema
 import aioboto3
 
-from app.data_providers.PocketGraphClientSession import PocketGraphClientSession, PocketGraphConfig
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.corpus.curated_corpus_api_client import CuratedCorpusAPIClient
 from app.data_providers.metrics_client import MetricsClient
@@ -11,12 +10,10 @@ from app.data_providers.slate_provider import SlateProvider
 from app.data_providers.snowplow.config import SnowplowConfig, create_snowplow_tracker
 from app.data_providers.snowplow.snowplow_corpus_slate_tracker import SnowplowCorpusSlateTracker
 from app.data_providers.topic_provider import TopicProvider
-from app.data_providers.unleash_provider import UnleashProvider, UnleashConfig
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.graphql.ranked_corpus_slate import RankedCorpusSlate
 from app.graphql.update_user_recommendation_preferences_mutation import UpdateUserRecommendationPreferences
 from app.graphql.util import get_field_argument
-from app.models.ab_test_assignment import AbTestAssignmentModel
 from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
 from app.models.ranked_corpus_slate_instance import RankedCorpusSlateInstance
 from app.models.corpus_slate_model import CorpusSlateModel
@@ -103,11 +100,6 @@ class Query(ObjectType):
             user=info.context['user'],
             recommendation_count=recommendation_count,
         )
-
-    async def resolve_experiments(self, info) -> [AbTestAssignmentModel]:
-        async with PocketGraphClientSession(config=PocketGraphConfig()) as pocket_graph_client_session:
-            unleash_provider = UnleashProvider(pocket_graph_client_session, unleash_config=UnleashConfig())
-            return await unleash_provider.get_assignments('test')
 
     async def resolve_recommendation_preference_topics(self, info) -> [Topic]:
         topics = await TopicProvider(aioboto3_session=aioboto3.Session()).get_all()
