@@ -81,11 +81,7 @@ class UnleashProvider:
             }
         }
 
-        async with self.pocket_graph_client_session.post(url='/', json=body) as resp:
+        async with self.pocket_graph_client_session.post(url='/', json=body, raise_for_status=True) as resp:
             response_json = await resp.json()
-
-            if resp.status == 200:
-                assignments_data = response_json['data']['unleashAssignments']['assignments']
-                return [UnleashAssignmentModel.parse_obj(assignment) for assignment in assignments_data]
-            else:
-                raise UnleashError(f"unleashAssignments responded with {resp.status}: {response_json.get('errors')}")
+            assignments_data = response_json['data']['unleashAssignments']['assignments']
+            return [UnleashAssignmentModel.parse_obj(assignment) for assignment in assignments_data]

@@ -24,3 +24,13 @@ async def pocket_graph_server(aiohttp_server) -> TestServer:
     app = aiohttp.web.Application()
     app.router.add_post('/', mock_graphql_query)
     return await aiohttp_server(app)
+
+
+@pytest.fixture
+async def failing_pocket_graph_server(aiohttp_server) -> TestServer:
+    async def mock_graphql_query(request):
+        return aiohttp.web.Response(body=b'Simulating an internal server error', status=501)
+
+    app = aiohttp.web.Application()
+    app.router.add_post('/', mock_graphql_query)
+    return await aiohttp_server(app)
