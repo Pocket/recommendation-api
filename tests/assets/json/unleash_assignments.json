@@ -1,0 +1,20 @@
+{
+  "data": {
+    "unleashAssignments": {
+      "assignments": [
+        {
+          "assigned": false,
+          "name": "test.getstarted-v2",
+          "payload": null,
+          "variant": "disabled"
+        },
+        {
+          "assigned": true,
+          "name": "test.getstarted",
+          "payload": null,
+          "variant": "v0"
+        }
+      ]
+    }
+  }
+}
