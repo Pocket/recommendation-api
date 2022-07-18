@@ -11,7 +11,7 @@ class PocketGraphConfig:
     DEV_ENDPOINT_URL = 'https://client-api.getpocket.dev'
     ENDPOINT_URL = PROD_ENDPOINT_URL if ENV == ENV_PROD else DEV_ENDPOINT_URL
 
-    CLIENT_NAME = 'recommendations-api'
+    CLIENT_NAME = 'recommendation-api'
     CLIENT_VERSION = VERSION
 
 
