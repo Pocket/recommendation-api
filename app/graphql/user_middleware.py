@@ -11,7 +11,7 @@ class UserMiddleware(object):
 
     def resolve(self, next, root, info, **args):
         """
-        See if we have a user/guid id (hashed or unhashed) passed into a header from upstream,
+        See if we have a user id passed into a header from upstream,
         since this application lives within Pocket's VPC we are trusting that the upstream caller's
         have validated the JWT token and only set the userId in the header if it was valid
 
