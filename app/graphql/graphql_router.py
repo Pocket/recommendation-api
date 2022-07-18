@@ -8,12 +8,15 @@ from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureG
 from app.data_providers.corpus.curated_corpus_api_client import CuratedCorpusAPIClient
 from app.data_providers.metrics_client import MetricsClient
 from app.data_providers.slate_provider import SlateProvider
+from app.data_providers.snowplow.config import SnowplowConfig, create_snowplow_tracker
+from app.data_providers.snowplow.snowplow_corpus_slate_tracker import SnowplowCorpusSlateTracker
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.unleash_provider import UnleashProvider, UnleashConfig
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.graphql.ranked_corpus_slate import RankedCorpusSlate
 from app.graphql.update_user_recommendation_preferences_mutation import UpdateUserRecommendationPreferences
 from app.graphql.util import get_field_argument
+from app.models.ab_test_assignment import AbTestAssignmentModel
 from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
 from app.models.ranked_corpus_slate_instance import RankedCorpusSlateInstance
 from app.models.corpus_slate_model import CorpusSlateModel
@@ -81,25 +84,30 @@ class Query(ObjectType):
     async def resolve_setup_moment_slate(self, info: graphql.ResolveInfo, **kwargs) -> CorpusSlateModel:
         aioboto3_session = aioboto3.Session()
         corpus_client = CorpusFeatureGroupClient(aioboto3_session=aioboto3_session)
+        topic_provider = TopicProvider(aioboto3_session)
         user_recommendation_preferences_provider = UserRecommendationPreferencesProvider(
             aioboto3_session=aioboto3_session,
-            topic_provider=TopicProvider(aioboto3_session)
+            topic_provider=topic_provider
         )
+        slate_tracker = SnowplowCorpusSlateTracker(tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
 
         recommendation_count = int(get_field_argument(
             info.field_asts, ['setupMomentSlate', 'recommendations'], 'count', default_value=CorpusSlate.DEFAULT_COUNT))
 
+        return await SetupMomentDispatch(
+            corpus_client=corpus_client,
+            user_recommendation_preferences_provider=user_recommendation_preferences_provider,
+            slate_tracker=slate_tracker,
+            topic_provider=topic_provider,
+        ).get_ranked_corpus_slate(
+            user=info.context['user'],
+            recommendation_count=recommendation_count,
+        )
+
+    async def resolve_experiments(self, info) -> [AbTestAssignmentModel]:
         async with PocketGraphClientSession(config=PocketGraphConfig()) as pocket_graph_client_session:
             unleash_provider = UnleashProvider(pocket_graph_client_session, unleash_config=UnleashConfig())
-
-            return await SetupMomentDispatch(
-                corpus_client=corpus_client,
-                user_recommendation_preferences_provider=user_recommendation_preferences_provider,
-                unleash_provider=unleash_provider,
-            ).get_ranked_corpus_slate(
-                user_session_ids=info.context.get('user_session_ids'),
-                recommendation_count=recommendation_count,
-            )
+            return await unleash_provider.get_assignments('test')
 
     async def resolve_recommendation_preference_topics(self, info) -> [Topic]:
         topics = await TopicProvider(aioboto3_session=aioboto3.Session()).get_all()

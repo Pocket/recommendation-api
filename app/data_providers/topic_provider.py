@@ -43,7 +43,7 @@ class TopicProvider:
         :param slug: string slug of the topic to be retrieved
         :return: a TopicModel object
         """
-        async with aioboto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
+        async with self.aioboto3_session.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
             table = await dynamodb.Table(dynamodb_config['metadata']['table'])
             response = await table.query(IndexName='slug', Limit=1, KeyConditionExpression=Key('slug').eq(slug))
         if response['Items']:

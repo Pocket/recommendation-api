@@ -3,18 +3,96 @@ import os
 import json
 
 import pytest
+from app.models.corpus_item_model import CorpusItemModel
 
 from tests.assets.engagement_metrics import generate_metrics, generate_firefox_metrics, generate_metrics_model_dict
+from tests.assets.topics import *
 from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_nontopic_configs, generate_lineup_configs
 from app.config import ROOT_DIR
 from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, rank_topics, \
     thompson_sampling_1day, thompson_sampling_7day, thompson_sampling_14day, blocklist, top1_topics, top3_topics, \
-    firefox_thompson_sampling_1day, user_impression_filter
+    firefox_thompson_sampling_1day, user_impression_filter, rank_by_preferred_topics
 from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
 from operator import itemgetter
 
 ANDROID_DISCOVER_LINEUP_ID = "b50524d6-4df9-4f15-a0d0-13ccc8bdf4ed"
 WEB_HOME_LINEUP_ID = "05027beb-0053-4020-8bdc-4da2fcc0cb68"
+
+
+class TestAlgorithmsRankPreferredTopics(unittest.TestCase):
+    @staticmethod
+    def _prepare_recs():
+        topics = [business_topic, technology_topic, gaming_topic, health_topic, entertainment_topic]
+        # 5 topics x 3 articles
+        recs = []
+        for i in range(5):
+            for j in range(3):
+                recs.append(CorpusItemModel(id=(i+1)*(j+1), topic=topics[i].corpus_topic_id))
+
+        return topics, recs
+
+    def test_even_split_3_items(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = [topics[0], topics[2], topics[4]]
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 3)
+
+        assert len(reordered) == 3
+        assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
+
+    def test_uneven_split_3_items(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = [topics[0], topics[2]]
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 3)
+
+        assert len(reordered) == 3
+        assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
+        for pref in user_prefs:
+            topic_recs_len = len([r for r in reordered if r.topic == pref.corpus_topic_id])
+            assert topic_recs_len == 2 or topic_recs_len == 1
+
+    def test_single_topic(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = [topics[0]]
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 3)
+
+        assert len(reordered) == 3
+        assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
+
+    def test_uneven_split_5_items(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = [topics[0], topics[2], topics[4]]
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 5)
+
+        assert len(reordered) == 5
+        assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
+        for pref in user_prefs:
+            topic_recs_len = len([r for r in reordered if r.topic == pref.corpus_topic_id])
+            assert topic_recs_len == 2 or topic_recs_len == 1
+
+    def test_not_enough_preferred_topic_items(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = [topics[0]]
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 5)
+
+        assert len(reordered) == 5
+        assert all(r.topic == user_prefs[0].corpus_topic_id for r in reordered[:3])
+        assert all(r.topic != user_prefs[0].corpus_topic_id for r in reordered[3:5])
+        assert len({r.topic for r in reordered[3:5] if r.topic != user_prefs[0].corpus_topic_id}) == 2
+
+    def test_rank_preferred_topics_no_prefs_returns_default(self):
+        topics, recs = self._prepare_recs()
+        user_prefs = []
+
+        reordered = rank_by_preferred_topics(recs, user_prefs, 3)
+
+        rec_topics = {r.topic for r in reordered}
+        assert len(reordered) == 3
+        assert len(rec_topics) == 3
 
 
 class TestAlgorithmsSpreadPublishers(unittest.TestCase):

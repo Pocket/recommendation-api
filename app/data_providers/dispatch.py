@@ -3,13 +3,14 @@ import uuid
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
+from app.data_providers.snowplow.snowplow_corpus_slate_tracker import SnowplowCorpusSlateTracker
 from app.data_providers.metrics_client import MetricsFetchable
 from app.data_providers.slate_provider import SlateProvider, SlateProvidable
-from app.data_providers.unleash_provider import UnleashProvider
+from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
-from app.models.user_session_ids import UserSessionIds
+from app.models.user import User
 from app.rankers.algorithms import rank_by_preferred_topics
 
 
@@ -19,54 +20,53 @@ class SetupMomentDispatch:
     setup moment to RankingDispatch as soon as we want to include rankers or experimentation.
     """
 
-    SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID = 'deea0f06-9dc9-44a5-b864-fea4a4d0beb7'
     DISPLAY_NAME = 'Save an article you find interesting'
     SUB_HEADLINE = 'sub headline'
-    RECENT_SYNDICATED_CORPUS_SET_IDS = ['deea0f06-9dc9-44a5-b864-fea4a4d0beb7']
-    SETUP_MOMENT_HAND_PICKED_CORPUS_SET_IDS = ['57d544d6-0758-4cd1-a7b4-86f454c8eae8']
+    DEFAULT_TOPICS = [
+        '26a3efb4-0f82-415a-9f47-7893df85853f',  # Health & Fitness
+        'c6242e35-4ef7-494f-ae9f-51f95b836424',  # Entertainment
+        '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
+        '7dc49254-686d-46e1-aa94-7ac3e7767f66',  # Travel
+    ]
+
+    CORPUS_CANDIDATE_SET_IDS = ['57d544d6-0758-4cd1-a7b4-86f454c8eae8']
 
     def __init__(
             self,
             corpus_client: CorpusFeatureGroupClient,
             user_recommendation_preferences_provider: UserRecommendationPreferencesProvider,
-            unleash_provider: UnleashProvider,
+            slate_tracker: SnowplowCorpusSlateTracker,
+            topic_provider: TopicProvider,
     ):
+        self.topic_provider = topic_provider
         self.corpus_client = corpus_client
         self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
-        self.unleash_provider = unleash_provider
+        self.slate_tracker = slate_tracker
 
-    async def get_ranked_corpus_slate(
-            self,
-            user_session_ids: UserSessionIds,
-            recommendation_count: int,
-    ) -> CorpusSlateModel:
-        assignment = await self.unleash_provider.get_assignment(
-            name='temp.recommendation-api.set-moment-slate.hand-picked-content', user_session_ids=user_session_ids)
+    async def get_ranked_corpus_slate(self, user: User, recommendation_count: int) -> CorpusSlateModel:
+        items = await self.corpus_client.get_corpus_items(self.CORPUS_CANDIDATE_SET_IDS)
 
-        if assignment and assignment.variant == 'hand-picked-content':
-            corpus_set_ids = self.SETUP_MOMENT_HAND_PICKED_CORPUS_SET_IDS
+        user_recommendation_preferences = await self.user_recommendation_preferences_provider.fetch(str(user.user_id))
+        if user_recommendation_preferences and user_recommendation_preferences.preferred_topics:
+            topics = user_recommendation_preferences.preferred_topics
         else:
-            # Control variant
-            corpus_set_ids = self.RECENT_SYNDICATED_CORPUS_SET_IDS
+            logging.info(f'SetupMoment is unpersonalized for user {user.user_id} because no preferences were found.')
+            topics = await self.topic_provider.get_topics(self.DEFAULT_TOPICS)
 
-        items = await self.corpus_client.get_corpus_items(corpus_set_ids)
-
-        user_id = str(user_session_ids.user_id)
-        user_recommendation_preferences = await self.user_recommendation_preferences_provider.fetch(user_id)
-        if user_recommendation_preferences:
-            items = rank_by_preferred_topics(items, preferred_topics=user_recommendation_preferences.preferred_topics)
-        else:
-            logging.info(f'SetupMoment is unpersonalized for user {user_id} because no preferences were found.')
-
+        items = rank_by_preferred_topics(items, topics, recommendation_count)
         items = items[:recommendation_count]
-        recommendations = [CorpusRecommendationModel(id=uuid.uuid4().hex, corpus_item=item) for item in items]
+        recommendations = [CorpusRecommendationModel(id=str(uuid.uuid4()), corpus_item=item) for item in items]
 
-        return CorpusSlateModel(
-            id=self.SETUP_MOMENT_CORPUS_CANDIDATE_SET_ID,
+        corpus_slate = CorpusSlateModel(
+            id=str(uuid.uuid4()),
             headline=self.DISPLAY_NAME,
             subheadline=self.SUB_HEADLINE,
             recommendations=recommendations,
         )
+
+        await self.slate_tracker.track(corpus_slate, user=user)
+
+        return corpus_slate
 
 
 class RankingDispatch:

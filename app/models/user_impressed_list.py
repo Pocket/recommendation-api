@@ -13,6 +13,9 @@ class UserImpressedList:
         'resolved_ids',
     ]
 
+    def __init__(self):
+        self.aioboto3_session = aioboto3.Session()
+
     @xray_recorder.capture_async('models.user_impressed_list.get')
     async def get(self, user_id: str) -> List[int]:
         """
@@ -42,8 +45,7 @@ class UserImpressedList:
         :return: List with all items that should be filtered from slates/lineups returned by the recommendation-api
                  for the user corresponding to user_id
         """
-
-        async with aioboto3.client('sagemaker-featurestore-runtime') as featurestore:
+        async with self.aioboto3_session.client('sagemaker-featurestore-runtime') as featurestore:
             # TODO: Update aioboto3 to v9 to improve performance with featurestore's batch_get_record.
             #       - boto3 1.17.92 introduces BatchGetRecord
             #       - aioboto3 8.3.0 pins aiobotocore[boto3]==1.2.2

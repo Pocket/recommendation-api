@@ -6,6 +6,7 @@ from aws_xray_sdk.core import xray_recorder
 from app.data_providers.PocketGraphClientSession import PocketGraphClientSession
 from app.config import ENV, ENV_PROD
 from app.models.ab_test_assignment import AbTestAssignmentModel
+from app.models.user import User
 from app.models.user_session_ids import UserSessionIds
 
 
@@ -66,24 +67,24 @@ class UnleashProvider(AbTestProvidable):
         self.unleash_config = unleash_config
 
     @xray_recorder.capture_async('data_providers.UnleashProvider.get_assignments')
-    async def get_assignments(self, names: List[str], user_session_ids: UserSessionIds) -> List[AbTestAssignmentModel]:
+    async def get_assignments(self, names: List[str], user: User) -> List[AbTestAssignmentModel]:
         """
         Returns Unleash assignments with certain assignment names.
         :param names:
-        :param user_session_ids:
+        :param user:
         :return:
         """
 
         # Currently FeatureFlags only has a query for all assignments:
         # https://github.com/Pocket/feature-flags/blob/main/schema.graphql#L25
-        all_assignments = await self._get_all_assignments(user_session_ids=user_session_ids)
+        all_assignments = await self._get_all_assignments(user=user)
 
         return [assignment for assignment in all_assignments if assignment.name in names]
 
-    async def _get_all_assignments(self, user_session_ids: UserSessionIds) -> List[AbTestAssignmentModel]:
+    async def _get_all_assignments(self, user: User) -> List[AbTestAssignmentModel]:
         """
         Get all Unleash assignments for the given user/session.
-        :param user_session_ids:
+        :param user:
         :return:
         """
         query = """
@@ -106,8 +107,8 @@ class UnleashProvider(AbTestProvidable):
                 'context': {
                     'appName': self.unleash_config.APP_NAME,
                     'environment': self.unleash_config.ENVIRONMENT,
-                    'userId': user_session_ids.hashed_user_id,
-                    'sessionId': user_session_ids.hashed_guid,
+                    'userId': user.hashed_user_id,
+                    'sessionId': user.hashed_guid,
                 }
             }
         }
