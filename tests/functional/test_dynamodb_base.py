@@ -67,24 +67,13 @@ class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
         self.slate_metrics_table = self.create_slate_metrics_table()
         self.candidate_set_table = self.create_recommendation_api_candidate_sets_table()
 
-    def create_table(self, table_schema, retry_count=2) -> DynamoDBServiceResource.Table:
+    def create_table(self, table_schema) -> DynamoDBServiceResource.Table:
         with open(table_schema) as f:
             table_schema_json = json.load(f)
 
-        try:
-            table = self.dynamodb.create_table(**table_schema_json)
-            table.meta.client.get_waiter('table_exists').wait(TableName=table.name)
-            assert table.table_status == 'ACTIVE'
-        except self.dynamodb.meta.client.exceptions.ResourceInUseException as e:
-            # 'ResourceInUseException' is raised if the table already exists.
-            # This happens about half the times on CircleCI, but only the first time that tests are executed.
-            # SSH'ing into CircleCI and re-running the tests makes them consistently pass successfully.
-            # It's unclear how we can get in this state, because asyncSetUp deletes all tables before creating them.
-            if retry_count > 0:
-                self.delete_table(table_schema_json['TableName'])
-                return self.create_table(table_schema, retry_count=retry_count-1)
-            else:
-                raise e
+        table = self.dynamodb.create_table(**table_schema_json)
+        table.meta.client.get_waiter('table_exists').wait(TableName=table.name)
+        assert table.table_status == 'ACTIVE'
 
         return table
 
