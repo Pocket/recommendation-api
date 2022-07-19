@@ -29,8 +29,6 @@ services:
     ports:
       - '4566-4599:4566-4599'
       - '8080:8080'
-    volumes:
-      - ./.docker/localstack:/docker-entrypoint-initaws.d
     environment:
       - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY}
       - DEBUG=1
