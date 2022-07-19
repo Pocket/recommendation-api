@@ -26,6 +26,9 @@
           },
           "is_promoted": {
             "BOOL": false
+          },
+          "corpus_topic_id": {
+            "S": "BUSINESS"
           }
         }
       }
@@ -56,6 +59,9 @@
           },
           "is_promoted": {
             "BOOL": false
+          },
+          "corpus_topic_id": {
+            "S": "CAREER"
           }
         }
       }
@@ -86,6 +92,9 @@
           },
           "is_promoted": {
             "BOOL": false
+          },
+          "corpus_topic_id": {
+            "S": "EDUCATION"
           }
         }
       }
@@ -116,6 +125,9 @@
           },
           "is_promoted": {
             "BOOL": false
+          },
+          "corpus_topic_id": {
+            "S": "ENTERTAINMENT"
           }
         }
       }
@@ -146,6 +158,9 @@
           },
           "is_promoted": {
             "BOOL": false
+          },
+          "corpus_topic_id": {
+            "S": "FOOD"
           }
         }
       }
@@ -176,6 +191,9 @@
           },
           "is_promoted": {
             "BOOL": false
+          },
+          "corpus_topic_id": {
+            "S": "GAMING"
           }
         }
       }
@@ -206,6 +224,9 @@
           },
           "is_promoted": {
             "BOOL": false
+          },
+          "corpus_topic_id": {
+            "S": "PARENTING"
           }
         }
       }
@@ -236,6 +257,9 @@
           },
           "is_promoted": {
             "BOOL": false
+          },
+          "corpus_topic_id": {
+            "S": "PERSONAL_FINANCE"
           }
         }
       }
@@ -266,6 +290,9 @@
           },
           "is_promoted": {
             "BOOL": false
+          },
+          "corpus_topic_id": {
+            "S": "POLITICS"
           }
         }
       }
@@ -296,6 +323,9 @@
           },
           "is_promoted": {
             "BOOL": false
+          },
+          "corpus_topic_id": {
+            "S": "SCIENCE"
           }
         }
       }
@@ -326,6 +356,9 @@
           },
           "is_promoted": {
             "BOOL": false
+          },
+          "corpus_topic_id": {
+            "S": "SELF_IMPROVEMENT"
           }
         }
       }
@@ -356,6 +389,9 @@
           },
           "is_promoted": {
             "BOOL": false
+          },
+          "corpus_topic_id": {
+            "S": "SPORTS"
           }
         }
       }
@@ -386,6 +422,9 @@
           },
           "is_promoted": {
             "BOOL": false
+          },
+          "corpus_topic_id": {
+            "S": "TECHNOLOGY"
           }
         }
       }
@@ -416,6 +455,9 @@
           },
           "is_promoted": {
             "BOOL": false
+          },
+          "corpus_topic_id": {
+            "S": "TRAVEL"
           }
         }
       }
@@ -446,6 +488,9 @@
           },
           "is_promoted": {
             "BOOL": false
+          },
+          "corpus_topic_id": {
+            "S": "HEALTH_FITNESS"
           }
         }
       }
@@ -491,6 +536,9 @@
           },
           "social_image": {
             "S": "https://pocket-image-cache.com//filters:no_upscale():format(jpg):extract_cover()/https%3A%2F%2Fpocket-spoc-images.s3.amazonaws.com%2FEditorial_Images%2FGettyImages-1212213050.jpg"
+          },
+          "corpus_topic_id": {
+            "S": "CORONAVIRUS"
           }
         }
       }

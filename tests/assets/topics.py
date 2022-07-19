@@ -101,6 +101,4 @@ def populate_topics(table: DynamoDBServiceResource.Table, topics: List[TopicMode
 
     for topic in topics:
         topic_dict = topic.dict()
-        # Simulate corpus_topic_id being stored in DynamoDB, without it being present on the model yet.
-        topic_dict['corpus_topic_id'] = topic.name.upper()
         table.put_item(Item=topic_dict)
