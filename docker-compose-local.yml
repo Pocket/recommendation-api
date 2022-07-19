@@ -1,0 +1,9 @@
+# This configures localstack to be initialized with dummy data, which is not necessary for tests, because they
+# initialize localstack before each test case.
+
+version: '3.8'
+
+services:
+  localstack:
+    volumes:
+      - ./.docker/localstack:/docker-entrypoint-initaws.d
