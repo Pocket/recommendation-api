@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 
 from aws_xray_sdk.core import xray_recorder
@@ -19,12 +20,15 @@ class SnowplowCorpusSlateTracker:
         self.snowplow_config = snowplow_config
 
     @xray_recorder.capture_async('data_providers.SnowplowCorpusSlateTracker.track')
-    async def track(self, corpus_slate: CorpusSlateModel, user: User):
+    async def track(self, corpus_slate: CorpusSlateModel, user: User, recommended_at: datetime.datetime = None):
+        if not recommended_at:
+            recommended_at = datetime.datetime.now()
+
         await self.tracker.track_self_describing_event(
             event_json=self._get_object_update_event(object='corpus_slate', trigger='corpus_slate_recommendation'),
             event_subject=self._get_subject(user),
             context=[
-                self._get_corpus_slate_entity(corpus_slate),
+                self._get_corpus_slate_entity(corpus_slate, recommended_at=recommended_at),
                 self._get_user_entity(user),
             ],
         )
@@ -38,11 +42,16 @@ class SnowplowCorpusSlateTracker:
             data={'object': object, 'trigger': trigger}
         )
 
-    def _get_corpus_slate_entity(self, corpus_slate: CorpusSlateModel) -> SelfDescribingJson:
+    def _get_corpus_slate_entity(
+            self,
+            corpus_slate: CorpusSlateModel,
+            recommended_at: datetime.datetime,
+    ) -> SelfDescribingJson:
         return SelfDescribingJson(
             schema=self.snowplow_config.CORPUS_SLATE_SCHEMA,
             data={
                 'corpus_slate_id': corpus_slate.id,
+                'recommended_at': recommended_at.isoformat(),
                 'recommendations': [
                     {
                         'corpus_recommendation_id': recommendation.id,
