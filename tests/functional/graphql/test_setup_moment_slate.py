@@ -95,6 +95,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
                 context_value={'user': self.user},
                 executor=AsyncioExecutor())
 
+            assert not executed.get('errors')
             response = executed['data']['setupMomentSlate']
             recs = response['recommendations']
             assert response['headline'] == 'Save an article you find interesting'
@@ -146,6 +147,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
                 context_value={'user': self.user},
                 executor=AsyncioExecutor())
 
+            assert not executed.get('errors')f
             response = executed['data']['setupMomentSlate']
             recs = response['recommendations']
 
@@ -176,5 +178,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
         for context_data in good_events[0]['event']['contexts']['data']:
             if context_data['schema'] == SnowplowConfig.CORPUS_SLATE_SCHEMA:
                 assert len(context_data['data']['recommendations']) == expected_recommendation_count
+                # recommended_at explicitly specifies that the timezone is UTC.
+                assert context_data['data']['recommended_at'].endswith('+00:00')
             elif context_data['schema'] == SnowplowConfig.USER_SCHEMA:
                 assert context_data['data']['user_id'] == int(self.user.user_id)

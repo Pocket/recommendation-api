@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import logging
 import uuid
 
@@ -59,6 +60,7 @@ class SetupMomentDispatch:
 
         corpus_slate = CorpusSlateModel(
             id=str(uuid.uuid4()),
+            recommended_at=datetime.now(tz=timezone.utc),
             headline=self.DISPLAY_NAME,
             subheadline=self.SUB_HEADLINE,
             recommendations=recommendations,
