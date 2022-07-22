@@ -110,6 +110,7 @@ class RankingDispatch:
 
         return CorpusSlateModel(
             id=slate_id,
+            recommended_at=datetime.now(tz=timezone.utc),
             headline=corpus_slate_schema.displayName,
             subheadline=corpus_slate_schema.description,
             recommendations=recommendations,
