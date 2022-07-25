@@ -46,7 +46,7 @@ class SnowplowCorpusSlateTracker:
             schema=self.snowplow_config.CORPUS_SLATE_SCHEMA,
             data={
                 'corpus_slate_id': corpus_slate.id,
-                'recommended_at': corpus_slate.recommended_at.isoformat(),
+                'recommended_at': int(corpus_slate.recommended_at.timestamp()),
                 'recommendations': [
                     {
                         'corpus_recommendation_id': recommendation.id,
