@@ -1,5 +1,3 @@
-from typing import Optional
-
 from aws_xray_sdk.core import xray_recorder
 from aio_snowplow_tracker import Tracker, Subject, SelfDescribingJson
 
@@ -20,6 +18,11 @@ class SnowplowCorpusSlateTracker:
 
     @xray_recorder.capture_async('data_providers.SnowplowCorpusSlateTracker.track')
     async def track(self, corpus_slate: CorpusSlateModel, user: User):
+        """
+        Track the recommendation of a CorpusSlate in Snowplow.
+        :param corpus_slate: The slate that was recommended.
+        :param user: The user that the slate was recommended to.
+        """
         await self.tracker.track_self_describing_event(
             event_json=self._get_object_update_event(object='corpus_slate', trigger='corpus_slate_recommendation'),
             event_subject=self._get_subject(user),
@@ -43,6 +46,7 @@ class SnowplowCorpusSlateTracker:
             schema=self.snowplow_config.CORPUS_SLATE_SCHEMA,
             data={
                 'corpus_slate_id': corpus_slate.id,
+                'recommended_at': int(corpus_slate.recommended_at.timestamp()),
                 'recommendations': [
                     {
                         'corpus_recommendation_id': recommendation.id,

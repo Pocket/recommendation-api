@@ -1,11 +1,13 @@
 import datetime
 import random
 import uuid
+import time
 from typing import List, Sequence
 
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from graphene.test import Client
 from fastapi.testclient import TestClient
+from pytest import approx
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.snowplow.config import SnowplowConfig
@@ -95,6 +97,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
                 context_value={'user': self.user},
                 executor=AsyncioExecutor())
 
+            assert not executed.get('errors')
             response = executed['data']['setupMomentSlate']
             recs = response['recommendations']
             assert response['headline'] == 'Save an article you find interesting'
@@ -146,6 +149,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
                 context_value={'user': self.user},
                 executor=AsyncioExecutor())
 
+            assert not executed.get('errors')
             response = executed['data']['setupMomentSlate']
             recs = response['recommendations']
 
@@ -176,5 +180,8 @@ class TestSetupMomentSlate(TestDynamoDBBase):
         for context_data in good_events[0]['event']['contexts']['data']:
             if context_data['schema'] == SnowplowConfig.CORPUS_SLATE_SCHEMA:
                 assert len(context_data['data']['recommendations']) == expected_recommendation_count
+                # recommended_at is accurate to a minute.
+                # (e.g. `datetime.utcnow().timestamp()` is off by 7 hours if your local time is PDT.)
+                assert context_data['data']['recommended_at'] == approx(time.time(), rel=60)
             elif context_data['schema'] == SnowplowConfig.USER_SCHEMA:
                 assert context_data['data']['user_id'] == int(self.user.user_id)

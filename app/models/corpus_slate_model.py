@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from pydantic import BaseModel
@@ -11,6 +12,7 @@ class CorpusSlateModel(BaseModel):
     """
     id: str
     recommendations: List[CorpusRecommendationModel]
+    recommended_at: datetime  # UTC time when the slate was recommended
     headline: str
     subheadline: str = None
     more_link_url: str = None

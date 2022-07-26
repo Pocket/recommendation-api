@@ -18,7 +18,7 @@ class SnowplowConfig:
 
     PROTOCOL: HttpProtocol = 'http' if ENV == ENV_LOCAL else 'https'
 
-    CORPUS_SLATE_SCHEMA = 'iglu:com.pocket/corpus_slate/jsonschema/1-0-1'
+    CORPUS_SLATE_SCHEMA = 'iglu:com.pocket/corpus_slate/jsonschema/2-0-1'
     USER_SCHEMA = 'iglu:com.pocket/user/jsonschema/1-0-0'
     OBJECT_UPDATE_SCHEMA = 'iglu:com.pocket/object_update/jsonschema/1-0-7'
 
