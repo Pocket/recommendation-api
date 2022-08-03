@@ -95,6 +95,14 @@ type UserRecommendationPreferences {
     preferredTopics: [Topic!]
 }
 
+extend type User @key(fields: "id") {
+    """
+    User id, provided by the user service.
+    """
+    id: ID! @external
+    userRecommendationPreferences: UserRecommendationPreferences
+}
+
 type RankedCorpusSlate @key(fields: "id") {
     id: ID!
     description: String!
