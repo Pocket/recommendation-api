@@ -11,7 +11,7 @@ from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
-from app.models.user import User
+from app.models.user_ids import UserIds
 from app.rankers.algorithms import rank_by_preferred_topics
 
 
@@ -44,7 +44,7 @@ class SetupMomentDispatch:
         self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
         self.slate_tracker = slate_tracker
 
-    async def get_ranked_corpus_slate(self, user: User, recommendation_count: int) -> CorpusSlateModel:
+    async def get_ranked_corpus_slate(self, user: UserIds, recommendation_count: int) -> CorpusSlateModel:
         items = await self.corpus_client.get_corpus_items(self.CORPUS_CANDIDATE_SET_IDS)
 
         user_recommendation_preferences = await self.user_recommendation_preferences_provider.fetch(str(user.user_id))

@@ -18,7 +18,7 @@ from app.graphql.graphql_router import schema
 from app.main import app
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.topic import TopicModel
-from app.models.user import User
+from app.models.user_ids import UserIds
 from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
 from tests.assets.topics import *
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
@@ -59,7 +59,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
     async def asyncSetUp(self):
         await super().asyncSetUp()
         self.client = Client(schema)
-        self.user = User(
+        self.user = UserIds(
             user_id=1,
             hashed_user_id='1-hashed',
         )

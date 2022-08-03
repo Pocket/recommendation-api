@@ -1,4 +1,4 @@
-from app.models.user import User
+from app.models.user_ids import UserIds
 
 
 class UserMiddleware(object):
@@ -25,7 +25,7 @@ class UserMiddleware(object):
 
         info.context['user_id'] = headers.get('userId')
 
-        info.context['user'] = User(
+        info.context['user'] = UserIds(
             user_id=headers.get('userId'),
             hashed_user_id=headers.get('encodedId'),
             hashed_guid=headers.get('encodedGuid'),
