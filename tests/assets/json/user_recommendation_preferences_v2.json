@@ -1,0 +1,16 @@
+[
+  [
+    {
+      "FeatureName": "user_id",
+      "ValueAsString": "aaaaaaaaaaaaaaa123"
+    },
+    {
+      "FeatureName": "updated_at",
+      "ValueAsString": "2022-06-07T23:00:48Z"
+    },
+    {
+      "FeatureName": "preferred_topics",
+      "ValueAsString": "[{\"id\": \"1bf756c0-632f-49e8-9cce-324f38f4cc71\"}, {\"id\": \"25c716f1-e1b2-43db-bf52-1a5553d9fb74\"}]"
+    }
+  ]
+]

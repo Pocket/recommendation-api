@@ -114,3 +114,7 @@ class UserRecommendationPreferencesProvider:
     @classmethod
     def _topic_feature_from_topic(cls, topic: TopicModel) -> Dict[str, str]:
         return {'id': topic.id}
+
+
+class UserRecommendationPreferencesProviderV2(UserRecommendationPreferencesProvider):
+    _FEATURE_GROUP_VERSION = 2
