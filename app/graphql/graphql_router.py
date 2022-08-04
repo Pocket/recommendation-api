@@ -25,6 +25,7 @@ from app.models.slate_lineup import SlateLineupModel
 from app.graphql.topic import Topic
 from app.graphql.slate import Slate
 from app.graphql.slate_lineup import SlateLineup
+from app.graphql.user import User
 
 
 class Query(ObjectType):
@@ -111,10 +112,16 @@ class Mutation(ObjectType):
     update_user_recommendation_preferences = UpdateUserRecommendationPreferences.Field()
 
 
+# Any type with a __resolve_reference should be added to this list.
+types = [
+    User,
+]
+
+
 ##
 # Graphene requires that you define your schema programmatically.
 # Looks like Graphene 3 will support loading from a .graphql file.
 # For now this file should stay in sync with *.graphql
 ##
-schema = build_schema(query=Query, mutation=Mutation)
+schema = build_schema(query=Query, mutation=Mutation, types=types)
 
