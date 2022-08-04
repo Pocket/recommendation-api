@@ -6,7 +6,6 @@ from graphene_federation import external, extend
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProviderV2
 from app.graphql.user_recommendation_preferences import UserRecommendationPreferences
-from app.models.user_ids import UserIds
 
 
 @extend(fields='id')
