@@ -101,7 +101,7 @@ extend type User @key(fields: "id") {
     """
     id: ID! @external
     #userRecommendationPreferences: UserRecommendationPreferences
-    rec_name: String!
+    recName: String!
 }
 
 type RankedCorpusSlate @key(fields: "id") {
