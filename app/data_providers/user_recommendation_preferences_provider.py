@@ -12,6 +12,10 @@ from app.models.user_recommendation_preferences import UserRecommendationPrefere
 
 
 class UserRecommendationPreferencesProvider:
+    """
+    Put or fetch user preferred topics in a Feature Group keyed on the integer user id.
+    """
+
     _FEATURE_GROUP_VERSION = 1
     _FEATURE_NAMES: List[str] = ['user_id', 'updated_at', 'preferred_topics']
 
@@ -117,4 +121,7 @@ class UserRecommendationPreferencesProvider:
 
 
 class UserRecommendationPreferencesProviderV2(UserRecommendationPreferencesProvider):
+    """
+    Put or fetch user preferred topics in a Feature Group keyed on the hashed user id.
+    """
     _FEATURE_GROUP_VERSION = 2
