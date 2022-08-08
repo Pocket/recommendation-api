@@ -12,7 +12,10 @@ from app.data_providers.user_recommendation_preferences_provider import (
 from app.graphql.topic import Topic
 from app.graphql.update_user_recommendation_preferences_input import UpdateUserRecommendationPreferencesInput
 from app.models.user import User
-from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
+from app.models.user_recommendation_preferences import (
+    UserRecommendationPreferencesModel,
+    UserRecommendationPreferencesModelV2,
+)
 
 
 class UpdateUserRecommendationPreferences(graphene.Mutation):
@@ -45,8 +48,8 @@ class UpdateUserRecommendationPreferences(graphene.Mutation):
             preferred_topics=preferred_topics
         )
 
-        model_v2 = UserRecommendationPreferencesModel(
-            user_id=user.hashed_user_id,
+        model_v2 = UserRecommendationPreferencesModelV2(
+            hashed_user_id=user.hashed_user_id,
             updated_at=datetime.datetime.utcnow(),
             preferred_topics=preferred_topics
         )

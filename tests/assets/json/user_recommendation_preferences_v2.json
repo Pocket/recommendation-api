@@ -1,7 +1,7 @@
 [
   [
     {
-      "FeatureName": "user_id",
+      "FeatureName": "hashed_user_id",
       "ValueAsString": "aaaaaaaaaaaaaaa123"
     },
     {
