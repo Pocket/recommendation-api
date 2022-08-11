@@ -4,15 +4,18 @@ import uuid
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
+from app.data_providers.corpus_metrics_provider import CorpusMetricsProvider
 from app.data_providers.snowplow.snowplow_corpus_slate_tracker import SnowplowCorpusSlateTracker
 from app.data_providers.metrics_client import MetricsFetchable
 from app.data_providers.slate_provider import SlateProvider, SlateProvidable
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
+from app.models.corpus_slate_config_model import CorpusSlateConfigModel
 from app.models.corpus_slate_model import CorpusSlateModel
+from app.models.surface import Surface
 from app.models.user import User
-from app.rankers.algorithms import rank_by_preferred_topics
+from app.rankers.algorithms import rank_by_preferred_topics, thompson_sampling_28day
 
 
 class SetupMomentDispatch:
@@ -38,11 +41,15 @@ class SetupMomentDispatch:
             user_recommendation_preferences_provider: UserRecommendationPreferencesProvider,
             slate_tracker: SnowplowCorpusSlateTracker,
             topic_provider: TopicProvider,
+            metrics_provider: CorpusMetricsProvider,
     ):
+        self.surface = Surface.SETUP_MOMENT
+        self.corpus_slate_config = CorpusSlateConfigModel(id='6dbdecbf-4fa7-4d76-95f3-9295316b1966')
         self.topic_provider = topic_provider
         self.corpus_client = corpus_client
         self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
         self.slate_tracker = slate_tracker
+        self.metrics_provider = metrics_provider
 
     async def get_ranked_corpus_slate(self, user: User, recommendation_count: int) -> CorpusSlateModel:
         items = await self.corpus_client.get_corpus_items(self.CORPUS_CANDIDATE_SET_IDS)
@@ -54,8 +61,18 @@ class SetupMomentDispatch:
             logging.info(f'SetupMoment is unpersonalized for user {user.user_id} because no preferences were found.')
             topics = await self.topic_provider.get_topics(self.DEFAULT_TOPICS)
 
+        # TODO: Compose `rank_by_preferred_topics` out of several individual rankers:
+        # 1. Thompson sampling (replaces simple randomization)
+        # 2. Rank by preferred topics
+        # 3. Spread topics
         items = rank_by_preferred_topics(items, topics, recommendation_count)
         items = items[:recommendation_count]
+
+        # TODO: Thompson sampling is applied here for demonstration.
+        metrics = self.metrics_provider.fetch_by_corpus_item_ids(
+            Surface.SETUP_MOMENT, self.corpus_slate_config.id, [item.id for item in items])
+        items = thompson_sampling_28day(recs=items, metrics=metrics)
+
         recommendations = [CorpusRecommendationModel(id=str(uuid.uuid4()), corpus_item=item) for item in items]
 
         corpus_slate = CorpusSlateModel(

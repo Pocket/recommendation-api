@@ -7,6 +7,7 @@ import random
 from aws_xray_sdk.core import xray_recorder
 
 from app.models.corpus_item_model import CorpusItemModel
+from app.models.metrics.corpus_metrics_model import CorpusMetricsModel
 from app.models.metrics.metrics_model import MetricsModel
 from app.models.metrics.firefox_new_tab_metrics_model import FirefoxNewTabMetricsModel
 
@@ -101,7 +102,7 @@ def blocklist(recs: RecommendationListType, blocklist: Optional[List[str]] = Non
 
 def thompson_sampling(
         recs: RankableListType,
-        metrics: Dict[(int or str), Union['MetricsModel', 'FirefoxNewTabMetricsModel']],
+        metrics: Dict[(int or str), Union['MetricsModel', 'FirefoxNewTabMetricsModel', 'CorpusMetricsModel']],
         trailing_period: int = 28,
         default_alpha_prior=DEFAULT_ALPHA_PRIOR,
         default_beta_prior=DEFAULT_BETA_PRIOR) -> RankableListType:
