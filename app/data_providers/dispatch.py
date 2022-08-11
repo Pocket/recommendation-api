@@ -69,7 +69,7 @@ class SetupMomentDispatch:
         items = items[:recommendation_count]
 
         # TODO: Thompson sampling is applied here for demonstration.
-        metrics = self.metrics_provider.fetch_by_corpus_item_ids(
+        metrics = await self.metrics_provider.fetch_by_corpus_item_ids(
             Surface.SETUP_MOMENT, self.corpus_slate_config.id, [item.id for item in items])
         items = thompson_sampling_28day(recs=items, metrics=metrics)
 

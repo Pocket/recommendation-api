@@ -1,5 +1,6 @@
+import datetime
+import random
 from asyncio import gather
-from datetime import datetime
 from typing import List, Dict
 
 import aioboto3
@@ -13,13 +14,13 @@ from app.models.metrics.corpus_metrics_model import CorpusMetricsModel, CorpusMe
 from app.models.surface import Surface
 
 
-class CorpusMetricsProvider():
+class CorpusMetricsProvider:
     _FEATURE_GROUP_VERSION: int = 1
     _FEATURE_NAMES: List[str] = [
         'UPDATED_AT',
         'SURFACE',
-        'CORPUS_SLATE_CONFIG_ID'
-        'CORPUS_ITEM_ID'
+        'CORPUS_SLATE_CONFIG_ID',
+        'CORPUS_ITEM_ID',
         'TRAILING_1_DAY_OPENS',
         'TRAILING_1_DAY_IMPRESSIONS',
         'TRAILING_7_DAY_OPENS',
@@ -62,7 +63,9 @@ class CorpusMetricsProvider():
         """
         keys = list(map(self._format_key, segments))
 
-        return await self._query_metrics(keys)
+        records = await self._query_metrics(keys)
+
+        return list(map(self._parse_from_record, records))
 
     @classmethod
     def get_feature_group_name(cls):
@@ -75,7 +78,7 @@ class CorpusMetricsProvider():
         :param segment:
         :return:
         """
-        return '/'.join([segment.surface, segment.corpus_slate_config_id, segment.corpus_item_id])
+        return '/'.join([segment.surface.value, segment.corpus_slate_config_id, segment.corpus_item_id])
 
     @staticmethod
     def _parse_from_record(record: FeatureStoreRecordType) -> CorpusMetricsModel:
@@ -93,8 +96,7 @@ class CorpusMetricsProvider():
     @xray_recorder.capture_async('CorpusMetricsProvider._query_metrics')
     async def _query_metrics(self, metrics_keys: List[str]) -> List[FeatureStoreRecordType]:
         """
-        Queries metrics from the Feature Group.
-
+        Queries metrics from the Feature Group
         :param metrics_keys: Feature record IDs to query
         :return: List with all metrics that were successfully queried from the Feature Store.
                  If metrics are missing from the output that means the feature group did not find a match, probably
@@ -122,3 +124,25 @@ class CorpusMetricsProvider():
                     records.append(record)
 
         return records
+
+    # TODO: Remove debug function below.
+    def _random_record(self, segment: CorpusMetricsSegmentModel) -> FeatureStoreRecordType:
+        segment_features = [{'FeatureName': k.upper(), 'ValueAsString': v if type(v) is str else v.value} for k, v in segment.dict().items()]
+        key_feature = [{'FeatureName': 'KEY', 'ValueAsString': self._format_key(segment)}]
+        updated_feature = [{'FeatureName': 'UPDATED_AT', 'ValueAsString': datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")}]
+
+        day_periods = [1, 7, 14, 28]
+        open_features = [{'FeatureName': f'TRAILING_{d}_DAY_OPENS', 'ValueAsString': str(random.randint(0, d*10))} for d in day_periods]
+        impression_features = [{'FeatureName': f'TRAILING_{d}_DAY_IMPRESSIONS', 'ValueAsString': str(random.randint(d*10, d*1000))} for d in day_periods]
+
+        return segment_features + open_features + impression_features + key_feature + updated_feature
+
+    # TODO: Remove debug function below.
+    async def _put_records(self, segments: List[CorpusMetricsSegmentModel]):
+        async with self.aioboto3_session.client('sagemaker-featurestore-runtime') as featurestore:
+            promises = [featurestore.put_record(
+                FeatureGroupName=self.get_feature_group_name(),
+                Record=self._random_record(segment)
+            ) for segment in segments]
+
+            await gather(*promises)
