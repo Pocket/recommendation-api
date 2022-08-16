@@ -3,7 +3,7 @@ from aio_snowplow_tracker import Tracker, Subject, SelfDescribingJson
 
 from app.data_providers.snowplow.config import SnowplowConfig
 from app.models.corpus_slate_model import CorpusSlateModel
-from app.models.user import User
+from app.models.user_ids import UserIds
 
 
 class SnowplowCorpusSlateTracker:
@@ -17,7 +17,7 @@ class SnowplowCorpusSlateTracker:
         self.snowplow_config = snowplow_config
 
     @xray_recorder.capture_async('data_providers.SnowplowCorpusSlateTracker.track')
-    async def track(self, corpus_slate: CorpusSlateModel, user: User):
+    async def track(self, corpus_slate: CorpusSlateModel, user: UserIds):
         """
         Track the recommendation of a CorpusSlate in Snowplow.
         :param corpus_slate: The slate that was recommended.
@@ -32,7 +32,7 @@ class SnowplowCorpusSlateTracker:
             ],
         )
 
-    def _get_subject(self, user: User):
+    def _get_subject(self, user: UserIds):
         return Subject().set_user_id(str(user.user_id))
 
     def _get_object_update_event(self, object: str, trigger: str) -> SelfDescribingJson:
@@ -59,7 +59,7 @@ class SnowplowCorpusSlateTracker:
             }
         )
 
-    def _get_user_entity(self, user: User) -> SelfDescribingJson:
+    def _get_user_entity(self, user: UserIds) -> SelfDescribingJson:
         user_entity = {k: v for k, v in user.dict().items() if v is not None}
 
         return SelfDescribingJson(

@@ -8,7 +8,7 @@ from app.data_providers.user_recommendation_preferences_provider import (
 )
 from app.graphql.graphql_router import schema
 from app.main import app
-from app.models.user import User
+from app.models.user_ids import UserIds
 from tests.assets.topics import populate_topics, technology_topic, business_topic
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 
@@ -25,7 +25,7 @@ class TestUpdateUserRecommendationPreferences(TestDynamoDBBase):
         await super().asyncSetUp()
         populate_topics(self.metadata_table)
         self.client = Client(schema)
-        self.user = User(
+        self.user_ids = UserIds(
             user_id=1,
             hashed_user_id='1-hashed',
         )
@@ -56,7 +56,7 @@ class TestUpdateUserRecommendationPreferences(TestDynamoDBBase):
                         ]
                     }
                 },
-                context_value={'user_id': self.user.user_id, 'user': self.user},
+                context_value={'user_id': self.user_ids.user_id, 'user': self.user_ids},
                 executor=AsyncioExecutor())
 
             response = executed.get('data').get('updateUserRecommendationPreferences')
