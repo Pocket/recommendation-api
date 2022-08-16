@@ -29,7 +29,7 @@ sentry_sdk.init(
     environment=sentry_config['environment']
 )
 # Ignore graphql.execution.utils to prevent duplicate Sentry events. Exceptions are handled by GraphQLSentryMiddleware.
-#sentry_sdk.integrations.logging.ignore_logger("graphql.execution.utils")
+sentry_sdk.integrations.logging.ignore_logger("graphql.execution.utils")
 
 # Standard asyncio X-Ray configuration, customise as you choose
 xray_recorder.configure(context=AsyncContext(), service=service.get('domain'), plugins=['ecsplugin'])
