@@ -31,7 +31,7 @@ uvicorn = "==0.14.0"
 # Locking fastapi to prevent a conflict with pydantic:
 #   pydantic<2.0.0,>=1.6.2 (from fastapi==0.65.1)
 #   pydantic<=1.6,>=1.0 (from graphene-pydantic==0.1.0)
-fastapi = "==0.64.0"
+fastapi = "==0.65.0"
 uvloop = "*"
 gql = "==2.*"
 xraysink = "*"
