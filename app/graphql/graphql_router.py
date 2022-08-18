@@ -11,13 +11,15 @@ from app.data_providers.snowplow.config import SnowplowConfig, create_snowplow_t
 from app.data_providers.snowplow.snowplow_corpus_slate_tracker import SnowplowCorpusSlateTracker
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
+from app.graphql.corpus_slate_lineup import CorpusSlateLineup
 from app.graphql.ranked_corpus_slate import RankedCorpusSlate
 from app.graphql.update_user_recommendation_preferences_mutation import UpdateUserRecommendationPreferences
 from app.graphql.util import get_field_argument
+from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel
 from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
 from app.models.ranked_corpus_slate_instance import RankedCorpusSlateInstance
 from app.models.corpus_slate_model import CorpusSlateModel
-from app.data_providers.dispatch import RankingDispatch, SetupMomentDispatch
+from app.data_providers.dispatch import RankingDispatch, SetupMomentDispatch, HomeDispatch
 from app.graphql.corpus_slate import CorpusSlate
 from app.models.topic import TopicModel
 from app.models.slate import SlateModel
@@ -37,6 +39,10 @@ class Query(ObjectType):
 
     setup_moment_slate = Field(
         CorpusSlate,
+    )
+
+    home_slate_lineup = Field(
+        CorpusSlateLineup,
     )
 
     recommendation_preference_topics = Field(
@@ -100,6 +106,25 @@ class Query(ObjectType):
         ).get_ranked_corpus_slate(
             user=info.context['user'],
             recommendation_count=recommendation_count,
+        )
+
+    async def resolve_home_slate_lineup(self, info: graphql.ResolveInfo, **kwargs) -> CorpusSlateLineupModel:
+        aioboto3_session = aioboto3.Session()
+        corpus_client = CorpusFeatureGroupClient(aioboto3_session=aioboto3_session)
+        topic_provider = TopicProvider(aioboto3_session)
+        user_recommendation_preferences_provider = UserRecommendationPreferencesProvider(
+            aioboto3_session=aioboto3_session,
+            topic_provider=topic_provider
+        )
+        slate_tracker = SnowplowCorpusSlateTracker(tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
+
+        return await HomeDispatch(
+            corpus_client=corpus_client,
+            user_recommendation_preferences_provider=user_recommendation_preferences_provider,
+            slate_tracker=slate_tracker,
+            topic_provider=topic_provider,
+        ).get_slate_lineup(
+            user=info.context['user'],
         )
 
     async def resolve_recommendation_preference_topics(self, info) -> [Topic]:
