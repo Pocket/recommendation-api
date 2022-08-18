@@ -86,6 +86,7 @@ class Query(ObjectType):
                                                                      slate_count=slate_count)
 
     async def resolve_setup_moment_slate(self, info: graphql.ResolveInfo, **kwargs) -> CorpusSlateModel:
+        user = info.context['user']
         aioboto3_session = aioboto3.Session()
         corpus_client = CorpusFeatureGroupClient(aioboto3_session=aioboto3_session)
         topic_provider = TopicProvider(aioboto3_session)
@@ -98,15 +99,17 @@ class Query(ObjectType):
         recommendation_count = int(get_field_argument(
             info.field_asts, ['setupMomentSlate', 'recommendations'], 'count', default_value=CorpusSlate.DEFAULT_COUNT))
 
-        return await SetupMomentDispatch(
+        corpus_slate = await SetupMomentDispatch(
             corpus_client=corpus_client,
             user_recommendation_preferences_provider=user_recommendation_preferences_provider,
-            slate_tracker=slate_tracker,
             topic_provider=topic_provider,
         ).get_ranked_corpus_slate(
-            user=info.context['user'],
+            user=user,
             recommendation_count=recommendation_count,
         )
+
+        await slate_tracker.track(corpus_slate, user=user)
+        return corpus_slate
 
     async def resolve_home_slate_lineup(self, info: graphql.ResolveInfo, **kwargs) -> CorpusSlateLineupModel:
         aioboto3_session = aioboto3.Session()

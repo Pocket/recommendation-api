@@ -37,13 +37,11 @@ class SetupMomentDispatch:
             self,
             corpus_client: CorpusFeatureGroupClient,
             user_recommendation_preferences_provider: UserRecommendationPreferencesProvider,
-            slate_tracker: SnowplowCorpusSlateTracker,
             topic_provider: TopicProvider,
     ):
         self.topic_provider = topic_provider
         self.corpus_client = corpus_client
         self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
-        self.slate_tracker = slate_tracker
 
     async def get_ranked_corpus_slate(self, user: UserIds, recommendation_count: int) -> CorpusSlateModel:
         items = await self.corpus_client.get_corpus_items(self.CORPUS_CANDIDATE_SET_IDS)
@@ -66,8 +64,6 @@ class SetupMomentDispatch:
             subheadline=self.SUB_HEADLINE,
             recommendations=recommendations,
         )
-
-        await self.slate_tracker.track(corpus_slate, user=user)
 
         return corpus_slate
 
@@ -108,7 +104,6 @@ class HomeDispatch:
         return SetupMomentDispatch(
             corpus_client=self.corpus_client,
             user_recommendation_preferences_provider=self.user_recommendation_preferences_provider,
-            slate_tracker=self.slate_tracker,  # TODO: Only track slate on the Lineup level
             topic_provider=self.topic_provider,
         )
 
