@@ -2,29 +2,25 @@ import asyncio
 import datetime
 
 import aioboto3
-import graphene
+import strawberry
 
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import (
     UserRecommendationPreferencesProvider,
     UserRecommendationPreferencesProviderV2,
 )
-from app.graphql.topic import Topic
 from app.graphql.update_user_recommendation_preferences_input import UpdateUserRecommendationPreferencesInput
+from app.graphql.user_recommendation_preferences import UserRecommendationPreferences
 from app.models.user_ids import UserIds
-from app.models.user_recommendation_preferences import (
-    UserRecommendationPreferencesModel,
-    UserRecommendationPreferencesModelV2,
-)
+from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel, \
+    UserRecommendationPreferencesModelV2
 
 
-class UpdateUserRecommendationPreferences(graphene.Mutation):
-    class Arguments:
-        input = UpdateUserRecommendationPreferencesInput(required=True)
-
-    preferred_topics = graphene.List(Topic, description="Topics that the user expressed interest in")
-
-    async def mutate(root, info, input):
+@strawberry.type
+class Mutation:
+    @strawberry.mutation
+    async def update_user_recommendation_preferences(
+            self, input: UpdateUserRecommendationPreferencesInput) -> UserRecommendationPreferences:
         aioboto3_session = aioboto3.Session()
 
         topic_provider = TopicProvider(aioboto3_session=aioboto3_session)
@@ -40,7 +36,11 @@ class UpdateUserRecommendationPreferences(graphene.Mutation):
         )
 
         preferred_topics = await topic_provider.get_topics([t.id for t in input.preferredTopics])
-        user_ids: UserIds = info.context['user']
+        #user_ids: UserIds = info.context['user']
+        user_ids: UserIds = UserIds(
+            user_id=1,
+            hashed_user_id='hashed-1',
+        )
 
         model = UserRecommendationPreferencesModel(
             user_id=user_ids.user_id,  # Integer user id
@@ -59,4 +59,4 @@ class UpdateUserRecommendationPreferences(graphene.Mutation):
             preferences_provider_v2.put(model_v2),
         )
 
-        return UpdateUserRecommendationPreferences(preferred_topics=model.preferred_topics)
+        return UserRecommendationPreferences(preferred_topics=model.preferred_topics)

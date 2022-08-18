@@ -1,8 +1,10 @@
-from graphene_pydantic import PydanticObjectType
+import strawberry
 
 from app.models.topic import TopicModel
 
 
-class Topic(PydanticObjectType):
-    class Meta:
-        model = TopicModel
+@strawberry.experimental.pydantic.type(model=TopicModel)
+class Topic:
+    id: strawberry.ID
+    name: strawberry.auto
+    # TODO: Extend

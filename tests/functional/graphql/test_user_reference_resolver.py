@@ -39,27 +39,8 @@ class TestUserReferenceResolver(TestDynamoDBBase):
                 "/",
                 json={
                     'query': '''
-                        query ($representations: [_Any!]!) {
-                          _entities(representations: $representations) {
-                            ... on User {
-                              id
-                              recommendationPreferences {
-                                preferredTopics {
-                                  name
-                                  id
-                                }
-                              }
-                            }
-                          }
-                        }
                     ''',
                     'variables': {
-                        'representations': [
-                            {
-                                '__typename': 'User',
-                                'id': self.user_ids.hashed_user_id,
-                            },
-                        ],
                     },
                 },
             )

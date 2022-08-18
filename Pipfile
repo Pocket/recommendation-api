@@ -20,20 +20,17 @@ pytest-asyncio = "*"
 pytest-aiohttp = "*"
 
 [packages]
-graphene = "==2.*"
-graphene-federation = "*"
 starlette = "*"
 sentry-sdk = "*"
-graphene-pydantic = "==0.1.0"
 aioboto3 = "*"
 gunicorn = "*"
-uvicorn = "==0.14.0"
+uvicorn = "*"
 # Locking fastapi to prevent a conflict with pydantic:
 #   pydantic<2.0.0,>=1.6.2 (from fastapi==0.65.1)
 #   pydantic<=1.6,>=1.0 (from graphene-pydantic==0.1.0)
-fastapi = "==0.65.0"
+fastapi = "==0.69.0"
 uvloop = "*"
-gql = "==2.*"
+gql = "*"
 xraysink = "*"
 aws-xray-sdk = "*"
 scipy = "*"
@@ -46,6 +43,7 @@ aiomcache = "==0.6.*"
 ujson = "*"
 httptools = "*"
 aio-snowplow-tracker = "*"
+strawberry-graphql = {extras = ["fastapi"], version = "*"}
 
 [requires]
 python_version = "3.8"

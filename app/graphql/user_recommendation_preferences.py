@@ -1,7 +1,9 @@
-import graphene
+import strawberry
+import typing
 
 from app.graphql.topic import Topic
 
 
-class UserRecommendationPreferences(graphene.ObjectType):
-    preferredTopics = graphene.List(Topic, description="Topics that the user expressed interest in")
+@strawberry.type
+class UserRecommendationPreferences:
+    preferred_topics: typing.List['Topic'] = strawberry.field(description="Topics that the user expressed interest in")

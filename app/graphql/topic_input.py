@@ -1,5 +1,6 @@
-import graphene
+import strawberry
 
 
-class TopicInput(graphene.InputObjectType):
-    id = graphene.ID(required=True)
+@strawberry.input
+class TopicInput:
+    id: strawberry.ID
