@@ -118,6 +118,12 @@ class Query(ObjectType):
         )
         slate_tracker = SnowplowCorpusSlateTracker(tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
 
+        slate_count = int(get_field_argument(
+            info.field_asts, ['homeSlateLineup', 'slates'], 'count', default_value=CorpusSlateLineup.DEFAULT_COUNT))
+
+        recommendation_count = int(get_field_argument(
+            info.field_asts, ['homeSlateLineup', 'slates', 'recommendations'], 'count', default_value=CorpusSlate.DEFAULT_COUNT))
+
         return await HomeDispatch(
             corpus_client=corpus_client,
             user_recommendation_preferences_provider=user_recommendation_preferences_provider,
@@ -125,6 +131,8 @@ class Query(ObjectType):
             topic_provider=topic_provider,
         ).get_slate_lineup(
             user=info.context['user'],
+            slate_count=slate_count,
+            recommendation_count=recommendation_count,
         )
 
     async def resolve_recommendation_preference_topics(self, info) -> [Topic]:

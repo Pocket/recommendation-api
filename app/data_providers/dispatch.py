@@ -73,16 +73,6 @@ class SetupMomentDispatch:
 
 
 class HomeDispatch:
-    DISPLAY_NAME = 'Save an article you find interesting'
-    SUB_HEADLINE = 'sub headline'
-    DEFAULT_TOPICS = [
-        '26a3efb4-0f82-415a-9f47-7893df85853f',  # Health & Fitness
-        'c6242e35-4ef7-494f-ae9f-51f95b836424',  # Entertainment
-        '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
-        '7dc49254-686d-46e1-aa94-7ac3e7767f66',  # Travel
-    ]
-
-    CORPUS_CANDIDATE_SET_IDS = ['57d544d6-0758-4cd1-a7b4-86f454c8eae8']
 
     def __init__(
             self,
@@ -96,24 +86,31 @@ class HomeDispatch:
         self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
         self.slate_tracker = slate_tracker
 
-    async def get_slate_lineup(self, user: UserIds) -> CorpusSlateLineupModel:
-        personalized_topic_slate = await SetupMomentDispatch(
-            corpus_client=self.corpus_client,
-            user_recommendation_preferences_provider=self.user_recommendation_preferences_provider,
-            slate_tracker=self.slate_tracker,  # TODO: Only track slate on the Lineup level
-            topic_provider=self.topic_provider,
-        ).get_ranked_corpus_slate(
+        self.setup_moment_dispatch = self._create_setup_moment_dispatch()
+
+    async def get_slate_lineup(
+            self, user: UserIds, slate_count: int, recommendation_count: int
+    ) -> CorpusSlateLineupModel:
+        slates = [await self.setup_moment_dispatch.get_ranked_corpus_slate(
             user=user,
-            recommendation_count=10,  # TODO: Accept parameter
-        )
+            recommendation_count=recommendation_count,
+        )]
 
         corpus_slate_lineup = CorpusSlateLineupModel(
             id=str(uuid.uuid4()),
-            slates=[personalized_topic_slate],
+            slates=slates,
             recommended_at = datetime.now(tz=timezone.utc),
         )
 
         return corpus_slate_lineup
+
+    def _create_setup_moment_dispatch(self) -> SetupMomentDispatch:
+        return SetupMomentDispatch(
+            corpus_client=self.corpus_client,
+            user_recommendation_preferences_provider=self.user_recommendation_preferences_provider,
+            slate_tracker=self.slate_tracker,  # TODO: Only track slate on the Lineup level
+            topic_provider=self.topic_provider,
+        )
 
 
 class RankingDispatch:
