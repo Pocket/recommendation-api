@@ -60,18 +60,6 @@ class Query(ObjectType):
         return await SlateModel.get_slate(slate_id=slate_id, user_id=info.context.get('user_id'),
                                           recommendation_count=recommendation_count)
 
-    async def resolve_get_ranked_corpus_slate(self, info, slate_id: str) -> RankedCorpusSlateInstance:
-        return await RankingDispatch(
-            corpus_client=CuratedCorpusAPIClient(),
-            slate_provider=SlateProvider(),
-            metrics_client=MetricsClient(
-                firefox_newtab_metrics_factory=FirefoxNewTabMetricsFactory()
-            )
-        ).get_ranked_corpus_slate(slate_id=slate_id)
-
-    async def resolve_list_slates(self, info, recommendation_count: int) -> [SlateModel]:
-        return await SlateModel.get_all(user_id=info.context.get('user_id'), recommendation_count=recommendation_count)
-
     async def resolve_get_slate_lineup(self, info, slate_lineup_id: str, recommendation_count: int = 10,
                                        slate_count: int = 8) -> SlateLineupModel:
         return await SlateLineupModel.get_slate_lineup_with_fallback(slate_lineup_id=slate_lineup_id,
