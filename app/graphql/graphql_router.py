@@ -120,7 +120,6 @@ class Query(ObjectType):
             aioboto3_session=aioboto3_session,
             topic_provider=topic_provider
         )
-        slate_tracker = SnowplowCorpusSlateTracker(tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
 
         slate_count = int(get_field_argument(
             info.field_asts, ['homeSlateLineup', 'slates'], 'count', default_value=CorpusSlateLineup.DEFAULT_COUNT))
@@ -131,7 +130,6 @@ class Query(ObjectType):
         return await HomeDispatch(
             corpus_client=corpus_client,
             user_recommendation_preferences_provider=user_recommendation_preferences_provider,
-            slate_tracker=slate_tracker,
             topic_provider=topic_provider,
             topic_slate_provider=TopicSlateProvider(corpus_client)
         ).get_slate_lineup(

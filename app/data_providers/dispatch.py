@@ -76,14 +76,12 @@ class HomeDispatch:
             self,
             corpus_client: CorpusFeatureGroupClient,
             user_recommendation_preferences_provider: UserRecommendationPreferencesProvider,
-            slate_tracker: SnowplowCorpusSlateTracker,
             topic_provider: TopicProvider,
             topic_slate_provider: TopicSlateProvider,
     ):
         self.topic_provider = topic_provider
         self.corpus_client = corpus_client
         self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
-        self.slate_tracker = slate_tracker
         self.topic_slate_provider = topic_slate_provider
 
         self.setup_moment_dispatch = self._create_setup_moment_dispatch()
