@@ -10,6 +10,7 @@ from app.data_providers.slate_provider import SlateProvider
 from app.data_providers.snowplow.config import SnowplowConfig, create_snowplow_tracker
 from app.data_providers.snowplow.snowplow_corpus_slate_tracker import SnowplowCorpusSlateTracker
 from app.data_providers.topic_provider import TopicProvider
+from app.data_providers.topic_slate_provider import TopicSlateProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.graphql.corpus_slate_lineup import CorpusSlateLineup
 from app.graphql.ranked_corpus_slate import RankedCorpusSlate
@@ -132,6 +133,7 @@ class Query(ObjectType):
             user_recommendation_preferences_provider=user_recommendation_preferences_provider,
             slate_tracker=slate_tracker,
             topic_provider=topic_provider,
+            topic_slate_provider=TopicSlateProvider(corpus_client)
         ).get_slate_lineup(
             user=info.context['user'],
             slate_count=slate_count,

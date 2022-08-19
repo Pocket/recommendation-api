@@ -1,3 +1,4 @@
+import random
 from datetime import datetime, timezone
 import logging
 import uuid
@@ -7,6 +8,7 @@ from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
 from app.data_providers.snowplow.snowplow_corpus_slate_tracker import SnowplowCorpusSlateTracker
 from app.data_providers.metrics_client import MetricsFetchable
 from app.data_providers.slate_provider import SlateProvider
+from app.data_providers.topic_slate_provider import TopicSlateProvider
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
@@ -76,11 +78,13 @@ class HomeDispatch:
             user_recommendation_preferences_provider: UserRecommendationPreferencesProvider,
             slate_tracker: SnowplowCorpusSlateTracker,
             topic_provider: TopicProvider,
+            topic_slate_provider: TopicSlateProvider,
     ):
         self.topic_provider = topic_provider
         self.corpus_client = corpus_client
         self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
         self.slate_tracker = slate_tracker
+        self.topic_slate_provider = topic_slate_provider
 
         self.setup_moment_dispatch = self._create_setup_moment_dispatch()
 
@@ -91,6 +95,13 @@ class HomeDispatch:
             user=user,
             recommendation_count=recommendation_count,
         )]
+
+        topics = await self.topic_provider.get_all()
+        remaining_slate_count = slate_count - len(slates)
+        if len(topics) > remaining_slate_count:
+            topics = random.sample(topics, k=remaining_slate_count)
+
+        slates += await self.topic_slate_provider.get_slates(topics, recommendation_count=recommendation_count)
 
         corpus_slate_lineup = CorpusSlateLineupModel(
             id=str(uuid.uuid4()),
