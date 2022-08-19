@@ -1,3 +1,5 @@
+from typing import List
+
 import graphql
 import aioboto3
 import strawberry
@@ -116,17 +118,17 @@ import strawberry
 # types = [
 #     User,
 # ]
+from app.data_providers.topic_provider import TopicProvider
+from app.graphql.topic import Topic
 from app.graphql.update_user_recommendation_preferences_mutation import Mutation
-from app.graphql.update_user_recommendation_preferences_input import UpdateUserRecommendationPreferencesInput
-from app.graphql.user_recommendation_preferences import UserRecommendationPreferences
 
 
 @strawberry.type
 class Query:
     @strawberry.field
-    def hello(self) -> str:
-        return "Hello World"
-
+    async def list_topics(self) -> List[Topic]:
+        topic_models = await TopicProvider(aioboto3_session=aioboto3.Session()).get_all()
+        return [Topic.from_pydantic(topic_model) for topic_model in topic_models]
 
 
 ##
