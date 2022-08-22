@@ -350,63 +350,34 @@ type Query {
   """
   Get the recomendations for a specific topic
   """
-  getTopicRecommendations(
-    slug: String!
-    algorithmicCount: Int = 20
-    curatedCount: Int = 5
-  ): TopicRecommendations
-    @deprecated(
-      reason: "Use `getSlateLineup` with a specific SlateLineup instead."
-    )
+  getTopicRecommendations(slug: String!, algorithmicCount: Int = 20, curatedCount: Int = 5): TopicRecommendations  @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
 
   """
   List all available topics that we have recomendarions for.
   """
-  listTopics: [Topic!]!
-    @deprecated(
-      reason: "Use `getSlateLineup` with a specific SlateLineup instead."
-    )
+  listTopics: [Topic!]! @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
 
   """
   Request a specific `Slate` by id
   """
   getSlate(
-    "The {Slate.id} of the slate to return"
-    slateId: String!
-    "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
-    recommendationCount: Int = 10
-  ): Slate
-
-  """
-  List all available slates
-  """
-  listSlates(
-    "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 0"
-    recommendationCount: Int = 0
-  ): [Slate!]!
-    @deprecated(
-      reason: "This query has not been used in the last month, and its purpose is unclear."
-    )
+      "The {Slate.id} of the slate to return"
+      slateId: String!,
+      "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
+      recommendationCount: Int = 10
+  ): Slate @deprecated(reason: "Please use queries specific to the surface ex. setMomentSlate. If a named query for your surface does not yet exit please reach out to the Data Products team and they will happily provide you with a named query.")
 
   """
   Request a specific `SlateLineup` by id
   """
   getSlateLineup(
-    "The {SlateLineup.id} of the SlateLineup to return"
-    slateLineupId: String!
-    "Maximum number of slates to return in {SlateLineup.slates}, defaults to 8"
-    slateCount: Int = 8
-    "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
-    recommendationCount: Int = 10
-  ): SlateLineup
-
-  """
-  Request a specific `RankedCorpusSlate` by ID: ultimately replaces `getSlate`
-  """
-  getRankedCorpusSlate(slateId: String!): RankedCorpusSlate
-    @deprecated(
-      reason: "This query is experimental and might not work as expected"
-    )
+      "The {SlateLineup.id} of the SlateLineup to return"
+      slateLineupId: String!,
+      "Maximum number of slates to return in {SlateLineup.slates}, defaults to 8"
+      slateCount: Int = 8,
+      "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
+      recommendationCount: Int = 10
+  ): SlateLineup @deprecated(reason: "Please use queries specific to the surface ex. setMomentSlate. If a named query for your surface does not yet exit please reach out to the Data Products team and they will happily provide you with a named query.")
 }
 
 type Mutation {
