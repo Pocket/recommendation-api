@@ -90,11 +90,6 @@ import strawberry
 #             recommendation_count=recommendation_count,
 #         )
 #
-#     async def resolve_recommendation_preference_topics(self, info) -> [Topic]:
-#         topics = await TopicProvider(aioboto3_session=aioboto3.Session()).get_all()
-#         exclude_topic_names = ['Gaming', 'Sports', 'Education', 'Coronavirus']
-#         return [t for t in topics if t.name not in exclude_topic_names]
-#
 #
 # class Mutation(ObjectType):
 #     update_user_recommendation_preferences = UpdateUserRecommendationPreferences.Field()
@@ -103,14 +98,19 @@ import strawberry
 from app.graphql.topic import Topic
 from app.graphql.update_user_recommendation_preferences_mutation import Mutation
 from app.graphql.user import User
-from app.graphql.resolvers.topic_resolvers import list_topics
+from app.graphql.resolvers.topic_resolvers import list_topics, resolve_recommendation_preference_topics
 
 
 @strawberry.type
 class Query:
+    recommendation_preference_topics: List[Topic] = strawberry.field(
+        resolver=resolve_recommendation_preference_topics,
+        description='List all topics that the user can express a preference for.')
+
     list_topics: List[Topic] = strawberry.field(
         resolver=list_topics,
-        deprecation_reason='Use `getSlateLineup` with a specific SlateLineup instead.')
+        deprecation_reason='`recommendation_preference_topics` gets topics that users can express a preference for.',
+        description='List all available topics that we have recommendations for.')
 
 
 schema = strawberry.federation.Schema(Query, mutation=Mutation, types=[User], enable_federation_2=True)
