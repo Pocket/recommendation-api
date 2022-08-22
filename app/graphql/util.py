@@ -1,10 +1,10 @@
 from typing import List
 
-import graphql.language.ast
+from strawberry.types.nodes import SelectedField
 
 
 def get_field_argument(
-        fields: List[graphql.language.ast.Field],
+        fields: List[SelectedField],
         field_path: List[str],
         argument_name: str,
         default_value=None
@@ -25,16 +25,14 @@ def get_field_argument(
     :return: Field argument value in string representation, or `default_value` if field argument is not present.
     """
     for field in fields:
-        if field.name.value == field_path[0]:
+        if field.name == field_path[0]:
             if len(field_path) == 1:
                 # End of recursion: We've reached the desired field, and can now find the argument.
-                for argument in field.arguments:
-                    if argument.name.value == argument_name:
-                        return argument.value.value
+                return field.arguments.get(argument_name, default_value)
             else:
                 # Recursion with the next level of fields, with the first element from `field_path` removed.
                 return get_field_argument(
-                    fields=field.selection_set.selections,
+                    fields=field.selections,
                     field_path=field_path[1:],
                     argument_name=argument_name,
                     default_value=default_value
