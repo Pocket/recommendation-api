@@ -1,7 +1,5 @@
 from typing import List
 
-import graphql
-import aioboto3
 import strawberry
 
 # from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
@@ -114,27 +112,17 @@ import strawberry
 #     update_user_recommendation_preferences = UpdateUserRecommendationPreferences.Field()
 #
 #
-# # Any type with a __resolve_reference should be added to this list.
-# types = [
-#     User,
-# ]
-from app.data_providers.topic_provider import TopicProvider
 from app.graphql.topic import Topic
 from app.graphql.update_user_recommendation_preferences_mutation import Mutation
+from app.graphql.user import User
+from app.graphql.resolvers.topic_resolvers import list_topics
 
 
 @strawberry.type
 class Query:
-    @strawberry.field
-    async def list_topics(self) -> List[Topic]:
-        topic_models = await TopicProvider(aioboto3_session=aioboto3.Session()).get_all()
-        return [Topic.from_pydantic(topic_model) for topic_model in topic_models]
+    list_topics: List[Topic] = strawberry.field(
+        resolver=list_topics,
+        deprecation_reason='Use `getSlateLineup` with a specific SlateLineup instead.')
 
 
-##
-# Graphene requires that you define your schema programmatically.
-# Looks like Graphene 3 will support loading from a .graphql file.
-# For now this file should stay in sync with *.graphql
-##
-#schema = build_schema(query=Query, mutation=Mutation, types=types)
-schema = strawberry.Schema(Query, mutation=Mutation)
+schema = strawberry.federation.Schema(Query, mutation=Mutation, types=[User], enable_federation_2=True)
