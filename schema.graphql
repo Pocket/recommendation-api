@@ -358,15 +358,7 @@ type Query {
         slateId: String!,
         "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
         recommendationCount: Int = 10
-    ): Slate
-
-    """
-    List all available slates
-    """
-    listSlates(
-        "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 0"
-        recommendationCount: Int = 0
-    ): [Slate!]!  @deprecated(reason: "This query has not been used in the last month, and its purpose is unclear.")
+    ): Slate @deprecated(reason: "Please use queries specific to the surface ex. setMomentSlate. If a named query for your surface does not yet exit please reach out to the Data Products team and they will happily provide you with a named query.")
 
     """
     Request a specific `SlateLineup` by id
@@ -378,14 +370,7 @@ type Query {
         slateCount: Int = 8,
         "Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10"
         recommendationCount: Int = 10
-    ): SlateLineup
-
-    """
-    Request a specific `RankedCorpusSlate` by ID: ultimately replaces `getSlate`
-    """
-    getRankedCorpusSlate(
-        slateId: String!
-    ): RankedCorpusSlate  @deprecated(reason: "This query is experimental and might not work as expected")
+    ): SlateLineup @deprecated(reason: "Please use queries specific to the surface ex. setMomentSlate. If a named query for your surface does not yet exit please reach out to the Data Products team and they will happily provide you with a named query.")
 }
 
 type Mutation {

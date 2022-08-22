@@ -12,7 +12,7 @@ from xraysink.asgi.middleware import xray_middleware
 from xraysink.context import AsyncContext
 
 from app.cache import initialize_caches
-from app.config import ENV, ENV_PROD, ENV_DEV, service, sentry as sentry_config
+from app.config import ENV, ENV_PROD, service, sentry as sentry_config
 from app.graphql.graphql_router import schema
 from app.models.candidate_set import candidate_set_factory
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
