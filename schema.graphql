@@ -338,7 +338,7 @@ type Query {
   setupMomentSlate: CorpusSlate
 
   """
-  Get ranked corpus slates and recommendations to deliver a unified Home experience.
+  Under active development: Get ranked corpus slates and recommendations to deliver a unified Home experience.
   """
   homeSlateLineup: CorpusSlateLineup
 
