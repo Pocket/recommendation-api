@@ -1,8 +1,10 @@
-from graphene_pydantic import PydanticObjectType
+import strawberry
 
+from app.graphql.corpus_item import CorpusItem
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 
 
-class CorpusRecommendation(PydanticObjectType):
-    class Meta:
-        model = CorpusRecommendationModel
+@strawberry.experimental.pydantic.type(model=CorpusRecommendationModel)
+class CorpusRecommendation:
+    id: strawberry.ID
+    corpus_item: CorpusItem

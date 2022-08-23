@@ -2,10 +2,8 @@ import datetime
 import random
 import uuid
 import time
-from typing import List, Sequence
+from typing import Sequence
 
-from graphql.execution.executors.asyncio import AsyncioExecutor
-from graphene.test import Client
 from fastapi.testclient import TestClient
 from pytest import approx
 
@@ -14,10 +12,8 @@ from app.data_providers.snowplow.config import SnowplowConfig
 from app.data_providers.dispatch import SetupMomentDispatch
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
-from app.graphql.graphql_router import schema
 from app.main import app
 from app.models.corpus_item_model import CorpusItemModel
-from app.models.topic import TopicModel
 from app.models.user_ids import UserIds
 from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
 from tests.assets.topics import *
@@ -49,17 +45,15 @@ def _user_recommendation_preferences_fixture(
 def _corpus_items_fixture(n: int) -> [CorpusItemModel]:
     return [CorpusItemModel(id=str(uuid.uuid4()), topic=random.choice(corpus_topic_ids)) for _ in range(n)]
 
+
 def _get_topics_fixture(topics_ids: Sequence[str]) -> List[TopicModel]:
     return [topics_by_id[id] for id in topics_ids]
 
 
 class TestSetupMomentSlate(TestDynamoDBBase):
-    client: Client
-
     async def asyncSetUp(self):
         await super().asyncSetUp()
-        self.client = Client(schema)
-        self.user = UserIds(
+        self.user_ids = UserIds(
             user_id=1,
             hashed_user_id='1-hashed',
         )
@@ -74,33 +68,39 @@ class TestSetupMomentSlate(TestDynamoDBBase):
         mock_get_ranked_corpus_items.return_value = corpus_items_fixture
 
         preferred_topics = [technology_topic, gaming_topic]
-        preferences_fixture = _user_recommendation_preferences_fixture(str(self.user.user_id), preferred_topics)
+        preferences_fixture = _user_recommendation_preferences_fixture(str(self.user_ids.user_id), preferred_topics)
         mock_fetch_user_recommendation_preferences.return_value = preferences_fixture
 
-        with TestClient(app):
-            executed = self.client.execute(
-                '''
-                query SetupMomentSlate {
-                  setupMomentSlate {
-                    headline
-                    subheadline
-                    recommendations(count: 100) {
-                      id
-                      corpusItem {
-                        id
-                        topic
-                      }
-                    }
-                  }
+        with TestClient(app) as client:
+            data = client.post(
+                '/',
+                json={
+                    'query': '''
+                        query SetupMomentSlate {
+                          setupMomentSlate {
+                            headline
+                            subheadline
+                            recommendations(count: 100) {
+                              id
+                              corpusItem {
+                                id
+                                topic
+                              }
+                            }
+                          }
+                        }
+                    ''',
+                },
+                headers={
+                    'userId': str(self.user_ids.user_id),
+                    'encodedId': self.user_ids.hashed_user_id,
                 }
-                ''',
-                context_value={'user': self.user},
-                executor=AsyncioExecutor())
+            ).json()
 
-            assert not executed.get('errors')
-            response = executed['data']['setupMomentSlate']
-            recs = response['recommendations']
-            assert response['headline'] == 'Save an article you find interesting'
+            assert not data.get('errors')
+            slate = data['data']['setupMomentSlate']
+            recs = slate['recommendations']
+            assert slate['headline'] == 'Save an article you find interesting'
 
             # Assert that all corpus items are being returned.
             assert len(recs) == len(corpus_items_fixture)
@@ -126,32 +126,36 @@ class TestSetupMomentSlate(TestDynamoDBBase):
         default_recommendation_count = 10  # Number of recommendations that is expected to be returned by default.
 
         mock_fetch_user_recommendation_preferences.return_value = \
-            _user_recommendation_preferences_fixture(str(self.user.user_id), [])
+            _user_recommendation_preferences_fixture(str(self.user_ids.user_id), [])
         mock_get_topics.return_value = _get_topics_fixture(SetupMomentDispatch.DEFAULT_TOPICS)
 
-        with TestClient(app):
-            executed = self.client.execute(
-                '''
-                query SetupMomentSlate {
-                  setupMomentSlate {
-                    headline
-                    subheadline
-                    recommendations {
-                      id
-                      corpusItem {
-                        id
-                        topic
-                      }
-                    }
-                  }
+        with TestClient(app) as client:
+            data = client.post(
+                '/',
+                json={
+                    'query': '''
+                        query SetupMomentSlate {
+                          setupMomentSlate {
+                            recommendations {
+                              id
+                              corpusItem {
+                                id
+                                topic
+                              }
+                            }
+                          }
+                        }
+                    ''',
+                },
+                headers={
+                    'userId': str(self.user_ids.user_id),
+                    'encodedId': self.user_ids.hashed_user_id,
                 }
-                ''',
-                context_value={'user': self.user},
-                executor=AsyncioExecutor())
+            ).json()
 
-            assert not executed.get('errors')
-            response = executed['data']['setupMomentSlate']
-            recs = response['recommendations']
+            assert not data.get('errors')
+            slate = data['data']['setupMomentSlate']
+            recs = slate['recommendations']
 
             # Assert that 10 (the default for count) corpus items are being returned.
             assert len(recs) == default_recommendation_count
@@ -184,4 +188,4 @@ class TestSetupMomentSlate(TestDynamoDBBase):
                 # (e.g. `datetime.utcnow().timestamp()` is off by 7 hours if your local time is PDT.)
                 assert context_data['data']['recommended_at'] == approx(time.time(), rel=60)
             elif context_data['schema'] == SnowplowConfig.USER_SCHEMA:
-                assert context_data['data']['user_id'] == int(self.user.user_id)
+                assert context_data['data']['user_id'] == int(self.user_ids.user_id)

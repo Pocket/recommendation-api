@@ -67,34 +67,13 @@ import strawberry
 #                                                                      recommendation_count=recommendation_count,
 #                                                                      slate_count=slate_count)
 #
-#     async def resolve_setup_moment_slate(self, info: graphql.ResolveInfo, **kwargs) -> CorpusSlateModel:
-#         aioboto3_session = aioboto3.Session()
-#         corpus_client = CorpusFeatureGroupClient(aioboto3_session=aioboto3_session)
-#         topic_provider = TopicProvider(aioboto3_session)
-#         user_recommendation_preferences_provider = UserRecommendationPreferencesProvider(
-#             aioboto3_session=aioboto3_session,
-#             topic_provider=topic_provider
-#         )
-#         slate_tracker = SnowplowCorpusSlateTracker(tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
-#
-#         recommendation_count = int(get_field_argument(
-#             info.field_asts, ['setupMomentSlate', 'recommendations'], 'count', default_value=CorpusSlate.DEFAULT_COUNT))
-#
-#         return await SetupMomentDispatch(
-#             corpus_client=corpus_client,
-#             user_recommendation_preferences_provider=user_recommendation_preferences_provider,
-#             slate_tracker=slate_tracker,
-#             topic_provider=topic_provider,
-#         ).get_ranked_corpus_slate(
-#             user=info.context['user'],
-#             recommendation_count=recommendation_count,
-#         )
-#
 #
 # class Mutation(ObjectType):
 #     update_user_recommendation_preferences = UpdateUserRecommendationPreferences.Field()
 #
 #
+from app.graphql.corpus_slate import CorpusSlate
+from app.graphql.resolvers.corpus_slate_resolvers import resolve_setup_moment_slate
 from app.graphql.topic import Topic
 from app.graphql.update_user_recommendation_preferences_mutation import Mutation
 from app.graphql.user import User
@@ -103,6 +82,12 @@ from app.graphql.resolvers.topic_resolvers import list_topics, resolve_recommend
 
 @strawberry.type
 class Query:
+    setup_moment_slate: CorpusSlate = strawberry.field(
+        resolver=resolve_setup_moment_slate,
+        description='Get stories during Setup Moment onboarding that are personalized with user preferences provided '
+                    'during onboarding.'
+    )
+
     recommendation_preference_topics: List[Topic] = strawberry.field(
         resolver=resolve_recommendation_preference_topics,
         description='List all topics that the user can express a preference for.')

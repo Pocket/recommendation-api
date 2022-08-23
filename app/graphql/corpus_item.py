@@ -1,14 +1,10 @@
-import graphene
-
-from graphene_pydantic import PydanticObjectType
-from graphene_federation import external, extend
+import strawberry
 
 from app.models.corpus_item_model import CorpusItemModel
 
-@extend(fields='id')
-class CorpusItem(PydanticObjectType):
-    id = external(graphene.String(required=True))
 
-    class Meta:
-        model = CorpusItemModel
-
+@strawberry.federation.type(keys=["id"])
+@strawberry.experimental.pydantic.type(model=CorpusItemModel)
+class CorpusItem:
+    id: strawberry.ID
+    topic: strawberry.auto

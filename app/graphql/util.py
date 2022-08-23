@@ -1,6 +1,9 @@
 from typing import List
 
+from strawberry.types import Info
 from strawberry.types.nodes import SelectedField
+
+from app.models.user_ids import UserIds
 
 
 def get_field_argument(
@@ -39,3 +42,19 @@ def get_field_argument(
                 )
 
     return default_value
+
+
+def get_user_ids(info: Info) -> UserIds:
+    """
+    Get user ids from the request headers that are available in the GraphQL context.
+    :param info:
+    :return:
+    """
+    headers = info.context.get('request').headers
+
+    return UserIds(
+        user_id=headers.get('userId'),
+        hashed_user_id=headers.get('encodedId'),
+        hashed_guid=headers.get('encodedGuid'),
+        guid=headers.get('guid'),
+    )
