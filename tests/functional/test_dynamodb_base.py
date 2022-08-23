@@ -35,8 +35,10 @@ class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
         initialize_caches()
 
     async def asyncTearDown(self):
+        # TODO: "got Future <Future pending> attached to a different loop" with clear_caches() in test_get_slate_lineup
+        # Remove it completely? Or move it to a different class?
+        # await self.clear_caches()
         self.delete_tables()
-        await self.clear_caches()
 
     async def clear_caches(self):
         # Clear memcached
