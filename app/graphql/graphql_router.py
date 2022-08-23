@@ -60,12 +60,6 @@ import strawberry
 #         return await SlateModel.get_slate(slate_id=slate_id, user_id=info.context.get('user_id'),
 #                                           recommendation_count=recommendation_count)
 #
-#     async def resolve_get_slate_lineup(self, info, slate_lineup_id: str, recommendation_count: int = 10,
-#                                        slate_count: int = 8) -> SlateLineupModel:
-#         return await SlateLineupModel.get_slate_lineup_with_fallback(slate_lineup_id=slate_lineup_id,
-#                                                                      user_id=info.context.get('user_id'),
-#                                                                      recommendation_count=recommendation_count,
-#                                                                      slate_count=slate_count)
 #
 #
 # class Mutation(ObjectType):
@@ -74,6 +68,8 @@ import strawberry
 #
 from app.graphql.corpus_slate import CorpusSlate
 from app.graphql.resolvers.corpus_slate_resolvers import resolve_setup_moment_slate
+from app.graphql.resolvers.legacy.slate_lineup_resolver import resolve_get_slate_lineup
+from app.graphql.slate_lineup import SlateLineup
 from app.graphql.topic import Topic
 from app.graphql.update_user_recommendation_preferences_mutation import Mutation
 from app.graphql.user import User
@@ -96,6 +92,13 @@ class Query:
         resolver=list_topics,
         deprecation_reason='`recommendation_preference_topics` gets topics that users can express a preference for.',
         description='List all available topics that we have recommendations for.')
+
+    get_slate_lineup: SlateLineup = strawberry.field(
+        resolver=resolve_get_slate_lineup,
+        deprecation_reason='Please use queries specific to the surface ex. setMomentSlate. '
+                           'If a named query for your surface does not yet exit please reach out to the '
+                           'Data Products team and they will happily provide you with a named query.',
+        description='Request a specific `SlateLineup` by id')
 
 
 schema = strawberry.federation.Schema(Query, mutation=Mutation, types=[User], enable_federation_2=True)

@@ -1,10 +1,16 @@
-from graphene_pydantic import PydanticObjectType
-from graphene_federation import key
+import strawberry
+from strawberry import auto
 
+from app.graphql.objects.legacy.item import Item
 from app.models.recommendation import RecommendationModel
 
 
-@key('item { itemId }')
-class Recommendation(PydanticObjectType):
-    class Meta:
-        model = RecommendationModel
+@strawberry.experimental.pydantic.type(model=RecommendationModel)
+class Recommendation:
+    id: strawberry.ID
+    feed_item_id: auto
+    feed_id: auto
+    item_id: auto
+    item: Item
+    rec_src: auto
+    publisher: auto
