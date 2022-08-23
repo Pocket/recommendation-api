@@ -14,6 +14,7 @@ from app.models.topic import TopicModel
 class TopicSlateProvider:
 
     # Map Corpus topic (keys) to the Corpus candidate set id (values).
+    # TODO: Instead of hardcoding these values, consider moving them to the Sagemaker Feature Store, or a database.
     _TOPIC_CANDIDATE_SETS = {
         'SELF_IMPROVEMENT': '78f23805-66e7-46d5-9cfc-ff10a0335265',
         'POLITICS': '0a024f6e-b7e7-4be2-bc86-b603c26fc351',
