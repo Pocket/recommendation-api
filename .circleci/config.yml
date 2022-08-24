@@ -233,7 +233,7 @@ workflows:
           <<: *not_main
           context: pocket
 
-      - apollo
+      - apollo:
           context: pocket
 
       - build
