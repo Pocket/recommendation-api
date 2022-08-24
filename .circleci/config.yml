@@ -39,16 +39,15 @@ only_dev: &only_dev
 
 jobs:
   apollo:
-    docker:
-      - image: circleci/node:16
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
+    machine:
+      image: ubuntu-2004:202104-01
+      docker_layer_caching: true
     steps:
       - checkout
       - run:
           name: Build docker-compose.yml
           command: |
+            echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USERNAME --password-stdin
             touch .env
             docker-compose build
       - run:
