@@ -52,7 +52,11 @@ jobs:
             docker-compose build
       - run:
           name: Export GraphQL schema to file
-          command: docker-compose run app_dev strawberry export-schema app.graphql.graphql_router:schema > ./schema.graphql
+          command: |
+            mkdir ./tmp
+            chmod 777 ./tmp
+            docker-compose run app_dev sh -c "strawberry export-schema app.graphql.graphql_router:schema > /tmp/schema.graphql"
+            cp ./tmp/schema.graphql ./
       - run:
           name: install rover
           command: |
