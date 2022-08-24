@@ -48,7 +48,7 @@ jobs:
       - checkout
       - run:
           name: export schema
-          command: strawberry export-schema app.graphql.graphql_router:schema > ./schema.graphql
+          command: pipenv run strawberry export-schema app.graphql.graphql_router:schema > ./schema.graphql
       - run:
           name: install rover
           command: |
