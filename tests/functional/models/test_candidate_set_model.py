@@ -1,7 +1,7 @@
-from tests.mocks.dynamodb import *
-from tests.mocks.caching import *
+import pytest
 
 from app.models.candidate_set import DynamoDBCandidateSet
+from tests.mocks.caching import reset_caches
 
 
 @pytest.mark.asyncio
@@ -81,5 +81,3 @@ async def test_get_cached_candidate_set(candidate_sets_dynamodb_table, aiocache_
     candidate_set = await DynamoDBCandidateSet.get(cs_id='asdasd-12sd1asd3-5512')
     assert candidate_set.version == 2
     assert candidate_set.candidates[0].item_id == 3208490410
-
-    #await clear_caches()
