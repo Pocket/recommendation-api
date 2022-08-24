@@ -4,11 +4,11 @@ from typing import Tuple
 import unittest
 import boto3
 import json
-from aiocache import caches
-from app.cache import initialize_caches, candidate_set_alias, metrics_alias
 from app.config import dynamodb as dynamodb_config, ROOT_DIR
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 from aws_xray_sdk import global_sdk_config
+
+from tests.mocks.caching import reset_caches
 
 
 class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
@@ -31,12 +31,16 @@ class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
         self.dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
         self.delete_tables()
         self.create_tables()
+        await reset_caches()
 
     async def asyncTearDown(self):
         # TODO: "got Future <Future pending> attached to a different loop" with clear_caches() in test_get_slate_lineup
         # Remove it completely? Or move it to a different class?
         # await self.clear_caches()
         self.delete_tables()
+
+    async def clear_caches(self):
+        await reset_caches()
 
     def delete_tables(self):
         for table_name in TestDynamoDBBase.TABLE_NAMES:
