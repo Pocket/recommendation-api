@@ -48,7 +48,7 @@ jobs:
       - checkout
       - run:
           name: export schema
-          command: docker compose run app_dev strawberry export-schema app.graphql.graphql_router:schema > ./schema.graphql
+          command: docker-compose run app_dev strawberry export-schema app.graphql.graphql_router:schema > ./schema.graphql
       - run:
           name: install rover
           command: |
