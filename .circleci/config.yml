@@ -234,6 +234,7 @@ workflows:
           context: pocket
 
       - apollo
+          context: pocket
 
       - build
 
