@@ -32,23 +32,11 @@ class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
         self.delete_tables()
         self.create_tables()
 
-        initialize_caches()
-
     async def asyncTearDown(self):
         # TODO: "got Future <Future pending> attached to a different loop" with clear_caches() in test_get_slate_lineup
         # Remove it completely? Or move it to a different class?
         # await self.clear_caches()
         self.delete_tables()
-
-    async def clear_caches(self):
-        # Clear memcached
-        for alias in (candidate_set_alias, metrics_alias):
-            cache = caches.get(alias)
-            await cache.clear()
-            # aiocache doesn't support deleting caches.
-            # If we don't delete them, an error is raised "attached to a different loop", because
-            # IsolatedAsyncioTestCase creates a new event loop for every test case.
-            del caches._caches[alias]
 
     def delete_tables(self):
         for table_name in TestDynamoDBBase.TABLE_NAMES:
