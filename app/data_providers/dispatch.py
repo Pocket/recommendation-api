@@ -1,4 +1,5 @@
 import random
+from asyncio import gather
 from datetime import datetime, timezone
 import logging
 import uuid
@@ -89,17 +90,20 @@ class HomeDispatch:
     async def get_slate_lineup(
             self, user: UserIds, slate_count: int, recommendation_count: int
     ) -> CorpusSlateLineupModel:
-        slates = [await self.setup_moment_dispatch.get_ranked_corpus_slate(
+        setup_moment_slate_coroutine = self.setup_moment_dispatch.get_ranked_corpus_slate(
             user=user,
             recommendation_count=recommendation_count,
-        )]
+        )
 
         topics = await self.topic_provider.get_all()
-        remaining_slate_count = slate_count - len(slates)
+        remaining_slate_count = slate_count - 1  # first slate is setup moment
         if len(topics) > remaining_slate_count:
             topics = random.sample(topics, k=remaining_slate_count)
 
-        slates += await self.topic_slate_provider.get_slates(topics, recommendation_count=recommendation_count)
+        topic_slates_coroutine = self.topic_slate_provider.get_slates(topics, recommendation_count=recommendation_count)
+
+        setup_moment_slate, topic_slates = await gather(setup_moment_slate_coroutine, topic_slates_coroutine)
+        slates = [setup_moment_slate] + topic_slates
 
         corpus_slate_lineup = CorpusSlateLineupModel(
             id=str(uuid.uuid4()),
