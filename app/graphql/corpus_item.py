@@ -7,4 +7,3 @@ from app.models.corpus_item_model import CorpusItemModel
 @strawberry.experimental.pydantic.type(model=CorpusItemModel)
 class CorpusItem:
     id: strawberry.ID
-    topic: strawberry.auto

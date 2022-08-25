@@ -11,6 +11,6 @@ class Recommendation:
     feed_item_id: auto
     feed_id: auto
     item_id: auto
-    item: Item
+    item: Item = strawberry.federation.field(shareable=True)
     rec_src: auto
     publisher: auto
