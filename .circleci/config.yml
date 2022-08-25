@@ -61,7 +61,7 @@ jobs:
           name: install rover
           command: |
             # download and install Rover
-            curl -sSL https://rover.apollo.dev/nix/v0.1.0 | sh
+            curl -sSL https://rover.apollo.dev/nix/v0.8.1 | sh
             # This allows the PATH changes to persist to the next `run` step
             echo 'export PATH=$HOME/.rover/bin:$PATH' >> $BASH_ENV
       - run:
