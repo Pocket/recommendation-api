@@ -209,22 +209,6 @@ type Topic {
 }
 
 """
-Represents a set of recomednations for /explore
-Deprecated for SlateLineups
-"""
-type TopicRecommendations {
-    """
-    Recomendations that are sourced directly from our curators
-    """
-    curatedRecommendations: [Recommendation!]!
-
-    """
-    Recomendations that are sourced from Machine Learning models
-    """
-    algorithmicRecommendations: [Recommendation!]!
-}
-
-"""
 Represents a Recomendation from Pocket
 """
 type Recommendation @key(fields: "item { itemId }") {
@@ -339,11 +323,6 @@ type Query {
     List all topics that the user can express a preference for.
     """
     recommendationPreferenceTopics: [Topic!]!
-
-    """
-    Get the recomendations for a specific topic
-    """
-    getTopicRecommendations(slug: String!, algorithmicCount: Int = 20, curatedCount: Int = 5): TopicRecommendations  @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
 
     """
     List all available topics that we have recomendarions for.
