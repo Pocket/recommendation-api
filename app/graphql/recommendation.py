@@ -5,6 +5,7 @@ from app.graphql.objects.legacy.item import Item
 from app.models.recommendation import RecommendationModel
 
 
+@strawberry.federation.type(keys=["item { itemId }"])
 @strawberry.experimental.pydantic.type(model=RecommendationModel)
 class Recommendation:
     id: strawberry.ID
