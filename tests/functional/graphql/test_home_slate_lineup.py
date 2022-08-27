@@ -1,20 +1,13 @@
 import datetime
 import random
 import uuid
-import time
-from typing import List, Sequence
+from typing import Sequence
 
-from graphql.execution.executors.asyncio import AsyncioExecutor
-from graphene.test import Client
 from fastapi.testclient import TestClient
-from pytest import approx
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.snowplow.config import SnowplowConfig
-from app.data_providers.dispatch import SetupMomentDispatch
-from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
-from app.graphql.graphql_router import schema
 from app.main import app
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.topic import TopicModel
@@ -24,11 +17,8 @@ from tests.assets.topics import *
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 
 from unittest.mock import patch
-from collections import namedtuple
 
 from tests.functional.test_util.snowplow import SnowplowMicroClient
-
-MockResponse = namedtuple('MockResponse', 'status')
 
 
 corpus_topics = [health_topic, business_topic, entertainment_topic, technology_topic, gaming_topic, travel_topic]
@@ -55,12 +45,9 @@ def _get_topics_fixture(topics_ids: Sequence[str]) -> List[TopicModel]:
 
 
 class TestHomeSlateLineup(TestDynamoDBBase):
-    client: Client
-
     async def asyncSetUp(self):
         await super().asyncSetUp()
-        self.client = Client(schema)
-        self.user = UserIds(
+        self.user_ids = UserIds(
             user_id=1,
             hashed_user_id='1-hashed',
         )
@@ -77,32 +64,38 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         mock_get_ranked_corpus_items.return_value = corpus_items_fixture
 
         preferred_topics = [technology_topic, gaming_topic]
-        preferences_fixture = _user_recommendation_preferences_fixture(str(self.user.user_id), preferred_topics)
+        preferences_fixture = _user_recommendation_preferences_fixture(str(self.user_ids.user_id), preferred_topics)
         mock_fetch_user_recommendation_preferences.return_value = preferences_fixture
 
-        with TestClient(app):
-            executed = self.client.execute(
-                '''
-                query {
-                  homeSlateLineup {
-                    id
-                    slates(count: 4) {
-                      headline
-                      recommendations(count: 5) {
-                        corpusItem {
-                          id
+        with TestClient(app) as client:
+            data = client.post(
+                '/',
+                json={
+                    'query': '''
+                        query {
+                          homeSlateLineup {
+                            id
+                            slates(count: 4) {
+                              headline
+                              recommendations(count: 5) {
+                                corpusItem {
+                                  id
+                                }
+                              }
+                            }
+                          }
                         }
-                      }
-                    }
-                  }
+                    ''',
+                },
+                headers={
+                    'userId': str(self.user_ids.user_id),
+                    'encodedId': self.user_ids.hashed_user_id,
                 }
-                ''',
-                context_value={'user': self.user},
-                executor=AsyncioExecutor())
+            ).json()
 
-            assert not executed.get('errors')
-            response = executed['data']['homeSlateLineup']
-            slates = response['slates']
+            assert not data.get('errors')
+            slate_lineup = data['data']['homeSlateLineup']
+            slates = slate_lineup['slates']
 
             # Assert that the expected number of slates is being returned.
             assert len(slates) == 4

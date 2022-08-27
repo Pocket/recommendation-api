@@ -2,13 +2,13 @@ import aioboto3
 from strawberry.types import Info
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
-from app.data_providers.dispatch import SetupMomentDispatch
-from app.data_providers.snowplow.config import create_snowplow_tracker, SnowplowConfig
-from app.data_providers.snowplow.snowplow_corpus_slate_tracker import SnowplowCorpusSlateTracker
+from app.data_providers.dispatch import HomeDispatch
 from app.data_providers.topic_provider import TopicProvider
+from app.data_providers.topic_slate_provider import TopicSlateProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.graphql.corpus_slate import CorpusSlate
 from app.graphql.corpus_slate_lineup import CorpusSlateLineup
+from app.graphql.resolvers.corpus_slate_lineup_slates_resolver import DEFAULT_SLATE_COUNT
 from app.graphql.resolvers.corpus_slate_recommendations_resolver import DEFAULT_RECOMMENDATION_COUNT
 from app.graphql.util import get_field_argument, get_user_ids
 
@@ -23,13 +23,18 @@ async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
     )
 
     slate_count = int(get_field_argument(
-        info.field_asts, ['homeSlateLineup', 'slates'], 'count', default_value=CorpusSlateLineup.DEFAULT_COUNT))
+        fields=info.selected_fields,
+        field_path=['homeSlateLineup', 'slates'],
+        argument_name='count',
+        default_value=DEFAULT_SLATE_COUNT))
 
     recommendation_count = int(get_field_argument(
-        info.field_asts, ['homeSlateLineup', 'slates', 'recommendations'], 'count',
-        default_value=CorpusSlate.DEFAULT_COUNT))
+        fields=info.selected_fields,
+        field_path=['homeSlateLineup', 'slates', 'recommendations'],
+        argument_name='count',
+        default_value=DEFAULT_RECOMMENDATION_COUNT))
 
-    return await HomeDispatch(
+    slate_lineup_model = await HomeDispatch(
         corpus_client=corpus_client,
         user_recommendation_preferences_provider=user_recommendation_preferences_provider,
         topic_provider=topic_provider,
@@ -39,3 +44,7 @@ async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
         slate_count=slate_count,
         recommendation_count=recommendation_count,
     )
+
+    slate_lineup = CorpusSlateLineup.from_pydantic(slate_lineup_model)
+    slate_lineup.slates = slate_lineup_model.slates
+    return slate_lineup
