@@ -268,7 +268,7 @@ type Recommendation @key(fields: "item { itemId }") {
 }
 
 """
-A grouping of item recomendations that relate to each other under a specific name and description
+A grouping of item recommendations that relate to each other under a specific name and description
 """
 type Slate {
   id: String!
@@ -286,7 +286,7 @@ type Slate {
   experimentId: ID!
 
   """
-  The name to show to the user for this set of recomendations
+  The name to show to the user for this set of recommendations
   """
   displayName: String
 
@@ -296,7 +296,7 @@ type Slate {
   description: String
 
   """
-  An ordered list of the recomendations to show to the user
+  An ordered list of the recommendations to show to the user
   """
   recommendations: [Recommendation!]!
 }
