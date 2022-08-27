@@ -3,6 +3,8 @@ from typing import List
 import strawberry
 
 from app.graphql.corpus_slate import CorpusSlate
+from app.graphql.corpus_slate_lineup import CorpusSlateLineup
+from app.graphql.resolvers.corpus_slate_lineup_resolvers import resolve_home_slate_lineup
 from app.graphql.resolvers.corpus_slate_resolvers import resolve_setup_moment_slate
 from app.graphql.resolvers.legacy.slate_lineup_resolver import resolve_get_slate_lineup
 from app.graphql.resolvers.legacy.slate_resolver import resolve_get_slate
@@ -17,6 +19,12 @@ from app.graphql.user_recommendation_preferences import UserRecommendationPrefer
 
 @strawberry.type
 class Query:
+    home_slate_lineup: CorpusSlateLineup = strawberry.field(
+        resolver=resolve_home_slate_lineup,
+        description='Under active development: Get ranked corpus slates and recommendations to deliver a unified Home '
+                    'experience.'
+    )
+
     setup_moment_slate: CorpusSlate = strawberry.field(
         resolver=resolve_setup_moment_slate,
         description='Get stories during Setup Moment onboarding that are personalized with user preferences provided '
