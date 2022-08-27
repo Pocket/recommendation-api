@@ -10,6 +10,6 @@ from app.models.slate_lineup import SlateLineupModel
 @strawberry.experimental.pydantic.type(model=SlateLineupModel)
 class SlateLineup:
     id: strawberry.ID
-    requestId: auto
-    experimentId: auto
+    requestId: strawberry.ID
+    experimentId: strawberry.ID
     slates: List[Slate]

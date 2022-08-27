@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
 from app.models.corpus_item_model import CorpusItemModel
@@ -10,4 +12,4 @@ class CorpusRecommendationModel(BaseModel):
                     'This field can be joined with recommendation decisions to aggregate more meta data about the '
                     'decision.')
 
-    corpus_item: CorpusItemModel = Field(description='Content meta data.')
+    corpus_item: Optional[CorpusItemModel] = Field(description='Content meta data.')

@@ -15,3 +15,5 @@ class CorpusSlate:
     recommendations: strawberry.auto = strawberry.field(
         resolver=corpus_slate_recommendations_resolver,
         description='Recommendations for the current request context.')
+    more_link_url: strawberry.auto
+    more_link_name: strawberry.auto

@@ -11,7 +11,7 @@ from app.models.recommendation import RecommendationModel
     # Currently, the `strawberry.federation.type` cannot be combined with `strawberry.experimental.pydantic.type`,
     # so set the key as a directive.
     directives=[Key("item { itemId }", UNSET)],
-    description='Represents a Recommendation from Pocket',
+    description='Represents a Recomendation from Pocket',
 )
 class Recommendation:
     id: strawberry.ID
