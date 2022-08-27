@@ -227,7 +227,7 @@ type TopicRecommendations {
 }
 
 """
-Represents a Recomendation from Pocket
+Represents a Recommendation from Pocket
 """
 type Recommendation @key(fields: "item { itemId }") {
   """
@@ -353,7 +353,7 @@ type Query {
   getTopicRecommendations(slug: String!, algorithmicCount: Int = 20, curatedCount: Int = 5): TopicRecommendations  @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
 
   """
-  List all available topics that we have recomendarions for.
+  List all available topics that we have recommendations for.
   """
   listTopics: [Topic!]! @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
 
