@@ -7,7 +7,8 @@ from strawberry import auto, field, ID
 from app.models.topic import TopicModel
 
 
-@strawberry.enum
+@strawberry.enum(description='Represents a type of page for /explore\n'
+                             'Deprecated for SlateLineups')
 class PageType(Enum):
     """
     This enum mirrors app.models.topic.PageType

@@ -29,7 +29,7 @@ class Query:
 
     list_topics: List[Topic] = strawberry.field(
         resolver=list_topics,
-        deprecation_reason='`recommendation_preference_topics` gets topics that users can express a preference for.',
+        deprecation_reason='Use `getSlateLineup` with a specific SlateLineup instead.',
         description='List all available topics that we have recommendations for.')
 
     get_slate: Slate = strawberry.field(

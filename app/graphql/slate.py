@@ -10,8 +10,8 @@ from app.models.slate import SlateModel
 @strawberry.experimental.pydantic.type(model=SlateModel)
 class Slate:
     id: strawberry.ID
-    requestId: auto
-    experimentId: auto
+    requestId: strawberry.ID
+    experimentId: strawberry.ID
     display_name: auto
     description: auto
     recommendations: List[Recommendation]

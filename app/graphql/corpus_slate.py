@@ -4,7 +4,10 @@ from app.graphql.resolvers.corpus_slate_recommendations_resolver import corpus_s
 from app.models.corpus_slate_model import CorpusSlateModel
 
 
-@strawberry.experimental.pydantic.type(model=CorpusSlateModel)
+@strawberry.experimental.pydantic.type(
+    model=CorpusSlateModel,
+    description='This is the same as Slate but in this type all recommendations are backed by CorpusItems. '
+                'This means that the editorial team has editorial control over the items served by this endpoint.')
 class CorpusSlate:
     id: strawberry.ID
     headline: strawberry.auto
