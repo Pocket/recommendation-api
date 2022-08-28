@@ -84,7 +84,6 @@ class TestSetupMomentSlate(TestDynamoDBBase):
                               id
                               corpusItem {
                                 id
-                                topic
                               }
                             }
                           }
@@ -105,14 +104,6 @@ class TestSetupMomentSlate(TestDynamoDBBase):
             # Assert that all corpus items are being returned.
             assert len(recs) == len(corpus_items_fixture)
             assert {rec['corpusItem']['id'] for rec in recs} == {item.id for item in corpus_items_fixture}
-
-            # Assert that recommendations of preferred topics are ordered before non-preferred ones.
-            # recommendations are rotated to spread topics
-            pref_corpus_topic_ids = [t.corpus_topic_id for t in preferred_topics]
-            pref_corpus_item_ids = {c.id for c in corpus_items_fixture if c.topic in pref_corpus_topic_ids}
-            non_pref_corpus_item_ids = {c.id for c in corpus_items_fixture if c.topic not in pref_corpus_topic_ids}
-            assert {rec['corpusItem']['id'] for rec in recs[:len(pref_corpus_item_ids)]} == pref_corpus_item_ids
-            assert {rec['corpusItem']['id'] for rec in recs[len(pref_corpus_item_ids):]} == non_pref_corpus_item_ids
 
             self.validate_snowplow_event(expected_recommendation_count=len(corpus_items_fixture))
 
@@ -140,7 +131,6 @@ class TestSetupMomentSlate(TestDynamoDBBase):
                               id
                               corpusItem {
                                 id
-                                topic
                               }
                             }
                           }
@@ -159,10 +149,6 @@ class TestSetupMomentSlate(TestDynamoDBBase):
 
             # Assert that 10 (the default for count) corpus items are being returned.
             assert len(recs) == default_recommendation_count
-            # Because the user doesn't have any preferred topics, default ones should be recommended.
-            assert {rec['corpusItem']['topic'] for rec in recs} <= \
-                   {health_topic.corpus_topic_id, entertainment_topic.corpus_topic_id, technology_topic.corpus_topic_id,
-                    travel_topic.corpus_topic_id}
 
             self.validate_snowplow_event(expected_recommendation_count=default_recommendation_count)
 

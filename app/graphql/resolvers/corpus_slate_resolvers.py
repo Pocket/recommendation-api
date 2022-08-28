@@ -22,7 +22,6 @@ async def resolve_setup_moment_slate(root, info: Info) -> Optional[CorpusSlate]:
         aioboto3_session=aioboto3_session,
         topic_provider=topic_provider
     )
-    slate_tracker = SnowplowCorpusSlateTracker(tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
     user = get_user_ids(info)
 
     recommendation_count = int(get_field_argument(
@@ -40,9 +39,10 @@ async def resolve_setup_moment_slate(root, info: Info) -> Optional[CorpusSlate]:
         recommendation_count=recommendation_count,
     )
 
+    slate_tracker = SnowplowCorpusSlateTracker(tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
+    await slate_tracker.track(corpus_slate_model, user=user)
+
     corpus_slate = CorpusSlate.from_pydantic(corpus_slate_model)
     corpus_slate.recommendations = corpus_slate_model.recommendations
-
-    await slate_tracker.track(corpus_slate, user=user)
 
     return corpus_slate
