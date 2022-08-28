@@ -24,10 +24,7 @@ starlette = "*"
 sentry-sdk = "*"
 aioboto3 = "*"
 gunicorn = "*"
-uvicorn = "*"
-# Locking fastapi to prevent a conflict with pydantic:
-#   pydantic<2.0.0,>=1.6.2 (from fastapi==0.65.1)
-#   pydantic<=1.6,>=1.0 (from graphene-pydantic==0.1.0)
+uvicorn = {extras = ["standard"], version = "*"}
 fastapi = "==0.69.0"
 uvloop = "*"
 gql = "*"
