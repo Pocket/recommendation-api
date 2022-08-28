@@ -1,3 +1,5 @@
+from typing import Optional
+
 from strawberry import argument
 from strawberry.types import Info
 from typing_extensions import Annotated
@@ -10,11 +12,11 @@ async def resolve_get_slate_lineup(
         root,
         info: Info,
         slate_lineup_id: Annotated[str, argument(description='The {SlateLineup.id} of the SlateLineup to return')],
-        slate_count: Annotated[int, argument(
+        slate_count: Annotated[Optional[int], argument(
             description='Maximum number of slates to return in {SlateLineup.slates}, defaults to 8')] = 8,
-        recommendation_count: Annotated[int, argument(
+        recommendation_count: Annotated[Optional[int], argument(
             description='Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10')] = 10,
-) -> SlateLineup:
+) -> Optional[SlateLineup]:
     slate_lineup_model = await SlateLineupModel.get_slate_lineup_with_fallback(
         slate_lineup_id=slate_lineup_id,
         user_id=info.context.get('request').headers.get('userId'),

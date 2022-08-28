@@ -1,3 +1,5 @@
+from typing import Optional
+
 import aioboto3
 import strawberry
 
@@ -9,7 +11,7 @@ from app.graphql.user_recommendation_preferences import UserRecommendationPrefer
 @strawberry.federation.type(keys=["id"])
 class User:
     id: strawberry.ID = strawberry.field(description='User id, provided by the user service.')
-    recommendation_preferences: UserRecommendationPreferences = strawberry.field(
+    recommendation_preferences: Optional[UserRecommendationPreferences] = strawberry.field(
         description='Preferences for recommendations that the user has explicitly set.')
 
     @classmethod

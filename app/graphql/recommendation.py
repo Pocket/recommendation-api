@@ -1,3 +1,5 @@
+from typing import Optional
+
 import strawberry
 from strawberry import auto, UNSET
 from strawberry.federation.schema_directives import Key
@@ -14,10 +16,10 @@ from app.models.recommendation import RecommendationModel
     description='Represents a Recomendation from Pocket',
 )
 class Recommendation:
-    id: strawberry.ID
-    feed_item_id: auto = strawberry.field(deprecation_reason="Use `id`")
+    id: Optional[strawberry.ID]
+    feed_item_id: Optional[strawberry.ID] = strawberry.field(deprecation_reason="Use `id`")
     feed_id: auto
-    item_id: auto
+    item_id: strawberry.ID
     item: Item = strawberry.federation.field(shareable=True)
-    rec_src: auto
+    rec_src: str
     publisher: auto

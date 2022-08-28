@@ -1,3 +1,5 @@
+from typing import Optional
+
 from typing_extensions import Annotated
 
 import strawberry
@@ -12,10 +14,10 @@ async def resolve_get_slate(
         info: Info,
         slate_id: Annotated[str, strawberry.argument(description='The {Slate.id} of the slate to return')],
         recommendation_count: Annotated[
-            int, strawberry.argument(
+            Optional[int], strawberry.argument(
                 description='Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10')
         ] = 10
-) -> Slate:
+) -> Optional[Slate]:
     slate_model = await SlateModel.get_slate(
         slate_id=slate_id,
         user_id=info.context.get('request').headers.get('userId'),

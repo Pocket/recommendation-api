@@ -36,4 +36,4 @@ class Topic:
     social_description: auto
     social_image: auto
     page_type: PageType
-    custom_feed_id: auto
+    custom_feed_id: Optional[strawberry.ID]

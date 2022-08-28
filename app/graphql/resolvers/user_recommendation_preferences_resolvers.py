@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+from typing import Optional
 
 import aioboto3
 from strawberry.types import Info
@@ -17,7 +18,7 @@ from app.models.user_recommendation_preferences import UserRecommendationPrefere
 
 
 async def update_user_recommendation_preferences(
-        root, info: Info, input: UpdateUserRecommendationPreferencesInput) -> UserRecommendationPreferences:
+        root, info: Info, input: UpdateUserRecommendationPreferencesInput) -> Optional[UserRecommendationPreferences]:
     aioboto3_session = aioboto3.Session()
 
     topic_provider = TopicProvider(aioboto3_session=aioboto3_session)

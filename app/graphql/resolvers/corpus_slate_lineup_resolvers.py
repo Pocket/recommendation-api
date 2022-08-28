@@ -1,3 +1,5 @@
+from typing import Optional
+
 import aioboto3
 from strawberry.types import Info
 
@@ -13,9 +15,10 @@ from app.graphql.resolvers.corpus_slate_recommendations_resolver import DEFAULT_
 from app.graphql.util import get_field_argument, get_user_ids
 
 
-async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
+async def resolve_home_slate_lineup(root, info: Info) -> Optional[CorpusSlateLineup]:
     aioboto3_session = aioboto3.Session()
     corpus_client = CorpusFeatureGroupClient(aioboto3_session=aioboto3_session)
+    user = get_user_ids(info)
     topic_provider = TopicProvider(aioboto3_session)
     user_recommendation_preferences_provider = UserRecommendationPreferencesProvider(
         aioboto3_session=aioboto3_session,
@@ -40,7 +43,7 @@ async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
         topic_provider=topic_provider,
         topic_slate_provider=TopicSlateProvider(corpus_client)
     ).get_slate_lineup(
-        user=info.context['user'],
+        user=user,
         slate_count=slate_count,
         recommendation_count=recommendation_count,
     )
