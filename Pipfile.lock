@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6f8789a2d1723b3100310817986506912ec58a5ab499aa0df4cb863bc5f537a3"
+            "sha256": "63d3a6c105c85b061f9a75f44c09432ac9dfa0f97e7379b951248e5552b133e3"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -728,7 +728,7 @@
                 "sha256:5c6e71fe8a11f690f78ab13363b0993eb7e5446986d3549902a81505afdaa08b",
                 "sha256:66dc8464dc4380f591f33248d23913830f501027ac26839329c99177cf119128"
             ],
-            "index": "pypi",
+            "markers": "python_version >= '3.6'",
             "version": "==0.15.0"
         },
         "strawberry-graphql": {
@@ -844,7 +844,6 @@
                 "sha256:e814ac2c6f9daf4c36eb8e85266859f42174a4ff0d71b99405ed559257750382",
                 "sha256:f74bc20c7b67d1c27c72601c78cf95be99d5c2cdd4514502b4f3eb0933ff1228"
             ],
-            "index": "pypi",
             "version": "==0.16.0"
         },
         "watchfiles": {

@@ -20,13 +20,11 @@ pytest-asyncio = "*"
 pytest-aiohttp = "*"
 
 [packages]
-starlette = "*"
 sentry-sdk = "*"
 aioboto3 = "*"
 gunicorn = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 fastapi = "==0.69.0"
-uvloop = "*"
 gql = "*"
 xraysink = "*"
 aws-xray-sdk = "*"
