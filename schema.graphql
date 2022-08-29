@@ -308,7 +308,7 @@ type Query {
     recommendationPreferenceTopics: [Topic!]!
 
     """
-    List all available topics that we have recommendarions for.
+    List all available topics that we have recommendations for.
     """
     listTopics: [Topic!]! @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
 
