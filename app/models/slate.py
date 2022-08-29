@@ -24,10 +24,10 @@ class SlateModel(BaseModel):
         default=None,
         description='A unique guid/slug, provided by the Data & Learning team that can identify a specific experiment. '
                     'Production apps typically won\'t request a specific one, but can for QA or during a/b testing.')
-    display_name: str = Field(default=None, description='The name to show to the user for this set of recomendations')
+    display_name: str = Field(default=None, description='The name to show to the user for this set of recommendations')
     description: str = Field(default=None, description='The description of the the slate')
     recommendations: List[RecommendationModel] = Field(
-        default=None, description='An ordered list of the recomendations to show to the user')
+        default=None, description='An ordered list of the recommendations to show to the user')
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_slate')

@@ -29,15 +29,15 @@ class RecommendationModel(BaseModel):
     article. The `item` property contains all article details, e.g. title, excerpt, image, etc.
     """
     id: str = Field(
-        default=None, description='A generated id from the Data and Learning team that represents the Recomendation')
+        default=None, description='A generated id from the Data and Learning team that represents the Recommendation')
     feed_item_id: str = Field(
         default=None,
-        description='A generated id from the Data and Learning team that represents the Recomendation - Deprecated')
+        description='A generated id from the Data and Learning team that represents the Recommendation - Deprecated')
     feed_id: int = Field(
         default=None,
         description='The feed id from mysql that this item was curated from (if it was curated)')
     item_id: str = Field(
-        description='The ID of the item this recomendation represents\n'
+        description='The ID of the item this recommendation represents\n'
                     'TODO: Use apollo federation to turn this into an Item type.')
     item: ItemModel = Field(description='The Item that is resolved by apollo federation using the itemId')
     rec_src: str = Field(default='RecommendationAPI', description='The source of the recommendation')
