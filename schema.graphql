@@ -107,23 +107,6 @@ extend type User @key(fields: "id") {
     recommendationPreferences: UserRecommendationPreferences
 }
 
-type RankedCorpusSlate @key(fields: "id") {
-  id: ID!
-  description: String!
-  displayName: String!
-  experimentId: String!
-  corpusItems: [CorpusItem!]
-  requestId: String
-}
-
-type RankedCorpusSlateExperiment @key(fields: "id") {
-  id: ID!
-  rankedCorpusSlateId: ID!
-  description: String!
-  candidateSets: [ID!]
-  rankers: [ID!]
-}
-
 """
 Represents a type of page for /explore
 Deprecated for SlateLineups
@@ -211,37 +194,21 @@ type Topic {
 }
 
 """
-Represents a set of recomednations for /explore
-Deprecated for SlateLineups
-"""
-type TopicRecommendations {
-  """
-  Recomendations that are sourced directly from our curators
-  """
-  curatedRecommendations: [Recommendation!]!
-
-  """
-  Recomendations that are sourced from Machine Learning models
-  """
-  algorithmicRecommendations: [Recommendation!]!
-}
-
-"""
-Represents a Recomendation from Pocket
+Represents a Recommendation from Pocket
 """
 type Recommendation @key(fields: "item { itemId }") {
   """
-  A generated id from the Data and Learning team that represents the Recomendation
+  A generated id from the Data and Learning team that represents the Recommendation
   """
   id: ID
 
   """
-  A generated id from the Data and Learning team that represents the Recomendation - Deprecated
+  A generated id from the Data and Learning team that represents the Recommendation - Deprecated
   """
   feedItemId: ID @deprecated(reason: "Use `id`")
 
   """
-  The ID of the item this recomendation represents
+  The ID of the item this recommendation represents
   TODO: Use apollo federation to turn this into an Item type.
   """
   itemId: ID!
@@ -268,7 +235,7 @@ type Recommendation @key(fields: "item { itemId }") {
 }
 
 """
-A grouping of item recomendations that relate to each other under a specific name and description
+A grouping of item recommendations that relate to each other under a specific name and description
 """
 type Slate {
   id: String!
@@ -286,7 +253,7 @@ type Slate {
   experimentId: ID!
 
   """
-  The name to show to the user for this set of recomendations
+  The name to show to the user for this set of recommendations
   """
   displayName: String
 
@@ -296,7 +263,7 @@ type Slate {
   description: String
 
   """
-  An ordered list of the recomendations to show to the user
+  An ordered list of the recommendations to show to the user
   """
   recommendations: [Recommendation!]!
 }
@@ -348,12 +315,7 @@ type Query {
   recommendationPreferenceTopics: [Topic!]!
 
   """
-  Get the recomendations for a specific topic
-  """
-  getTopicRecommendations(slug: String!, algorithmicCount: Int = 20, curatedCount: Int = 5): TopicRecommendations  @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
-
-  """
-  List all available topics that we have recomendarions for.
+  List all available topics that we have recommendations for.
   """
   listTopics: [Topic!]! @deprecated(reason: "Use `getSlateLineup` with a specific SlateLineup instead.")
 
