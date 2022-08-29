@@ -4,7 +4,7 @@ import strawberry
 from strawberry import auto, UNSET
 from strawberry.federation.schema_directives import Key
 
-from app.graphql.objects.legacy.item import Item
+from app.graphql.item import Item
 from app.models.recommendation import RecommendationModel
 
 

@@ -15,10 +15,10 @@ class TestRecommendationPreferenceTopics(TestDynamoDBBase):
 
         with TestClient(app) as client:
             query = 'query RecommendationPreferenceTopics { recommendationPreferenceTopics { id name } }'
-            response = client.post("/", json={'query': query}).json()
+            data = client.post("/", json={'query': query}).json()
 
-            assert not response.get('errors')
-            topics = response.get('data').get('recommendationPreferenceTopics')
+            assert not data.get('errors')
+            topics = data.get('data').get('recommendationPreferenceTopics')
 
             # 'Gaming' is filtered out, so the only topic remaining is 'Technology'.
             assert len(topics) == 1

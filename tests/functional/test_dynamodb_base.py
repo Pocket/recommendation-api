@@ -8,7 +8,7 @@ from app.config import dynamodb as dynamodb_config, ROOT_DIR
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 from aws_xray_sdk import global_sdk_config
 
-from tests.mocks.caching import reset_caches
+from tests.functional.test_util.caching import reset_caches
 
 
 class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
@@ -34,9 +34,6 @@ class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
         await reset_caches()
 
     async def asyncTearDown(self):
-        # TODO: "got Future <Future pending> attached to a different loop" with clear_caches() in test_get_slate_lineup
-        # Remove it completely? Or move it to a different class?
-        # await self.clear_caches()
         self.delete_tables()
 
     async def clear_caches(self):
