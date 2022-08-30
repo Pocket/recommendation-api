@@ -1,16 +1,9 @@
-import aioboto3
-
 from asyncio import gather
 
-import logging
-from aws_xray_sdk.core import xray_recorder
-from boto3.dynamodb.conditions import Key
 from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.config import dynamodb as dynamodb_config
-# Needs to exist for pydantic to resolve the model field "item: ItemModel" in the RecommendationModel
-from app.graphql.item import Item
 from app.models.candidate_set import candidate_set_factory
 from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
 from app.models.metrics.recommendation_metrics_factory import RecommendationMetricsFactory
@@ -35,13 +28,20 @@ class RecommendationModel(BaseModel):
     A recommendation models a single article. The properties here are the bare minimum necessary to represent an
     article. The `item` property contains all article details, e.g. title, excerpt, image, etc.
     """
-    id: str = None
-    feed_item_id: str = None
-    feed_id: int = None
-    item_id: str
-    item: ItemModel
-    rec_src: str = 'RecommendationAPI'
-    publisher: str = None
+    id: str = Field(
+        default=None, description='A generated id from the Data and Learning team that represents the Recommendation')
+    feed_item_id: str = Field(
+        default=None,
+        description='A generated id from the Data and Learning team that represents the Recommendation - Deprecated')
+    feed_id: int = Field(
+        default=None,
+        description='The feed id from mysql that this item was curated from (if it was curated)')
+    item_id: str = Field(
+        description='The ID of the item this recommendation represents\n'
+                    'TODO: Use apollo federation to turn this into an Item type.')
+    item: ItemModel = Field(description='The Item that is resolved by apollo federation using the itemId')
+    rec_src: str = Field(default='RecommendationAPI', description='The source of the recommendation')
+    publisher: str = Field(default=None, description='The publisher of the item')
 
     @staticmethod
     def candidate_dict_to_recommendation(candidate: dict):

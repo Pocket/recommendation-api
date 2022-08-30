@@ -1,13 +1,7 @@
-import json
-import os
-from functools import partial
-
-from graphql.execution.executors.asyncio import AsyncioExecutor
-from graphene.test import Client
 from fastapi.testclient import TestClient
 
-from app.graphql.graphql_router import schema
 from app.main import app
+from app.models.user_ids import UserIds
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 
 from unittest.mock import patch
@@ -15,36 +9,41 @@ from collections import namedtuple
 
 MockResponse = namedtuple('MockResponse', 'status')
 
+
 class TestGetSlateLineup(TestDynamoDBBase):
-    client: Client
 
     async def asyncSetUp(self):
         await super().asyncSetUp()
         self.populate_candidate_sets_table()
-        self.client = Client(schema)
+        self.user_ids = UserIds(
+            user_id=1,
+            hashed_user_id='1-hashed',
+        )
 
     @patch('aiohttp.ClientSession.get', to_return=MockResponse(status=200))
     @patch('app.models.user_impressed_list.UserImpressedList.get', to_return=[])
     def test_get_slate_lineup(self, mock_userimpressedlist_get, mock_clientsession_get):
-        with TestClient(
-                app):  # This context manager forces the FastAPI startup event to run, which we use to populate our slate lineup configuration
-            executed = self.client.execute(
-                '''
-                    query GetSlateLineup {
-                      getSlateLineup(slateLineupId: "aaf47c0f-1361-4c8c-a89f-fa45e1dc2978") {
-                        slates {
-                            description
+        with TestClient(app) as client:
+            data = client.post(
+                '/',
+                json={
+                    'query': '''
+                        query GetSlateLineup {
+                          getSlateLineup(slateLineupId: "aaf47c0f-1361-4c8c-a89f-fa45e1dc2978") {
+                            slates {
+                              description
+                            }
+                          }
                         }
-                      }
-                    }
-                ''',
-                context_value={"user_id": "johnjacobjingleheimerschmidt"},
-                executor=AsyncioExecutor())
+                    ''',
+                },
+                headers={
+                    'userId': 'johnjacobjingleheimerschmidt',
+                }
+            ).json()
 
-            # No get defaults here. This chain of 'gets' is deliberately not robust.
-            # We want to test that THIS structure exists in the JSON in its entirety
-            # because our clients depend on this structure.
-            slate_list = executed.get('data').get('getSlateLineup').get('slates')
+            assert not data.get('errors')
+            slate_list = data['data']['getSlateLineup']['slates']
 
             # Testing that multiple slates come back
             assert len(slate_list) > 1

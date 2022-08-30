@@ -4,11 +4,11 @@ from typing import Tuple
 import unittest
 import boto3
 import json
-from aiocache import caches
-from app.cache import initialize_caches, candidate_set_alias, metrics_alias
 from app.config import dynamodb as dynamodb_config, ROOT_DIR
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 from aws_xray_sdk import global_sdk_config
+
+from tests.functional.test_util.caching import reset_caches
 
 
 class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
@@ -31,22 +31,13 @@ class TestDynamoDBBase(unittest.IsolatedAsyncioTestCase):
         self.dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url'])
         self.delete_tables()
         self.create_tables()
-
-        initialize_caches()
+        await reset_caches()
 
     async def asyncTearDown(self):
         self.delete_tables()
-        await self.clear_caches()
 
     async def clear_caches(self):
-        # Clear memcached
-        for alias in (candidate_set_alias, metrics_alias):
-            cache = caches.get(alias)
-            await cache.clear()
-            # aiocache doesn't support deleting caches.
-            # If we don't delete them, an error is raised "attached to a different loop", because
-            # IsolatedAsyncioTestCase creates a new event loop for every test case.
-            del caches._caches[alias]
+        await reset_caches()
 
     def delete_tables(self):
         for table_name in TestDynamoDBBase.TABLE_NAMES:

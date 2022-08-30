@@ -1,15 +1,9 @@
-import graphene
-
-from graphene_pydantic import PydanticObjectType
-from graphene_federation import external, extend
+import strawberry
 
 from app.models.item import ItemModel
 
 
-@extend(fields='itemId')
-class Item(PydanticObjectType):
-    item_id = external(graphene.String(required=True))
-
-    class Meta:
-        model = ItemModel
-
+@strawberry.federation.type(keys=["itemId"])
+@strawberry.experimental.pydantic.type(model=ItemModel)
+class Item:
+    item_id: str  # This type is a 'str' and not an 'ID' in our graph.

@@ -1,14 +1,10 @@
-from graphene_pydantic import PydanticObjectType
-from graphene import List, Int
+import strawberry
 
-from app.graphql.corpus_slate import CorpusSlate
+from app.graphql.resolvers.corpus_slate_lineup_slates_resolver import corpus_slate_lineup_slates_resolver
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel
 
 
-class CorpusSlateLineup(PydanticObjectType):
-    DEFAULT_COUNT = 10
-
-    slates = List(CorpusSlate, required=True, count=Int(default_value=DEFAULT_COUNT))
-
-    class Meta:
-        model = CorpusSlateLineupModel
+@strawberry.experimental.pydantic.type(model=CorpusSlateLineupModel, description='A collection of slates.')
+class CorpusSlateLineup:
+    id: strawberry.ID
+    slates: strawberry.auto = strawberry.field(resolver=corpus_slate_lineup_slates_resolver, description='Slates.')

@@ -32,8 +32,6 @@ class TestUserReferenceResolver(TestDynamoDBBase):
 
     @patch.object(UserRecommendationPreferencesProviderV2, 'fetch', return_value=mock_user_preferences)
     def test_user_reference_resolver(self, mock_data_provider_fetch_v2):
-        # Note: Unlike other functional tests, using graphene.test.Client causes the test below to get stuck (timeout).
-        #       Making the request directly using the TestClient does work.
         with TestClient(app) as client:
             response = client.post(
                 "/",
@@ -66,7 +64,7 @@ class TestUserReferenceResolver(TestDynamoDBBase):
 
             executed = response.json()
 
-            assert not executed.get('error')
+            assert not executed.get('errors')
             entities = executed['data']['_entities']
 
             assert len(entities) == 1
