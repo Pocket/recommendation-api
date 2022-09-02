@@ -16,7 +16,7 @@ services:
     volumes:
       - "./app:/app:ro"
       - "./tests:/tests:rw"  # give read-write permission to write junitxml test reports here.
-      - "./tmp:/tmp:rw"  # give permission to export the GraphQL schema here.
+      - "./tmp:/tmp:rw"  # the GraphQL schema is exported here during deployment.
       - "./.docker:/.docker:ro"  # Functional Tests read files from .docker/localstack/dynamodb.
     depends_on:
       - localstack
