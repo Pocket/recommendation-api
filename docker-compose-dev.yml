@@ -20,14 +20,14 @@ services:
       - "./app:/app:ro"
       - "./app:/opt/project/src:ro" # PyCharm overrides app to /opt/project/src
     depends_on:
-      - xray_daemon
+      - xray
 
-  xray_daemon:
+  xray:
     image: amazon/aws-xray-daemon
     command:
       - '--region'
       - 'us-east-1'
-      - '--local-mode'
+      - '--local-mode' # Don't check for EC2 instance metadata.
     environment:
       # Run `source <(maws -o awscli)` to export credentials with AWS CLI
       - AWS_PROFILE=pocket-dev-PocketSSODataLearning
@@ -35,4 +35,4 @@ services:
       - '2000:2000/udp'
       - '2000:2000/tcp'
     volumes:
-      - "~/.aws:/home/root/.aws:ro"
+      - "~/.aws:/root/.aws:ro"
