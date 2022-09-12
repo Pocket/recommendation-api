@@ -9,7 +9,7 @@ from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
 from app.data_providers.snowplow.snowplow_corpus_slate_tracker import SnowplowCorpusSlateTracker
 from app.data_providers.metrics_client import MetricsFetchable
 from app.data_providers.slate_provider import SlateProvider
-from app.data_providers.topic_slate_provider import TopicSlateProvider
+from app.data_providers.slate_providers.topic_slate_provider import TopicSlateProvider
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.models.corpus_recommendation_model import CorpusRecommendationModel

@@ -6,7 +6,7 @@ from strawberry.types import Info
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.dispatch import HomeDispatch
 from app.data_providers.topic_provider import TopicProvider
-from app.data_providers.topic_slate_provider import TopicSlateProvider
+from app.data_providers.slate_providers.topic_slate_provider import TopicSlateProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.graphql.corpus_slate import CorpusSlate
 from app.graphql.corpus_slate_lineup import CorpusSlateLineup
