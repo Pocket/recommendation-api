@@ -5,6 +5,7 @@ from uuid import uuid4
 from pydantic import BaseModel, Field
 
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
+from app.models.recommendation_reason_type import RecommendationReasonType
 
 
 class CorpusSlateModel(BaseModel):
@@ -17,6 +18,10 @@ class CorpusSlateModel(BaseModel):
     recommended_at: datetime = Field(
         default_factory=lambda: datetime.now(tz=timezone.utc),
         description='UTC time when the slate was recommended')
+    recommendation_reason_type: Optional[RecommendationReasonType] = Field(
+        description="Indicates the main type of reason why recommendations are included in this slate, or null if none "
+                    "is available."
+    )
     headline: str = Field(
         description='The display headline for the slate. Surface context may be required to render determine what to '
                     'display. This will depend on if we connect the copy to the Surface, SlateExperiment, or Slate.')
