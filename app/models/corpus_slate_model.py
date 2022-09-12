@@ -5,6 +5,7 @@ from uuid import uuid4
 from pydantic import BaseModel, Field
 
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
+from app.models.link import LinkModel
 from app.models.recommendation_reason_type import RecommendationReasonType
 
 
@@ -28,11 +29,6 @@ class CorpusSlateModel(BaseModel):
     subheadline: Optional[str] = Field(
         default=None,
         description='A smaller, secondary headline that can be displayed to provide additional context on the slate.')
-    more_link_url: str = Field(
-        default=None,
-        description='The URL destination of the page to explore more content like this Slate.')
-    more_link_name: str = Field(
-        default=None,
-        description='The display name for the link to explore more content like this Slate.')
-
-
+    more_link: Optional[LinkModel] = Field(
+        description='Link to a page where the user can explore more recommendations similar to this slate, or null if '
+                    'no link is provided.')
