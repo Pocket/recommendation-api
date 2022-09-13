@@ -86,6 +86,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
                                 corpusItem {
                                   id
                                 }
+                                reason
                               }
                             }
                           }

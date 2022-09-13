@@ -4,6 +4,7 @@ from uuid import uuid4
 from pydantic import BaseModel, Field
 
 from app.models.corpus_item_model import CorpusItemModel
+from app.models.recommendation_reason_model import RecommendationReasonModel
 
 
 class CorpusRecommendationModel(BaseModel):
@@ -15,3 +16,6 @@ class CorpusRecommendationModel(BaseModel):
                     'decision.')
 
     corpus_item: Optional[CorpusItemModel] = Field(description='Content meta data.')
+
+    reason: Optional[RecommendationReasonModel] = Field(
+        description='Reason why this CorpusItem is recommended to the user, or null if no reason is available.')
