@@ -1,13 +1,15 @@
-import random
-from asyncio import gather
-from datetime import datetime, timezone
 import logging
 import uuid
+from asyncio import gather
+from datetime import datetime, timezone
+from typing import List
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
-from app.data_providers.topic_slate_provider import TopicSlateProvider
+from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
+from app.data_providers.slate_providers.topic_slate_provider import TopicSlateProvider
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
+from app.data_providers.util import flatten
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel
 from app.models.corpus_slate_model import CorpusSlateModel
@@ -69,49 +71,38 @@ class SetupMomentDispatch:
 
 class HomeDispatch:
 
+    DEFAULT_TOPICS = [
+        '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
+        'c6242e35-4ef7-494f-ae9f-51f95b836424',  # Entertainment
+        '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
+    ]
+
     def __init__(
             self,
             corpus_client: CorpusFeatureGroupClient,
             user_recommendation_preferences_provider: UserRecommendationPreferencesProvider,
             topic_provider: TopicProvider,
             topic_slate_provider: TopicSlateProvider,
+            collection_slate_provider: CollectionSlateProvider,
     ):
         self.topic_provider = topic_provider
         self.corpus_client = corpus_client
         self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
         self.topic_slate_provider = topic_slate_provider
-
-        self.setup_moment_dispatch = self._create_setup_moment_dispatch()
+        self.collection_slate_provider = collection_slate_provider
 
     async def get_slate_lineup(
             self, user: UserIds, slate_count: int, recommendation_count: int
     ) -> CorpusSlateLineupModel:
-        setup_moment_slate_coroutine = self.setup_moment_dispatch.get_ranked_corpus_slate(
-            user=user,
-            recommendation_count=recommendation_count,
+        return CorpusSlateLineupModel(
+            slates=flatten(list(
+                await gather(
+                    self.collection_slate_provider.get_slate(),
+                    self._get_topic_slates(recommendation_count=recommendation_count),
+                )
+            )),
         )
 
-        topics = await self.topic_provider.get_all()
-        remaining_slate_count = slate_count - 1  # first slate is setup moment
-        if len(topics) > remaining_slate_count:
-            topics = random.sample(topics, k=remaining_slate_count)
-
-        topic_slates_coroutine = self.topic_slate_provider.get_slates(topics, recommendation_count=recommendation_count)
-
-        setup_moment_slate, topic_slates = await gather(setup_moment_slate_coroutine, topic_slates_coroutine)
-        slates = [setup_moment_slate] + topic_slates
-
-        corpus_slate_lineup = CorpusSlateLineupModel(
-            id=str(uuid.uuid4()),
-            slates=slates,
-            recommended_at = datetime.now(tz=timezone.utc),
-        )
-
-        return corpus_slate_lineup
-
-    def _create_setup_moment_dispatch(self) -> SetupMomentDispatch:
-        return SetupMomentDispatch(
-            corpus_client=self.corpus_client,
-            user_recommendation_preferences_provider=self.user_recommendation_preferences_provider,
-            topic_provider=self.topic_provider,
-        )
+    async def _get_topic_slates(self, recommendation_count: int) -> List[CorpusSlateModel]:
+        topics = await self.topic_provider.get_topics(self.DEFAULT_TOPICS)
+        return await self.topic_slate_provider.get_slates(topics, recommendation_count=recommendation_count)

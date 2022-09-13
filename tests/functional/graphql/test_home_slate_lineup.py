@@ -57,7 +57,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         self.snowplow_micro = SnowplowMicroClient(config=SnowplowConfig())
         self.snowplow_micro.reset_snowplow_events()
 
-    @patch.object(CorpusFeatureGroupClient, 'get_corpus_items')
+    @patch.object(CorpusFeatureGroupClient, 'fetch')
     @patch.object(UserRecommendationPreferencesProvider, 'fetch')
     def test_home_slate_lineup(self, mock_fetch_user_recommendation_preferences, mock_get_ranked_corpus_items):
         corpus_items_fixture = _corpus_items_fixture(n=100)
@@ -77,10 +77,16 @@ class TestHomeSlateLineup(TestDynamoDBBase):
                             id
                             slates(count: 4) {
                               headline
+                              moreLink {
+                                url
+                                text
+                              }
+                              recommendationReasonType
                               recommendations(count: 5) {
                                 corpusItem {
                                   id
                                 }
+                                reason
                               }
                             }
                           }
@@ -99,6 +105,9 @@ class TestHomeSlateLineup(TestDynamoDBBase):
 
             # Assert that the expected number of slates is being returned.
             assert len(slates) == 4
+
+            # First slate has a link to the collections page
+            assert slates[0]['moreLink']['url'] == 'https://getpocket.com/collections'
 
             recommendation_counts = [len(slate['recommendations']) for slate in slates]
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each

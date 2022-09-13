@@ -44,15 +44,11 @@ class TopicSlateProvider:
 
     async def get_slate(self, topic: TopicModel, recommendation_count: int) -> CorpusSlateModel:
         candidate_set_id = self._TOPIC_CANDIDATE_SETS[topic.corpus_topic_id]
-        items = await self.corpus_feature_group_client.get_corpus_items([candidate_set_id])
+        items = await self.corpus_feature_group_client.fetch(candidate_set_id)
         if len(items) > recommendation_count:
             items = random.sample(items, k=recommendation_count)
 
-        recommendations = [CorpusRecommendationModel(id=str(uuid.uuid4()), corpus_item=item) for item in items]
-
         return CorpusSlateModel(
-            id=str(uuid.uuid4()),
-            recommended_at=datetime.now(tz=timezone.utc),
             headline=topic.name,
-            recommendations=recommendations,
+            recommendations=[CorpusRecommendationModel(corpus_item=item) for item in items],
         )
