@@ -111,6 +111,10 @@ class TestHomeSlateLineup(TestDynamoDBBase):
 
             # First slate has a link to the collections page
             assert slates[0]['moreLink']['url'] == 'https://getpocket.com/collections'
+            # Last slates have topic explore links
+            assert slates[1]['moreLink']['url'] == 'https://getpocket.com/explore/technology'
+            assert slates[2]['moreLink']['url'] == 'https://getpocket.com/explore/entertainment'
+            assert slates[3]['moreLink']['url'] == 'https://getpocket.com/explore/self-improvement'
 
             recommendation_counts = [len(slate['recommendations']) for slate in slates]
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each
