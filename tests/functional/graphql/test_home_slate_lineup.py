@@ -81,6 +81,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
                                 url
                                 text
                               }
+                              recommendationReasonType
                               recommendations(count: 5) {
                                 corpusItem {
                                   id

@@ -20,6 +20,7 @@ class CorpusSlateModel(BaseModel):
         default_factory=lambda: datetime.now(tz=timezone.utc),
         description='UTC time when the slate was recommended')
     recommendation_reason_type: Optional[RecommendationReasonType] = Field(
+        default=None,
         description="Indicates the main type of reason why recommendations are included in this slate, or null if none "
                     "is available."
     )
