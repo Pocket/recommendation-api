@@ -8,6 +8,7 @@ from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureG
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
+from app.models.link import LinkModel
 from app.models.topic import TopicModel
 
 
@@ -51,4 +52,5 @@ class TopicSlateProvider:
         return CorpusSlateModel(
             headline=topic.name,
             recommendations=[CorpusRecommendationModel(corpus_item=item) for item in items],
+            more_link=LinkModel(text=f'Explore more {topic.name}', url=f'https://getpocket.com/explore/{topic.slug}')
         )
