@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import uuid
 from asyncio import gather
@@ -6,6 +7,7 @@ from typing import List
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
+from app.data_providers.slate_providers.personalized_for_you_slate_provider import PersonalizedForYouSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider import TopicSlateProvider
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
@@ -13,6 +15,7 @@ from app.data_providers.util import flatten
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel
 from app.models.corpus_slate_model import CorpusSlateModel
+from app.models.topic import TopicModel
 from app.models.user_ids import UserIds
 from app.rankers.algorithms import rank_by_preferred_topics
 
@@ -82,27 +85,56 @@ class HomeDispatch:
             corpus_client: CorpusFeatureGroupClient,
             user_recommendation_preferences_provider: UserRecommendationPreferencesProvider,
             topic_provider: TopicProvider,
+            personalized_for_you_slate_provider: PersonalizedForYouSlateProvider,
             topic_slate_provider: TopicSlateProvider,
             collection_slate_provider: CollectionSlateProvider,
     ):
         self.topic_provider = topic_provider
         self.corpus_client = corpus_client
         self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
+        self.personalized_for_you_slate_provider = personalized_for_you_slate_provider
         self.topic_slate_provider = topic_slate_provider
         self.collection_slate_provider = collection_slate_provider
 
     async def get_slate_lineup(
             self, user: UserIds, slate_count: int, recommendation_count: int
     ) -> CorpusSlateLineupModel:
+        """
+        Returns the Home slate lineup:
+        1. 'For You' slate if preferred topics are available, otherwise this slate is simply not shown.
+        2. Collection slate
+        3. Topic slates according to preferred topics if available, otherwise default topics.
+
+        :param user:
+        :param slate_count:
+        :param recommendation_count:
+        :return:
+        """
+        slates = []
+
+        preferred_topics = await self._get_preferred_topics(user)
+        if preferred_topics:
+            slates += [self.personalized_for_you_slate_provider.get_slate(preferred_topics, recommendation_count)]
+
+        slates += [
+            self.collection_slate_provider.get_slate(),
+            self._get_topic_slates(preferred_topics=preferred_topics, recommendation_count=recommendation_count),
+        ]
+
         return CorpusSlateLineupModel(
             slates=flatten(list(
-                await gather(
-                    self.collection_slate_provider.get_slate(),
-                    self._get_topic_slates(recommendation_count=recommendation_count),
-                )
+                await gather(*slates)
             )),
         )
 
-    async def _get_topic_slates(self, recommendation_count: int) -> List[CorpusSlateModel]:
-        topics = await self.topic_provider.get_topics(self.DEFAULT_TOPICS)
+    async def _get_preferred_topics(self, user: UserIds) -> List[TopicModel]:
+        user_recommendation_preferences = await self.user_recommendation_preferences_provider.fetch(str(user.user_id))
+        if user_recommendation_preferences and user_recommendation_preferences.preferred_topics:
+            return user_recommendation_preferences.preferred_topics
+        else:
+            return []
+
+    async def _get_topic_slates(self, preferred_topics: List[TopicModel], recommendation_count: int) -> List[CorpusSlateModel]:
+        preferred_topic_ids = [t.id for t in preferred_topics]
+        topics = await self.topic_provider.get_topics(preferred_topic_ids or self.DEFAULT_TOPICS)
         return await self.topic_slate_provider.get_slates(topics, recommendation_count=recommendation_count)
