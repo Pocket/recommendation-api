@@ -3,7 +3,6 @@ from typing import List, Dict
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
-from app.models.link import LinkModel
 from app.models.recommendation_reason_model import RecommendationReasonModel
 from app.models.recommendation_reason_type import RecommendationReasonType
 from app.models.topic import TopicModel

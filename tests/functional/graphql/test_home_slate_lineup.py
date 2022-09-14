@@ -3,7 +3,6 @@ import random
 import uuid
 from typing import Sequence
 
-import pytest
 from fastapi.testclient import TestClient
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
@@ -11,7 +10,6 @@ from app.data_providers.snowplow.config import SnowplowConfig
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.main import app
 from app.models.corpus_item_model import CorpusItemModel
-from app.models.topic import TopicModel
 from app.models.user_ids import UserIds
 from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
 from tests.assets.topics import *

@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import uuid
 from asyncio import gather
