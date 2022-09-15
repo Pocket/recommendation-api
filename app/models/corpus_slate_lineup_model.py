@@ -8,7 +8,7 @@ from app.models.corpus_slate_model import CorpusSlateModel
 
 
 class CorpusSlateLineupModel(BaseModel):
-    id: str = Field(default_factory=uuid4, description='UUID')
+    id: str = Field(default_factory=lambda: str(uuid4()), description='UUID')
     slates: List[CorpusSlateModel] = Field(description='Slates.')
     recommended_at: datetime = Field(
         default_factory=lambda: datetime.now(tz=timezone.utc),

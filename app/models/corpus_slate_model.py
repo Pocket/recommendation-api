@@ -13,7 +13,7 @@ class CorpusSlateModel(BaseModel):
     """
     Models a corpus slate
     """
-    id: str = Field(default_factory=uuid4, description='UUID')
+    id: str = Field(default_factory=lambda: str(uuid4()), description='UUID')
     recommendations: List[CorpusRecommendationModel] = Field(
         description='Recommendations for the current request context.')
     recommended_at: datetime = Field(

@@ -6,10 +6,11 @@ from strawberry.types import Info
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.dispatch import HomeDispatch
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
+from app.data_providers.snowplow.config import create_snowplow_tracker, SnowplowConfig
+from app.data_providers.snowplow.snowplow_corpus_slate_lineup_tracker import SnowplowCorpusSlateLineupTracker
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.slate_providers.topic_slate_provider import TopicSlateProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
-from app.graphql.corpus_slate import CorpusSlate
 from app.graphql.corpus_slate_lineup import CorpusSlateLineup
 from app.graphql.resolvers.corpus_slate_lineup_slates_resolver import DEFAULT_SLATE_COUNT
 from app.graphql.resolvers.corpus_slate_recommendations_resolver import DEFAULT_RECOMMENDATION_COUNT
@@ -50,6 +51,11 @@ async def resolve_home_slate_lineup(root, info: Info) -> Optional[CorpusSlateLin
         recommendation_count=recommendation_count,
     )
 
+    slate_lineup_tracker = SnowplowCorpusSlateLineupTracker(
+        tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
+    await slate_lineup_tracker.track(slate_lineup_model, user=user)
+
     slate_lineup = CorpusSlateLineup.from_pydantic(slate_lineup_model)
     slate_lineup.slates = slate_lineup_model.slates
+
     return slate_lineup
