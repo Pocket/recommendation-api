@@ -109,7 +109,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             # Assert that the expected number of slates is being returned.
             assert len(slates) == 4
             # First slate is personalized
-            assert slates[0]['headline'] == 'Recommended For You'
+            assert slates[0]['headline'] == 'For You'
             # Second slate has a link to the collections page
             assert slates[1]['moreLink']['url'] == 'https://getpocket.com/collections'
             # Last slates match preferred topics
