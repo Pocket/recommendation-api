@@ -9,7 +9,7 @@ from app.models.topic import TopicModel
 from app.rankers.algorithms import rank_by_preferred_topics
 
 
-class PersonalizedForYouSlateProvider:
+class ForYouSlateProvider:
 
     _EN_RECOMMENDED_CANDIDATE_SET_ID = '2066c835-a940-45ec-b1f7-267457d9e0a2'
 
