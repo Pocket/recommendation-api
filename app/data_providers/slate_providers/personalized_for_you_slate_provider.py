@@ -23,7 +23,7 @@ class PersonalizedForYouSlateProvider:
         preferred_topic_by_id: Dict[str, TopicModel] = {t.corpus_topic_id: t for t in preferred_topics}
 
         return CorpusSlateModel(
-            headline='Recommended For You',
+            headline='For You',
             subheadline='Curated for your interests',
             recommendation_reason_type=RecommendationReasonType.PREFERRED_TOPICS,
             recommendations=[
