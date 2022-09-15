@@ -31,5 +31,6 @@ class CorpusSlateModel(BaseModel):
         default=None,
         description='A smaller, secondary headline that can be displayed to provide additional context on the slate.')
     more_link: Optional[LinkModel] = Field(
+        default=None,
         description='Link to a page where the user can explore more recommendations similar to this slate, or null if '
                     'no link is provided.')

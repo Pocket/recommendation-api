@@ -1,11 +1,8 @@
 import random
-import uuid
 from asyncio import gather
-from datetime import datetime, timezone
 from typing import List
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
-from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.link import LinkModel
