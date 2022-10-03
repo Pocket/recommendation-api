@@ -6,7 +6,7 @@ from typing import List
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
-from app.data_providers.slate_providers.personalized_for_you_slate_provider import ForYouSlateProvider
+from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider import TopicSlateProvider
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
