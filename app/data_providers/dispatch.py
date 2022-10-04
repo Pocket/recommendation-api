@@ -7,6 +7,7 @@ from typing import List
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
+from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider import TopicSlateProvider
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
@@ -85,6 +86,7 @@ class HomeDispatch:
             preferences_provider: UserRecommendationPreferencesProvider,
             topic_provider: TopicProvider,
             for_you_slate_provider: ForYouSlateProvider,
+            recommended_reads_slate_provider: RecommendedReadsSlateProvider,
             topic_slate_provider: TopicSlateProvider,
             collection_slate_provider: CollectionSlateProvider,
     ):
@@ -92,6 +94,7 @@ class HomeDispatch:
         self.corpus_client = corpus_client
         self.preferences_provider = preferences_provider
         self.for_you_slate_provider = for_you_slate_provider
+        self.recommended_reads_slate_provider = recommended_reads_slate_provider
         self.topic_slate_provider = topic_slate_provider
         self.collection_slate_provider = collection_slate_provider
 
@@ -114,6 +117,8 @@ class HomeDispatch:
         preferred_topics = await self._get_preferred_topics(user)
         if preferred_topics:
             slates += [self.for_you_slate_provider.get_slate(preferred_topics, recommendation_count)]
+        else:
+            slates += [self.recommended_reads_slate_provider.get_slate()]
 
         slates += [
             self.collection_slate_provider.get_slate(),

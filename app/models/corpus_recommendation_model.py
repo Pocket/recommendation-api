@@ -18,4 +18,5 @@ class CorpusRecommendationModel(BaseModel):
     corpus_item: Optional[CorpusItemModel] = Field(description='Content meta data.')
 
     reason: Optional[RecommendationReasonModel] = Field(
+        default=None,
         description='Reason why this CorpusItem is recommended to the user, or null if no reason is available.')
