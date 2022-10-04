@@ -121,10 +121,27 @@ class HomeDispatch:
         ]
 
         return CorpusSlateLineupModel(
-            slates=flatten(list(
-                await gather(*slates)
-            )),
+            slates=self._dedupe_and_limit(
+                flatten(list(
+                    await gather(*slates)
+                )),
+                recommendation_count=recommendation_count,
+            ),
         )
+
+    def _dedupe_and_limit(
+        self, slates: List[CorpusSlateModel], recommendation_count: int
+    ) -> List[CorpusSlateModel]:
+        seen_corpus_ids = set()
+
+        for slate in slates:
+            # Remove recommendations that exist in previous slates, and limit count to recommendation_count.
+            slate.recommendations = \
+                [r for r in slate.recommendations if r.corpus_item.id not in seen_corpus_ids][:recommendation_count]
+            # Add all item ids from slate to seen_item_ids
+            seen_corpus_ids |= {r.corpus_item.id for r in slate.recommendations}
+
+        return slates
 
     async def _get_preferred_topics(self, user: UserIds) -> List[TopicModel]:
         preferences = await self.preferences_provider.fetch(str(user.user_id))
