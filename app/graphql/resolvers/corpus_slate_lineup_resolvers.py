@@ -6,7 +6,8 @@ from strawberry.types import Info
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.dispatch import HomeDispatch
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
-from app.data_providers.slate_providers.personalized_for_you_slate_provider import ForYouSlateProvider
+from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
+from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.slate_providers.topic_slate_provider import TopicSlateProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
@@ -44,6 +45,7 @@ async def resolve_home_slate_lineup(root, info: Info) -> Optional[CorpusSlateLin
         preferences_provider=user_recommendation_preferences_provider,
         topic_provider=topic_provider,
         for_you_slate_provider=ForYouSlateProvider(corpus_client),
+        recommended_reads_slate_provider=RecommendedReadsSlateProvider(corpus_client),
         topic_slate_provider=TopicSlateProvider(corpus_client),
         collection_slate_provider=CollectionSlateProvider(corpus_client),
     ).get_slate_lineup(
