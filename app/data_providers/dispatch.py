@@ -132,6 +132,14 @@ class HomeDispatch:
     def _dedupe_and_limit(
         self, slates: List[CorpusSlateModel], recommendation_count: int
     ) -> List[CorpusSlateModel]:
+        """
+        Deduplicate recommendations across slates, and limit the number of recommendations.
+        It is assumed each individual slate consists of unique items, and this function doesn't look for items occurring
+        multiple times in the same slate.
+        :param slates:
+        :param recommendation_count: The maximum number of recommendations for each slate.
+        :return: Slates with duplicates removed and recommendation_count limit applied.
+        """
         seen_corpus_ids = set()
 
         for slate in slates:
