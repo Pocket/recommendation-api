@@ -15,8 +15,8 @@ class CollectionSlateProvider:
         items = await self.corpus_feature_group_client.fetch(self._CANDIDATE_SET)
 
         return CorpusSlateModel(
-            headline='Our most-read Collections',
-            subheadline='Dive into our editors’ curated lists of stories around a unique subject',
+            headline='Popular Collections',
+            subheadline='Curated guides to the best reads on the web',
             recommendations=[CorpusRecommendationModel(corpus_item=item) for item in items],
-            more_link=LinkModel(text='View More Collections', url='https://getpocket.com/collections')
+            more_link=LinkModel(text='Explore More Collections', url='https://getpocket.com/collections')
         )
