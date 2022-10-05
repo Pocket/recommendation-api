@@ -44,13 +44,20 @@ class SlateProvider(ABC):
         """
         return None
 
-    async def get_recommendation_items(self, *args, **kwargs) -> List[CorpusItemModel]:
+    async def get_candidate_corpus_items(self) -> List[CorpusItemModel]:
+        """
+        :return: The CorpusItems from the candidate set, without any rankers or filters applied.
+        """
+        return await self.corpus_feature_group_client.fetch(self.candidate_set_id)
+
+    async def get_recommendations(self, *args, **kwargs) -> List[CorpusRecommendationModel]:
         """
         :param args: Arguments will different per slate provider.
         :param kwargs:
         :return: The list of corpus items that can be recommended is by default the same as the candidate set.
         """
-        return await self.corpus_feature_group_client.fetch(self.candidate_set_id)
+        items = await self.get_candidate_corpus_items()
+        return [CorpusRecommendationModel(corpus_item=item) for item in items]
 
     async def get_slate(self, *args, **kwargs) -> CorpusSlateModel:
         """
@@ -58,13 +65,11 @@ class SlateProvider(ABC):
         :param kwargs:
         :return: A Corpus Slate that can be recommended
         """
-        items = await self.get_recommendation_items(*args, **kwargs)
-
         return CorpusSlateModel(
             configuration_id=self.configuration_id,
             headline=self.headline,
             subheadline=self.subheadline,
-            recommendations=[CorpusRecommendationModel(corpus_item=item) for item in items],
+            recommendations=await self.get_recommendations(*args, **kwargs),
             more_link=self.more_link
         )
 
