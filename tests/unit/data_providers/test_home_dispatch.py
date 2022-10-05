@@ -7,6 +7,7 @@ from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureG
 from app.data_providers.dispatch import HomeDispatch
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
+from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider import TopicSlateProvider
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
@@ -44,6 +45,7 @@ class TestHomeDispatch:
             preferences_provider=self.preferences_provider,
             topic_provider=MagicMock(TopicProvider),
             for_you_slate_provider=MagicMock(ForYouSlateProvider),
+            recommended_reads_slate_provider=MagicMock(RecommendedReadsSlateProvider),
             topic_slate_provider=MagicMock(TopicSlateProvider),
             collection_slate_provider=MagicMock(CollectionSlateProvider),
         )
@@ -53,10 +55,12 @@ class TestHomeDispatch:
         Test that corpus recommendations are deduplicated across slates in the Home lineup.
         """
         self.preferences_provider.fetch.return_value = None
+        self.home_dispatch.recommended_reads_slate_provider.get_slate.return_value = _generate_slate(
+            ['Tech2', 'Ent4'], headline='Collections')
         self.home_dispatch.collection_slate_provider.get_slate.return_value = _generate_slate(
             ['Tech1', 'Ent2', 'Self1'], headline='Collections')
         self.home_dispatch.topic_slate_provider.get_slates.return_value = [
-            _generate_slate(['Tech1', 'Tech2', 'Tech3'], headline='Technology'),
+            _generate_slate(['Tech1', 'Tech2', 'Tech3', 'Tech4'], headline='Technology'),
             _generate_slate(['Ent1', 'Ent2', 'Ent3'], headline='Entertainment'),
             _generate_slate(['Self1'], headline='Self-improvement'),
         ]
@@ -64,8 +68,9 @@ class TestHomeDispatch:
         lineup = await self.home_dispatch.get_slate_lineup(user=self.user_ids, slate_count=10, recommendation_count=2)
 
         assert [
+            ['Tech2', 'Ent4'],
             ['Tech1', 'Ent2'],
-            ['Tech2', 'Tech3'],
+            ['Tech3', 'Tech4'],
             ['Ent1', 'Ent3'],  # 'Ent2' is removed because it occurs in the Collection slate.
             ['Self1'],  # 'Self1' is not removed because it's outside the top 2 of the Collection slate.
         ] == [[rec.corpus_item.id for rec in slate.recommendations] for slate in lineup.slates]
