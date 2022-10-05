@@ -129,9 +129,8 @@ class HomeDispatch:
             ),
         )
 
-    def _dedupe_and_limit(
-        self, slates: List[CorpusSlateModel], recommendation_count: int
-    ) -> List[CorpusSlateModel]:
+    @staticmethod
+    def _dedupe_and_limit(slates: List[CorpusSlateModel], recommendation_count: int) -> List[CorpusSlateModel]:
         """
         Deduplicate recommendations across slates, and limit the number of recommendations.
         It is assumed each individual slate consists of unique items, and this function doesn't look for items occurring
