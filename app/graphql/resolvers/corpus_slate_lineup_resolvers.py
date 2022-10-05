@@ -18,7 +18,7 @@ from app.graphql.resolvers.corpus_slate_recommendations_resolver import DEFAULT_
 from app.graphql.util import get_field_argument, get_user_ids
 
 
-async def resolve_home_slate_lineup(root, info: Info) -> Optional[CorpusSlateLineup]:
+async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
     aioboto3_session = aioboto3.Session()
     corpus_client = CorpusFeatureGroupClient(aioboto3_session=aioboto3_session)
     user = get_user_ids(info)

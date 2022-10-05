@@ -18,7 +18,7 @@ from app.models.user_recommendation_preferences import UserRecommendationPrefere
 
 
 async def update_user_recommendation_preferences(
-        root, info: Info, input: UpdateUserRecommendationPreferencesInput) -> Optional[UserRecommendationPreferences]:
+        root, info: Info, input: UpdateUserRecommendationPreferencesInput) -> UserRecommendationPreferences:
     aioboto3_session = aioboto3.Session()
 
     topic_provider = TopicProvider(aioboto3_session=aioboto3_session)
