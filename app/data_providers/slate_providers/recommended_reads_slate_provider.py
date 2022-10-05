@@ -1,4 +1,7 @@
-class RecommendedReadsSlateProvider:
+from app.data_providers.slate_providers.slate_provider import SlateProvider
+
+
+class RecommendedReadsSlateProvider(SlateProvider):
 
     @property
     def candidate_set_id(self) -> str:

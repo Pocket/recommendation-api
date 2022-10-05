@@ -1,15 +1,16 @@
 import random
 from asyncio import gather
-from typing import List
+from typing import List, Optional
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
+from app.data_providers.slate_providers.slate_provider import SlateProvider
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.link import LinkModel
 from app.models.topic import TopicModel
 
 
-class TopicSlateProvider:
+class TopicSlateProvider(SlateProvider):
 
     # Map Corpus topic (keys) to the Corpus candidate set id (values).
     # TODO: Instead of hardcoding these values, consider moving them to the Sagemaker Feature Store, or a database.
@@ -32,21 +33,26 @@ class TopicSlateProvider:
         'GAMING': '465cadb7-638d-41b7-8914-3d6c42f53b57',
     }
 
-    def __init__(self, corpus_feature_group_client: CorpusFeatureGroupClient):
-        self.corpus_feature_group_client = corpus_feature_group_client
+    def __init__(self, corpus_feature_group_client: CorpusFeatureGroupClient, topic: TopicModel):
+        super().__init__(corpus_feature_group_client)
+        self.topic = topic
 
-    async def get_slates(self, topics: List[TopicModel], recommendation_count: int) -> List[CorpusSlateModel]:
-        return list(await gather(*[
-            self.get_slate(topic, recommendation_count=recommendation_count) for topic in topics
-        ]))
+    @property
+    def candidate_set_id(self) -> str:
+        return self._TOPIC_CANDIDATE_SETS[self.topic.corpus_topic_id]
 
-    async def get_slate(self, topic: TopicModel, recommendation_count: int) -> CorpusSlateModel:
-        candidate_set_id = self._TOPIC_CANDIDATE_SETS[topic.corpus_topic_id]
-        items = await self.corpus_feature_group_client.fetch(candidate_set_id)
+    @property
+    def headline(self) -> str:
+        return self.topic.name
+
+    @property
+    def more_link(self) -> Optional[LinkModel]:
+        return LinkModel(text=f'Explore more {self.topic.name}', url=f'https://getpocket.com/explore/{self.topic.slug}')
+
+    async def get_recommendations(self, recommendation_count: int) -> List[CorpusRecommendationModel]:
+        """
+        :return: Corpus recommendations ranked based on preferred topics
+        """
+        items = await self.get_candidate_corpus_items()
         random.shuffle(items)
-
-        return CorpusSlateModel(
-            headline=topic.name,
-            recommendations=[CorpusRecommendationModel(corpus_item=item) for item in items],
-            more_link=LinkModel(text=f'Explore more {topic.name}', url=f'https://getpocket.com/explore/{topic.slug}')
-        )
+        return [CorpusRecommendationModel(corpus_item=item) for item in items]

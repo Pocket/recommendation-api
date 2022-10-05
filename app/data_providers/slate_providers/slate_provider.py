@@ -50,26 +50,26 @@ class SlateProvider(ABC):
         """
         return await self.corpus_feature_group_client.fetch(self.candidate_set_id)
 
-    async def get_recommendations(self, *args, **kwargs) -> List[CorpusRecommendationModel]:
+    async def get_recommendations(self, recommendation_count: int) -> List[CorpusRecommendationModel]:
         """
-        :param args: Arguments will different per slate provider.
-        :param kwargs:
+        :param recommendation_count: The desired number of recommendations. Fewer or more than this may be returned.
         :return: The list of corpus items that can be recommended is by default the same as the candidate set.
         """
         items = await self.get_candidate_corpus_items()
         return [CorpusRecommendationModel(corpus_item=item) for item in items]
 
-    async def get_slate(self, *args, **kwargs) -> CorpusSlateModel:
+    async def get_slate(self, recommendation_count: int) -> CorpusSlateModel:
         """
-        :param args: Arguments will different per slate provider.
-        :param kwargs:
+        :param recommendation_count: The desired number of recommendations. Fewer or more than this may be returned.
+        It's good to return ~2x more recommendations to account for any duplicates that are removed at a later stage.
+        Fewer may be returned if insufficient content is available.
         :return: A Corpus Slate that can be recommended
         """
         return CorpusSlateModel(
             configuration_id=self.configuration_id,
             headline=self.headline,
             subheadline=self.subheadline,
-            recommendations=await self.get_recommendations(*args, **kwargs),
+            recommendations=await self.get_recommendations(recommendation_count=recommendation_count),
             more_link=self.more_link
         )
 
