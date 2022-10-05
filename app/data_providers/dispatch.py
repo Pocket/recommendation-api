@@ -126,10 +126,32 @@ class HomeDispatch:
         ]
 
         return CorpusSlateLineupModel(
-            slates=flatten(list(
-                await gather(*slates)
-            )),
+            slates=self._dedupe_and_limit(
+                flatten(list(
+                    await gather(*slates)
+                )),
+                recommendation_count=recommendation_count,
+            ),
         )
+
+    @staticmethod
+    def _dedupe_and_limit(slates: List[CorpusSlateModel], recommendation_count: int) -> List[CorpusSlateModel]:
+        """
+        Deduplicate recommendations across slates, and limit the number of recommendations.
+        It is assumed each individual slate consists of unique items, and this function doesn't look for items occurring
+        multiple times in the same slate.
+        :param slates:
+        :param recommendation_count: The maximum number of recommendations for each slate.
+        :return: Slates with duplicates removed and recommendation_count limit applied.
+        """
+        seen_corpus_ids = set()
+
+        for slate in slates:
+            slate.remove_corpus_items(seen_corpus_ids).limit(recommendation_count)
+            # Add all CorpusItem ids from slate to seen_item_ids
+            seen_corpus_ids |= set(slate.corpus_item_ids())
+
+        return slates
 
     async def _get_preferred_topics(self, user: UserIds) -> List[TopicModel]:
         preferences = await self.preferences_provider.fetch(str(user.user_id))
