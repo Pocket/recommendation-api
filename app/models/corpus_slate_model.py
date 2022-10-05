@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timezone
 from typing import List, Optional, Set, Generator
 from uuid import uuid4
@@ -14,6 +15,9 @@ class CorpusSlateModel(BaseModel):
     Models a corpus slate
     """
     id: str = Field(default_factory=lambda: str(uuid4()), description='UUID')
+    configuration_id: str = Field(
+        description='Identifies the combination of a candidate set and rankers used to generate this slate. '
+                    'Can be used to aggregate engagement for Thompson sampling, for example.')
     recommendations: List[CorpusRecommendationModel] = Field(
         description='Recommendations for the current request context.')
     recommended_at: datetime = Field(
