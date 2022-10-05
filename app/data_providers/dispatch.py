@@ -143,11 +143,9 @@ class HomeDispatch:
         seen_corpus_ids = set()
 
         for slate in slates:
-            # Remove recommendations that exist in previous slates, and limit count to recommendation_count.
-            slate.recommendations = \
-                [r for r in slate.recommendations if r.corpus_item.id not in seen_corpus_ids][:recommendation_count]
-            # Add all item ids from slate to seen_item_ids
-            seen_corpus_ids |= {r.corpus_item.id for r in slate.recommendations}
+            slate.remove_corpus_items(seen_corpus_ids).limit(recommendation_count)
+            # Add all CorpusItem ids from slate to seen_item_ids
+            seen_corpus_ids |= set(slate.corpus_item_ids())
 
         return slates
 
