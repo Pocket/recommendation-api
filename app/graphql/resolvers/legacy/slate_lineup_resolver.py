@@ -15,7 +15,7 @@ async def resolve_get_slate_lineup(
         slate_count: Annotated[Optional[int], argument(
             description='Maximum number of slates to return in {SlateLineup.slates}, defaults to 8')] = 8,
         recommendation_count: Annotated[Optional[int], argument(
-            description='Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10')] = 10,
+            description='Maximum number of recommendations to return in {Slate.recommendations}, defaults to 15')] = 15,
 ) -> Optional[SlateLineup]:
     slate_lineup_model = await SlateLineupModel.get_slate_lineup_with_fallback(
         slate_lineup_id=slate_lineup_id,
