@@ -47,7 +47,7 @@ HOME_SLATE_LINEUP_QUERY = '''
     query {
       homeSlateLineup {
         id
-        slates(count: 4) {
+        slates {
           headline
           moreLink {
             url
@@ -141,13 +141,15 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             slates = data['data']['homeSlateLineup']['slates']
 
             # Assert that the expected number of slates is being returned.
-            assert len(slates) == 4
-            # First slate has a link to the collections page
-            assert slates[0]['moreLink']['url'] == 'https://getpocket.com/collections'
+            assert len(slates) == 5
+            # Fisrt slate has an unpersonalized recommendations
+            assert slates[0]['headline'] == 'Recommended Reads'
+            # Second slate has a link to the collections page
+            assert slates[1]['moreLink']['url'] == 'https://getpocket.com/collections'
             # Last slates have topic explore links
-            assert slates[1]['moreLink']['url'] == 'https://getpocket.com/explore/technology'
-            assert slates[2]['moreLink']['url'] == 'https://getpocket.com/explore/entertainment'
-            assert slates[3]['moreLink']['url'] == 'https://getpocket.com/explore/self-improvement'
+            assert slates[2]['moreLink']['url'] == 'https://getpocket.com/explore/technology'
+            assert slates[3]['moreLink']['url'] == 'https://getpocket.com/explore/entertainment'
+            assert slates[4]['moreLink']['url'] == 'https://getpocket.com/explore/self-improvement'
 
             recommendation_counts = [len(slate['recommendations']) for slate in slates]
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each
