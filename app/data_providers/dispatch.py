@@ -6,6 +6,8 @@ from typing import List
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
+from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
+from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider import TopicSlateProvider
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
@@ -13,6 +15,7 @@ from app.data_providers.util import flatten
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel
 from app.models.corpus_slate_model import CorpusSlateModel
+from app.models.topic import TopicModel
 from app.models.user_ids import UserIds
 from app.rankers.algorithms import rank_by_preferred_topics
 
@@ -80,29 +83,84 @@ class HomeDispatch:
     def __init__(
             self,
             corpus_client: CorpusFeatureGroupClient,
-            user_recommendation_preferences_provider: UserRecommendationPreferencesProvider,
+            preferences_provider: UserRecommendationPreferencesProvider,
             topic_provider: TopicProvider,
+            for_you_slate_provider: ForYouSlateProvider,
+            recommended_reads_slate_provider: RecommendedReadsSlateProvider,
             topic_slate_provider: TopicSlateProvider,
             collection_slate_provider: CollectionSlateProvider,
     ):
         self.topic_provider = topic_provider
         self.corpus_client = corpus_client
-        self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
+        self.preferences_provider = preferences_provider
+        self.for_you_slate_provider = for_you_slate_provider
+        self.recommended_reads_slate_provider = recommended_reads_slate_provider
         self.topic_slate_provider = topic_slate_provider
         self.collection_slate_provider = collection_slate_provider
 
     async def get_slate_lineup(
             self, user: UserIds, slate_count: int, recommendation_count: int
     ) -> CorpusSlateLineupModel:
+        """
+        Returns the Home slate lineup:
+        1. 'For You' slate if preferred topics are available, otherwise this slate is simply not shown.
+        2. Collection slate
+        3. Topic slates according to preferred topics if available, otherwise default topics.
+
+        :param user:
+        :param slate_count:
+        :param recommendation_count:
+        :return:
+        """
+        slates = []
+
+        preferred_topics = await self._get_preferred_topics(user)
+        if preferred_topics:
+            slates += [self.for_you_slate_provider.get_slate(preferred_topics, recommendation_count)]
+        else:
+            slates += [self.recommended_reads_slate_provider.get_slate()]
+
+        slates += [
+            self.collection_slate_provider.get_slate(),
+            self._get_topic_slates(preferred_topics=preferred_topics, recommendation_count=recommendation_count),
+        ]
+
         return CorpusSlateLineupModel(
-            slates=flatten(list(
-                await gather(
-                    self.collection_slate_provider.get_slate(),
-                    self._get_topic_slates(recommendation_count=recommendation_count),
-                )
-            )),
+            slates=self._dedupe_and_limit(
+                flatten(list(
+                    await gather(*slates)
+                )),
+                recommendation_count=recommendation_count,
+            ),
         )
 
-    async def _get_topic_slates(self, recommendation_count: int) -> List[CorpusSlateModel]:
-        topics = await self.topic_provider.get_topics(self.DEFAULT_TOPICS)
+    @staticmethod
+    def _dedupe_and_limit(slates: List[CorpusSlateModel], recommendation_count: int) -> List[CorpusSlateModel]:
+        """
+        Deduplicate recommendations across slates, and limit the number of recommendations.
+        It is assumed each individual slate consists of unique items, and this function doesn't look for items occurring
+        multiple times in the same slate.
+        :param slates:
+        :param recommendation_count: The maximum number of recommendations for each slate.
+        :return: Slates with duplicates removed and recommendation_count limit applied.
+        """
+        seen_corpus_ids = set()
+
+        for slate in slates:
+            slate.remove_corpus_items(seen_corpus_ids).limit(recommendation_count)
+            # Add all CorpusItem ids from slate to seen_item_ids
+            seen_corpus_ids |= set(slate.corpus_item_ids())
+
+        return slates
+
+    async def _get_preferred_topics(self, user: UserIds) -> List[TopicModel]:
+        preferences = await self.preferences_provider.fetch(str(user.user_id))
+        if preferences and preferences.preferred_topics:
+            return preferences.preferred_topics
+        else:
+            return []
+
+    async def _get_topic_slates(self, preferred_topics: List[TopicModel], recommendation_count: int) -> List[CorpusSlateModel]:
+        preferred_topic_ids = [t.id for t in preferred_topics]
+        topics = await self.topic_provider.get_topics(preferred_topic_ids or self.DEFAULT_TOPICS)
         return await self.topic_slate_provider.get_slates(topics, recommendation_count=recommendation_count)

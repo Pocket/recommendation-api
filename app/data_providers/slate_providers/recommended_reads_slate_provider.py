@@ -1,22 +1,20 @@
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
-from app.models.link import LinkModel
 
 
-class CollectionSlateProvider:
+class RecommendedReadsSlateProvider:
 
-    _CANDIDATE_SET = '92af3dae-25c9-46c3-bf05-18082aacc7e1'
+    _CANDIDATE_SET_ID = '5f0dae93-a5a8-439a-a2e2-5d418c04bc98'
 
     def __init__(self, corpus_feature_group_client: CorpusFeatureGroupClient):
         self.corpus_feature_group_client = corpus_feature_group_client
 
     async def get_slate(self) -> CorpusSlateModel:
-        items = await self.corpus_feature_group_client.fetch(self._CANDIDATE_SET)
+        items = await self.corpus_feature_group_client.fetch(self._CANDIDATE_SET_ID)
 
         return CorpusSlateModel(
-            headline='Popular Collections',
-            subheadline='Curated guides to the best reads on the web',
+            headline='Recommended Reads',
+            subheadline='Curated by Pocket',
             recommendations=[CorpusRecommendationModel(corpus_item=item) for item in items],
-            more_link=LinkModel(text='Explore More Collections', url='https://getpocket.com/collections')
         )
