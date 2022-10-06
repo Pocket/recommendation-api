@@ -77,7 +77,7 @@ class SlateProvider(ABC):
         :param ranked_items: The ranked Corpus items to be recommended.
         :return: a CorpusRecommendationModel for each given CorpusItemModel.
         """
-        return [CorpusRecommendationModel(corpus_item=item) for item in items]
+        return [CorpusRecommendationModel(corpus_item=item) for item in ranked_items]
 
     async def get_slate(self, *args, **kwargs) -> CorpusSlateModel:
         """
@@ -87,8 +87,8 @@ class SlateProvider(ABC):
         :return: A Corpus Slate that can be recommended
         """
         candidate_items = await self.get_candidate_corpus_items()
-        ranked_items = await self.rank_corpus_items(candidate_items)
-        recommendations = await self.get_recommendations(ranked_items)
+        ranked_items = await self.rank_corpus_items(candidate_items, *args, **kwargs)
+        recommendations = await self.get_recommendations(ranked_items, *args, **kwargs)
 
         return CorpusSlateModel(
             configuration_id=self.configuration_id,

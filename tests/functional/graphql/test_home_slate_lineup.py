@@ -121,7 +121,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
 
             all_snowplow_events = self.snowplow_micro.get_event_counts()
             # No Snowplow events are expected to be emitted at this point.
-            assert all_snowplow_events == {'total': 0, 'good': 0, 'bad': 0}, self.snowplow_micro.get_last_error()
+            assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}, self.snowplow_micro.get_last_error()
 
     @patch.object(CorpusFeatureGroupClient, 'fetch')
     @patch.object(UserRecommendationPreferencesProvider, 'fetch')

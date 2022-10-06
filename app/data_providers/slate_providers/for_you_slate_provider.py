@@ -32,13 +32,12 @@ class ForYouSlateProvider(SlateProvider):
             **kwargs
     ) -> List[CorpusItemModel]:
         """
+        :param items: Candidate corpus items
         :param preferred_topics: Topics explicitly preferred by the user.
         :param recommendation_count: Maximum recommendations to return.
-        :param items: Candidate corpus items
-        :return: Randomizes items.
+        :return: Ranks items based on topic preferences, with topic spreading.
         """
-        rank_by_preferred_topics(items, preferred_topics, recommendation_count)
-        return items
+        return rank_by_preferred_topics(items, preferred_topics, recommendation_count)
 
     async def get_recommendations(
             self,
