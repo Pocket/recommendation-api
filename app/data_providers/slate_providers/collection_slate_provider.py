@@ -20,4 +20,4 @@ class CollectionSlateProvider(SlateProvider):
 
     @property
     def more_link(self) -> Optional[LinkModel]:
-        return LinkModel(text='Explore More Collections', url='https://getpocket.com/collections')
+        return LinkModel(text='Explore more Collections', url='https://getpocket.com/collections')
