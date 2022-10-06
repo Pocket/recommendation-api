@@ -11,7 +11,7 @@ class CorpusRecommendationModel(BaseModel):
     id: str = Field(
         default_factory=lambda: str(uuid4()),
         description='Clients should include this id in the `corpus_recommendation` Snowplow entity for impression, '
-                    'content_open, and engagement events related to this recommendation. This id different '
+                    'content_open, and engagement events related to this recommendation. This id is different '
                     'across users, across requests, and across corpus items. The recommendation-api service associates '
                     'metadata with this id to join and aggregate recommendations in our data warehouse.')
 
