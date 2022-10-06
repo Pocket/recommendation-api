@@ -1,10 +1,9 @@
 import random
-from asyncio import gather
 from typing import List, Optional
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.slate_provider import SlateProvider
-from app.models.corpus_recommendation_model import CorpusRecommendationModel
+from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.link import LinkModel
 from app.models.topic import TopicModel
@@ -49,10 +48,10 @@ class TopicSlateProvider(SlateProvider):
     def more_link(self) -> Optional[LinkModel]:
         return LinkModel(text=f'Explore more {self.topic.name}', url=f'https://getpocket.com/explore/{self.topic.slug}')
 
-    async def get_recommendations(self, recommendation_count: int) -> List[CorpusRecommendationModel]:
+    async def rank_corpus_items(self, items: List[CorpusItemModel], *args, **kwargs) -> List[CorpusItemModel]:
         """
-        :return: Corpus recommendations ranked based on preferred topics
+        :param items: Candidate corpus items
+        :return: Randomizes items.
         """
-        items = await self.get_candidate_corpus_items()
         random.shuffle(items)
-        return [CorpusRecommendationModel(corpus_item=item) for item in items]
+        return items
