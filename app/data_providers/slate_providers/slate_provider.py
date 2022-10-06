@@ -22,8 +22,8 @@ class SlateProvider(ABC):
         """
         return NotImplemented
 
-    @abstractmethod
     @property
+    @abstractmethod
     def headline(self) -> str:
         """
         :return: Slate headline

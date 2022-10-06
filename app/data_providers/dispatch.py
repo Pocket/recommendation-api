@@ -127,7 +127,8 @@ class HomeDispatch:
             slates += [self.recommended_reads_slate_provider.get_slate()]
 
         slates += [self.collection_slate_provider.get_slate()]
-        slates += self._get_topic_slates(preferred_topics=preferred_topics)
+        x = await self._get_topic_slate_promises(preferred_topics=preferred_topics)
+        slates += x
 
         return CorpusSlateLineupModel(
             slates=self._dedupe_and_limit(
@@ -162,8 +163,8 @@ class HomeDispatch:
         else:
             return []
 
-    async def _get_topic_slates(
-            self, preferred_topics: List[TopicModel]) -> List[CorpusSlateModel]:
+    async def _get_topic_slate_promises(
+            self, preferred_topics: List[TopicModel]) -> List[Coroutine[Any, Any, CorpusSlateModel]]:
         preferred_topic_ids = [t.id for t in preferred_topics]
         topics = await self.topic_provider.get_topics(preferred_topic_ids or self.DEFAULT_TOPICS)
-        return [await self.topic_slate_providers[topic].get_slate() for topic in topics]
+        return [self.topic_slate_providers[topic].get_slate() for topic in topics]
