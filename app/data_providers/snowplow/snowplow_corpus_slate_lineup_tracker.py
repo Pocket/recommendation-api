@@ -37,7 +37,7 @@ class SnowplowCorpusSlateLineupTracker:
             ),
             event_subject=get_subject(user),
             context=[
-                get_corpus_slate_lineup_entity(self.snowplow_config.CORPUS_SLATE_SCHEMA, corpus_slate_lineup),
+                get_corpus_slate_lineup_entity(self.snowplow_config.CORPUS_SLATE_LINEUP_SCHEMA, corpus_slate_lineup),
                 get_user_entity(self.snowplow_config.USER_SCHEMA, user),
             ],
         )

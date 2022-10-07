@@ -1,3 +1,5 @@
+from typing import Dict
+
 from aio_snowplow_tracker import SelfDescribingJson, Subject
 
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel
@@ -26,29 +28,34 @@ def get_user_entity(schema: str, user_ids: UserIds) -> SelfDescribingJson:
     return SelfDescribingJson(schema=schema, data=user_entity)
 
 
+def get_corpus_slate_data(corpus_slate: CorpusSlateModel) -> Dict:
+    """
+    :param corpus_slate:
+    :return: Snowplow corpus_slate entity data
+    """
+    return {
+        'corpus_slate_id': corpus_slate.id,
+        'recommended_at': int(corpus_slate.recommended_at.timestamp()),
+        'corpus_slate_configuration_id': corpus_slate.configuration_id,
+        'recommendations': [
+            {
+                'corpus_recommendation_id': recommendation.id,
+                'corpus_item': {
+                    'corpus_item_id': recommendation.corpus_item.id,
+                }
+            }
+            for recommendation in corpus_slate.recommendations
+        ]
+    }
+
+
 def get_corpus_slate_entity(schema: str, corpus_slate: CorpusSlateModel) -> SelfDescribingJson:
     """
     :param schema: Versioned Snowplow schema URI
     :param corpus_slate:
     :return: Snowplow corpus_slate entity
     """
-    return SelfDescribingJson(
-        schema=schema,
-        data={
-            'corpus_slate_id': corpus_slate.id,
-            'recommended_at': int(corpus_slate.recommended_at.timestamp()),
-            'corpus_slate_configuration_id': corpus_slate.configuration_id,
-            'recommendations': [
-                {
-                    'corpus_recommendation_id': recommendation.id,
-                    'corpus_item': {
-                        'corpus_item_id': recommendation.corpus_item.id,
-                    }
-                }
-                for recommendation in corpus_slate.recommendations
-            ]
-        },
-    )
+    return SelfDescribingJson(schema=schema, data=get_corpus_slate_data(corpus_slate))
 
 
 def get_corpus_slate_lineup_entity(schema: str, corpus_slate_lineup: CorpusSlateLineupModel) -> SelfDescribingJson:
@@ -63,6 +70,6 @@ def get_corpus_slate_lineup_entity(schema: str, corpus_slate_lineup: CorpusSlate
             'corpus_slate_lineup_id': corpus_slate_lineup.id,
             'recommended_at': int(corpus_slate_lineup.recommended_at.timestamp()),
             'recommendation_surface_id': corpus_slate_lineup.recommendation_surface_id.value,
-            'slates': [get_corpus_slate_entity(corpus_slate) for corpus_slate in corpus_slate_lineup.slates]
+            'slates': [get_corpus_slate_data(corpus_slate) for corpus_slate in corpus_slate_lineup.slates]
         },
     )
