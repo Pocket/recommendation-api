@@ -14,7 +14,7 @@ from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.data_providers.util import flatten
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
-from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel
+from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel, RecommendationSurfaceId
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.topic import TopicModel
 from app.models.user_ids import UserIds
@@ -135,6 +135,7 @@ class HomeDispatch:
                 slates=list(await gather(*slates)),
                 recommendation_count=recommendation_count,
             ),
+            recommendation_surface_id=RecommendationSurfaceId.HOME,
         )
 
     @staticmethod

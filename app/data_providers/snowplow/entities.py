@@ -33,6 +33,6 @@ def get_corpus_slate_lineup_entity(corpus_slate_lineup: CorpusSlateLineupModel) 
     return {
         'corpus_slate_lineup_id': corpus_slate_lineup.id,
         'recommended_at': int(corpus_slate_lineup.recommended_at.timestamp()),
-        'recommendation_surface_id': 'HOME',  # TODO: Get this value as an argument.
+        'recommendation_surface_id': corpus_slate_lineup.recommendation_surface_id.value,
         'slates': [get_corpus_slate_entity(corpus_slate) for corpus_slate in corpus_slate_lineup.slates]
     }
