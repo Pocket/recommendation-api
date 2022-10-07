@@ -120,7 +120,6 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each
 
             all_snowplow_events = self.snowplow_micro.get_event_counts()
-            # No Snowplow events are expected to be emitted at this point.
             assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}, self.snowplow_micro.get_last_error()
 
     @patch.object(CorpusFeatureGroupClient, 'fetch')
