@@ -34,7 +34,7 @@ async def failing_snowplow_server(aiohttp_server) -> TestServer:
 
 @pytest.fixture
 async def snowplow_tracker(snowplow_server) -> Tracker:
-    emitter = Emitter((await snowplow_server).host, protocol='http', port=snowplow_server.port)
+    emitter = Emitter(snowplow_server.host, protocol='http', port=snowplow_server.port)
     return Tracker([emitter])
 
 
