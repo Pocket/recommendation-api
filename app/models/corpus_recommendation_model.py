@@ -15,7 +15,7 @@ class CorpusRecommendationModel(BaseModel):
                     'across users, across requests, and across corpus items. The recommendation-api service associates '
                     'metadata with this id to join and aggregate recommendations in our data warehouse.')
 
-    corpus_item: Optional[CorpusItemModel] = Field(description='Content meta data.')
+    corpus_item: CorpusItemModel = Field(description='Content meta data.')
 
     reason: Optional[RecommendationReasonModel] = Field(
         default=None,
