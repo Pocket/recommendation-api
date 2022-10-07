@@ -47,7 +47,7 @@ class SnowplowCorpusSlateTracker:
             data={
                 'corpus_slate_id': corpus_slate.id,
                 'recommended_at': int(corpus_slate.recommended_at.timestamp()),
-                'corpus_slate_configuration_id': '92af3dae-25c9-46c3-bf05-18082aacc7e1',  # TODO: Replace dummy value
+                'corpus_slate_configuration_id': corpus_slate.configuration_id,
                 'recommendations': [
                     {
                         'corpus_recommendation_id': recommendation.id,
