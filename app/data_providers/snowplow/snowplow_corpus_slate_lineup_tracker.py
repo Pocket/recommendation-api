@@ -2,6 +2,7 @@ from aws_xray_sdk.core import xray_recorder
 from aio_snowplow_tracker import Tracker, Subject, SelfDescribingJson
 
 from app.data_providers.snowplow.config import SnowplowConfig
+from app.data_providers.snowplow.entities import get_corpus_slate_entity, get_corpus_slate_lineup_entity
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.user_ids import UserIds
@@ -45,28 +46,7 @@ class SnowplowCorpusSlateLineupTracker:
     def _get_corpus_slate_lineup_entity(self, corpus_slate_lineup: CorpusSlateLineupModel) -> SelfDescribingJson:
         return SelfDescribingJson(
             schema=self.snowplow_config.CORPUS_SLATE_LINEUP_SCHEMA,
-            data={
-                'corpus_slate_lineup_id': corpus_slate_lineup.id,
-                'recommended_at': int(corpus_slate_lineup.recommended_at.timestamp()),
-                'recommendation_surface_id': 'HOME',  # TODO: Get this value as an argument.
-                'slates': [
-                    # TODO: Reuse logic from _get_corpus_slate_entity
-                    {
-                        'corpus_slate_id': corpus_slate.id,
-                        'recommended_at': int(corpus_slate.recommended_at.timestamp()),
-                        'corpus_slate_configuration_id': corpus_slate.configuration_id,
-                        'recommendations': [
-                            {
-                                'corpus_recommendation_id': recommendation.id,
-                                'corpus_item': {
-                                    'corpus_item_id': recommendation.corpus_item.id,
-                                }
-                            }
-                            for recommendation in corpus_slate.recommendations
-                        ]
-                    } for corpus_slate in corpus_slate_lineup.slates
-                ]
-            }
+            data=get_corpus_slate_lineup_entity(corpus_slate_lineup),
         )
 
     def _get_user_entity(self, user: UserIds) -> SelfDescribingJson:

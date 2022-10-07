@@ -2,6 +2,7 @@ from aws_xray_sdk.core import xray_recorder
 from aio_snowplow_tracker import Tracker, Subject, SelfDescribingJson
 
 from app.data_providers.snowplow.config import SnowplowConfig
+from app.data_providers.snowplow.entities import get_corpus_slate_entity
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.user_ids import UserIds
 
@@ -44,20 +45,7 @@ class SnowplowCorpusSlateTracker:
     def _get_corpus_slate_entity(self, corpus_slate: CorpusSlateModel) -> SelfDescribingJson:
         return SelfDescribingJson(
             schema=self.snowplow_config.CORPUS_SLATE_SCHEMA,
-            data={
-                'corpus_slate_id': corpus_slate.id,
-                'recommended_at': int(corpus_slate.recommended_at.timestamp()),
-                'corpus_slate_configuration_id': corpus_slate.configuration_id,
-                'recommendations': [
-                    {
-                        'corpus_recommendation_id': recommendation.id,
-                        'corpus_item': {
-                            'corpus_item_id': recommendation.corpus_item.id,
-                        }
-                    }
-                    for recommendation in corpus_slate.recommendations
-                ]
-            }
+            data=get_corpus_slate_entity(corpus_slate)
         )
 
     def _get_user_entity(self, user: UserIds) -> SelfDescribingJson:
