@@ -26,7 +26,10 @@ class SnowplowCorpusSlateLineupTracker:
         :param user: The user that the slate was recommended to.
         """
         await self.tracker.track_self_describing_event(
-            event_json=self._get_object_update_event(object='corpus_slate', trigger='corpus_slate_recommendation'),
+            event_json=self._get_object_update_event(
+                object='corpus_slate_lineup',
+                trigger='corpus_slate_lineup_recommendation'
+            ),
             event_subject=self._get_subject(user),
             context=[
                 self._get_corpus_slate_lineup_entity(corpus_slate_lineup),
