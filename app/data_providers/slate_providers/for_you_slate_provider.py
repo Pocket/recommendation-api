@@ -21,7 +21,7 @@ class ForYouSlateProvider(SlateProvider):
 
     @property
     def subheadline(self) -> str:
-        return 'Curated for your interests'
+        return 'Recommended for your interests'
 
     async def rank_corpus_items(
             self,
