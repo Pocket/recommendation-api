@@ -24,7 +24,7 @@ technology_topic = TopicModel(
     corpus_topic_id='TECHNOLOGY',
     name='Technology',
     display_name='Technology',
-    slug='tech',
+    slug='technology',
     query='query',
     curator_label='technology',
     is_displayed=True,
@@ -63,7 +63,7 @@ entertainment_topic = TopicModel(
     corpus_topic_id='ENTERTAINMENT',
     name='Entertainment',
     display_name='Entertainment',
-    slug='Entertainment',
+    slug='entertainment',
     query='Entertainment',
     curator_label='Entertainment',
     is_displayed=False,
@@ -84,6 +84,19 @@ travel_topic = TopicModel(
     page_type=PageType.topic_page
 )
 
+self_improvement_topic = TopicModel(
+    id='45f8e740-42e0-4f54-8363-21310a084f1f',
+    corpus_topic_id='SELF_IMPROVEMENT',
+    curator_label='Self Improvement',
+    name='Self Improvement',
+    display_name='Self Improvement',
+    is_displayed=True,
+    is_promoted=False,
+    page_type=PageType.topic_page,
+    query='self-improvement learning habits advice relationships spirituality',
+    slug='self-improvement'
+)
+
 
 all_topic_fixtures = [
     business_topic,
@@ -92,6 +105,7 @@ all_topic_fixtures = [
     health_topic,
     travel_topic,
     entertainment_topic,
+    self_improvement_topic,
 ]
 
 

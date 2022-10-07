@@ -10,7 +10,6 @@ from app.data_providers.snowplow.config import SnowplowConfig
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.main import app
 from app.models.corpus_item_model import CorpusItemModel
-from app.models.topic import TopicModel
 from app.models.user_ids import UserIds
 from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
 from tests.assets.topics import *
@@ -44,6 +43,32 @@ def _get_topics_fixture(topics_ids: Sequence[str]) -> List[TopicModel]:
     return [topics_by_id[id] for id in topics_ids]
 
 
+HOME_SLATE_LINEUP_QUERY = '''
+    query {
+      homeSlateLineup {
+        id
+        slates {
+          headline
+          moreLink {
+            url
+            text
+          }
+          recommendationReasonType
+          recommendations(count: 5) {
+            corpusItem {
+              id
+            }
+            reason {
+              name
+              type
+            }
+          }
+        }
+      }
+    }
+'''
+
+
 class TestHomeSlateLineup(TestDynamoDBBase):
     async def asyncSetUp(self):
         await super().asyncSetUp()
@@ -51,15 +76,23 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             user_id=1,
             hashed_user_id='1-hashed',
         )
+        self.headers = {
+            'userId': str(self.user_ids.user_id),
+            'encodedId': self.user_ids.hashed_user_id,
+        }
 
         populate_topics(self.metadata_table)
 
         self.snowplow_micro = SnowplowMicroClient(config=SnowplowConfig())
         self.snowplow_micro.reset_snowplow_events()
 
-    @patch.object(CorpusFeatureGroupClient, 'get_corpus_items')
+    @patch.object(CorpusFeatureGroupClient, 'fetch')
     @patch.object(UserRecommendationPreferencesProvider, 'fetch')
-    def test_home_slate_lineup(self, mock_fetch_user_recommendation_preferences, mock_get_ranked_corpus_items):
+    def test_personalized_home_slate_lineup(
+            self,
+            mock_fetch_user_recommendation_preferences,
+            mock_get_ranked_corpus_items
+    ):
         corpus_items_fixture = _corpus_items_fixture(n=100)
         mock_get_ranked_corpus_items.return_value = corpus_items_fixture
 
@@ -68,37 +101,55 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         mock_fetch_user_recommendation_preferences.return_value = preferences_fixture
 
         with TestClient(app) as client:
-            data = client.post(
-                '/',
-                json={
-                    'query': '''
-                        query {
-                          homeSlateLineup {
-                            id
-                            slates(count: 4) {
-                              headline
-                              recommendations(count: 5) {
-                                corpusItem {
-                                  id
-                                }
-                              }
-                            }
-                          }
-                        }
-                    ''',
-                },
-                headers={
-                    'userId': str(self.user_ids.user_id),
-                    'encodedId': self.user_ids.hashed_user_id,
-                }
-            ).json()
+            data = client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers=self.headers).json()
 
             assert not data.get('errors')
-            slate_lineup = data['data']['homeSlateLineup']
-            slates = slate_lineup['slates']
+            slates = data['data']['homeSlateLineup']['slates']
 
             # Assert that the expected number of slates is being returned.
             assert len(slates) == 4
+            # First slate is personalized
+            assert slates[0]['headline'] == 'For You'
+            # Second slate has a link to the collections page
+            assert slates[1]['moreLink']['url'] == 'https://getpocket.com/collections'
+            # Last slates match preferred topics
+            assert slates[2]['moreLink']['url'] == f'https://getpocket.com/explore/{preferred_topics[0].slug}'
+            assert slates[3]['moreLink']['url'] == f'https://getpocket.com/explore/{preferred_topics[1].slug}'
+
+            recommendation_counts = [len(slate['recommendations']) for slate in slates]
+            assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each
+
+            all_snowplow_events = self.snowplow_micro.get_event_counts()
+            # No Snowplow events are expected to be emitted at this point.
+            assert all_snowplow_events == {'total': 0, 'good': 0, 'bad': 0}, self.snowplow_micro.get_last_error()
+
+    @patch.object(CorpusFeatureGroupClient, 'fetch')
+    @patch.object(UserRecommendationPreferencesProvider, 'fetch')
+    def test_unpersonalized_home_slate_lineup(
+            self,
+            mock_fetch_user_recommendation_preferences,
+            mock_get_ranked_corpus_items
+    ):
+        corpus_items_fixture = _corpus_items_fixture(n=100)
+        mock_get_ranked_corpus_items.return_value = corpus_items_fixture
+        mock_fetch_user_recommendation_preferences.return_value = None  # User has does not have a preferences record
+
+        with TestClient(app) as client:
+            data = client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers=self.headers).json()
+
+            assert not data.get('errors')
+            slates = data['data']['homeSlateLineup']['slates']
+
+            # Assert that the expected number of slates is being returned.
+            assert len(slates) == 5
+            # Fisrt slate has an unpersonalized recommendations
+            assert slates[0]['headline'] == 'Recommended Reads'
+            # Second slate has a link to the collections page
+            assert slates[1]['moreLink']['url'] == 'https://getpocket.com/collections'
+            # Last slates have topic explore links
+            assert slates[2]['moreLink']['url'] == 'https://getpocket.com/explore/technology'
+            assert slates[3]['moreLink']['url'] == 'https://getpocket.com/explore/entertainment'
+            assert slates[4]['moreLink']['url'] == 'https://getpocket.com/explore/self-improvement'
 
             recommendation_counts = [len(slate['recommendations']) for slate in slates]
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each

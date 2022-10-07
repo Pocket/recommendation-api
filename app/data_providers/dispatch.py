@@ -1,20 +1,21 @@
-import random
-from asyncio import gather
-from datetime import datetime, timezone
 import logging
 import uuid
+from asyncio import gather
+from datetime import datetime, timezone
+from typing import List
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
-from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
-from app.data_providers.snowplow.snowplow_corpus_slate_tracker import SnowplowCorpusSlateTracker
-from app.data_providers.metrics_client import MetricsFetchable
-from app.data_providers.slate_provider import SlateProvider
-from app.data_providers.topic_slate_provider import TopicSlateProvider
+from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
+from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
+from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
+from app.data_providers.slate_providers.topic_slate_provider import TopicSlateProvider
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
+from app.data_providers.util import flatten
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel
 from app.models.corpus_slate_model import CorpusSlateModel
+from app.models.topic import TopicModel
 from app.models.user_ids import UserIds
 from app.rankers.algorithms import rank_by_preferred_topics
 
@@ -73,95 +74,93 @@ class SetupMomentDispatch:
 
 class HomeDispatch:
 
+    DEFAULT_TOPICS = [
+        '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
+        'c6242e35-4ef7-494f-ae9f-51f95b836424',  # Entertainment
+        '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
+    ]
+
     def __init__(
             self,
             corpus_client: CorpusFeatureGroupClient,
-            user_recommendation_preferences_provider: UserRecommendationPreferencesProvider,
+            preferences_provider: UserRecommendationPreferencesProvider,
             topic_provider: TopicProvider,
+            for_you_slate_provider: ForYouSlateProvider,
+            recommended_reads_slate_provider: RecommendedReadsSlateProvider,
             topic_slate_provider: TopicSlateProvider,
+            collection_slate_provider: CollectionSlateProvider,
     ):
         self.topic_provider = topic_provider
         self.corpus_client = corpus_client
-        self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
+        self.preferences_provider = preferences_provider
+        self.for_you_slate_provider = for_you_slate_provider
+        self.recommended_reads_slate_provider = recommended_reads_slate_provider
         self.topic_slate_provider = topic_slate_provider
-
-        self.setup_moment_dispatch = self._create_setup_moment_dispatch()
+        self.collection_slate_provider = collection_slate_provider
 
     async def get_slate_lineup(
             self, user: UserIds, slate_count: int, recommendation_count: int
     ) -> CorpusSlateLineupModel:
-        setup_moment_slate_coroutine = self.setup_moment_dispatch.get_ranked_corpus_slate(
-            user=user,
-            recommendation_count=recommendation_count,
-        )
-
-        topics = await self.topic_provider.get_all()
-        remaining_slate_count = slate_count - 1  # first slate is setup moment
-        if len(topics) > remaining_slate_count:
-            topics = random.sample(topics, k=remaining_slate_count)
-
-        topic_slates_coroutine = self.topic_slate_provider.get_slates(topics, recommendation_count=recommendation_count)
-
-        setup_moment_slate, topic_slates = await gather(setup_moment_slate_coroutine, topic_slates_coroutine)
-        slates = [setup_moment_slate] + topic_slates
-
-        corpus_slate_lineup = CorpusSlateLineupModel(
-            id=str(uuid.uuid4()),
-            slates=slates,
-            recommended_at = datetime.now(tz=timezone.utc),
-        )
-
-        return corpus_slate_lineup
-
-    def _create_setup_moment_dispatch(self) -> SetupMomentDispatch:
-        return SetupMomentDispatch(
-            corpus_client=self.corpus_client,
-            user_recommendation_preferences_provider=self.user_recommendation_preferences_provider,
-            topic_provider=self.topic_provider,
-        )
-
-
-class RankingDispatch:
-    """
-    This class is responsible for accepting:
-
-     a dependency to get items to rank (api_client),
-     a strategy for ranking them (slate_provider),
-     and the data to execute ranking (metrics_client),
-
-     and then using those three things to shape the list of items to the order and size we serve to a client.
-
-     If there are NO rankers, it sends the original list of items, with no reshaping, to the client.
-    """
-    def __init__(
-            self,
-            corpus_client: CorpusFetchable,
-            slate_provider: SlateProvider,
-            metrics_client: MetricsFetchable
-    ):
-        self.corpus_client = corpus_client
-        self.slate_provider = slate_provider
-        self.metrics_client = metrics_client
-
-    async def get_ranked_corpus_slate(self, slate_id) -> CorpusSlateModel:
         """
-        From a slate identifier find the appropriate experiment. Then fetch the candidate set and sort the corpus items.
-        :param slate_id: defined in `slate_configs.json`
-        :return: CorpusSlateModel
+        Returns the Home slate lineup:
+        1. 'For You' slate if preferred topics are available, otherwise this slate is simply not shown.
+        2. Collection slate
+        3. Topic slates according to preferred topics if available, otherwise default topics.
+
+        :param user:
+        :param slate_count:
+        :param recommendation_count:
+        :return:
         """
-        corpus_slate_schema = self.slate_provider.get_slate(slate_id)
-        experiment = self.slate_provider.get_random_experiment(slate_id)
+        slates = []
 
-        # Fetch Corporeal Candidates
-        items = await self.corpus_client.get_corpus_items(experiment.corpus_ids())
-        items = await self.metrics_client.rank_items(items, experiment.rankers)
+        preferred_topics = await self._get_preferred_topics(user)
+        if preferred_topics:
+            slates += [self.for_you_slate_provider.get_slate(preferred_topics, recommendation_count)]
+        else:
+            slates += [self.recommended_reads_slate_provider.get_slate()]
 
-        recommendations = [CorpusRecommendationModel(id=uuid.uuid4().hex, corpus_item=item) for item in items]
+        slates += [
+            self.collection_slate_provider.get_slate(),
+            self._get_topic_slates(preferred_topics=preferred_topics, recommendation_count=recommendation_count),
+        ]
 
-        return CorpusSlateModel(
-            id=slate_id,
-            recommended_at=datetime.now(tz=timezone.utc),
-            headline=corpus_slate_schema.displayName,
-            subheadline=corpus_slate_schema.description,
-            recommendations=recommendations,
+        return CorpusSlateLineupModel(
+            slates=self._dedupe_and_limit(
+                flatten(list(
+                    await gather(*slates)
+                )),
+                recommendation_count=recommendation_count,
+            ),
         )
+
+    @staticmethod
+    def _dedupe_and_limit(slates: List[CorpusSlateModel], recommendation_count: int) -> List[CorpusSlateModel]:
+        """
+        Deduplicate recommendations across slates, and limit the number of recommendations.
+        It is assumed each individual slate consists of unique items, and this function doesn't look for items occurring
+        multiple times in the same slate.
+        :param slates:
+        :param recommendation_count: The maximum number of recommendations for each slate.
+        :return: Slates with duplicates removed and recommendation_count limit applied.
+        """
+        seen_corpus_ids = set()
+
+        for slate in slates:
+            slate.remove_corpus_items(seen_corpus_ids).limit(recommendation_count)
+            # Add all CorpusItem ids from slate to seen_item_ids
+            seen_corpus_ids |= set(slate.corpus_item_ids())
+
+        return slates
+
+    async def _get_preferred_topics(self, user: UserIds) -> List[TopicModel]:
+        preferences = await self.preferences_provider.fetch(str(user.user_id))
+        if preferences and preferences.preferred_topics:
+            return preferences.preferred_topics
+        else:
+            return []
+
+    async def _get_topic_slates(self, preferred_topics: List[TopicModel], recommendation_count: int) -> List[CorpusSlateModel]:
+        preferred_topic_ids = [t.id for t in preferred_topics]
+        topics = await self.topic_provider.get_topics(preferred_topic_ids or self.DEFAULT_TOPICS)
+        return await self.topic_slate_provider.get_slates(topics, recommendation_count=recommendation_count)

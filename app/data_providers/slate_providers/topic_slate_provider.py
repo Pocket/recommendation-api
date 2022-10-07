@@ -1,13 +1,11 @@
 import random
-import uuid
 from asyncio import gather
-from datetime import datetime, timezone
 from typing import List
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
-from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
+from app.models.link import LinkModel
 from app.models.topic import TopicModel
 
 
@@ -44,15 +42,11 @@ class TopicSlateProvider:
 
     async def get_slate(self, topic: TopicModel, recommendation_count: int) -> CorpusSlateModel:
         candidate_set_id = self._TOPIC_CANDIDATE_SETS[topic.corpus_topic_id]
-        items = await self.corpus_feature_group_client.get_corpus_items([candidate_set_id])
-        if len(items) > recommendation_count:
-            items = random.sample(items, k=recommendation_count)
-
-        recommendations = [CorpusRecommendationModel(id=str(uuid.uuid4()), corpus_item=item) for item in items]
+        items = await self.corpus_feature_group_client.fetch(candidate_set_id)
+        random.shuffle(items)
 
         return CorpusSlateModel(
-            id=str(uuid.uuid4()),
-            recommended_at=datetime.now(tz=timezone.utc),
             headline=topic.name,
-            recommendations=recommendations,
+            recommendations=[CorpusRecommendationModel(corpus_item=item) for item in items],
+            more_link=LinkModel(text=f'Explore more {topic.name}', url=f'https://getpocket.com/explore/{topic.slug}')
         )
