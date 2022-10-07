@@ -127,8 +127,7 @@ class HomeDispatch:
             slates += [self.recommended_reads_slate_provider.get_slate()]
 
         slates += [self.collection_slate_provider.get_slate()]
-        x = await self._get_topic_slate_promises(preferred_topics=preferred_topics)
-        slates += x
+        slates += await self._get_topic_slate_promises(preferred_topics=preferred_topics)
 
         return CorpusSlateLineupModel(
             slates=self._dedupe_and_limit(
