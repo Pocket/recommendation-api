@@ -84,6 +84,31 @@ async def load_slate_configs():
     # Check for GUID re-use
     validate_unique_guids(slate_lineup_configs, slate_configs)
 
+    # Validate slate_lineup and slate configs on prod, not locally or in dev.
+    if ENV == ENV_PROD:
+        # wow i do not love this nested loop soup, BUT it does give us nice full context for the error message
+        for slate_config in slate_configs:
+            for experiment in slate_config.experiments:
+                for cs in experiment.candidate_sets:
+                    logging.info(f"Validating candidate set {cs}")
+                    csm = candidate_set_factory(cs)
+                    if not await csm.verify_candidate_set(cs):
+                        # Send event to Sentry, but don't raise it, because missing candidate sets should not
+                        # block successfully starting the application.
+                        message = f'candidate set {slate_config.id}|{experiment.description}|{cs} was not found.'
+                        logging.error(message)
+                        sentry_sdk.capture_exception(MissingCandidateSetException(message))
+
+        for slate_lineup_config in slate_lineup_configs:
+            for experiment in slate_lineup_config.experiments:
+                for slate in experiment.slates:
+                    logging.info(f"Validating slate id {slate}")
+                    if not SlateLineupExperimentModel.slate_id_exists(slate):
+                        set_health_status(HealthStatus.UNHEALTHY)
+                        raise MissingSlateException(
+                            f'slate {slate_lineup_config.id}|{experiment.description}|{slate} was not found'
+                            f'in json/slate_configs.json - application start failed')
+
     set_health_status(HealthStatus.HEALTHY)
 
 
