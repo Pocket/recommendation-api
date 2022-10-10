@@ -1,6 +1,7 @@
 from enum import Enum
 
 import aioboto3
+from aiocache import cached
 from aws_xray_sdk.core import xray_recorder
 from boto3.dynamodb.conditions import Key
 from typing import List, Optional, Set, Sequence
@@ -15,6 +16,7 @@ class TopicProvider:
         self.aioboto3_session = aioboto3_session
 
     @xray_recorder.capture_async('models_topic_get_all')
+    @cached(ttl=60, key='TopicProvider.get_all')
     async def get_all(self) -> List[TopicModel]:
         """
         Retrieves all topics from dynamo db

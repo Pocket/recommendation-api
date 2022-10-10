@@ -6,6 +6,7 @@ import json
 
 import aioboto3
 from aws_xray_sdk.core import xray_recorder
+from aiocache import cached
 
 from app import config
 from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
@@ -46,6 +47,7 @@ class CorpusFeatureGroupClient(CorpusFetchable):
         return CorpusItemModel.parse_obj({k.lower(): v for k, v in obj.items()})
 
     @xray_recorder.capture_async('CorpusFeatureGroupClient._query_corpus_items')
+    @cached(ttl=60, key_builder=lambda f, self, *args, **kwargs: args[0])
     async def _query_corpus_items(self, corpus_candidate_set_id: str) -> List[Dict[str, str]]:
         """
         Queries impressed items to be filtered from the Feature Group.
