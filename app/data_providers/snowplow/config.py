@@ -18,9 +18,10 @@ class SnowplowConfig:
 
     PROTOCOL: HttpProtocol = 'http' if ENV == ENV_LOCAL else 'https'
 
-    CORPUS_SLATE_SCHEMA = 'iglu:com.pocket/corpus_slate/jsonschema/2-0-1'
+    CORPUS_SLATE_SCHEMA = 'iglu:com.pocket/corpus_slate/jsonschema/3-0-0'
+    CORPUS_SLATE_LINEUP_SCHEMA = 'iglu:com.pocket/corpus_slate_lineup/jsonschema/1-0-11'
     USER_SCHEMA = 'iglu:com.pocket/user/jsonschema/1-0-0'
-    OBJECT_UPDATE_SCHEMA = 'iglu:com.pocket/object_update/jsonschema/1-0-7'
+    OBJECT_UPDATE_SCHEMA = 'iglu:com.pocket/object_update/jsonschema/1-0-8'
 
 
 def create_snowplow_tracker() -> Tracker:
