@@ -1,5 +1,5 @@
 from aio_snowplow_tracker import Tracker, Emitter
-from aio_snowplow_tracker.typing import HttpProtocol
+from aio_snowplow_tracker.typing import HttpProtocol, Method
 
 from app.config import ENV, ENV_PROD, ENV_DEV, ENV_LOCAL
 
@@ -17,6 +17,8 @@ class SnowplowConfig:
     )
 
     PROTOCOL: HttpProtocol = 'http' if ENV == ENV_LOCAL else 'https'
+    METHOD: Method = 'post'
+    BUFFER_SIZE: int = 1  # Number of events to buffer before flushing to Snowplow. 1 = No buffer.
 
     CORPUS_SLATE_SCHEMA = 'iglu:com.pocket/corpus_slate/jsonschema/3-0-0'
     CORPUS_SLATE_LINEUP_SCHEMA = 'iglu:com.pocket/corpus_slate_lineup/jsonschema/1-0-11'
@@ -32,5 +34,7 @@ def create_snowplow_tracker() -> Tracker:
     emitter = Emitter(
         SnowplowConfig.ENDPOINT_URL,
         protocol=SnowplowConfig.PROTOCOL,
+        method=SnowplowConfig.METHOD,
+        buffer_size=SnowplowConfig.BUFFER_SIZE,
     )
     return Tracker(emitter, app_id=SnowplowConfig.APP_ID)
