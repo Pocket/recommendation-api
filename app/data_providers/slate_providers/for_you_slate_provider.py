@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from app.data_providers.slate_providers.slate_provider import SlateProvider
 from app.models.corpus_item_model import CorpusItemModel
@@ -22,6 +22,13 @@ class ForYouSlateProvider(SlateProvider):
     @property
     def subheadline(self) -> str:
         return 'Recommended for your interests'
+
+    @property
+    def recommendation_reason_type(self) -> Optional[RecommendationReasonType]:
+        """
+        :return: Recommendations in this slate are optimized to match the user's preferred topics.
+        """
+        return RecommendationReasonType.PREFERRED_TOPICS
 
     async def rank_corpus_items(
             self,

@@ -3,6 +3,7 @@ from typing import List, Optional
 from uuid import uuid5, UUID
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
+from app.graphql.recommendation_reason_type import RecommendationReasonType
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
@@ -58,6 +59,13 @@ class SlateProvider(ABC):
         """
         return str(uuid5(UUID(self.candidate_set_id), self.provider_name))
 
+    @property
+    def recommendation_reason_type(self) -> Optional[RecommendationReasonType]:
+        """
+        :return: (optional) Reason why recommendations in this slate are recommended.
+        """
+        return None
+
     async def get_candidate_corpus_items(self) -> List[CorpusItemModel]:
         """
         :return: The CorpusItems from the candidate set, without any rankers or filters applied.
@@ -96,4 +104,5 @@ class SlateProvider(ABC):
             subheadline=self.subheadline,
             more_link=self.more_link,
             recommendations=recommendations,
+            recommendation_reason_type=self.recommendation_reason_type,
         )
