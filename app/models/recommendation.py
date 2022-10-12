@@ -9,9 +9,7 @@ from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetr
 from app.models.metrics.recommendation_metrics_factory import RecommendationMetricsFactory
 from app.models.item import ItemModel
 from app.models.slate_experiment import SlateExperimentModel
-from app.models.user_impressed_list import UserImpressedList
-from app.rankers import get_ranker, POCKET_THOMPSON_SAMPLING_RANKERS, FIREFOX_THOMPSON_SAMPLING_RANKERS, \
-    PERSONALIZED_IMPRESSION_RANKERS
+from app.rankers import get_ranker, POCKET_THOMPSON_SAMPLING_RANKERS, FIREFOX_THOMPSON_SAMPLING_RANKERS
 
 
 class RecommendationType(Enum):
@@ -94,11 +92,6 @@ class RecommendationModel(BaseModel):
                 # firefox Thompson sampling requires click/impression data from it's own data source
                 ranker_kwargs = {
                     'metrics': await FirefoxNewTabMetricsFactory().get([rec.id for rec in recommendations])
-                }
-            elif ranker in PERSONALIZED_IMPRESSION_RANKERS:
-                # impression filtering requires personalized impressed item lists from it's own data source
-                ranker_kwargs = {
-                    'user_impressed_list': await UserImpressedList().get(user_id)
                 }
             recommendations = get_ranker(ranker)(recommendations, **ranker_kwargs)
 
