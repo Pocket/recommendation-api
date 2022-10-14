@@ -6,7 +6,7 @@ from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.recommendation_reason_model import RecommendationReasonModel
 from app.models.recommendation_reason_type import RecommendationReasonType
 from app.models.topic import TopicModel
-from app.rankers.algorithms import rank_by_preferred_topics
+from app.rankers.algorithms import rank_by_preferred_topics, spread_topics, rank_by_impression_caps
 
 
 class ForYouSlateProvider(SlateProvider):
@@ -34,17 +34,20 @@ class ForYouSlateProvider(SlateProvider):
             self,
             items: List[CorpusItemModel],
             preferred_topics: List[TopicModel] = None,
-            recommendation_count: int = None,
+            user_impression_capped_list: List[str] = None,
             *args,
             **kwargs
     ) -> List[CorpusItemModel]:
         """
         :param items: Candidate corpus items
         :param preferred_topics: Topics explicitly preferred by the user.
-        :param recommendation_count: Maximum recommendations to return.
+        :param user_impression_capped_list: List of impression capped CorpusItem ids for the user.
         :return: Ranks items based on topic preferences, with topic spreading.
         """
-        return rank_by_preferred_topics(items, preferred_topics, recommendation_count)
+        items = rank_by_impression_caps(items, user_impression_capped_list)
+        items = spread_topics(items)
+        items = rank_by_preferred_topics(items, preferred_topics)
+        return items
 
     async def get_recommendations(
             self,

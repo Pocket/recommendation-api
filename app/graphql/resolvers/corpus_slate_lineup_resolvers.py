@@ -13,6 +13,7 @@ from app.data_providers.slate_providers.topic_slate_provider_factory import Topi
 from app.data_providers.snowplow.config import create_snowplow_tracker, SnowplowConfig
 from app.data_providers.snowplow.snowplow_corpus_slate_lineup_tracker import SnowplowCorpusSlateLineupTracker
 from app.data_providers.topic_provider import TopicProvider
+from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.graphql.corpus_slate_lineup import CorpusSlateLineup
 from app.graphql.resolvers.corpus_slate_lineup_slates_resolver import DEFAULT_SLATE_COUNT
@@ -29,6 +30,7 @@ async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
         aioboto3_session=aioboto3_session,
         topic_provider=topic_provider
     )
+    user_impression_cap_provider = UserImpressionCapProvider(aioboto3_session=aioboto3_session)
 
     slate_count = int(get_field_argument(
         fields=info.selected_fields,
@@ -45,6 +47,7 @@ async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
     slate_lineup_model = await HomeDispatch(
         corpus_client=corpus_client,
         preferences_provider=user_recommendation_preferences_provider,
+        user_impression_cap_provider=user_impression_cap_provider,
         topic_provider=topic_provider,
         for_you_slate_provider=ForYouSlateProvider(corpus_client),
         recommended_reads_slate_provider=RecommendedReadsSlateProvider(corpus_client),

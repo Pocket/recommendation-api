@@ -11,6 +11,7 @@ from app.data_providers.slate_providers.recommended_reads_slate_provider import 
 from app.data_providers.slate_providers.topic_slate_provider import TopicSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
 from app.data_providers.topic_provider import TopicProvider
+from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.data_providers.util import flatten
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
@@ -87,6 +88,7 @@ class HomeDispatch:
             self,
             corpus_client: CorpusFeatureGroupClient,
             preferences_provider: UserRecommendationPreferencesProvider,
+            user_impression_cap_provider: UserImpressionCapProvider,
             topic_provider: TopicProvider,
             for_you_slate_provider: ForYouSlateProvider,
             recommended_reads_slate_provider: RecommendedReadsSlateProvider,
@@ -96,6 +98,7 @@ class HomeDispatch:
         self.topic_provider = topic_provider
         self.corpus_client = corpus_client
         self.preferences_provider = preferences_provider
+        self.user_impression_cap_provider = user_impression_cap_provider
         self.for_you_slate_provider = for_you_slate_provider
         self.recommended_reads_slate_provider = recommended_reads_slate_provider
         self.topic_slate_providers = topic_slate_providers
@@ -117,11 +120,13 @@ class HomeDispatch:
         """
         slates = []
 
+        user_impression_capped_list = await self.user_impression_cap_provider.get(user)  # TODO: Gather these two calls.
         preferred_topics = await self._get_preferred_topics(user)
         if preferred_topics:
             slates += [self.for_you_slate_provider.get_slate(
                 preferred_topics=preferred_topics,
-                recommendation_count=recommendation_count
+                recommendation_count=recommendation_count,
+                user_impression_capped_list=user_impression_capped_list,
             )]
         else:
             slates += [self.recommended_reads_slate_provider.get_slate()]

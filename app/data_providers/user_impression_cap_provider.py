@@ -10,14 +10,14 @@ from app.exceptions.personalization_error import PersonalizationError
 from app.models.user_ids import UserIds
 
 
-class UserImpressionCappedList:
+class UserImpressionCapProvider:
     _FEATURE_GROUP_VERSION = 2
     _FEATURE_NAMES: List[str] = [
-        'corpus_ids',
+        'CORPUS_IDS',
     ]
 
-    def __init__(self):
-        self.aioboto3_session = aioboto3.Session()
+    def __init__(self, aioboto3_session: aioboto3.session.Session):
+        self.aioboto3_session = aioboto3_session
 
     @xray_recorder.capture_async('models.user_impressed_list.get')
     async def get(self, user_ids: UserIds) -> List[str]:
