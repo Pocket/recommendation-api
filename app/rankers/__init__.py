@@ -9,8 +9,6 @@ POCKET_THOMPSON_SAMPLING_RANKERS = {"thompson-sampling-1day", "thompson-sampling
 
 FIREFOX_THOMPSON_SAMPLING_RANKERS = {"firefox-thompson-sampling-1day"}
 
-PERSONALIZED_IMPRESSION_RANKERS = {"user-impression-filter"}
-
 
 def get_all_rankers():
     # Importing algorithms within the function here ensures that when rankers are imported
@@ -40,7 +38,6 @@ def get_all_rankers():
         top1_topics,
         top3_topics,
         rank_topics,
-        user_impression_filter
     )
 
     return {
@@ -61,5 +58,4 @@ def get_all_rankers():
         'top3-topics': top3_topics,
         'rank-topics': rank_topics,
         'pubspread': spread_publishers,
-        'user-impression-filter': user_impression_filter
     }

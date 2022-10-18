@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.snowplow.config import SnowplowConfig
+from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.main import app
 from app.models.corpus_item_model import CorpusItemModel
@@ -88,8 +89,10 @@ class TestHomeSlateLineup(TestDynamoDBBase):
 
     @patch.object(CorpusFeatureGroupClient, 'fetch')
     @patch.object(UserRecommendationPreferencesProvider, 'fetch')
+    @patch.object(UserImpressionCapProvider, 'get')
     def test_personalized_home_slate_lineup(
             self,
+            mock_get_user_impression_caps,
             mock_fetch_user_recommendation_preferences,
             mock_get_ranked_corpus_items
     ):
@@ -99,6 +102,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         preferred_topics = [technology_topic, gaming_topic]
         preferences_fixture = _user_recommendation_preferences_fixture(str(self.user_ids.user_id), preferred_topics)
         mock_fetch_user_recommendation_preferences.return_value = preferences_fixture
+        mock_get_user_impression_caps.return_value = corpus_items_fixture[:6]
 
         with TestClient(app) as client:
             data = client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers=self.headers).json()
@@ -125,14 +129,17 @@ class TestHomeSlateLineup(TestDynamoDBBase):
 
     @patch.object(CorpusFeatureGroupClient, 'fetch')
     @patch.object(UserRecommendationPreferencesProvider, 'fetch')
+    @patch.object(UserImpressionCapProvider, 'get')
     def test_unpersonalized_home_slate_lineup(
             self,
+            mock_get_user_impression_caps,
             mock_fetch_user_recommendation_preferences,
             mock_get_ranked_corpus_items
     ):
         corpus_items_fixture = _corpus_items_fixture(n=100)
         mock_get_ranked_corpus_items.return_value = corpus_items_fixture
         mock_fetch_user_recommendation_preferences.return_value = None  # User has does not have a preferences record
+        mock_get_user_impression_caps.return_value = corpus_items_fixture[:6]
 
         with TestClient(app) as client:
             data = client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers=self.headers).json()

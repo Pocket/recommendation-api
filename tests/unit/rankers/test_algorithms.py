@@ -11,7 +11,7 @@ from tests.unit.utils import generate_recommendations, generate_curated_configs,
 from app.config import ROOT_DIR
 from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, rank_topics, \
     thompson_sampling_1day, thompson_sampling_7day, thompson_sampling_14day, blocklist, top1_topics, top3_topics, \
-    firefox_thompson_sampling_1day, user_impression_filter, rank_by_preferred_topics
+    firefox_thompson_sampling_1day, rank_by_impression_caps, rank_by_preferred_topics
 from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
 from operator import itemgetter
 
@@ -19,80 +19,60 @@ ANDROID_DISCOVER_LINEUP_ID = "b50524d6-4df9-4f15-a0d0-13ccc8bdf4ed"
 WEB_HOME_LINEUP_ID = "05027beb-0053-4020-8bdc-4da2fcc0cb68"
 
 
-class TestAlgorithmsRankPreferredTopics(unittest.TestCase):
+class MockCorpusItems:
     @staticmethod
-    def _prepare_recs():
-        topics = [business_topic, technology_topic, gaming_topic, health_topic, entertainment_topic]
+    def get_topics():
+        return [business_topic, technology_topic, gaming_topic, health_topic, entertainment_topic]
+
+    @staticmethod
+    def get_recs():
+        topics = MockCorpusItems.get_topics()
         # 5 topics x 3 articles
         recs = []
-        for i in range(5):
+        for t in topics:
             for j in range(3):
-                recs.append(CorpusItemModel(id=(i+1)*(j+1), topic=topics[i].corpus_topic_id))
+                recs.append(CorpusItemModel(id=f'{t.name}-rec-{j}', topic=t.corpus_topic_id))
 
-        return topics, recs
+        return recs
 
-    def test_even_split_3_items(self):
-        topics, recs = self._prepare_recs()
-        user_prefs = [topics[0], topics[2], topics[4]]
 
-        reordered = rank_by_preferred_topics(recs, user_prefs, 3)
+@pytest.mark.parametrize("user_prefs", [
+    ([t for i, t in enumerate(MockCorpusItems.get_topics()) if i % 2 == 0]),
+    ([]),
+    # Get the first topic that is not available as a recommendation candidate.
+    ([t for t in all_topic_fixtures if t not in MockCorpusItems.get_topics()][:1]),
+])
+def test_rank_by_preferred_topics(user_prefs):
+    recs = MockCorpusItems.get_recs()
 
-        assert len(reordered) == 3
-        assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
+    reordered = rank_by_preferred_topics(recs, user_prefs)
 
-    def test_uneven_split_3_items(self):
-        topics, recs = self._prepare_recs()
-        user_prefs = [topics[0], topics[2]]
+    preferred_recs = [r for r in recs if any(p.corpus_topic_id == r.topic for p in user_prefs)]
+    not_preferred_recs = [r for r in recs if r not in preferred_recs]
 
-        reordered = rank_by_preferred_topics(recs, user_prefs, 3)
+    # Preferred recs are ranked first in-order.
+    assert reordered[:len(preferred_recs)] == preferred_recs
+    # Non-preferred recs are ranked last in-order.
+    assert reordered[len(preferred_recs):] == not_preferred_recs
 
-        assert len(reordered) == 3
-        assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
-        for pref in user_prefs:
-            topic_recs_len = len([r for r in reordered if r.topic == pref.corpus_topic_id])
-            assert topic_recs_len == 2 or topic_recs_len == 1
 
-    def test_single_topic(self):
-        topics, recs = self._prepare_recs()
-        user_prefs = [topics[0]]
+@pytest.mark.parametrize("capped_corpus_items", [
+    ([r for i, r in enumerate(MockCorpusItems.get_recs()) if i % 2 == 0]),
+    ([]),
+    ([CorpusItemModel(id='non-existing-id')]),
+])
+def test_rank_by_impression_caps(capped_corpus_items: List[CorpusItemModel]):
+    recs = MockCorpusItems.get_recs()
 
-        reordered = rank_by_preferred_topics(recs, user_prefs, 3)
+    reordered = rank_by_impression_caps(recs, capped_corpus_items)
 
-        assert len(reordered) == 3
-        assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
+    recs_capped = [r for r in recs if r in capped_corpus_items]
+    recs_not_capped = [r for r in recs if r not in recs_capped]
 
-    def test_uneven_split_5_items(self):
-        topics, recs = self._prepare_recs()
-        user_prefs = [topics[0], topics[2], topics[4]]
-
-        reordered = rank_by_preferred_topics(recs, user_prefs, 5)
-
-        assert len(reordered) == 5
-        assert {r.topic for r in reordered} == {pref.corpus_topic_id for pref in user_prefs}
-        for pref in user_prefs:
-            topic_recs_len = len([r for r in reordered if r.topic == pref.corpus_topic_id])
-            assert topic_recs_len == 2 or topic_recs_len == 1
-
-    def test_not_enough_preferred_topic_items(self):
-        topics, recs = self._prepare_recs()
-        user_prefs = [topics[0]]
-
-        reordered = rank_by_preferred_topics(recs, user_prefs, 5)
-
-        assert len(reordered) == 5
-        assert all(r.topic == user_prefs[0].corpus_topic_id for r in reordered[:3])
-        assert all(r.topic != user_prefs[0].corpus_topic_id for r in reordered[3:5])
-        assert len({r.topic for r in reordered[3:5] if r.topic != user_prefs[0].corpus_topic_id}) == 2
-
-    def test_rank_preferred_topics_no_prefs_returns_default(self):
-        topics, recs = self._prepare_recs()
-        user_prefs = []
-
-        reordered = rank_by_preferred_topics(recs, user_prefs, 3)
-
-        rec_topics = {r.topic for r in reordered}
-        assert len(reordered) == 3
-        assert len(rec_topics) == 3
+    # Recs that are not capped are ranked first in-order.
+    assert reordered[:len(recs_not_capped)] == recs_not_capped
+    # Recs that are capped are ranked last in-order.
+    assert reordered[len(recs_not_capped):] == recs_capped
 
 
 class TestAlgorithmsSpreadPublishers(unittest.TestCase):
@@ -396,44 +376,3 @@ class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
 
         for topic_ranker in [top1_topics, top3_topics, rank_topics]:
             self.assertRaises(ValueError, topic_ranker, input_configs, full_topic_profile)
-
-
-class TestAlgorithmsImpressionFilter(unittest.TestCase):
-
-    def test_impression_filter_remove(self):
-        item_ids = ["234", "345", "456"]
-        recs = generate_recommendations(item_ids)
-        impressed_items = [123, 456, 999]
-
-        filtered_recs = user_impression_filter(recs, impressed_items)
-
-        # check for filtering of impressed items
-        filtered_item_ids = [r.item_id for r in filtered_recs]
-        for i in impressed_items:
-            assert i not in filtered_item_ids
-
-        # check for presence of unfiltered items
-        for i in recs:
-            if int(i.item_id) not in impressed_items:
-                assert i.item_id in filtered_item_ids
-
-    def test_no_impressed_list(self):
-
-        item_ids = ["234", "345", "456"]
-        recs = generate_recommendations(item_ids)
-        filtered_recs = user_impression_filter(recs, [])
-
-        # check for presence of original items
-        assert recs == filtered_recs
-
-
-    def test_no_overlap(self):
-
-        item_ids = ["234", "345", "456"]
-        impressed_item_ids = [9*int(i) for i in item_ids]
-        recs = generate_recommendations(item_ids)
-        filtered_recs = user_impression_filter(recs, impressed_item_ids)
-
-        # check for presence of original items
-        assert recs == filtered_recs
-
