@@ -121,8 +121,11 @@ class HomeDispatch:
         """
         slates = []
 
-        user_impression_capped_list = await self.user_impression_cap_provider.get(user)  # TODO: Gather these two calls.
-        preferred_topics = await self._get_preferred_topics(user)
+        user_impression_capped_list, preferred_topics = await gather(
+            self.user_impression_cap_provider.get(user),
+            self._get_preferred_topics(user)
+        )
+
         if preferred_topics:
             slates += [self.for_you_slate_provider.get_slate(
                 preferred_topics=preferred_topics,
