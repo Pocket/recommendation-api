@@ -1,0 +1,16 @@
+[
+  [
+    {
+      "FeatureName": "HASHED_USER_ID",
+      "ValueAsString": "aaaaaaaaaaaaaaa123"
+    },
+    {
+      "FeatureName": "UPDATED_AT",
+      "ValueAsString": "2022-10-18T00:00:00Z"
+    },
+    {
+      "FeatureName": "CORPUS_IDS",
+      "ValueAsString": "[1697212b-1065-4e60-839d-c399882a0977,357e1f96-617e-4ece-aa21-a9cc74a457a2]"
+    }
+  ]
+]

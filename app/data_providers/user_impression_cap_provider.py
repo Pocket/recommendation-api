@@ -40,6 +40,10 @@ class UserImpressionCapProvider:
     def get_feature_group_name(cls):
         return f'{config.ENV}-user-impressions-v{cls._FEATURE_GROUP_VERSION}'
 
+    @staticmethod
+    def parse_snowflake_array(arr: str) -> List[str]:
+        return arr.strip('[]').split(',')
+
     @xray_recorder.capture_async('UserImpressedList._query_item_list')
     async def _query_item_list(self, user_ids: UserIds) -> List[str]:
         """
@@ -57,6 +61,6 @@ class UserImpressionCapProvider:
             )
 
         if "Record" in record:
-            return json.loads(record["Record"][0]['ValueAsString'])
+            return self.parse_snowflake_array(record["Record"][0]['ValueAsString'])
         else:
             return []
