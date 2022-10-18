@@ -1,3 +1,4 @@
+import random
 from typing import List, Dict, Optional
 
 from app.data_providers.slate_providers.slate_provider import SlateProvider
@@ -48,6 +49,7 @@ class ForYouSlateProvider(SlateProvider):
         assert preferred_topics is not None
         assert user_impression_capped_list is not None
 
+        random.shuffle(items)
         items = rank_by_impression_caps(items, user_impression_capped_list)
         items = spread_topics(items)
         items = rank_by_preferred_topics(items, preferred_topics)

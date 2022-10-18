@@ -33,7 +33,7 @@ class TestForYouSlateProvider:
 
         assert len(items) == len(ranked_items)
         # Assert recs with preferred topic are ranked first.
-        assert ranked_items[:len(preferred_topic_items)] == preferred_topic_items
+        assert set(r.id for r in ranked_items[:len(preferred_topic_items)]) == set(r.id for r in preferred_topic_items)
 
     async def test_rank_corpus_items_multiple_preferred_topics(self):
         items = [CorpusItemModel(id=str(i), topic=all_topic_fixtures[i % 5].corpus_topic_id) for i in range(20)]
@@ -45,7 +45,7 @@ class TestForYouSlateProvider:
 
         assert len(items) == len(ranked_items)
         # Assert recs with preferred topic are ranked first.
-        assert ranked_items[:len(preferred_topic_items)] == preferred_topic_items
+        assert set(r.id for r in ranked_items[:len(preferred_topic_items)]) == set(r.id for r in preferred_topic_items)
         # Assert topics are spread
         assert ranked_items[0].topic != ranked_items[1].topic
         assert ranked_items[1].topic != ranked_items[2].topic
