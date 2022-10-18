@@ -126,7 +126,6 @@ class HomeDispatch:
         if preferred_topics:
             slates += [self.for_you_slate_provider.get_slate(
                 preferred_topics=preferred_topics,
-                recommendation_count=recommendation_count,
                 user_impression_capped_list=user_impression_capped_list,
             )]
         else:

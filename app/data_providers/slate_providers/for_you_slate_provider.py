@@ -34,7 +34,7 @@ class ForYouSlateProvider(SlateProvider):
             self,
             items: List[CorpusItemModel],
             preferred_topics: List[TopicModel] = None,
-            user_impression_capped_list: List[str] = None,
+            user_impression_capped_list: List[CorpusItemModel] = None,
             *args,
             **kwargs
     ) -> List[CorpusItemModel]:
