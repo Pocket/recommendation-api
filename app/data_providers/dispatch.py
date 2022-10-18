@@ -1,4 +1,5 @@
 import logging
+import random
 import uuid
 from asyncio import gather
 from datetime import datetime, timezone
@@ -8,18 +9,16 @@ from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureG
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
 from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
-from app.data_providers.slate_providers.topic_slate_provider import TopicSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
-from app.data_providers.util import flatten
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel, RecommendationSurfaceId
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.topic import TopicModel
 from app.models.user_ids import UserIds
-from app.rankers.algorithms import rank_by_preferred_topics
+from app.rankers.algorithms import rank_by_preferred_topics, spread_topics
 
 
 class SetupMomentDispatch:
@@ -60,7 +59,9 @@ class SetupMomentDispatch:
             logging.info(f'SetupMoment is unpersonalized for user {user.user_id} because no preferences were found.')
             topics = await self.topic_provider.get_topics(self.DEFAULT_TOPICS)
 
-        items = rank_by_preferred_topics(items, topics, recommendation_count)
+        random.shuffle(items)
+        items = spread_topics(items)
+        items = rank_by_preferred_topics(items, topics)
         items = items[:recommendation_count]
         recommendations = [CorpusRecommendationModel(id=str(uuid.uuid4()), corpus_item=item) for item in items]
 

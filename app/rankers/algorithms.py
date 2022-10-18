@@ -30,7 +30,7 @@ DEFAULT_FIREFOX_ALPHA_PRIOR = int(0.0085 * DEFAULT_FIREFOX_BETA_PRIOR)
 
 RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel'], List['CorpusItem']]
 RecommendationListType = List['RecommendationModel']
-CorpusRecommendationListType = List[CorpusItemModel]
+CorpusItemListType = List[CorpusItemModel]
 
 def top_n(n: int, items: RankableListType) -> RankableListType:
     """
@@ -234,9 +234,9 @@ def __personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
 
 
 def rank_by_impression_caps(
-        recs: CorpusRecommendationListType,
-        user_impression_capped_list: List[str]
-) -> CorpusRecommendationListType:
+        recs: CorpusItemListType,
+        user_impression_capped_list: List[CorpusItemModel],
+) -> CorpusItemListType:
     """
     removes items that a user has already seen too many times or saw too many days previous
 
@@ -244,14 +244,15 @@ def rank_by_impression_caps(
     :param user_impression_capped_list a list of CorpusItem ids loaded from the feature store per user
     :return: ranked list of recs for the user
     """
-    return [r for r in recs if r.id not in user_impression_capped_list] + \
-           [r for r in recs if r.id in user_impression_capped_list]
+    capped_corpus_item_ids = {c.id for c in user_impression_capped_list}
+    return [r for r in recs if r.id not in capped_corpus_item_ids] + \
+           [r for r in recs if r.id in capped_corpus_item_ids]
 
 
 def rank_by_preferred_topics(
-        recs: CorpusRecommendationListType,
+        recs: CorpusItemListType,
         preferred_topics: List[TopicModel]
-) -> CorpusRecommendationListType:
+) -> CorpusItemListType:
     """
     Boosts preferred topics to the top.
 
@@ -264,7 +265,7 @@ def rank_by_preferred_topics(
            [r for r in recs if r.topic not in preferred_corpus_topic_ids]
 
 
-def spread_topics(recs: CorpusRecommendationListType) -> CorpusRecommendationListType:
+def spread_topics(recs: CorpusItemListType) -> CorpusItemListType:
     """
     :param recs:
     :return: Recommendations spread by topic, while otherwise preserving the order.

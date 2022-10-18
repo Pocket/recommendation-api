@@ -7,6 +7,7 @@ from aws_xray_sdk.core import xray_recorder
 
 from app import config
 from app.exceptions.personalization_error import PersonalizationError
+from app.models.corpus_item_model import CorpusItemModel
 from app.models.user_ids import UserIds
 
 
@@ -19,8 +20,8 @@ class UserImpressionCapProvider:
     def __init__(self, aioboto3_session: aioboto3.session.Session):
         self.aioboto3_session = aioboto3_session
 
-    @xray_recorder.capture_async('models.user_impressed_list.get')
-    async def get(self, user_ids: UserIds) -> List[str]:
+    @xray_recorder.capture_async('UserImpressionCapProvider.get')
+    async def get(self, user_ids: UserIds) -> List[CorpusItemModel]:
         """
         Get corpus item ids that should be filtered in slates that are shown to the user with given user.
         :param user_ids: user ids for the corresponding list of impressed items
@@ -29,11 +30,11 @@ class UserImpressionCapProvider:
         if not user_ids.hashed_user_id:
             raise PersonalizationError("hashed_user_id must be provided for personalized impression filtering")
 
-        impressed_items = await self._query_item_list(user_ids)
-        if not impressed_items:
+        impressed_item_ids = await self._query_item_list(user_ids)
+        if not impressed_item_ids:
             logging.info(f"No returned impressed item list for hashed_user_id={user_ids.hashed_user_id}")
 
-        return impressed_items
+        return [CorpusItemModel(id=id) for id in impressed_item_ids]
 
     @classmethod
     def get_feature_group_name(cls):
