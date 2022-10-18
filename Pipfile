@@ -24,7 +24,7 @@ sentry-sdk = "*"
 aioboto3 = "*"
 gunicorn = "*"
 uvicorn = {extras = ["standard"], version = "*"}
-fastapi = "==0.79.0"
+fastapi = "==0.85.1"
 gql = "*"
 xraysink = "*"
 aws-xray-sdk = "*"
