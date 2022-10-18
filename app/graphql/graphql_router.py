@@ -30,7 +30,8 @@ class Query:
     setup_moment_slate: CorpusSlate = strawberry.field(
         resolver=resolve_setup_moment_slate,
         description='Get stories during Setup Moment onboarding that are personalized with user preferences provided '
-                    'during onboarding.'
+                    'during onboarding.',
+        deprecation_reason='Setup Moment has been integrated into Home.',
     )
 
     recommendation_preference_topics: List[Topic] = strawberry.field(

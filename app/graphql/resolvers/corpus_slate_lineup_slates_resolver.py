@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from app.graphql.corpus_slate_lineup import CorpusSlateLineup
 
 
-DEFAULT_SLATE_COUNT = 10  # The maximum number of recommendations that is returned by default in a CorpusSlate.
+DEFAULT_SLATE_COUNT = 15  # The maximum number of recommendations that is returned by default in a CorpusSlate.
 
 
 def corpus_slate_lineup_slates_resolver(

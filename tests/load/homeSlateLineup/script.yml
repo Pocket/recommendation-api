@@ -1,0 +1,29 @@
+config:
+  target: "https://client-api.getpocket.com"
+
+  phases:
+    - duration: 1800
+      arrivalRate: 2
+      rampTo: 15
+      name: "Warm up"
+
+    - duration: 900
+      arrivalRate: 15
+      rampTo: 15
+      name: "Sustain load"
+  defaults:
+    headers:
+      Content-Type: application/json
+
+scenarios:
+
+  - name: "homeSlateLineup"
+    flow:
+      - post:
+          url: "/"
+          body: '{"query":"query HomeLoadTest { homeSlateLineup { slates { slateId: id recommendationReasonType headline subheadline moreLink { url text } recommendations { corpusItem { corpusItemId: id imageUrl url title excerpt language publisher authors { name } } reason { name type } } } } }"}'
+          headers:
+             Content-Type: application/json
+          expect:
+            - statusCode: 200
+            - contentType: json
