@@ -51,3 +51,12 @@ services:
     platform: linux/amd64
     ports:
       - '9090:9090'
+
+
+
+#qdrant:
+# image: qdrant/qdrant:v0.10.2
+# ports:
+#     - 6333:6333
+# volumes:
+#     - /tmp/qdrant:/qdrant/storage

@@ -52,6 +52,13 @@ recit = {
     'endpoint_url': os.getenv('RECIT_ENDPOINT_URL', 'https://recit.readitlater.com')
 }
 
+qdrant = {
+   'host': os.getenv('QDRANT_HOST', 'qdrant.readitlater.com'),
+   'port': os.getenv('QDRANT_PORT', 443),
+   'https': os.getenv('QDRANT_HTTPS', 'true') == 'true'
+}
+
+
 # Slates will be replace for the following set of QA users. See qa_slate_maps below.
 qa_user_ids = ['47372502']
 # For QA users, slates in keys will be replaced by the slate in the corresponding value.

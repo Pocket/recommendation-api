@@ -6,6 +6,7 @@ import uuid
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
+from app.data_providers.item2item import Item2ItemRecommender
 from app.data_providers.snowplow.snowplow_corpus_slate_tracker import SnowplowCorpusSlateTracker
 from app.data_providers.metrics_client import MetricsFetchable
 from app.data_providers.slate_provider import SlateProvider
@@ -17,6 +18,27 @@ from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.user_ids import UserIds
 from app.rankers.algorithms import rank_by_preferred_topics
+
+
+class Item2ItemDispatch:
+
+    def __init__(self,
+                 metrics_client: MetricsFetchable,
+                 item_recommender: Item2ItemRecommender):
+        self.metrics_client = metrics_client
+        self.item_recommender = item_recommender
+
+    async def syndicated(self, item_id: str, count: int):
+        candidates = self.item_recommender.syndicated(item_id, count)
+        # ranked = self.metrics_client.rank_items(candidates, rankers=[thompson_sampling_28day])
+        # return ranked
+        return candidates
+
+    async def by_publisher(self, item_id: str, domain_id: int, count: int):
+        candidates = self.item_recommender.by_publisher(item_id, domain_id, count)
+        # ranked = self.metrics_client.rank_items(candidates, rankers=[thompson_sampling_28day])
+        # return ranked
+        return candidates
 
 
 class SetupMomentDispatch:

@@ -2,10 +2,12 @@ from typing import List
 
 import strawberry
 
+from app.graphql.corpus_recommendation import CorpusRecommendation
 from app.graphql.corpus_slate import CorpusSlate
 from app.graphql.corpus_slate_lineup import CorpusSlateLineup
 from app.graphql.resolvers.corpus_slate_lineup_resolvers import resolve_home_slate_lineup
 from app.graphql.resolvers.corpus_slate_resolvers import resolve_setup_moment_slate
+from app.graphql.resolvers.item2item_resolvers import resolve_publisher, resolve_syndicated
 from app.graphql.resolvers.legacy.slate_lineup_resolver import resolve_get_slate_lineup
 from app.graphql.resolvers.legacy.slate_resolver import resolve_get_slate
 from app.graphql.resolvers.topic_resolvers import list_topics, resolve_recommendation_preference_topics
@@ -54,6 +56,15 @@ class Query:
                            'Data Products team and they will happily provide you with a named query.',
         description='Request a specific `SlateLineup` by id')
 
+    related_syndicated: List[CorpusRecommendation] = strawberry.field(
+       resolver=resolve_syndicated,
+       description='Get similar syndicated articles.'
+    )
+
+    related_publisher: List[CorpusRecommendation] = strawberry.field(
+       resolver=resolve_publisher,
+       description='Get similar articles from the same publisher.'
+    )
 
 @strawberry.type
 class Mutation:
