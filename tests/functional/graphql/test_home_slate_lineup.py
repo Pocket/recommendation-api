@@ -110,6 +110,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             assert len(slates) == 4
             # First slate is personalized
             assert slates[0]['headline'] == 'For You'
+            assert slates[0]['recommendationReasonType'] == 'PREFERRED_TOPICS'
             # Second slate has a link to the collections page
             assert slates[1]['moreLink']['url'] == 'https://getpocket.com/collections'
             # Last slates match preferred topics
@@ -120,8 +121,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each
 
             all_snowplow_events = self.snowplow_micro.get_event_counts()
-            # No Snowplow events are expected to be emitted at this point.
-            assert all_snowplow_events == {'total': 0, 'good': 0, 'bad': 0}, self.snowplow_micro.get_last_error()
+            assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}, self.snowplow_micro.get_last_error()
 
     @patch.object(CorpusFeatureGroupClient, 'fetch')
     @patch.object(UserRecommendationPreferencesProvider, 'fetch')
@@ -142,8 +142,9 @@ class TestHomeSlateLineup(TestDynamoDBBase):
 
             # Assert that the expected number of slates is being returned.
             assert len(slates) == 5
-            # Fisrt slate has an unpersonalized recommendations
+            # First slate has an unpersonalized recommendations
             assert slates[0]['headline'] == 'Recommended Reads'
+            assert slates[0]['recommendationReasonType'] is None
             # Second slate has a link to the collections page
             assert slates[1]['moreLink']['url'] == 'https://getpocket.com/collections'
             # Last slates have topic explore links
@@ -155,5 +156,4 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each
 
             all_snowplow_events = self.snowplow_micro.get_event_counts()
-            # No Snowplow events are expected to be emitted at this point.
-            assert all_snowplow_events == {'total': 0, 'good': 0, 'bad': 0}, self.snowplow_micro.get_last_error()
+            assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}, self.snowplow_micro.get_last_error()
