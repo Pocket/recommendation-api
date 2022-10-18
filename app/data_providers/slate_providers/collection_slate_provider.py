@@ -1,22 +1,23 @@
-from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
-from app.models.corpus_recommendation_model import CorpusRecommendationModel
-from app.models.corpus_slate_model import CorpusSlateModel
+from typing import Optional
+
+from app.data_providers.slate_providers.slate_provider import SlateProvider
 from app.models.link import LinkModel
 
 
-class CollectionSlateProvider:
+class CollectionSlateProvider(SlateProvider):
 
-    _CANDIDATE_SET = '92af3dae-25c9-46c3-bf05-18082aacc7e1'
+    @property
+    def candidate_set_id(self) -> str:
+        return '92af3dae-25c9-46c3-bf05-18082aacc7e1'
 
-    def __init__(self, corpus_feature_group_client: CorpusFeatureGroupClient):
-        self.corpus_feature_group_client = corpus_feature_group_client
+    @property
+    def headline(self) -> str:
+        return 'Popular Collections'
 
-    async def get_slate(self) -> CorpusSlateModel:
-        items = await self.corpus_feature_group_client.fetch(self._CANDIDATE_SET)
+    @property
+    def subheadline(self) -> str:
+        return 'Curated guides to the best reads on the web'
 
-        return CorpusSlateModel(
-            headline='Popular Collections',
-            subheadline='Curated guides to the best reads on the web',
-            recommendations=[CorpusRecommendationModel(corpus_item=item) for item in items],
-            more_link=LinkModel(text='Explore More Collections', url='https://getpocket.com/collections')
-        )
+    @property
+    def more_link(self) -> Optional[LinkModel]:
+        return LinkModel(text='Explore more Collections', url='https://getpocket.com/collections')
