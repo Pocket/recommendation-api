@@ -36,18 +36,3 @@ class TopicProvider:
         all_topics = await self.get_all()
         topics_by_id = {topic.id: topic for topic in all_topics}
         return [topics_by_id[topic_id] for topic_id in topics_ids if topic_id in topics_by_id]
-
-    @xray_recorder.capture_async('models_topic_get_topic')
-    async def get_topic(self, slug: str) -> TopicModel:
-        """
-        Retrieves a single topic from dynamo db
-
-        :param slug: string slug of the topic to be retrieved
-        :return: a TopicModel object
-        """
-        async with self.aioboto3_session.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as dynamodb:
-            table = await dynamodb.Table(dynamodb_config['metadata']['table'])
-            response = await table.query(IndexName='slug', Limit=1, KeyConditionExpression=Key('slug').eq(slug))
-        if response['Items']:
-            return TopicModel.from_dict(response['Items'][0])
-        raise ValueError('Topic not found')

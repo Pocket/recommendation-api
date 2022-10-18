@@ -14,12 +14,3 @@ class TestTopicMetadata(TestDynamoDBBase):
     async def test_main_list_topics(self):
         executed = await self.topic_provider.get_all()
         assert executed == [business_topic, technology_topic]
-
-    async def test_main_get_topic(self):
-        executed = await self.topic_provider.get_topic('business')
-        assert executed == business_topic
-
-    async def test_main_get_nonexistent_topic(self):
-        with self.assertRaises(ValueError):
-            await self.topic_provider.get_topic(slug='stonks')
-

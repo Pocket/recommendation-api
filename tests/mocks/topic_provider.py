@@ -9,8 +9,3 @@ class MockTopicProvider(TopicProvider):
 
     async def get_all(self) -> List[TopicModel]:
         return all_topic_fixtures
-
-    async def get_topic(self, slug: str) -> TopicModel:
-        for topic in all_topic_fixtures:
-            if topic.slug == slug:
-                return topic
