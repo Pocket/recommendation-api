@@ -8,7 +8,7 @@ from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlat
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.recommendation_reason_type import RecommendationReasonType
 from tests.assets.topics import business_topic, all_topic_fixtures
-from mocks.feature_store_mock import FeatureStoreMock
+from tests.mocks.feature_store_mock import FeatureStoreMock
 
 
 @pytest.mark.asyncio
