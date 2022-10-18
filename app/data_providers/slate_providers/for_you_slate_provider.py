@@ -36,7 +36,7 @@ class ForYouSlateProvider(SlateProvider):
             preferred_topics: List[TopicModel] = None,
             user_impression_capped_list: List[CorpusItemModel] = None,
             *args,
-            **kwargs
+            **kwargs,
     ) -> List[CorpusItemModel]:
         """
         :param items: Candidate corpus items
@@ -44,6 +44,10 @@ class ForYouSlateProvider(SlateProvider):
         :param user_impression_capped_list: List of impression capped CorpusItem ids for the user.
         :return: Ranks items based on topic preferences, with topic spreading.
         """
+        # These parameters have default value 'None' to match the signature of the base class, but they are required.
+        assert preferred_topics is not None
+        assert user_impression_capped_list is not None
+
         items = rank_by_impression_caps(items, user_impression_capped_list)
         items = spread_topics(items)
         items = rank_by_preferred_topics(items, preferred_topics)

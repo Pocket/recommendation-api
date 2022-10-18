@@ -275,7 +275,7 @@ def spread_topics(recs: CorpusItemListType) -> CorpusItemListType:
     remaining_recs = copy(recs)
 
     while remaining_recs:
-        topics_to_avoid = set(r.topic for r in result_recs[:spread_distance])
+        topics_to_avoid = set(r.topic for r in result_recs[-spread_distance:])
         # Get the first remaining rec which topic which is not a repeat topic, or default to the first remaining rec.
         rec = next((r for r in remaining_recs if r.topic not in topics_to_avoid), remaining_recs[0])
         result_recs.append(rec)
