@@ -12,7 +12,6 @@ from tests.mocks.feature_store_mock import FeatureStoreMock
 @pytest.mark.asyncio  # This pytest-asyncio decorator allows us to use an async side_effect
 class TestUserImpressionCapProvider:
 
-    SLATE_ID = 'f99178fb-6bd0-4fa1-8109-cda181b697f6'  # Matches the slate_id in firefox_new_tab_engagement.json
     HASHED_USER_ID = 'aaaaaaaaaaaaaaa123'
 
     def setup(self):

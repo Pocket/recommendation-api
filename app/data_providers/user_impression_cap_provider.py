@@ -1,7 +1,6 @@
 import logging
 import aioboto3
 from typing import List
-import json
 
 from aws_xray_sdk.core import xray_recorder
 
