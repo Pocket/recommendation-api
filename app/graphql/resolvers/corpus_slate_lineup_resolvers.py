@@ -1,8 +1,6 @@
-import logging
-from typing import Optional
+import asyncio
 
 import aioboto3
-from starlette.background import BackgroundTask
 from strawberry.types import Info
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
@@ -61,8 +59,7 @@ async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
     slate_lineup_tracker = SnowplowCorpusSlateLineupTracker(
         tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
 
-    info.context["background_tasks"].add_task(
-        slate_lineup_tracker.track, corpus_slate_lineup=slate_lineup_model, user=user)
+    asyncio.create_task(slate_lineup_tracker.track(corpus_slate_lineup=slate_lineup_model, user=user))
 
     slate_lineup = CorpusSlateLineup.from_pydantic(slate_lineup_model)
     slate_lineup.slates = slate_lineup_model.slates
