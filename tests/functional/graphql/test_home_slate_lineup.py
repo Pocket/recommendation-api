@@ -1,7 +1,7 @@
+import asyncio
 import datetime
 import random
 import uuid
-from asyncio import sleep
 from typing import Sequence
 
 from httpx import AsyncClient
@@ -84,7 +84,6 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         }
 
         populate_topics(self.metadata_table)
-
         self.snowplow_micro = SnowplowMicroClient(config=SnowplowConfig())
         self.snowplow_micro.reset_snowplow_events()
 
@@ -126,7 +125,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             recommendation_counts = [len(slate['recommendations']) for slate in slates]
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each
 
-            await sleep(0.5)
+            await self.wait_for_snowplow_events()
             all_snowplow_events = self.snowplow_micro.get_event_counts()
             assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
 
@@ -166,6 +165,14 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             recommendation_counts = [len(slate['recommendations']) for slate in slates]
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each
 
-            await sleep(0.5)
+            await self.wait_for_snowplow_events()
             all_snowplow_events = self.snowplow_micro.get_event_counts()
             assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
+
+    async def wait_for_snowplow_events(self, max_wait_time: int = 5):
+        # Locally the request to Snowplow gets handled in 0.01s, but in CircleCI we need 1 second.
+        for i in range(max_wait_time):
+            if self.snowplow_micro.get_event_counts()['total'] > 0:
+                return
+            else:
+                await asyncio.sleep(1)
