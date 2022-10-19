@@ -12,6 +12,7 @@ from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlat
 from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
 from app.data_providers.topic_provider import TopicProvider
+from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
@@ -54,6 +55,7 @@ class TestHomeDispatch:
         self.home_dispatch = HomeDispatch(
             corpus_client=self.corpus_client,
             preferences_provider=self.preferences_provider,
+            user_impression_cap_provider=MagicMock(UserImpressionCapProvider),
             topic_provider=MagicMock(TopicProvider),
             for_you_slate_provider=MagicMock(ForYouSlateProvider),
             recommended_reads_slate_provider=MagicMock(RecommendedReadsSlateProvider),
