@@ -57,8 +57,8 @@ async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
 
     slate_lineup_tracker = SnowplowCorpusSlateLineupTracker(
         tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
-
-    asyncio.create_task(slate_lineup_tracker.track(corpus_slate_lineup=slate_lineup_model, user=user))
+    asyncio.create_task(
+        slate_lineup_tracker.track(corpus_slate_lineup=slate_lineup_model, user=user))
 
     slate_lineup = CorpusSlateLineup.from_pydantic(slate_lineup_model)
     slate_lineup.slates = slate_lineup_model.slates
