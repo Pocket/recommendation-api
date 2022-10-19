@@ -1,9 +1,7 @@
 import asyncio
 
-import aioboto3
 from strawberry.types import Info
 
-from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.dispatch import HomeDispatch
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
@@ -11,25 +9,20 @@ from app.data_providers.slate_providers.recommended_reads_slate_provider import 
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
 from app.data_providers.snowplow.config import create_snowplow_tracker, SnowplowConfig
 from app.data_providers.snowplow.snowplow_corpus_slate_lineup_tracker import SnowplowCorpusSlateLineupTracker
-from app.data_providers.topic_provider import TopicProvider
-from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
-from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.graphql.corpus_slate_lineup import CorpusSlateLineup
 from app.graphql.resolvers.corpus_slate_lineup_slates_resolver import DEFAULT_SLATE_COUNT
 from app.graphql.resolvers.corpus_slate_recommendations_resolver import DEFAULT_RECOMMENDATION_COUNT
 from app.graphql.util import get_field_argument, get_user_ids
+from app.singletons import (
+    corpus_client,
+    topic_provider,
+    user_impression_cap_provider,
+    user_recommendation_preferences_provider,
+)
 
 
 async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
-    aioboto3_session = aioboto3.Session()
-    corpus_client = CorpusFeatureGroupClient(aioboto3_session=aioboto3_session)
     user = get_user_ids(info)
-    topic_provider = TopicProvider(aioboto3_session)
-    user_recommendation_preferences_provider = UserRecommendationPreferencesProvider(
-        aioboto3_session=aioboto3_session,
-        topic_provider=topic_provider
-    )
-    user_impression_cap_provider = UserImpressionCapProvider(aioboto3_session=aioboto3_session)
 
     slate_count = int(get_field_argument(
         fields=info.selected_fields,
