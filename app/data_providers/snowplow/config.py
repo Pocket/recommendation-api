@@ -8,7 +8,7 @@ class SnowplowConfig:
     APP_ID = f'pocket-data-products-recommendation-api-{ENV}'
 
     PROD_ENDPOINT_URL = 'com-getpocket-prod1.collector.snplow.net'
-    DEV_ENDPOINT_URL = 'com-getpocket-prod1.mini.snplow.net' + 'foobar'
+    DEV_ENDPOINT_URL = 'com-getpocket-prod1.mini.snplow.net'
     LOCAL_ENDPOINT_URL = 'snowplow:9090'
     ENDPOINT_URL = (
         PROD_ENDPOINT_URL if ENV == ENV_PROD else
