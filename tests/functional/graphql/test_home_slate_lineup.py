@@ -128,7 +128,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
 
             await sleep(0.5)
             all_snowplow_events = self.snowplow_micro.get_event_counts()
-            assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}, self.snowplow_micro.get_last_error()
+            assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
 
     @patch.object(CorpusFeatureGroupClient, 'fetch')
     @patch.object(UserRecommendationPreferencesProvider, 'fetch')
@@ -168,4 +168,4 @@ class TestHomeSlateLineup(TestDynamoDBBase):
 
             await sleep(0.5)
             all_snowplow_events = self.snowplow_micro.get_event_counts()
-            assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}, self.snowplow_micro.get_last_error()
+            assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
