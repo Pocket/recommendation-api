@@ -1,6 +1,7 @@
 import datetime
 import random
 import uuid
+from time import sleep
 from typing import Sequence
 
 from fastapi.testclient import TestClient
@@ -120,6 +121,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             recommendation_counts = [len(slate['recommendations']) for slate in slates]
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each
 
+            sleep(0.5)
             all_snowplow_events = self.snowplow_micro.get_event_counts()
             assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}, self.snowplow_micro.get_last_error()
 
@@ -155,5 +157,6 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             recommendation_counts = [len(slate['recommendations']) for slate in slates]
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each
 
+            sleep(0.5)
             all_snowplow_events = self.snowplow_micro.get_event_counts()
             assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}, self.snowplow_micro.get_last_error()
