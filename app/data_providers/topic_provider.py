@@ -16,7 +16,7 @@ class TopicProvider:
         self.aioboto3_session = aioboto3_session
 
     @xray_recorder.capture_async('TopicProvider.get_all')
-    @cached(ttl=60, key='TopicProvider.get_all')
+    @cached(ttl=600, key='TopicProvider.get_all')
     async def get_all(self) -> List[TopicModel]:
         """
         Retrieves all topics from dynamo db
