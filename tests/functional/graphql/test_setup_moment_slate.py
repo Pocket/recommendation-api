@@ -114,7 +114,7 @@ class TestSetupMomentSlate(TestDynamoDBBase):
             self, mock_get_topics, mock_fetch_user_recommendation_preferences, mock_get_ranked_corpus_items):
         corpus_items_fixture = _corpus_items_fixture(n=100)
         mock_get_ranked_corpus_items.return_value = corpus_items_fixture
-        default_recommendation_count = 6  # Number of recommendations that is expected to be returned by default.
+        default_recommendation_count = 10  # Number of recommendations that is expected to be returned by default.
 
         mock_fetch_user_recommendation_preferences.return_value = \
             _user_recommendation_preferences_fixture(str(self.user_ids.user_id), [])

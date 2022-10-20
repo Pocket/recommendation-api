@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from app.graphql.corpus_slate import CorpusSlate
 
 
-DEFAULT_RECOMMENDATION_COUNT = 6  # The maximum number of recommendations that is returned by default in a CorpusSlate.
+DEFAULT_RECOMMENDATION_COUNT = 10  # The maximum number of recommendations that is returned by default in a CorpusSlate.
 
 
 def corpus_slate_recommendations_resolver(
