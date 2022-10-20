@@ -21,8 +21,7 @@ class TestGetSlateLineup(TestDynamoDBBase):
         )
 
     @patch('aiohttp.ClientSession.get', to_return=MockResponse(status=200))
-    @patch('app.models.user_impressed_list.UserImpressedList.get', to_return=[])
-    def test_get_slate_lineup(self, mock_userimpressedlist_get, mock_clientsession_get):
+    def test_get_slate_lineup(self, mock_clientsession_get):
         with TestClient(app) as client:
             data = client.post(
                 '/',

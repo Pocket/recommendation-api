@@ -3,6 +3,8 @@ from aiocache import caches
 
 from app.cache import initialize_caches, candidate_set_alias, metrics_alias
 from app import config
+from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
+from app.data_providers.topic_provider import TopicProvider
 
 
 def delete_caches():
@@ -28,7 +30,23 @@ async def clear_memcache():
         await client.flush_all()
 
 
+async def clear_function_caches():
+    """
+    Clears aioboto3 function caches
+    :return:
+    """
+    cached_functions = [
+        TopicProvider.get_all,
+        CorpusFeatureGroupClient._query_corpus_items,
+    ]
+
+    for f in cached_functions:
+        # The cache is available in the function object as ``<function_name>.cache``.
+        await f.cache.clear()
+
+
 async def reset_caches():
     await clear_memcache()
+    await clear_function_caches()
     delete_caches()
     initialize_caches()

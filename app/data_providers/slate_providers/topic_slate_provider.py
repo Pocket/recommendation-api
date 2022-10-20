@@ -36,6 +36,9 @@ class TopicSlateProvider(SlateProvider):
         super().__init__(corpus_feature_group_client)
         self.topic = topic
 
+    def __str__(self):
+        return f'{self.__class__.__name__}/{self.topic.corpus_topic_id}'
+
     @property
     def candidate_set_id(self) -> str:
         return self._TOPIC_CANDIDATE_SETS[self.topic.corpus_topic_id]

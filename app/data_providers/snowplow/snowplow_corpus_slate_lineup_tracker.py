@@ -22,7 +22,7 @@ class SnowplowCorpusSlateLineupTracker:
         self.tracker = tracker
         self.snowplow_config = snowplow_config
 
-    @xray_recorder.capture_async('data_providers.SnowplowCorpusSlateLineupTracker.track')
+    @xray_recorder.capture_async('SnowplowCorpusSlateLineupTracker.track')
     async def track(self, corpus_slate_lineup: CorpusSlateLineupModel, user: UserIds):
         """
         Track the recommendation of a CorpusSlateLineup in Snowplow.

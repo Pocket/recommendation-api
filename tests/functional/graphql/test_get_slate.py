@@ -17,8 +17,7 @@ class TestGetSlate(TestDynamoDBBase):
             hashed_user_id='1-hashed',
         )
 
-    @patch('app.models.user_impressed_list.UserImpressedList.get', to_return=[])
-    def test_get_slate(self, mock_userimpressedlist_get):
+    def test_get_slate(self):
         with TestClient(app) as client:
             data = client.post(
                 '/',

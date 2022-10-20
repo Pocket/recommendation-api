@@ -1,12 +1,14 @@
+import asyncio
 import datetime
 import random
 import uuid
 from typing import Sequence
 
-from fastapi.testclient import TestClient
+from httpx import AsyncClient
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.snowplow.config import SnowplowConfig
+from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.main import app
 from app.models.corpus_item_model import CorpusItemModel
@@ -82,14 +84,15 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         }
 
         populate_topics(self.metadata_table)
-
         self.snowplow_micro = SnowplowMicroClient(config=SnowplowConfig())
         self.snowplow_micro.reset_snowplow_events()
 
     @patch.object(CorpusFeatureGroupClient, 'fetch')
     @patch.object(UserRecommendationPreferencesProvider, 'fetch')
-    def test_personalized_home_slate_lineup(
+    @patch.object(UserImpressionCapProvider, 'get')
+    async def test_personalized_home_slate_lineup(
             self,
+            mock_get_user_impression_caps,
             mock_fetch_user_recommendation_preferences,
             mock_get_ranked_corpus_items
     ):
@@ -99,9 +102,11 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         preferred_topics = [technology_topic, gaming_topic]
         preferences_fixture = _user_recommendation_preferences_fixture(str(self.user_ids.user_id), preferred_topics)
         mock_fetch_user_recommendation_preferences.return_value = preferences_fixture
+        mock_get_user_impression_caps.return_value = corpus_items_fixture[:6]
 
-        with TestClient(app) as client:
-            data = client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers=self.headers).json()
+        async with AsyncClient(app=app, base_url="http://test") as client:
+            response = await client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers=self.headers)
+            data = response.json()
 
             assert not data.get('errors')
             slates = data['data']['homeSlateLineup']['slates']
@@ -120,22 +125,27 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             recommendation_counts = [len(slate['recommendations']) for slate in slates]
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each
 
+            await self.wait_for_snowplow_events()
             all_snowplow_events = self.snowplow_micro.get_event_counts()
-            assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}, self.snowplow_micro.get_last_error()
+            assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
 
     @patch.object(CorpusFeatureGroupClient, 'fetch')
     @patch.object(UserRecommendationPreferencesProvider, 'fetch')
-    def test_unpersonalized_home_slate_lineup(
+    @patch.object(UserImpressionCapProvider, 'get')
+    async def test_unpersonalized_home_slate_lineup(
             self,
+            mock_get_user_impression_caps,
             mock_fetch_user_recommendation_preferences,
             mock_get_ranked_corpus_items
     ):
         corpus_items_fixture = _corpus_items_fixture(n=100)
         mock_get_ranked_corpus_items.return_value = corpus_items_fixture
         mock_fetch_user_recommendation_preferences.return_value = None  # User has does not have a preferences record
+        mock_get_user_impression_caps.return_value = corpus_items_fixture[:6]
 
-        with TestClient(app) as client:
-            data = client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers=self.headers).json()
+        async with AsyncClient(app=app, base_url="http://test") as client:
+            response = await client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers=self.headers)
+            data = response.json()
 
             assert not data.get('errors')
             slates = data['data']['homeSlateLineup']['slates']
@@ -155,5 +165,14 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             recommendation_counts = [len(slate['recommendations']) for slate in slates]
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each
 
+            await self.wait_for_snowplow_events()
             all_snowplow_events = self.snowplow_micro.get_event_counts()
-            assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}, self.snowplow_micro.get_last_error()
+            assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
+
+    async def wait_for_snowplow_events(self, max_wait_time: int = 5):
+        # Locally the request to Snowplow gets handled in 0.01s, but in CircleCI we need 1 second.
+        for i in range(max_wait_time):
+            if self.snowplow_micro.get_event_counts()['total'] > 0:
+                return
+            else:
+                await asyncio.sleep(1)
