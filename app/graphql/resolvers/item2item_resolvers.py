@@ -24,7 +24,8 @@ async def resolve_syndicated(root, info: Info) -> List[CorpusRecommendation]:
 
     recommender = Item2ItemRecommender()
 
-    dispatch = Item2ItemDispatch(item_recommender=recommender, metrics_client=None)
+    dispatch = Item2ItemDispatch(item_recommender=recommender)
+                                 # , metrics_client=None)
 
     return await dispatch.syndicated(item_id=resolved_id, count=recommendation_count)
 
@@ -47,7 +48,8 @@ async def resolve_publisher(root, info: Info) -> List[CorpusRecommendation]:
         argument_name='resolved_id'))
 
     recommender = Item2ItemRecommender()
-    dispatch = Item2ItemDispatch(item_recommender=recommender, metrics_client=None)
+    dispatch = Item2ItemDispatch(item_recommender=recommender)
+                                 # , metrics_client=None)
 
     return await dispatch.by_publisher(item_id=resolved_id,
                                        domain_id=domain_id,

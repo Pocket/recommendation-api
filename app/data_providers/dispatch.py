@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import List, Coroutine, Any
 
 from app.data_providers.item2item import Item2ItemRecommender
-from app.data_providers.metrics_client import MetricsFetchable
+# from app.data_providers.metrics_client import MetricsFetchable
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
@@ -26,9 +26,9 @@ from app.rankers.algorithms import rank_by_preferred_topics
 class Item2ItemDispatch:
 
     def __init__(self,
-                 metrics_client: MetricsFetchable,
+                 # metrics_client: MetricsFetchable,
                  item_recommender: Item2ItemRecommender):
-        self.metrics_client = metrics_client
+        # self.metrics_client = metrics_client
         self.item_recommender = item_recommender
 
     async def syndicated(self, item_id: str, count: int):

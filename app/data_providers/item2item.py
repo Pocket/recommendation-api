@@ -4,8 +4,7 @@ from typing import List
 from qdrant_client.http import AsyncApis
 from qdrant_client.http.models import Filter, FieldCondition, Range, MatchValue, RecommendRequest
 
-from app.main import app
-
+import app.config
 
 def _build_filter(days_old: int,
                   is_curated: bool = None,
