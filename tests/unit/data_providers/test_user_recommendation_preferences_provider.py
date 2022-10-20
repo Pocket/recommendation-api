@@ -26,6 +26,8 @@ class TestUserRecommendationPreferencesProvider:
             records_json_path=os.path.join(ROOT_DIR, 'tests/assets/json/user_recommendation_preferences.json')
         )
 
+        self.existing_user_id = '12341234'  # Defined in the above JSON fixture
+
         # This is the client that's under test.
         self.client = UserRecommendationPreferencesProvider(
             aioboto3_session=self.feature_store_mock.aioboto3,
@@ -59,10 +61,10 @@ class TestUserRecommendationPreferencesProvider:
         """
         Test the case where the queried records exist in the Feature Group.
         """
-        model = await self.client.fetch('12341234')
+        model = await self.client.fetch(self.existing_user_id)
 
         # Assert model matches fixture data in user_recommendation_preferences.json
-        assert model.user_id == '12341234'
+        assert model.user_id == self.existing_user_id
         assert model.preferred_topics == [business_topic, technology_topic]
 
     async def test_fetch_non_existing_user(self):

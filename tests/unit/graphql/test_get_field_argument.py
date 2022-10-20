@@ -1,28 +1,30 @@
 import unittest
 
-from graphql.language.ast import Field, Name, SelectionSet, Argument, IntValue
+from strawberry.types.nodes import SelectedField
 
 from app.graphql.util import get_field_argument
 
 
 def _setup_moment_slate_field_fixture(query_name: str = 'setupMomentSlate', count_value: int = 3):
-    return Field(
-        name=Name(value=query_name),
-        selection_set=SelectionSet(selections=[
-            Field(name=Name(value='id')),
-            Field(name=Name(value='headline')),
-            Field(
-                name=Name(value='recommendations'),
-                arguments=[Argument(name=Name(value='count'), value=IntValue(value=f'{count_value}'))],
-                selection_set=SelectionSet(selections=[
-                    Field(name=Name(value='id')),
-                    Field(
-                        name=Name(value='corpusItem'),
-                        selection_set=SelectionSet(selections=[Field(name=Name(value='id'))])
-                    ),
-                ])
+    return SelectedField(
+        name=query_name, directives={}, arguments={},
+        selections=[
+            SelectedField(name='headline', directives={}, arguments={}, selections=[]),
+            SelectedField(name='subheadline', directives={}, arguments={}, selections=[]),
+            SelectedField(
+                name='recommendations', directives={}, arguments={'count': str(count_value)}, selections=[
+                    SelectedField(
+                        name='id', directives={}, arguments={}, selections=[]),
+                    SelectedField(
+                        name='corpusItem', directives={}, arguments={},
+                        selections=[
+                            SelectedField(name='id', directives={}, arguments={}, selections=[]),
+                            SelectedField(name='topic', directives={}, arguments={}, selections=[])
+                        ]
+                    )
+                ],
             )
-        ])
+        ]
     )
 
 

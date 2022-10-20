@@ -1,7 +1,7 @@
 import uuid
 
 from aws_xray_sdk.core import xray_recorder
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 
 import app.config
@@ -15,10 +15,17 @@ class SlateLineupModel(BaseModel):
     """
     Models a slate_lineup.
     """
-    id: str
-    requestId: str = None
-    experimentId: str = None
-    slates: List[SlateModel]
+    id: str = Field(description='A unique slug/id that describes a SlateLineup. '
+                                'The Data & Learning team will provide apps what id to use here for specific cases.')
+    requestId: str = Field(
+        description='A guid that is unique to every API request that returned slates, such as '
+                    '`getRecommendationSlateLineup` or `getSlate`. The API will provide a new request id every time apps'
+                    ' hit the API.')
+    experimentId: str = Field(
+        default=None,
+        description='A unique guid/slug, provided by the Data & Learning team that can identify a specific experiment. '
+                    'Production apps typically won\'t request a specific one, but can for QA or during a/b testing.')
+    slates: List[SlateModel] = Field(description='An ordered list of slates for the client to display')
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_lineup_get_slate_lineup')

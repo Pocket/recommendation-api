@@ -16,6 +16,7 @@ services:
     volumes:
       - "./app:/app:ro"
       - "./tests:/tests:rw"  # give read-write permission to write junitxml test reports here.
+      - "./tmp:/tmp:rw"  # give permission to export the GraphQL schema here.
       - "./.docker:/.docker:ro"  # Functional Tests read files from .docker/localstack/dynamodb.
     depends_on:
       - localstack
@@ -29,8 +30,6 @@ services:
     ports:
       - '4566-4599:4566-4599'
       - '8080:8080'
-    volumes:
-      - ./.docker/localstack:/docker-entrypoint-initaws.d
     environment:
       - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY}
       - DEBUG=1

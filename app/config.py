@@ -71,3 +71,6 @@ personalization_fallback_slate_lineup = {
     # Web Home - Personalized Curated --> Web Home - Fallback Curated
     '05027beb-0053-4020-8bdc-4da2fcc0cb68': '249850f0-61c0-46f9-a16a-f0553c222800',
 }
+
+# For running X-Ray locally, set `AWS_XRAY_DAEMON_ADDRESS`, otherwise defaults to production value.
+xray_daemon_address = os.getenv('AWS_XRAY_DAEMON_ADDRESS', '127.0.0.1:2000')

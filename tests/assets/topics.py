@@ -24,7 +24,7 @@ technology_topic = TopicModel(
     corpus_topic_id='TECHNOLOGY',
     name='Technology',
     display_name='Technology',
-    slug='tech',
+    slug='technology',
     query='query',
     curator_label='technology',
     is_displayed=True,
@@ -63,7 +63,7 @@ entertainment_topic = TopicModel(
     corpus_topic_id='ENTERTAINMENT',
     name='Entertainment',
     display_name='Entertainment',
-    slug='Entertainment',
+    slug='entertainment',
     query='Entertainment',
     curator_label='Entertainment',
     is_displayed=False,
@@ -74,7 +74,7 @@ entertainment_topic = TopicModel(
 travel_topic = TopicModel(
     id='7dc49254-686d-46e1-aa94-7ac3e7767f66',
     corpus_topic_id='TRAVEL',
-    name='Trave',
+    name='Travel',
     display_name='Travel',
     slug='Travel',
     query='Travel',
@@ -82,6 +82,19 @@ travel_topic = TopicModel(
     is_displayed=True,
     is_promoted=True,
     page_type=PageType.topic_page
+)
+
+self_improvement_topic = TopicModel(
+    id='45f8e740-42e0-4f54-8363-21310a084f1f',
+    corpus_topic_id='SELF_IMPROVEMENT',
+    curator_label='Self Improvement',
+    name='Self Improvement',
+    display_name='Self Improvement',
+    is_displayed=True,
+    is_promoted=False,
+    page_type=PageType.topic_page,
+    query='self-improvement learning habits advice relationships spirituality',
+    slug='self-improvement'
 )
 
 
@@ -92,6 +105,7 @@ all_topic_fixtures = [
     health_topic,
     travel_topic,
     entertainment_topic,
+    self_improvement_topic,
 ]
 
 
@@ -101,6 +115,4 @@ def populate_topics(table: DynamoDBServiceResource.Table, topics: List[TopicMode
 
     for topic in topics:
         topic_dict = topic.dict()
-        # Simulate corpus_topic_id being stored in DynamoDB, without it being present on the model yet.
-        topic_dict['corpus_topic_id'] = topic.name.upper()
         table.put_item(Item=topic_dict)

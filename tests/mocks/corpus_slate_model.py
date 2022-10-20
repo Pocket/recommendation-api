@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import uuid
 
 import pytest
@@ -11,6 +12,8 @@ from app.models.corpus_slate_model import CorpusSlateModel
 def corpus_slate_10_business_recs():
     return CorpusSlateModel(
         id=str(uuid.uuid4()),
+        configuration_id='12345678-1234-1234-1234-123456789000',
+        recommended_at=datetime(2022, 7, 21, 14, 30, tzinfo=timezone.utc),
         headline="All your favorite stories",
         recommendations=[
             CorpusRecommendationModel(

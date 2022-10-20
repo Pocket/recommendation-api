@@ -2,7 +2,7 @@ import uuid
 
 from asyncio import gather
 from aws_xray_sdk.core import xray_recorder
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 
 from app.models.recommendation import RecommendationModel
@@ -16,11 +16,18 @@ class SlateModel(BaseModel):
     Models a slate
     """
     id: str
-    requestId: str = None
-    experimentId: str = None
-    display_name: str = None
-    description: str = None
-    recommendations: List[RecommendationModel] = None
+    requestId: str = Field(
+        default=None,
+        description='A guid that is unique to every API request that returned slates, such as `getSlateLineup` or '
+                    '`getSlate`. The API will provide a new request id every time apps hit the API.')
+    experimentId: str = Field(
+        default=None,
+        description='A unique guid/slug, provided by the Data & Learning team that can identify a specific experiment. '
+                    'Production apps typically won\'t request a specific one, but can for QA or during a/b testing.')
+    display_name: str = Field(default=None, description='The name to show to the user for this set of recommendations')
+    description: str = Field(default=None, description='The description of the the slate')
+    recommendations: List[RecommendationModel] = Field(
+        default=None, description='An ordered list of the recommendations to show to the user')
 
     @staticmethod
     @xray_recorder.capture_async('models_slate_get_slate')

@@ -39,18 +39,29 @@ only_dev: &only_dev
 
 jobs:
   apollo:
-    docker:
-      - image: circleci/node:16
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
+    machine:
+      image: ubuntu-2004:202104-01
+      docker_layer_caching: true
     steps:
       - checkout
+      - run:
+          name: Build docker-compose.yml
+          command: |
+            echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USERNAME --password-stdin
+            touch .env
+            docker-compose build
+      - run:
+          name: Export GraphQL schema to file
+          command: |
+            mkdir ./tmp
+            chmod 777 ./tmp
+            docker-compose run app_dev sh -c "strawberry export-schema app.graphql.graphql_router:schema > /tmp/schema.graphql"
+            cp ./tmp/schema.graphql ./
       - run:
           name: install rover
           command: |
             # download and install Rover
-            curl -sSL https://rover.apollo.dev/nix/v0.1.0 | sh
+            curl -sSL https://rover.apollo.dev/nix/v0.8.1 | sh
             # This allows the PATH changes to persist to the next `run` step
             echo 'export PATH=$HOME/.rover/bin:$PATH' >> $BASH_ENV
       - run:
@@ -70,6 +81,8 @@ jobs:
             - run:
                 name: push service to dev client graph
                 command: rover subgraph publish pocket-client-api@development --schema ./schema.graphql --routing-url https://recommendation-api.getpocket.dev/ --name=recommendation-api
+      - store_artifacts:
+          path: ./schema.graphql
 
   build:
     #Sets up the code for the docker image to build in
@@ -181,7 +194,7 @@ jobs:
             - run:
                 name: Package Lambda
                 # We bundle our code in a way that lambda can understand and execute
-                # - pipenv lock -r > requirements.txt - output a requirements.txt file from Pipfile
+                # - pipenv requirements > requirements.txt - output a requirements.txt file from Pipfile
                 # - pip install -r requirements.txt --no-deps -t package | installs the requirements into a "package" directory
                 # - change dir into the "package" dir and add all the packages to a zip file as /tmp
                 # - change dir into the "aws_lambda" dir and remove all files and folder we want to exclude from the build
@@ -189,9 +202,9 @@ jobs:
                 # - copy the zip file to /tmp/build.zip and store as a CI artifact for quick inspection of the build
                 command: |
                   apt-get update && apt-get install zip
-                  pip install pipenv
+                  pip install pipenv==2022.8.15
                   cd aws_lambda
-                  pipenv lock -r > requirements.txt
+                  pipenv requirements > requirements.txt
                   pip install -r requirements.txt --no-deps -t package
                   cd package
                   mkdir -p /tmp
@@ -224,7 +237,8 @@ workflows:
           <<: *not_main
           context: pocket
 
-      - apollo
+      - apollo:
+          context: pocket
 
       - build
 

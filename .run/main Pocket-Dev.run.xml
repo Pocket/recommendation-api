@@ -5,8 +5,6 @@
     <option name="PARENT_ENVS" value="true" />
     <envs>
       <env name="PYTHONUNBUFFERED" value="1" />
-      <env name="AWS_PROFILE" value="pocket-dev-PocketSSODataLearning" />
-      <env name="AWS_DEFAULT_REGION" value="us-east-1" />
     </envs>
     <option name="SDK_HOME" value="docker-compose://[$PROJECT_DIR$/docker-compose-dev.yml]:app_dev/python" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />

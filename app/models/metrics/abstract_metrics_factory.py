@@ -52,7 +52,7 @@ class AbstractMetricsFactory(ABC):
         metrics = {k.split("/")[0]: self.parse_from_record(v) for k, v in metrics.items() if v is not None}
 
         if not metrics:
-            logging.error(f"No metrics for module {module_id} with keys={keys}")
+            logging.warn(f"No metrics for module {module_id} with keys={keys}")
 
         return metrics
 
