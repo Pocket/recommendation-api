@@ -99,10 +99,7 @@ class SlateProvider(ABC):
         Fewer may be returned if insufficient content is available.
         :return: A Corpus Slate that can be recommended
         """
-        async with xray_recorder.capture_async(f'{str(self)}.get_slate') as subsegment:
-            subsegment.put_annotation('candidate_set_id', self.candidate_set_id)
-            subsegment.put_annotation('provider_name', self.provider_name)
-
+        async with xray_recorder.capture_async(f'{str(self)}.get_slate'):
             candidate_items = await self.get_candidate_corpus_items()
             ranked_items = await self.rank_corpus_items(candidate_items, *args, **kwargs)
             recommendations = await self.get_recommendations(ranked_items, *args, **kwargs)
