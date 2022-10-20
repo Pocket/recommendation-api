@@ -18,13 +18,14 @@ boto3-stubs = {extras = ["essential"], version = "==1.21.46"}
 aioresponses = "*"
 pytest-asyncio = "*"
 pytest-aiohttp = "*"
+httpx = "*"
 
 [packages]
 sentry-sdk = "*"
 aioboto3 = "*"
 gunicorn = "*"
 uvicorn = {extras = ["standard"], version = "*"}
-fastapi = "==0.69.0"
+fastapi = "==0.85.1"
 gql = "*"
 xraysink = "*"
 aws-xray-sdk = "*"

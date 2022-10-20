@@ -19,7 +19,6 @@ class UserImpressionCapProvider:
     def __init__(self, aioboto3_session: aioboto3.session.Session):
         self.aioboto3_session = aioboto3_session
 
-    @xray_recorder.capture_async('UserImpressionCapProvider.get')
     async def get(self, user_ids: UserIds) -> List[CorpusItemModel]:
         """
         Get corpus item ids that should be filtered in slates that are shown to the user with given user.
@@ -43,7 +42,7 @@ class UserImpressionCapProvider:
     def parse_snowflake_array(arr: str) -> List[str]:
         return arr.strip('[]').split(',')
 
-    @xray_recorder.capture_async('UserImpressedList._query_item_list')
+    @xray_recorder.capture_async('UserImpressionCapProvider._query_item_list')
     async def _query_item_list(self, user_ids: UserIds) -> List[str]:
         """
         Queries impressed items to be filtered from the Feature Group.
