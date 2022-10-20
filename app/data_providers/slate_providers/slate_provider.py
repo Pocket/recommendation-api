@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 from uuid import uuid5, UUID
 
+from aws_xray_sdk.core import xray_recorder
+
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.graphql.recommendation_reason_type import RecommendationReasonType
 from app.models.corpus_item_model import CorpusItemModel
@@ -52,6 +54,9 @@ class SlateProvider(ABC):
         """
         return self.__class__.__name__
 
+    def __str__(self):
+        return self.provider_name
+
     @property
     def configuration_id(self) -> str:
         """
@@ -94,15 +99,19 @@ class SlateProvider(ABC):
         Fewer may be returned if insufficient content is available.
         :return: A Corpus Slate that can be recommended
         """
-        candidate_items = await self.get_candidate_corpus_items()
-        ranked_items = await self.rank_corpus_items(candidate_items, *args, **kwargs)
-        recommendations = await self.get_recommendations(ranked_items, *args, **kwargs)
+        async with xray_recorder.capture_async(f'{str(self)}.get_slate') as subsegment:
+            subsegment.put_annotation('candidate_set_id', self.candidate_set_id)
+            subsegment.put_annotation('provider_name', self.provider_name)
 
-        return CorpusSlateModel(
-            configuration_id=self.configuration_id,
-            headline=self.headline,
-            subheadline=self.subheadline,
-            more_link=self.more_link,
-            recommendations=recommendations,
-            recommendation_reason_type=self.recommendation_reason_type,
-        )
+            candidate_items = await self.get_candidate_corpus_items()
+            ranked_items = await self.rank_corpus_items(candidate_items, *args, **kwargs)
+            recommendations = await self.get_recommendations(ranked_items, *args, **kwargs)
+
+            return CorpusSlateModel(
+                configuration_id=self.configuration_id,
+                headline=self.headline,
+                subheadline=self.subheadline,
+                more_link=self.more_link,
+                recommendations=recommendations,
+                recommendation_reason_type=self.recommendation_reason_type,
+            )

@@ -32,6 +32,7 @@ class UserRecommendationPreferencesProvider:
         """
         await self._put_feature_store_record(model)
 
+    @xray_recorder.capture_async('UserRecommendationPreferencesProvider.fetch')
     async def fetch(self, user_id: str) -> Optional[UserRecommendationPreferencesModel]:
         """
         Gets user recommendation preferences for a given user id.
@@ -88,7 +89,6 @@ class UserRecommendationPreferencesProvider:
         # Map list of features to dict.
         return {feature['FeatureName']: feature['ValueAsString'] for feature in record['Record']}
 
-    @xray_recorder.capture_async('UserRecommendationPreferencesProvider._model_from_feature_store_record')
     async def _model_from_feature_store_record(
         self, record: Optional[Dict[str, Any]],
     ) -> UserRecommendationPreferencesModel:

@@ -5,6 +5,8 @@ from asyncio import gather
 from datetime import datetime, timezone
 from typing import List, Coroutine, Any
 
+from aws_xray_sdk.core import xray_recorder
+
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
@@ -105,6 +107,7 @@ class HomeDispatch:
         self.topic_slate_providers = topic_slate_providers
         self.collection_slate_provider = collection_slate_provider
 
+    @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
     async def get_slate_lineup(
             self, user: UserIds, slate_count: int, recommendation_count: int
     ) -> CorpusSlateLineupModel:
@@ -164,6 +167,7 @@ class HomeDispatch:
 
         return slates
 
+    @xray_recorder.capture_async('HomeDispatch._get_preferred_topics')
     async def _get_preferred_topics(self, user: UserIds) -> List[TopicModel]:
         preferences = await self.preferences_provider.fetch(str(user.user_id))
         if preferences and preferences.preferred_topics:
@@ -171,6 +175,7 @@ class HomeDispatch:
         else:
             return []
 
+    @xray_recorder.capture_async('HomeDispatch._get_topic_slate_promises')
     async def _get_topic_slate_promises(
             self, preferred_topics: List[TopicModel]) -> List[Coroutine[Any, Any, CorpusSlateModel]]:
         preferred_topic_ids = [t.id for t in preferred_topics]
