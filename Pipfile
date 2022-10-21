@@ -21,7 +21,7 @@ pytest-aiohttp = "*"
 httpx = "*"
 
 [packages]
-sentry-sdk = "*"
+sentry-sdk = "==1.9.10"
 aioboto3 = "*"
 gunicorn = "*"
 uvicorn = {extras = ["standard"], version = "*"}

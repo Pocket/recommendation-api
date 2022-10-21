@@ -33,14 +33,14 @@ class Item2ItemDispatch:
         # self.metrics_client = metrics_client
         self.item_recommender = item_recommender
 
-    async def syndicated(self, item_id: str, count: int):
-        candidates = self.item_recommender.syndicated(item_id, count)
+    async def syndicated(self, item_id: int, count: int) -> List[int]:
+        candidates = await self.item_recommender.syndicated(item_id, count)
         # ranked = self.metrics_client.rank_items(candidates, rankers=[thompson_sampling_28day])
         # return ranked
         return candidates
 
-    async def by_publisher(self, item_id: str, domain_id: int, count: int):
-        candidates = self.item_recommender.by_publisher(item_id, domain_id, count)
+    async def by_publisher(self, item_id: int, domain_id: int, count: int) -> List[int]:
+        candidates = await self.item_recommender.by_publisher(item_id, domain_id, count)
         # ranked = self.metrics_client.rank_items(candidates, rankers=[thompson_sampling_28day])
         # return ranked
         return candidates
