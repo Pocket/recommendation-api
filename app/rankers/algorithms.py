@@ -284,6 +284,37 @@ def spread_topics(recs: CorpusItemListType) -> CorpusItemListType:
     return result_recs
 
 
+def spread_topics_publishers(recs: CorpusItemListType, pub_spread: int = 2) -> CorpusItemListType:
+    """
+        :param recs:
+        :param pub_spread: desired gap between items with the same publisher
+        :return: Recommendations spread by topic, while otherwise preserving the order.
+
+        This method will enforce gaps as best it can at top of list, but will process all recs
+        Topic spreading is prioritized since it reflects a user preference
+        """
+    topic_spread = len(set(r.topic for r in recs)) - 1
+    result_recs = []
+    remaining_recs = copy(recs)
+
+    while remaining_recs:
+        topics_to_avoid = set(r.topic for r in result_recs[-topic_spread:])
+        publishers_to_avoid = set(r.publisher for r in result_recs[-pub_spread:])
+        # identify availble recs that satisfy topic constraint
+        topic_recs = [r for r in remaining_recs if r.topic not in topics_to_avoid]
+        if topic_recs:
+            # Get the first remaining rec that satisfies publisher constraint, or the first remaining rec
+            # from subset with eligible topics
+            rec = next((r for r in topic_recs if r.publisher not in publishers_to_avoid), topic_recs[0])
+        else:
+            # Get the first remaining rec which topic which is not a repeat topic, or the first remaining rec
+            rec = next((r for r in remaining_recs if r.publisher not in publishers_to_avoid), remaining_recs[0])
+        result_recs.append(rec)
+        remaining_recs.remove(rec)
+
+    return result_recs
+
+
 @xray_recorder.capture('rankers_algorithms_spread_publishers')
 def spread_publishers(recs: RecommendationListType, spread: int = 3) -> RecommendationListType:
     """

@@ -5,13 +5,15 @@ import json
 import pytest
 from app.models.corpus_item_model import CorpusItemModel
 
+from collections import Counter
 from tests.assets.engagement_metrics import generate_metrics, generate_firefox_metrics, generate_metrics_model_dict
 from tests.assets.topics import *
 from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_nontopic_configs, generate_lineup_configs
 from app.config import ROOT_DIR
 from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, rank_topics, \
     thompson_sampling_1day, thompson_sampling_7day, thompson_sampling_14day, blocklist, top1_topics, top3_topics, \
-    firefox_thompson_sampling_1day, rank_by_impression_caps, rank_by_preferred_topics
+    firefox_thompson_sampling_1day, rank_by_impression_caps, rank_by_preferred_topics, spread_topics, \
+    spread_topics_publishers
 from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
 from operator import itemgetter
 
@@ -25,15 +27,90 @@ class MockCorpusItems:
         return [business_topic, technology_topic, gaming_topic, health_topic, entertainment_topic]
 
     @staticmethod
+    def get_publishers():
+        return ["thedude.com", "walter.com", "donnie.com", "bowling.com", "abide.com"]
+
+    @staticmethod
     def get_recs():
         topics = MockCorpusItems.get_topics()
         # 5 topics x 3 articles
         recs = []
         for t in topics:
             for j in range(3):
-                recs.append(CorpusItemModel(id=f'{t.name}-rec-{j}', topic=t.corpus_topic_id))
+                recs.append(CorpusItemModel(id=f'{t.name}-rec-{j}', topic=t.corpus_topic_id,
+                                            publisher="that_one_site.com"))
 
         return recs
+
+    @staticmethod
+    def get_recs_with_publishers():
+        topics = MockCorpusItems.get_topics()
+        publishers = MockCorpusItems.get_publishers()
+        # 5 topics x 5 publishers x 3 articles
+        recs = []
+        for t in topics:
+            for p in publishers:
+                for j in range(3):
+                    recs.append(CorpusItemModel(id=f'{t.name}-{p}-rec-{j}', topic=t.corpus_topic_id,
+                                                publisher=p))
+
+        return recs
+
+
+def test_spread_topics():
+    recs = MockCorpusItems.get_recs()
+    topics = set([r.topic for r in recs])
+    reordered = spread_topics(recs)
+
+    for i, r in enumerate(reordered[:15]):
+        if i == 0:
+            prev_topic = r.topic
+        else:  # could write a more complex test for bigger spreads
+            assert r.topic != prev_topic
+            prev_topic = r.topic
+
+    # there are three sets of items per topic
+    c5 = Counter([r.topic for r in reordered[:5]])
+    c10 = Counter([r.topic for r in reordered[:10]])
+    c15 = Counter([r.topic for r in reordered[:15]])
+    for t in topics:
+        assert c5[t] == 1
+        assert c10[t] == 2
+        assert c15[t] == 3
+
+
+
+def test_spread_topics_publishers():
+    recs = MockCorpusItems.get_recs_with_publishers()
+    topics = set([r.topic for r in recs])
+
+    for pub_spread in [2, 3, 4]:
+        reordered = spread_topics_publishers(recs, pub_spread=pub_spread)
+
+        for i, r in enumerate(reordered[:15]):
+            if i == 0:
+                prev_topic = r.topic
+                prev_publisher = r.publisher
+            else:  # could write a more complex test for bigger spreads
+                assert r.topic != prev_topic
+                assert r.publisher != prev_publisher
+                prev_topic = r.topic
+                prev_publisher = r.publisher
+
+            # there are three sets of items per topic publisher pair
+            c5 = Counter([r.topic for r in reordered[:5]])
+            p5 = [r.publisher for r in reordered[:5]]
+            c10 = Counter([r.topic for r in reordered[:10]])
+            p10 = [r.publisher for r in reordered[5:10]]
+            c15 = Counter([r.topic for r in reordered[:15]])
+            p15 = [r.publisher for r in reordered[10:15]]
+            for t in topics:
+                assert c5[t] == 1
+                assert len(set(p5)) > pub_spread
+                assert c10[t] == 2
+                assert len(set(p10)) > pub_spread
+                assert c15[t] == 3
+                assert len(set(p15)) > pub_spread
 
 
 @pytest.mark.parametrize("user_prefs", [
@@ -59,7 +136,7 @@ def test_rank_by_preferred_topics(user_prefs):
 @pytest.mark.parametrize("capped_corpus_items", [
     ([r for i, r in enumerate(MockCorpusItems.get_recs()) if i % 2 == 0]),
     ([]),
-    ([CorpusItemModel(id='non-existing-id')]),
+    ([CorpusItemModel(id='non-existing-id', publisher='this.com')]),
 ])
 def test_rank_by_impression_caps(capped_corpus_items: List[CorpusItemModel]):
     recs = MockCorpusItems.get_recs()
