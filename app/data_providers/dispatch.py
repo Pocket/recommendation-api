@@ -130,10 +130,11 @@ class HomeDispatch:
         """
         slates = []
 
-        user_impression_capped_list, preferred_topics, is_in_contentv1_experiment = await gather(
+        user_impression_capped_list, preferred_topics, is_in_contentv1_treatment = await gather(
             self.user_impression_cap_provider.get(user),
             self._get_preferred_topics(user),
-            self.unleash_provider.is_in_variant('temp.data-products.recommendation-api.home.contentv1', 'variant', user),
+            self.unleash_provider.is_in_variant(
+                'temp.data-products.recommendation-api.home.contentv1', variant='treatment', user=user),
         )
 
         if preferred_topics:
@@ -144,7 +145,7 @@ class HomeDispatch:
         else:
             slates += [self.recommended_reads_slate_provider.get_slate()]
 
-        if is_in_contentv1_experiment:
+        if is_in_contentv1_treatment:
             slates += [self.pocket_hits_slate_provider.get_slate()]
 
         slates += [self.collection_slate_provider.get_slate()]

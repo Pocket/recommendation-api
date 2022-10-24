@@ -15,4 +15,3 @@ user_recommendation_preferences_provider = UserRecommendationPreferencesProvider
     topic_provider=topic_provider
 )
 user_impression_cap_provider = UserImpressionCapProvider(aioboto3_session=aioboto3_session)
-unleash_provider = UnleashProvider(PocketGraphClientSession(PocketGraphConfig()), unleash_config=UnleashConfig())

@@ -42,7 +42,7 @@ class UnleashProvider:
         :return: True if the user is assigned to the given assignment and variant
         """
         assignments = await self.get_assignments([name], user=user)
-        return assignments and assignments[0].variant == variant
+        return bool(assignments and assignments[0].variant == variant)
 
     async def get_assignments(self, names: List[str], user: UserIds) -> List[UnleashAssignmentModel]:
         """
