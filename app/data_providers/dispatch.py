@@ -24,7 +24,7 @@ from app.models.topic import TopicModel
 from app.models.user_ids import UserIds
 from app.rankers.algorithms import rank_by_preferred_topics, spread_topics
 
-
+# todo: add thompson sampling
 class Item2ItemDispatch:
 
     def __init__(self,
