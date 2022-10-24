@@ -1,11 +1,11 @@
-from typing import List
+from typing import List, Optional
 
 from aws_xray_sdk.core import xray_recorder
 
 from app.data_providers.PocketGraphClientSession import PocketGraphClientSession
 from app.config import ENV, ENV_PROD
 from app.models.unleash_assignment import UnleashAssignmentModel
-from app.models.user import User
+from app.models.user_ids import UserIds
 
 
 class UnleashConfig:
@@ -34,10 +34,19 @@ class UnleashProvider:
         self.pocket_graph_client_session = pocket_graph_client_session
         self.unleash_config = unleash_config
 
-    @xray_recorder.capture_async('data_providers.UnleashProvider.get_assignments')
-    async def get_assignments(self, names: List[str], user: User) -> List[UnleashAssignmentModel]:
+    async def is_in_variant(self, name: str, variant: str, user: UserIds) -> bool:
         """
-        Returns Unleash assignments with certain assignment names.
+        :param name: name of the assignment
+        :param variant:
+        :param user:
+        :return: True if the user is assigned to the given assignment and variant
+        """
+        assignments = await self.get_assignments([name], user=user)
+        return assignments and assignments[0].variant == variant
+
+    async def get_assignments(self, names: List[str], user: UserIds) -> List[UnleashAssignmentModel]:
+        """
+        Returns Unleash assignments with certain assignment names that the user is assigned to.
         :param names:
         :param user:
         :return:
@@ -47,9 +56,10 @@ class UnleashProvider:
         # https://github.com/Pocket/feature-flags/blob/main/schema.graphql#L25
         all_assignments = await self._get_all_assignments(user=user)
 
-        return [assignment for assignment in all_assignments if assignment.name in names]
+        return [assignment for assignment in all_assignments if assignment.name in names and assignment.assigned]
 
-    async def _get_all_assignments(self, user: User) -> List[UnleashAssignmentModel]:
+    @xray_recorder.capture_async('data_providers.UnleashProvider._get_all_assignments')
+    async def _get_all_assignments(self, user: UserIds) -> List[UnleashAssignmentModel]:
         """
         Get all Unleash assignments for the given user/session.
         :param user:

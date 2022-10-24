@@ -10,9 +10,11 @@ from aws_xray_sdk.core import xray_recorder
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
+from app.data_providers.slate_providers.pocket_hits_slate_provider import PocketHitsSlateProvider
 from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
 from app.data_providers.topic_provider import TopicProvider
+from app.data_providers.unleash_provider import UnleashProvider
 from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
@@ -97,6 +99,8 @@ class HomeDispatch:
             recommended_reads_slate_provider: RecommendedReadsSlateProvider,
             topic_slate_providers: TopicSlateProviderFactory,
             collection_slate_provider: CollectionSlateProvider,
+            pocket_hits_slate_provider: PocketHitsSlateProvider,
+            unleash_provider: UnleashProvider,
     ):
         self.topic_provider = topic_provider
         self.corpus_client = corpus_client
@@ -106,6 +110,8 @@ class HomeDispatch:
         self.recommended_reads_slate_provider = recommended_reads_slate_provider
         self.topic_slate_providers = topic_slate_providers
         self.collection_slate_provider = collection_slate_provider
+        self.pocket_hits_slate_provider = pocket_hits_slate_provider
+        self.unleash_provider = unleash_provider
 
     @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
     async def get_slate_lineup(
@@ -124,9 +130,10 @@ class HomeDispatch:
         """
         slates = []
 
-        user_impression_capped_list, preferred_topics = await gather(
+        user_impression_capped_list, preferred_topics, is_in_contentv1_experiment = await gather(
             self.user_impression_cap_provider.get(user),
-            self._get_preferred_topics(user)
+            self._get_preferred_topics(user),
+            self.unleash_provider.is_in_variant('temp.data-products.recommendation-api.home.contentv1', 'variant', user),
         )
 
         if preferred_topics:
@@ -136,6 +143,9 @@ class HomeDispatch:
             )]
         else:
             slates += [self.recommended_reads_slate_provider.get_slate()]
+
+        if is_in_contentv1_experiment:
+            slates += [self.pocket_hits_slate_provider.get_slate()]
 
         slates += [self.collection_slate_provider.get_slate()]
         slates += await self._get_topic_slate_promises(preferred_topics=preferred_topics)

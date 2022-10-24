@@ -1,7 +1,9 @@
 import aioboto3
 
+from app.data_providers.PocketGraphClientSession import PocketGraphClientSession, PocketGraphConfig
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.topic_provider import TopicProvider
+from app.data_providers.unleash_provider import UnleashProvider, UnleashConfig
 from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 
@@ -13,3 +15,4 @@ user_recommendation_preferences_provider = UserRecommendationPreferencesProvider
     topic_provider=topic_provider
 )
 user_impression_cap_provider = UserImpressionCapProvider(aioboto3_session=aioboto3_session)
+unleash_provider = UnleashProvider(PocketGraphClientSession(PocketGraphConfig()), unleash_config=UnleashConfig())
