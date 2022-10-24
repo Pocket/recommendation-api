@@ -5,6 +5,7 @@ from strawberry.types import Info
 from app.data_providers.dispatch import HomeDispatch
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
+from app.data_providers.slate_providers.pocket_hits_slate_provider import PocketHitsSlateProvider
 from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
 from app.data_providers.snowplow.config import create_snowplow_tracker, SnowplowConfig
@@ -18,6 +19,7 @@ from app.singletons import (
     topic_provider,
     user_impression_cap_provider,
     user_recommendation_preferences_provider,
+    unleash_provider,
 )
 
 
@@ -45,6 +47,8 @@ async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
         recommended_reads_slate_provider=RecommendedReadsSlateProvider(corpus_client),
         topic_slate_providers=TopicSlateProviderFactory(corpus_client),
         collection_slate_provider=CollectionSlateProvider(corpus_client),
+        pocket_hits_slate_provider=PocketHitsSlateProvider(corpus_client),
+        unleash_provider=unleash_provider,
     ).get_slate_lineup(
         user=user,
         slate_count=slate_count,
