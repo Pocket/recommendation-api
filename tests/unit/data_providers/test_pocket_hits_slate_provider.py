@@ -1,4 +1,3 @@
-import datetime
 import os
 
 import pytest
@@ -8,19 +7,7 @@ from app.config import ROOT_DIR
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.pocket_hits_slate_provider import PocketHitsSlateProvider
 from app.models.recommendation_reason_type import RecommendationReasonType
-from tests.assets.topics import business_topic
 from tests.mocks.feature_store_mock import FeatureStoreMock
-
-
-@pytest.fixture
-def patch_datetime_now(monkeypatch):
-
-    class mydatetime:
-        @classmethod
-        def now(cls):
-            return datetime.datetime(2022, 10, 24, 14, 0, 0)  # Oct 24th was a Monday
-
-    monkeypatch.setattr(datetime, 'datetime', mydatetime)
 
 
 @pytest.mark.asyncio
