@@ -19,6 +19,7 @@ aioresponses = "*"
 pytest-asyncio = "*"
 pytest-aiohttp = "*"
 httpx = "*"
+freezegun = "*"
 
 [packages]
 sentry-sdk = "*"

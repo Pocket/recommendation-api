@@ -7,6 +7,7 @@ from tests.mocks.corpus_slate_model import *
 from tests.mocks.user import *
 
 
+@pytest.mark.asyncio
 async def test_track_successful_response(snowplow_tracker, corpus_slate_10_business_recs, user_1, caplog):
     slate_tracker = SnowplowCorpusSlateTracker(snowplow_tracker, snowplow_config=SnowplowConfig())
     await slate_tracker.track(corpus_slate_10_business_recs, user=user_1)
@@ -15,6 +16,7 @@ async def test_track_successful_response(snowplow_tracker, corpus_slate_10_busin
     assert not any(r for r in caplog.records if r.levelname in ('WARNING', 'ERROR', 'CRITICAL'))
 
 
+@pytest.mark.asyncio
 async def test_track_failure_response(
         snowplow_tracker_with_server_failure, corpus_slate_10_business_recs, user_1, caplog):
     slate_tracker = SnowplowCorpusSlateTracker(snowplow_tracker_with_server_failure, snowplow_config=SnowplowConfig())

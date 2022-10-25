@@ -4,6 +4,7 @@ from aio_snowplow_tracker import SelfDescribingJson, Subject
 
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel
 from app.models.corpus_slate_model import CorpusSlateModel
+from app.models.unleash_assignment import UnleashAssignmentModel
 from app.models.user_ids import UserIds
 
 
@@ -73,3 +74,15 @@ def get_corpus_slate_lineup_entity(schema: str, corpus_slate_lineup: CorpusSlate
             'slates': [get_corpus_slate_data(corpus_slate) for corpus_slate in corpus_slate_lineup.slates]
         },
     )
+
+
+def get_feature_flag_entity(schema: str, assignment: UnleashAssignmentModel) -> SelfDescribingJson:
+    """
+    :param schema: Versioned Snowplow schema URI
+    :param assignment: Unleash assignment a.k.a. 'feature flag'
+    :return: Snowplow feature_flag entity
+    """
+    return SelfDescribingJson(schema=schema, data={
+        'name': assignment.name,
+        'variant': assignment.variant,
+    })
