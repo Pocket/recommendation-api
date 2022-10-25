@@ -1,6 +1,8 @@
 from datetime import datetime
+from typing import Optional
 
 from app.data_providers.slate_providers.slate_provider import SlateProvider
+from app.models.recommendation_reason_type import RecommendationReasonType
 
 
 class PocketHitsSlateProvider(SlateProvider):
@@ -12,3 +14,7 @@ class PocketHitsSlateProvider(SlateProvider):
     @property
     def headline(self) -> str:
         return f'{datetime.now().strftime("%A")}’s Pocket Hits'
+
+    @property
+    def recommendation_reason_type(self) -> Optional[RecommendationReasonType]:
+        return RecommendationReasonType.POCKET_HITS
