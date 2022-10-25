@@ -2,13 +2,13 @@ import json
 import os
 
 import aiohttp
-import pytest
+import pytest_asyncio
 from aiohttp.test_utils import TestServer
 
 from app.config import ROOT_DIR
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def pocket_graph_server(aiohttp_server) -> TestServer:
     async def mock_graphql_query(request):
         if 'requests' not in request.app:
@@ -26,7 +26,7 @@ async def pocket_graph_server(aiohttp_server) -> TestServer:
     return await aiohttp_server(app)
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def failing_pocket_graph_server(aiohttp_server) -> TestServer:
     async def mock_graphql_query(request):
         return aiohttp.web.Response(body=b'Simulating an internal server error', status=501)

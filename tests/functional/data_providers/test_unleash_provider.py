@@ -1,3 +1,4 @@
+import pytest
 from aiohttp import ClientError
 
 from app.data_providers.PocketGraphClientSession import PocketGraphClientSession, PocketGraphConfig
@@ -15,6 +16,7 @@ def _get_pocket_graph_config(pocket_graph_server: TestServer):
     return config
 
 
+@pytest.mark.asyncio
 async def test_get_assignments(pocket_graph_server: TestServer, user_1: UserIds):
     unleash_config = UnleashConfig()
 
@@ -37,6 +39,7 @@ async def test_get_assignments(pocket_graph_server: TestServer, user_1: UserIds)
     assert unleash_assignments == [UnleashAssignmentModel(assigned=True, name='test.getstarted', variant='v0')]
 
 
+@pytest.mark.asyncio
 async def test_get_assignments_server_error(failing_pocket_graph_server: TestServer, user_1: UserIds):
     # Assert that an exception is raised when the Pocket GraphQL server responds with a server error.
     with pytest.raises(ClientError) as exception_info:
