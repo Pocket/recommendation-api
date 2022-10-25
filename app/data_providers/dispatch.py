@@ -136,7 +136,7 @@ class HomeDispatch:
         user_impression_capped_list, preferred_topics, contentv1_assignment = await gather(
             self.user_impression_cap_provider.get(user),
             self._get_preferred_topics(user),
-            self.unleash_provider.get_assignment('temp.data-products.recommendation-api.home.contentv1', user=user),
+            self.unleash_provider.get_assignment('temp.web.recommendation-api.home.contentv1', user=user),
         )
 
         if preferred_topics:
