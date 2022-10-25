@@ -6,6 +6,7 @@ from app.data_providers.PocketGraphClientSession import PocketGraphClientSession
 from app.data_providers.dispatch import HomeDispatch
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
+from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
 from app.data_providers.slate_providers.pocket_hits_slate_provider import PocketHitsSlateProvider
 from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
@@ -50,6 +51,7 @@ async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
         topic_slate_providers=TopicSlateProviderFactory(corpus_client),
         collection_slate_provider=CollectionSlateProvider(corpus_client),
         pocket_hits_slate_provider=PocketHitsSlateProvider(corpus_client),
+        life_hacks_slate_provider=LifeHacksSlateProvider(corpus_client),
         unleash_provider=unleash_provider,
     ).get_slate_lineup(
         user=user,

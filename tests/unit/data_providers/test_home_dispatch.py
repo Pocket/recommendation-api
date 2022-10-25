@@ -9,6 +9,7 @@ from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureG
 from app.data_providers.dispatch import HomeDispatch
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
+from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
 from app.data_providers.slate_providers.pocket_hits_slate_provider import PocketHitsSlateProvider
 from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
@@ -65,6 +66,7 @@ class TestHomeDispatch:
             topic_slate_providers=MagicMock(TopicSlateProviderFactory),
             collection_slate_provider=MagicMock(CollectionSlateProvider),
             pocket_hits_slate_provider=MagicMock(PocketHitsSlateProvider),
+            life_hacks_slate_provider=MagicMock(LifeHacksSlateProvider),
             unleash_provider=self.unleash_provider,
         )
 
@@ -109,6 +111,8 @@ class TestHomeDispatch:
             ['PH1', 'PH2', 'PH3'], headline='Pocket Hits')
         self.home_dispatch.collection_slate_provider.get_slate.return_value = _generate_slate(
             ['Tech1', 'Ent2', 'Self1'], headline='Collections')
+        self.home_dispatch.life_hacks_slate_provider.get_slate.return_value = _generate_slate(
+            ['LifeHack1', 'LifeHack2'], headline='Pocket Hits')
         self.home_dispatch.topic_provider.get_topics.return_value = [technology_topic]
         self.home_dispatch.topic_slate_providers.__getitem__.side_effect = [
             MockSlateProvider(_generate_slate(['Tech1', 'Tech2', 'Tech3', 'Tech4'], headline='Technology')),
@@ -120,5 +124,6 @@ class TestHomeDispatch:
             ['Tech2', 'Ent4'],
             ['PH1', 'PH2'],
             ['Tech1', 'Ent2'],
+            ['LifeHack1', 'LifeHack2'],
             ['Tech3', 'Tech4'],
         ] == [[rec.corpus_item.id for rec in slate.recommendations] for slate in lineup.slates]

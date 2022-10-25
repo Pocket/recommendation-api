@@ -10,6 +10,7 @@ from aws_xray_sdk.core import xray_recorder
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
+from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
 from app.data_providers.slate_providers.pocket_hits_slate_provider import PocketHitsSlateProvider
 from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
@@ -100,6 +101,7 @@ class HomeDispatch:
             topic_slate_providers: TopicSlateProviderFactory,
             collection_slate_provider: CollectionSlateProvider,
             pocket_hits_slate_provider: PocketHitsSlateProvider,
+            life_hacks_slate_provider: LifeHacksSlateProvider,
             unleash_provider: UnleashProvider,
     ):
         self.topic_provider = topic_provider
@@ -111,6 +113,7 @@ class HomeDispatch:
         self.topic_slate_providers = topic_slate_providers
         self.collection_slate_provider = collection_slate_provider
         self.pocket_hits_slate_provider = pocket_hits_slate_provider
+        self.life_hacks_slate_provider = life_hacks_slate_provider
         self.unleash_provider = unleash_provider
 
     @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
@@ -146,9 +149,14 @@ class HomeDispatch:
             slates += [self.recommended_reads_slate_provider.get_slate()]
 
         if is_in_contentv1_treatment:
-            slates += [self.pocket_hits_slate_provider.get_slate()]
+            slates += [
+                self.pocket_hits_slate_provider.get_slate(),
+                self.collection_slate_provider.get_slate(),
+                self.life_hacks_slate_provider.get_slate(),
+            ]
+        else:
+            slates += [self.collection_slate_provider.get_slate()]
 
-        slates += [self.collection_slate_provider.get_slate()]
         slates += await self._get_topic_slate_promises(preferred_topics=preferred_topics)
 
         return CorpusSlateLineupModel(
