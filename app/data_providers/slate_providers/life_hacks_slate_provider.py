@@ -13,4 +13,4 @@ class LifeHacksSlateProvider(SlateProvider):
 
     @property
     def subheadline(self) -> str:
-        return 'Curated by Pocket'
+        return 'Tips for better living'
