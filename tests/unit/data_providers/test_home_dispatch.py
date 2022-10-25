@@ -20,6 +20,7 @@ from app.data_providers.user_recommendation_preferences_provider import UserReco
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
+from app.models.unleash_assignment import UnleashAssignmentModel
 from app.models.user_ids import UserIds
 from tests.assets.topics import technology_topic, entertainment_topic, self_improvement_topic
 
@@ -74,7 +75,8 @@ class TestHomeDispatch:
         """
         Test that corpus recommendations are deduplicated across slates in the Home lineup.
         """
-        self.unleash_provider.is_in_variant.return_value = False
+        self.unleash_provider.get_assignment.return_value = UnleashAssignmentModel(
+            assigned=True, name='content_v1', variant='control')
         self.preferences_provider.fetch.return_value = None
         self.home_dispatch.recommended_reads_slate_provider.get_slate.return_value = _generate_slate(
             ['Tech2', 'Ent4'], headline='Collections')
@@ -103,7 +105,8 @@ class TestHomeDispatch:
         """
         Test that the Pocket Hits slate is returned if the user is in the treatment variant of the experiment.
         """
-        self.unleash_provider.is_in_variant.return_value = True
+        self.unleash_provider.get_assignment.return_value = UnleashAssignmentModel(
+            assigned=True, name='content_v1', variant='treatment')
         self.preferences_provider.fetch.return_value = None
         self.home_dispatch.recommended_reads_slate_provider.get_slate.return_value = _generate_slate(
             ['Tech2', 'Ent4'], headline='Recommended Reads')

@@ -34,15 +34,14 @@ class UnleashProvider:
         self.pocket_graph_client_session = pocket_graph_client_session
         self.unleash_config = unleash_config
 
-    async def is_in_variant(self, name: str, variant: str, user: UserIds) -> bool:
+    async def get_assignment(self, name: str, user: UserIds) -> Optional[UnleashAssignmentModel]:
         """
         :param name: name of the assignment
-        :param variant:
         :param user:
-        :return: True if the user is assigned to the given assignment and variant
+        :return: UnleashAssignmentModel if the user is assigned else None.
         """
         assignments = await self.get_assignments([name], user=user)
-        return bool(assignments and assignments[0].variant == variant)
+        return assignments[0] if assignments else None
 
     async def get_assignments(self, names: List[str], user: UserIds) -> List[UnleashAssignmentModel]:
         """
