@@ -28,7 +28,7 @@ class TestPocketHitsSlateProvider:
         assert RecommendationReasonType.POCKET_HITS == slate.recommendation_reason_type
 
     @freeze_time("2022-10-24 16:00:00")  # Oct 24th, 2022 was a Monday
-    async def test_headline(self, patch_datetime_now):
+    async def test_headline(self):
         slate = await self.slate_provider.get_slate()
 
         assert slate.headline == 'Monday’s Pocket Hits'
