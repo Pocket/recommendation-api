@@ -48,7 +48,7 @@ def get_field_argument(
 def get_request_user(info: Info) -> RequestUser:
     """
     Get user ids from the request headers that are available in the GraphQL context.
-    :param info:
+    :param info: @see https://github.com/Pocket/client-api/blob/main/api-docs/docs/headers.md
     :return:
     """
     headers = info.context.get('request').headers
@@ -58,6 +58,7 @@ def get_request_user(info: Info) -> RequestUser:
         hashed_user_id=headers.get('encodedId'),
         hashed_guid=headers.get('encodedGuid'),
         guid=headers.get('guid'),
+        locale=headers.get('gatewayLangauge'),  # e.g. 'en-US'
     )
 
 
