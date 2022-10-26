@@ -25,7 +25,7 @@ async def resolve_syndicated(root, info: Info,
                                  # , metrics_client=None)
 
     return [strawberry.ID(str(id))
-            for id in await dispatch.syndicated(item_id=int(resolved_id),
+            for id in await dispatch.syndicated(resolved_id=int(resolved_id),
                                                 count=recommendation_count)]
 
 
@@ -41,6 +41,6 @@ async def resolve_publisher(root, info: Info,
                                  # , metrics_client=None)
 
     return [strawberry.ID(str(id))
-            for id in await dispatch.by_publisher(item_id=int(resolved_id),
-                                       domain_id=int(domain_id),
-                                       count=recommendation_count)]
+            for id in await dispatch.by_publisher(resolved_id=int(resolved_id),
+                                                  domain_id=int(domain_id),
+                                                  count=recommendation_count)]

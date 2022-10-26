@@ -33,17 +33,17 @@ class Item2ItemDispatch:
         # self.metrics_client = metrics_client
         self.item_recommender = item_recommender
 
-    async def syndicated(self, item_id: int, count: int) -> List[int]:
-        candidates = await self.item_recommender.syndicated(item_id, count)
-        # ranked = self.metrics_client.rank_items(candidates, rankers=[thompson_sampling_28day])
+    async def syndicated(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
+        recs = await self.item_recommender.syndicated(resolved_id, count)
+        # ranked = self.metrics_client.rank_items(recs, rankers=[thompson_sampling_28day])
         # return ranked
-        return candidates
+        return [CorpusRecommendationModel(corpus_item=r) for r in recs]
 
-    async def by_publisher(self, item_id: int, domain_id: int, count: int) -> List[int]:
-        candidates = await self.item_recommender.by_publisher(item_id, domain_id, count)
-        # ranked = self.metrics_client.rank_items(candidates, rankers=[thompson_sampling_28day])
+    async def by_publisher(self, resolved_id: int, domain_id: int, count: int) -> List[CorpusRecommendationModel]:
+        recs = await self.item_recommender.by_publisher(resolved_id, domain_id, count)
+        # ranked = self.metrics_client.rank_items(recs, rankers=[thompson_sampling_28day])
         # return ranked
-        return candidates
+        return [CorpusRecommendationModel(corpus_item=r) for r in recs]
 
 
 class SetupMomentDispatch:

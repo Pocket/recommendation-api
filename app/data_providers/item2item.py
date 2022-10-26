@@ -1,26 +1,19 @@
-import datetime
+import logging
 from typing import List
 
 from qdrant_client.http import AsyncApis
+from qdrant_client.http.exceptions import UnexpectedResponse
 from qdrant_client.http.models import Filter, FieldCondition, Range, MatchValue, RecommendRequest
 
 import app.config
+from app.models.corpus_item_model import CorpusItemModel
 
 
-def _build_filter(days_old: int = None,
-                  is_curated: bool = None,
+def _build_filter(is_curated: bool = None,
                   is_syndicated: bool = None,
                   domain_id: int = None) -> Filter:
     conditions = []
 
-    if days_old is not None:
-        timestamp = (datetime.datetime.now() - datetime.timedelta(days=days_old)).timestamp()
-        conditions.append(FieldCondition(
-            key='timestamp',
-            range=Range(
-                gte=timestamp
-            )
-        ))
     if is_syndicated is not None:
         conditions.append(FieldCondition(
             key='is_syndicated',
@@ -32,10 +25,9 @@ def _build_filter(days_old: int = None,
             match=MatchValue(value=is_curated)
         ))
     if domain_id is not None:
-        # todo: domain Id is apparently a string now, check qdrant
         conditions.append(FieldCondition(
             key='domain_id',
-            match=MatchValue(value=str(domain_id))
+            match=MatchValue(value=domain_id)
         ))
 
     return Filter(must=conditions)
@@ -49,31 +41,41 @@ class Item2ItemRecommender:
         self.collection = app.config.qdrant["collection"]
         self._client = AsyncApis(host=f"http{'s' if https else ''}://{host}:{port}").points_api
 
-    async def by_publisher(self, resolved_id: int, domain_id: int, count: int) -> List[int]:
+    async def by_publisher(self, resolved_id: int, domain_id: int, count: int) -> List[CorpusItemModel]:
         query_filter = _build_filter(
-            days_old=30,
             is_curated=True,
             domain_id=domain_id)
 
         return await self._recommend(resolved_id, query_filter, count)
 
-    async def syndicated(self, resolved_id: int, count: int) -> List[int]:
+    async def syndicated(self, resolved_id: int, count: int) -> List[CorpusItemModel]:
         query_filter = _build_filter(
-            days_old=365,
+            is_curated=True,
             is_syndicated=True)
 
         return await self._recommend(resolved_id, query_filter, count)
 
     async def _recommend(self, resolved_id: int, query_filter: Filter, count: int):
-        recommended = await self._client.recommend_points(
-            collection_name=self.collection,
-            recommend_request=RecommendRequest(
-                positive=[resolved_id],
-                negative=[],
-                limit=count,
-                filter=query_filter,
-                with_vector=False,
-                with_payload=True
+        try:
+            recommended = await self._client.recommend_points(
+                collection_name=self.collection,
+                recommend_request=RecommendRequest(
+                    positive=[resolved_id],
+                    negative=[],
+                    limit=count,
+                    filter=query_filter,
+                    with_vector=False,
+                    with_payload=True
+                )
             )
-        )
-        return [rec.id for rec in recommended.result]
+        except UnexpectedResponse as ex:
+            if ex.status_code == 404:
+                # point or collection does not exist
+                # it can happen when a new syndicated article was just added or qdrant state was reset by accident
+                logging.warning(f'Qdrant error: {ex}, returning empty recommendations')
+                return []
+            else:
+                raise
+
+        return [CorpusItemModel(id=rec.payload['corpus_item_id'], topic=rec.payload['topic'])
+                for rec in recommended.result]

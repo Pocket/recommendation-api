@@ -22,6 +22,7 @@ services:
       - localstack
       - memcached
       - snowplow
+      - qdrant
 
   localstack:
     image: localstack/localstack:0.12.11
@@ -52,11 +53,7 @@ services:
     ports:
       - '9090:9090'
 
-
-
-#qdrant:
-# image: qdrant/qdrant:v0.10.2
-# ports:
-#     - 6333:6333
-# volumes:
-#     - /tmp/qdrant:/qdrant/storage
+  qdrant:
+   image: qdrant/qdrant:v0.10.2
+   ports:
+       - 6333:6333
