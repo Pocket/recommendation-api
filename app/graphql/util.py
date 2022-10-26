@@ -3,6 +3,7 @@ from typing import List
 from strawberry.types import Info
 from strawberry.types.nodes import SelectedField
 
+from app.models.api_client import ApiClient
 from app.models.user_ids import UserIds
 
 
@@ -57,4 +58,20 @@ def get_user_ids(info: Info) -> UserIds:
         hashed_user_id=headers.get('encodedId'),
         hashed_guid=headers.get('encodedGuid'),
         guid=headers.get('guid'),
+    )
+
+
+def get_pocket_client(info: Info) -> ApiClient:
+    """
+    :param info: Request context with headers: https://github.com/Pocket/client-api/blob/main/api-docs/docs/headers.md
+    :return: ApiClient describing the client making the request.
+    """
+    headers = info.context.get('request').headers
+
+    return ApiClient(
+        consumer_key=headers.get('consumerKey'),
+        api_id=headers.get('apiId'),
+        application_name=headers.get('applicationName'),
+        is_trusted=headers.get('applicationIsTrusted'),
+        is_native=headers.get('applicationIsNative'),
     )
