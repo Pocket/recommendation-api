@@ -1,6 +1,6 @@
 from typing import Dict
 
-from aio_snowplow_tracker import SelfDescribingJson, Subject
+from aio_snowplow_tracker import SelfDescribingJson
 
 from app.data_providers.util import get_dict_without_none
 from app.models.api_client import ApiClient
@@ -50,6 +50,24 @@ def get_api_user_entity(schema: str, api_client: ApiClient) -> SelfDescribingJso
     }
 
     return SelfDescribingJson(schema=schema, data=get_dict_without_none(data))
+
+
+def get_api_user_entity(schema: str, api_client: ApiClient) -> SelfDescribingJson:
+    """
+    :param schema: Versioned Snowplow schema URI
+    :param api_client:
+    :return: Snowplow api_user entity (a.k.a. 'api client')
+    """
+    data = {
+        'api_id': int(api_client.api_id),
+        'name': api_client.application_name,
+        'is_native': api_client.is_native,
+        'is_trusted': api_client.is_trusted,
+    }
+
+    data_without_none = {k: v for k, v in data.items() if v is not None}
+
+    return SelfDescribingJson(schema=schema, data=data_without_none)
 
 
 def get_corpus_slate_data(corpus_slate: CorpusSlateModel) -> Dict:

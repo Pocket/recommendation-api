@@ -31,5 +31,5 @@ class TestPocketHitsSlateProvider:
     async def test_headline(self):
         slate = await self.slate_provider.get_slate()
 
-        assert slate.headline == 'Monday’s Pocket Hits'
-        assert slate.subheadline is None
+        assert slate.headline == 'Today’s Pocket Hits'
+        assert slate.subheadline == 'Monday, October 24'

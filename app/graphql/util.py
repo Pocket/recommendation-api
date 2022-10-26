@@ -76,3 +76,19 @@ def get_pocket_client(info: Info) -> ApiClient:
         is_trusted=headers.get('applicationIsTrusted'),
         is_native=headers.get('applicationIsNative'),
     )
+
+
+def get_pocket_client(info: Info) -> ApiClient:
+    """
+    :param info: Request context with headers: https://github.com/Pocket/client-api/blob/main/api-docs/docs/headers.md
+    :return: ApiClient describing the client making the request.
+    """
+    headers = info.context.get('request').headers
+
+    return ApiClient(
+        consumer_key=headers.get('consumerKey'),
+        api_id=headers.get('apiId'),
+        application_name=headers.get('applicationName'),
+        is_trusted=headers.get('applicationIsTrusted'),
+        is_native=headers.get('applicationIsNative'),
+    )
