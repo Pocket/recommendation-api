@@ -77,5 +77,6 @@ class Item2ItemRecommender:
             else:
                 raise
 
+        # print(f'Item2item: recommended: {[rec.payload["title"] for rec in recommended.result]}')
         return [CorpusItemModel(id=rec.payload['corpus_item_id'], topic=rec.payload['topic'])
                 for rec in recommended.result]
