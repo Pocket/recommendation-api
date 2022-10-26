@@ -2,6 +2,7 @@ from typing import Dict
 
 from aio_snowplow_tracker import SelfDescribingJson, Subject
 
+from app.models.api_client import ApiClient
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.unleash_assignment import UnleashAssignmentModel
@@ -27,6 +28,24 @@ def get_user_entity(schema: str, user_ids: UserIds) -> SelfDescribingJson:
     user_entity = {k: v for k, v in user_ids.dict().items() if v is not None}
 
     return SelfDescribingJson(schema=schema, data=user_entity)
+
+
+def get_api_user_entity(schema: str, api_client: ApiClient) -> SelfDescribingJson:
+    """
+    :param schema: Versioned Snowplow schema URI
+    :param api_client:
+    :return: Snowplow api_user entity (a.k.a. 'api client')
+    """
+    data = {
+        'api_id': int(api_client.api_id),
+        'name': api_client.application_name,
+        'is_native': api_client.is_native,
+        'is_trusted': api_client.is_trusted,
+    }
+
+    data_without_none = {k: v for k, v in data.items() if v is not None}
+
+    return SelfDescribingJson(schema=schema, data=data_without_none)
 
 
 def get_corpus_slate_data(corpus_slate: CorpusSlateModel) -> Dict:
