@@ -36,9 +36,16 @@ def get_api_user_entity(schema: str, api_client: ApiClient) -> SelfDescribingJso
     :param api_client:
     :return: Snowplow api_user entity (a.k.a. 'api client')
     """
-    api_user_entity = {k: v for k, v in api_client.dict().items() if v is not None}
+    data = {
+        'api_id': int(api_client.api_id),
+        'name': api_client.application_name,
+        'is_native': api_client.is_native,
+        'is_trusted': api_client.is_trusted,
+    }
 
-    return SelfDescribingJson(schema=schema, data=api_user_entity)
+    data_without_none = {k: v for k, v in data.items() if v is not None}
+
+    return SelfDescribingJson(schema=schema, data=data_without_none)
 
 
 def get_corpus_slate_data(corpus_slate: CorpusSlateModel) -> Dict:
