@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class UserIds(BaseModel):
+class RequestUser(BaseModel):
     """
     Represents user and session identifiers in internal and encoded representation:
     - user_id: integer user id for Pocket account. Not present on logged-out requests.
@@ -14,3 +14,4 @@ class UserIds(BaseModel):
     hashed_user_id: str = None
     guid: int = None
     hashed_guid: str = None
+    locale: str = None  # e.g. en-US

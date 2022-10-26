@@ -21,7 +21,7 @@ from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.unleash_assignment import UnleashAssignmentModel
-from app.models.user_ids import UserIds
+from app.models.request_user import RequestUser
 from tests.assets.topics import technology_topic, entertainment_topic, self_improvement_topic
 
 
@@ -48,7 +48,7 @@ class TestHomeDispatch:
     def setup(self):
         global_sdk_config.set_sdk_enabled(False)
 
-        self.user_ids = UserIds(
+        self.request_user = RequestUser(
             user_id=1,
             hashed_user_id='1-hashed',
         )
@@ -91,7 +91,7 @@ class TestHomeDispatch:
             MockSlateProvider(_generate_slate(['Self1'], headline='Self-improvement')),
         ]
 
-        lineup = await self.home_dispatch.get_slate_lineup(user=self.user_ids, slate_count=10, recommendation_count=2)
+        lineup = await self.home_dispatch.get_slate_lineup(user=self.request_user, slate_count=10, recommendation_count=2)
 
         assert [
             ['Tech2', 'Ent4'],
@@ -121,7 +121,7 @@ class TestHomeDispatch:
             MockSlateProvider(_generate_slate(['Tech1', 'Tech2', 'Tech3', 'Tech4'], headline='Technology')),
         ]
 
-        lineup = await self.home_dispatch.get_slate_lineup(user=self.user_ids, slate_count=10, recommendation_count=2)
+        lineup = await self.home_dispatch.get_slate_lineup(user=self.request_user, slate_count=10, recommendation_count=2)
 
         assert [
             ['Tech2', 'Ent4'],

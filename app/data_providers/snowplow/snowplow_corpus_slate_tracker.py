@@ -9,7 +9,7 @@ from app.data_providers.snowplow.entities import (
 )
 from app.data_providers.snowplow.subject import get_subject
 from app.models.corpus_slate_model import CorpusSlateModel
-from app.models.user_ids import UserIds
+from app.models.request_user import RequestUser
 
 
 class SnowplowCorpusSlateTracker:
@@ -23,7 +23,7 @@ class SnowplowCorpusSlateTracker:
         self.snowplow_config = snowplow_config
 
     @xray_recorder.capture_async('data_providers.SnowplowCorpusSlateTracker.track')
-    async def track(self, corpus_slate: CorpusSlateModel, user: UserIds):
+    async def track(self, corpus_slate: CorpusSlateModel, user: RequestUser):
         """
         Track the recommendation of a CorpusSlate in Snowplow.
         :param corpus_slate: The slate that was recommended.
