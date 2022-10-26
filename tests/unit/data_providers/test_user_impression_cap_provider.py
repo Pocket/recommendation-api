@@ -5,7 +5,7 @@ from aws_xray_sdk import global_sdk_config
 
 import app.config
 from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
-from app.models.user_ids import UserIds
+from app.models.request_user import RequestUser
 from tests.mocks.feature_store_mock import FeatureStoreMock
 
 
@@ -30,7 +30,7 @@ class TestUserImpressionCapProvider:
         Test the case where the queried records exist in the Feature Group.
         """
         corpus_items = await self.client.get(
-            user_ids=UserIds(hashed_user_id=self.HASHED_USER_ID)
+            user=RequestUser(hashed_user_id=self.HASHED_USER_ID)
         )
 
         # Assert corpus_items reflect the user_impressions_v2.json fixture data.
@@ -39,6 +39,6 @@ class TestUserImpressionCapProvider:
         assert corpus_items[1].id == '357e1f96-617e-4ece-aa21-a9cc74a457a2'
 
     async def test_get_non_existing_record(self):
-        corpus_items = await self.client.get(user_ids=UserIds(hashed_user_id='i-do-not-exist'))
+        corpus_items = await self.client.get(user=RequestUser(hashed_user_id='i-do-not-exist'))
 
         assert [] == corpus_items

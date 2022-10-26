@@ -1,11 +1,11 @@
 from aio_snowplow_tracker import Subject
 
-from app.models.user_ids import UserIds
+from app.models.request_user import RequestUser
 
 
-def get_subject(user_ids: UserIds) -> Subject:
+def get_subject(user: RequestUser) -> Subject:
     """
-    :param user_ids:
+    :param user:
     :return: Snowplow Subject
     """
-    return Subject().set_user_id(str(user_ids.user_id))
+    return Subject().set_user_id(str(user.user_id))
