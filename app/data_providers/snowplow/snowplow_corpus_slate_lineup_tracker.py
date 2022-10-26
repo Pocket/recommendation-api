@@ -5,7 +5,7 @@ from app.data_providers.snowplow.config import SnowplowConfig
 from app.data_providers.snowplow.entities import (
     get_corpus_slate_lineup_entity,
     get_object_update_event,
-    get_user_entity,
+    get_user_entity, get_feature_flag_entity,
 )
 from app.data_providers.snowplow.subject import get_subject
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel
@@ -29,6 +29,15 @@ class SnowplowCorpusSlateLineupTracker:
         :param corpus_slate_lineup: The slate lineup that was recommended.
         :param user: The user that the slate was recommended to.
         """
+        context = [
+            get_corpus_slate_lineup_entity(self.snowplow_config.CORPUS_SLATE_LINEUP_SCHEMA, corpus_slate_lineup),
+            get_user_entity(self.snowplow_config.USER_SCHEMA, user),
+        ]
+
+        if corpus_slate_lineup.experiment:
+            context.append(
+                get_feature_flag_entity(self.snowplow_config.FEATURE_FLAG_SCHEMA, corpus_slate_lineup.experiment))
+
         await self.tracker.track_self_describing_event(
             event_json=get_object_update_event(
                 self.snowplow_config.OBJECT_UPDATE_SCHEMA,
@@ -36,8 +45,5 @@ class SnowplowCorpusSlateLineupTracker:
                 trigger='corpus_slate_lineup_recommendation'
             ),
             event_subject=get_subject(user),
-            context=[
-                get_corpus_slate_lineup_entity(self.snowplow_config.CORPUS_SLATE_LINEUP_SCHEMA, corpus_slate_lineup),
-                get_user_entity(self.snowplow_config.USER_SCHEMA, user),
-            ],
+            context=context,
         )

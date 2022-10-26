@@ -1,11 +1,12 @@
 from datetime import datetime, timezone
 from enum import Enum
-from typing import List
+from typing import List, Optional
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
 from app.models.corpus_slate_model import CorpusSlateModel
+from app.models.unleash_assignment import UnleashAssignmentModel
 
 
 class RecommendationSurfaceId(Enum):
@@ -24,3 +25,4 @@ class CorpusSlateLineupModel(BaseModel):
         description='UTC time when the slate was recommended')
     recommendation_surface_id: RecommendationSurfaceId = Field(
         description='Identifies the recommendation surface that the slate lineup will be shown on.')
+    experiment: Optional[UnleashAssignmentModel] = None
