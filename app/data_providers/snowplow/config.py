@@ -25,6 +25,8 @@ class SnowplowConfig:
     USER_SCHEMA = 'iglu:com.pocket/user/jsonschema/1-0-0'
     OBJECT_UPDATE_SCHEMA = 'iglu:com.pocket/object_update/jsonschema/1-0-8'
     FEATURE_FLAG_SCHEMA = 'iglu:com.pocket/feature_flag/jsonschema/1-0-0'
+    VARIANT_ENROLL_SCHEMA = 'iglu:com.pocket/variant_enroll/jsonschema/1-0-0'
+    API_USER_SCHEMA = 'iglu:com.pocket/api_user/jsonschema/1-0-1'
 
 
 def create_snowplow_tracker() -> Tracker:
