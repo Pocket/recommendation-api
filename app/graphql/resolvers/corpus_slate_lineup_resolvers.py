@@ -27,7 +27,6 @@ from app.singletons import (
 
 async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
     user = get_user_ids(info)
-    unleash_provider = UnleashProvider(PocketGraphClientSession(PocketGraphConfig()), unleash_config=UnleashConfig())
 
     slate_count = int(get_field_argument(
         fields=info.selected_fields,
@@ -41,23 +40,26 @@ async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
         argument_name='count',
         default_value=DEFAULT_RECOMMENDATION_COUNT))
 
-    slate_lineup_model = await HomeDispatch(
-        corpus_client=corpus_client,
-        preferences_provider=user_recommendation_preferences_provider,
-        user_impression_cap_provider=user_impression_cap_provider,
-        topic_provider=topic_provider,
-        for_you_slate_provider=ForYouSlateProvider(corpus_client),
-        recommended_reads_slate_provider=RecommendedReadsSlateProvider(corpus_client),
-        topic_slate_providers=TopicSlateProviderFactory(corpus_client),
-        collection_slate_provider=CollectionSlateProvider(corpus_client),
-        pocket_hits_slate_provider=PocketHitsSlateProvider(corpus_client),
-        life_hacks_slate_provider=LifeHacksSlateProvider(corpus_client),
-        unleash_provider=unleash_provider,
-    ).get_slate_lineup(
-        user=user,
-        slate_count=slate_count,
-        recommendation_count=recommendation_count,
-    )
+    async with PocketGraphClientSession(PocketGraphConfig()) as graph_client_session:
+        unleash_provider = UnleashProvider(graph_client_session, unleash_config=UnleashConfig())
+
+        slate_lineup_model = await HomeDispatch(
+            corpus_client=corpus_client,
+            preferences_provider=user_recommendation_preferences_provider,
+            user_impression_cap_provider=user_impression_cap_provider,
+            topic_provider=topic_provider,
+            for_you_slate_provider=ForYouSlateProvider(corpus_client),
+            recommended_reads_slate_provider=RecommendedReadsSlateProvider(corpus_client),
+            topic_slate_providers=TopicSlateProviderFactory(corpus_client),
+            collection_slate_provider=CollectionSlateProvider(corpus_client),
+            pocket_hits_slate_provider=PocketHitsSlateProvider(corpus_client),
+            life_hacks_slate_provider=LifeHacksSlateProvider(corpus_client),
+            unleash_provider=unleash_provider,
+        ).get_slate_lineup(
+            user=user,
+            slate_count=slate_count,
+            recommendation_count=recommendation_count,
+        )
 
     slate_lineup_tracker = SnowplowCorpusSlateLineupTracker(
         tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
