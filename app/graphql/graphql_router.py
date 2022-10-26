@@ -58,12 +58,12 @@ class Query:
                            'Data Products team and they will happily provide you with a named query.',
         description='Request a specific `SlateLineup` by id')
 
-    related_syndicated: List[ID] = strawberry.field(
+    related_syndicated: List[CorpusRecommendation] = strawberry.field(
        resolver=resolve_syndicated,
        description='Get similar syndicated articles.'
     )
 
-    related_publisher: List[ID] = strawberry.field(
+    related_publisher: List[CorpusRecommendation] = strawberry.field(
        resolver=resolve_publisher,
        description='Get similar articles from the same publisher.'
     )
