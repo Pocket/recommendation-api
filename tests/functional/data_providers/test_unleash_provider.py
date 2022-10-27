@@ -32,7 +32,8 @@ async def test_get_assignments(pocket_graph_server: TestServer, user_1: RequestU
         'appName': unleash_config.APP_NAME,
         'environment': unleash_config.ENVIRONMENT,
         'userId': user_1.hashed_user_id,
-        'sessionId': user_1.hashed_guid
+        'sessionId': user_1.hashed_guid,
+        'properties': {'locale': user_1.locale}
     }
 
     # pocket_graph_server returns data from `tests/assets/json/unleash_assignments.json`
