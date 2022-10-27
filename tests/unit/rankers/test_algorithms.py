@@ -6,6 +6,7 @@ import pytest
 from app.models.corpus_item_model import CorpusItemModel
 
 from collections import Counter
+from random import shuffle
 from tests.assets.engagement_metrics import generate_metrics, generate_firefox_metrics, generate_metrics_model_dict
 from tests.assets.topics import *
 from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_nontopic_configs, generate_lineup_configs
@@ -80,37 +81,65 @@ def test_spread_topics():
 
 
 
-def test_spread_topics_publishers():
+@pytest.mark.parametrize("pub_spread", [2, 3, 4])
+def test_spread_topics_publishers(pub_spread):
     recs = MockCorpusItems.get_recs_with_publishers()
     topics = set([r.topic for r in recs])
 
-    for pub_spread in [2, 3, 4]:
-        reordered = spread_topics_publishers(recs, pub_spread=pub_spread)
+    reordered = spread_topics_publishers(recs, pub_spread=pub_spread)
 
-        for i, r in enumerate(reordered[:15]):
-            if i == 0:
-                prev_topic = r.topic
-                prev_publisher = r.publisher
-            else:  # could write a more complex test for bigger spreads
-                assert r.topic != prev_topic
-                assert r.publisher != prev_publisher
-                prev_topic = r.topic
-                prev_publisher = r.publisher
+    for i, r in enumerate(reordered[:15]):
+        if i == 0:
+            prev_topic = r.topic
+            prev_publisher = r.publisher
+        else:  # could write a more complex test for bigger spreads
+            assert r.topic != prev_topic
+            assert r.publisher != prev_publisher
+            prev_topic = r.topic
+            prev_publisher = r.publisher
 
-            # there are three sets of items per topic publisher pair
-            c5 = Counter([r.topic for r in reordered[:5]])
-            p5 = [r.publisher for r in reordered[:5]]
-            c10 = Counter([r.topic for r in reordered[:10]])
-            p10 = [r.publisher for r in reordered[5:10]]
-            c15 = Counter([r.topic for r in reordered[:15]])
-            p15 = [r.publisher for r in reordered[10:15]]
-            for t in topics:
-                assert c5[t] == 1
-                assert len(set(p5)) > pub_spread
-                assert c10[t] == 2
-                assert len(set(p10)) > pub_spread
-                assert c15[t] == 3
-                assert len(set(p15)) > pub_spread
+    # there are three sets of items per topic publisher pair
+    c5 = Counter([r.topic for r in reordered[:5]])
+    p5 = [r.publisher for r in reordered[:5]]
+    c10 = Counter([r.topic for r in reordered[:10]])
+    p10 = [r.publisher for r in reordered[5:10]]
+    c15 = Counter([r.topic for r in reordered[:15]])
+    p15 = [r.publisher for r in reordered[10:15]]
+    assert len(set(p5)) > pub_spread
+    assert len(set(p10)) > pub_spread
+    assert len(set(p15)) > pub_spread
+    for t in topics:
+        assert c5[t] == 1
+        assert c10[t] == 2
+        assert c15[t] == 3
+
+
+@pytest.mark.parametrize("pub_spread", [2, 3, 4])
+def test_spread_topics_publishers_null_pub(pub_spread):
+    recs = MockCorpusItems.get_recs_with_publishers()
+    t = technology_topic
+    recs.append(CorpusItemModel(id=f'{t.name}-rec-{90}', topic=t.corpus_topic_id,
+                                publisher=None))
+    shuffle(recs)
+
+    reordered = spread_topics_publishers(recs, pub_spread=pub_spread)
+
+    for i, r in enumerate(reordered[:15]):
+        if i == 0:
+            prev_publisher = r.publisher
+        else:  # could write a more complex test for bigger spreads
+            assert r.publisher != prev_publisher
+            prev_publisher = r.publisher
+
+    # there are three sets of items per topic publisher pair
+    p5 = [r.publisher for r in reordered[:5]]
+    p10 = [r.publisher for r in reordered[5:10]]
+    p15 = [r.publisher for r in reordered[10:15]]
+    assert len(set(p5)) > pub_spread
+    assert len(set(p10)) > pub_spread
+    assert len(set(p15)) > pub_spread
+
+    assert len(reordered) == len(recs)
 
 
 @pytest.mark.parametrize("user_prefs", [
