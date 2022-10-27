@@ -13,7 +13,12 @@ class PocketHitsSlateProvider(SlateProvider):
 
     @property
     def headline(self) -> str:
-        return f'{datetime.now().strftime("%A")}’s Pocket Hits'
+        return 'Today’s Pocket Hits'
+
+    @property
+    def subheadline(self) -> str:
+        dt = datetime.now()
+        return f'{dt:%A}, {dt:%B} {dt.day}'
 
     @property
     def recommendation_reason_type(self) -> Optional[RecommendationReasonType]:
