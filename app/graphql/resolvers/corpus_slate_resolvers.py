@@ -11,7 +11,7 @@ from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.graphql.corpus_slate import CorpusSlate
 from app.graphql.resolvers.corpus_slate_recommendations_resolver import DEFAULT_RECOMMENDATION_COUNT
-from app.graphql.util import get_field_argument, get_user_ids
+from app.graphql.util import get_field_argument, get_request_user
 
 
 async def resolve_setup_moment_slate(root, info: Info) -> Optional[CorpusSlate]:
@@ -22,7 +22,7 @@ async def resolve_setup_moment_slate(root, info: Info) -> Optional[CorpusSlate]:
         aioboto3_session=aioboto3_session,
         topic_provider=topic_provider
     )
-    user = get_user_ids(info)
+    user = get_request_user(info)
 
     recommendation_count = int(get_field_argument(
         fields=info.selected_fields,

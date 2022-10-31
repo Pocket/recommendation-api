@@ -13,7 +13,7 @@ from app.data_providers.snowplow.subject import get_subject
 from app.models.api_client import ApiClient
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel
 from app.models.unleash_assignment import UnleashAssignmentModel
-from app.models.user_ids import UserIds
+from app.models.request_user import RequestUser
 
 
 class SnowplowCorpusSlateLineupTracker:
@@ -27,7 +27,7 @@ class SnowplowCorpusSlateLineupTracker:
         self.snowplow_config = snowplow_config
 
     @xray_recorder.capture_async('SnowplowCorpusSlateLineupTracker.track')
-    async def track(self, corpus_slate_lineup: CorpusSlateLineupModel, user: UserIds, api_client: ApiClient):
+    async def track(self, corpus_slate_lineup: CorpusSlateLineupModel, user: RequestUser, api_client: ApiClient):
         """
         Track the recommendation of a CorpusSlateLineup in Snowplow.
         :param corpus_slate_lineup: The slate lineup that was recommended.
@@ -41,7 +41,7 @@ class SnowplowCorpusSlateLineupTracker:
 
         await asyncio.gather(*track_calls)
 
-    async def track_recommendation_metadata(self, corpus_slate_lineup: CorpusSlateLineupModel, user: UserIds):
+    async def track_recommendation_metadata(self, corpus_slate_lineup: CorpusSlateLineupModel, user: RequestUser):
         """
         Track the recommendation of a CorpusSlateLineup in Snowplow.
         :param corpus_slate_lineup: The slate lineup that was recommended.
@@ -67,7 +67,7 @@ class SnowplowCorpusSlateLineupTracker:
             context=context,
         )
 
-    async def track_variant_enroll(self, assignment: UnleashAssignmentModel, user: UserIds, api_client: ApiClient):
+    async def track_variant_enroll(self, assignment: UnleashAssignmentModel, user: RequestUser, api_client: ApiClient):
         """
         Track that the user was enrolled in an experiment.
         :param assignment: The experiment that the user was enrolled in.

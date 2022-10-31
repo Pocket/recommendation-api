@@ -12,7 +12,7 @@ from app.data_providers.user_recommendation_preferences_provider import (
 )
 from app.graphql.update_user_recommendation_preferences_input import UpdateUserRecommendationPreferencesInput
 from app.graphql.user_recommendation_preferences import UserRecommendationPreferences
-from app.graphql.util import get_user_ids
+from app.graphql.util import get_request_user
 from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel, \
     UserRecommendationPreferencesModelV2
 
@@ -34,16 +34,16 @@ async def update_user_recommendation_preferences(
     )
 
     preferred_topics = await topic_provider.get_topics([t.id for t in input.preferred_topics])
-    user_ids = get_user_ids(info)
+    request_user = get_request_user(info)
 
     model = UserRecommendationPreferencesModel(
-        user_id=user_ids.user_id,  # Integer user id
+        user_id=request_user.user_id,  # Integer user id
         updated_at=datetime.datetime.utcnow(),
         preferred_topics=preferred_topics
     )
 
     model_v2 = UserRecommendationPreferencesModelV2(
-        hashed_user_id=user_ids.hashed_user_id,
+        hashed_user_id=request_user.hashed_user_id,
         updated_at=datetime.datetime.utcnow(),
         preferred_topics=preferred_topics
     )

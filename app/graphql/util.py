@@ -4,7 +4,7 @@ from strawberry.types import Info
 from strawberry.types.nodes import SelectedField
 
 from app.models.api_client import ApiClient
-from app.models.user_ids import UserIds
+from app.models.request_user import RequestUser
 
 
 def get_field_argument(
@@ -45,19 +45,20 @@ def get_field_argument(
     return default_value
 
 
-def get_user_ids(info: Info) -> UserIds:
+def get_request_user(info: Info) -> RequestUser:
     """
     Get user ids from the request headers that are available in the GraphQL context.
-    :param info:
+    :param info: @see https://github.com/Pocket/client-api/blob/main/api-docs/docs/headers.md
     :return:
     """
     headers = info.context.get('request').headers
 
-    return UserIds(
+    return RequestUser(
         user_id=headers.get('userId'),
         hashed_user_id=headers.get('encodedId'),
         hashed_guid=headers.get('encodedGuid'),
         guid=headers.get('guid'),
+        locale=headers.get('gatewayLangauge'),  # e.g. 'en-US'
     )
 
 

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 
 def flatten(items: List) -> List:
@@ -8,3 +8,7 @@ def flatten(items: List) -> List:
     :return: List of all non-list elements in sequence.
     """
     return sum(map(flatten, items), []) if isinstance(items, list) else [items]
+
+
+def get_dict_without_none(d: Dict) -> Dict:
+    return {k: v for k, v in d.items() if v is not None}
