@@ -27,9 +27,16 @@ class TestPocketHitsSlateProvider:
 
         assert RecommendationReasonType.POCKET_HITS == slate.recommendation_reason_type
 
-    @freeze_time("2022-10-24 16:00:00")  # Oct 24th, 2022 was a Monday
+    @freeze_time("2022-10-25 13:00:00", tz_offset=0)  # Tue 1pm Oct 25th, 2022 UTC was Tue 9am Oct 25th EDT
     async def test_headline(self):
         slate = await self.slate_provider.get_slate()
 
         assert slate.headline == 'Today’s Pocket Hits'
         assert slate.subheadline == 'Monday, October 24'
+
+    @freeze_time("2022-10-25 14:00:00", tz_offset=0)  # Tue 2pm Oct 25th, 2022 UTC was Tue 10am Oct 25th EDT
+    async def test_headline(self):
+        slate = await self.slate_provider.get_slate()
+
+        assert slate.headline == 'Today’s Pocket Hits'
+        assert slate.subheadline == 'Tuesday, October 25'

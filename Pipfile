@@ -41,6 +41,7 @@ ujson = "*"
 httptools = "*"
 aio-snowplow-tracker = "*"
 strawberry-graphql = {extras = ["fastapi"], version = "*"}
+pytz = "*"
 
 [requires]
 python_version = "3.8"
