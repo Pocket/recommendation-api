@@ -5,7 +5,7 @@ from aws_xray_sdk.core import xray_recorder
 from app.data_providers.PocketGraphClientSession import PocketGraphClientSession
 from app.config import ENV, ENV_PROD
 from app.models.unleash_assignment import UnleashAssignmentModel
-from app.models.user_ids import UserIds
+from app.models.request_user import RequestUser
 
 
 class UnleashConfig:
@@ -34,7 +34,7 @@ class UnleashProvider:
         self.pocket_graph_client_session = pocket_graph_client_session
         self.unleash_config = unleash_config
 
-    async def get_assignment(self, name: str, user: UserIds) -> Optional[UnleashAssignmentModel]:
+    async def get_assignment(self, name: str, user: RequestUser) -> Optional[UnleashAssignmentModel]:
         """
         :param name: name of the assignment
         :param user:
@@ -43,7 +43,7 @@ class UnleashProvider:
         assignments = await self.get_assignments([name], user=user)
         return assignments[0] if assignments else None
 
-    async def get_assignments(self, names: List[str], user: UserIds) -> List[UnleashAssignmentModel]:
+    async def get_assignments(self, names: List[str], user: RequestUser) -> List[UnleashAssignmentModel]:
         """
         Returns Unleash assignments with certain assignment names that the user is assigned to.
         :param names:
@@ -58,7 +58,7 @@ class UnleashProvider:
         return [assignment for assignment in all_assignments if assignment.name in names and assignment.assigned]
 
     @xray_recorder.capture_async('data_providers.UnleashProvider._get_all_assignments')
-    async def _get_all_assignments(self, user: UserIds) -> List[UnleashAssignmentModel]:
+    async def _get_all_assignments(self, user: RequestUser) -> List[UnleashAssignmentModel]:
         """
         Get all Unleash assignments for the given user/session.
         :param user:
@@ -86,6 +86,9 @@ class UnleashProvider:
                     'environment': self.unleash_config.ENVIRONMENT,
                     'userId': user.hashed_user_id,
                     'sessionId': user.hashed_guid,
+                    'properties': {
+                        'locale': user.locale,
+                    }
                 }
             }
         }
