@@ -27,16 +27,16 @@ class TestPocketHitsSlateProvider:
 
         assert RecommendationReasonType.POCKET_HITS == slate.recommendation_reason_type
 
-    @freeze_time("2022-10-25 13:00:00", tz_offset=0)  # Tue 1pm Oct 25th, 2022 UTC was Tue 9am Oct 25th EDT
+    @freeze_time("2022-10-25 6:00:00", tz_offset=0)  # Tue 6am Oct 25th, 2022 UTC was Tue 2am Oct 25th EDT
     async def test_headline(self):
         slate = await self.slate_provider.get_slate()
 
         assert slate.headline == 'Today’s Pocket Hits'
-        assert slate.subheadline == 'Monday, October 24'
+        assert slate.subheadline == 'Monday, October 24'  # At 2am EDT the date should be the previous day.
 
-    @freeze_time("2022-10-25 14:00:00", tz_offset=0)  # Tue 2pm Oct 25th, 2022 UTC was Tue 10am Oct 25th EDT
+    @freeze_time("2022-10-25 7:00:00", tz_offset=0)  # Tue 2pm Oct 25th, 2022 UTC was Tue 3am Oct 25th EDT
     async def test_headline(self):
         slate = await self.slate_provider.get_slate()
 
         assert slate.headline == 'Today’s Pocket Hits'
-        assert slate.subheadline == 'Tuesday, October 25'
+        assert slate.subheadline == 'Tuesday, October 25'  # At 3am EDT the date should be the current day.

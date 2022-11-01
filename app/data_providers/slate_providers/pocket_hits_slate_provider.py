@@ -18,8 +18,8 @@ class PocketHitsSlateProvider(SlateProvider):
 
     @property
     def subheadline(self) -> str:
-        # The date is supposed to progress at 10AM EDT.
-        dt = datetime.now(tz=pytz.timezone('America/New_York')) - timedelta(hours=10)
+        # The date is supposed to progress at 3AM EDT.
+        dt = datetime.now(tz=pytz.timezone('America/New_York')) - timedelta(hours=3)
         return f'{dt:%A}, {dt:%B} {dt.day}'
 
     @property
