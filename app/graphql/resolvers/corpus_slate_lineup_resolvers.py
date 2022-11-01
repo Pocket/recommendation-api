@@ -16,7 +16,7 @@ from app.data_providers.unleash_provider import UnleashProvider, UnleashConfig
 from app.graphql.corpus_slate_lineup import CorpusSlateLineup
 from app.graphql.resolvers.corpus_slate_lineup_slates_resolver import DEFAULT_SLATE_COUNT
 from app.graphql.resolvers.corpus_slate_recommendations_resolver import DEFAULT_RECOMMENDATION_COUNT
-from app.graphql.util import get_field_argument, get_user_ids, get_pocket_client
+from app.graphql.util import get_field_argument, get_request_user, get_pocket_client
 from app.singletons import (
     corpus_client,
     topic_provider,
@@ -26,7 +26,7 @@ from app.singletons import (
 
 
 async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
-    user = get_user_ids(info)
+    user = get_request_user(info)
     api_client = get_pocket_client(info)
 
     slate_count = int(get_field_argument(

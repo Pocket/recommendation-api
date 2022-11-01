@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.models.user_ids import UserIds
+from app.models.request_user import RequestUser
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 
 from unittest.mock import patch
@@ -12,7 +12,7 @@ class TestGetSlate(TestDynamoDBBase):
     async def asyncSetUp(self):
         await super().asyncSetUp()
         self.populate_candidate_sets_table()
-        self.user_ids = UserIds(
+        self.request_user = RequestUser(
             user_id=1,
             hashed_user_id='1-hashed',
         )
