@@ -58,7 +58,7 @@ def get_request_user(info: Info) -> RequestUser:
         hashed_user_id=headers.get('encodedId'),
         hashed_guid=headers.get('encodedGuid'),
         guid=headers.get('guid'),
-        locale=headers.get('gatewayLangauge'),  # e.g. 'en-US'
+        locale=headers.get('gatewayLanguage'),  # e.g. 'en-US'
     )
 
 
