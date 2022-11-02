@@ -147,6 +147,7 @@ class HomeDispatch:
         else:
             slates += [self.recommended_reads_slate_provider.get_slate()]
 
+        logging.warning(f'User with locale={user.locale} was assigned to experiment: {contentv1_assignment}')
         if contentv1_assignment is not None and contentv1_assignment.variant == 'treatment':
             slates += [
                 self.pocket_hits_slate_provider.get_slate(),
