@@ -5,7 +5,7 @@ from app.data_providers.user_recommendation_preferences_provider import (
     UserRecommendationPreferencesProviderV2,
 )
 from app.main import app
-from app.models.user_ids import UserIds
+from app.models.request_user import RequestUser
 from tests.assets.topics import populate_topics, technology_topic, business_topic
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 
@@ -16,7 +16,7 @@ class TestUpdateUserRecommendationPreferences(TestDynamoDBBase):
     async def asyncSetUp(self):
         await super().asyncSetUp()
         populate_topics(self.metadata_table)
-        self.user_ids = UserIds(
+        self.request_user = RequestUser(
             user_id=1,
             hashed_user_id='1-hashed',
         )
@@ -48,8 +48,8 @@ class TestUpdateUserRecommendationPreferences(TestDynamoDBBase):
                     },
                 },
                 headers={
-                    'userId': str(self.user_ids.user_id),
-                    'encodedId': self.user_ids.hashed_user_id,
+                    'userId': str(self.request_user.user_id),
+                    'encodedId': self.request_user.hashed_user_id,
                 }
             ).json()
 

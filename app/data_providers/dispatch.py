@@ -24,7 +24,7 @@ from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel, RecommendationSurfaceId
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.topic import TopicModel
-from app.models.user_ids import UserIds
+from app.models.request_user import RequestUser
 from app.rankers.algorithms import rank_by_preferred_topics, spread_topics
 
 # todo: add thompson sampling
@@ -77,7 +77,7 @@ class SetupMomentDispatch:
         self.corpus_client = corpus_client
         self.user_recommendation_preferences_provider = user_recommendation_preferences_provider
 
-    async def get_ranked_corpus_slate(self, user: UserIds, recommendation_count: int) -> CorpusSlateModel:
+    async def get_ranked_corpus_slate(self, user: RequestUser, recommendation_count: int) -> CorpusSlateModel:
         items = await self.corpus_client.get_corpus_items(self.CORPUS_CANDIDATE_SET_IDS)
 
         user_recommendation_preferences = await self.user_recommendation_preferences_provider.fetch(str(user.user_id))
@@ -141,7 +141,7 @@ class HomeDispatch:
 
     @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
     async def get_slate_lineup(
-            self, user: UserIds, slate_count: int, recommendation_count: int
+            self, user: RequestUser, slate_count: int, recommendation_count: int
     ) -> CorpusSlateLineupModel:
         """
         Returns the Home slate lineup:
@@ -170,6 +170,7 @@ class HomeDispatch:
         else:
             slates += [self.recommended_reads_slate_provider.get_slate()]
 
+        logging.warning(f'User with locale={user.locale} was assigned to experiment: {contentv1_assignment}')
         if contentv1_assignment is not None and contentv1_assignment.variant == 'treatment':
             slates += [
                 self.pocket_hits_slate_provider.get_slate(),
@@ -210,7 +211,7 @@ class HomeDispatch:
         return slates
 
     @xray_recorder.capture_async('HomeDispatch._get_preferred_topics')
-    async def _get_preferred_topics(self, user: UserIds) -> List[TopicModel]:
+    async def _get_preferred_topics(self, user: RequestUser) -> List[TopicModel]:
         preferences = await self.preferences_provider.fetch(str(user.user_id))
         if preferences and preferences.preferred_topics:
             return preferences.preferred_topics

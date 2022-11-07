@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProviderV2
 from app.main import app
-from app.models.user_ids import UserIds
+from app.models.request_user import RequestUser
 from app.models.user_recommendation_preferences import UserRecommendationPreferencesModelV2
 from tests.assets.topics import populate_topics, business_topic
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
@@ -25,7 +25,7 @@ class TestUserReferenceResolver(TestDynamoDBBase):
     async def asyncSetUp(self):
         await super().asyncSetUp()
         populate_topics(self.metadata_table)
-        self.user_ids = UserIds(
+        self.request_user = RequestUser(
             user_id=1,
             hashed_user_id='1-hashed',
         )
@@ -55,7 +55,7 @@ class TestUserReferenceResolver(TestDynamoDBBase):
                         'representations': [
                             {
                                 '__typename': 'User',
-                                'id': self.user_ids.hashed_user_id,
+                                'id': self.request_user.hashed_user_id,
                             },
                         ],
                     },
@@ -68,7 +68,7 @@ class TestUserReferenceResolver(TestDynamoDBBase):
             entities = executed['data']['_entities']
 
             assert len(entities) == 1
-            assert entities[0]['id'] == self.user_ids.hashed_user_id
+            assert entities[0]['id'] == self.request_user.hashed_user_id
             assert entities[0]['recommendationPreferences']['preferredTopics'] == [
                 {'id': business_topic.id, 'name': business_topic.name}
             ]

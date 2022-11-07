@@ -1,5 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
+import pytz
 
 from app.data_providers.slate_providers.slate_provider import SlateProvider
 from app.models.recommendation_reason_type import RecommendationReasonType
@@ -17,7 +18,8 @@ class PocketHitsSlateProvider(SlateProvider):
 
     @property
     def subheadline(self) -> str:
-        dt = datetime.now()
+        # The date is supposed to progress at 3AM EDT.
+        dt = datetime.now(tz=pytz.timezone('America/New_York')) - timedelta(hours=3)
         return f'{dt:%A}, {dt:%B} {dt.day}'
 
     @property
