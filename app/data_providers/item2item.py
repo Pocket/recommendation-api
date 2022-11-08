@@ -11,7 +11,7 @@ from app.models.corpus_item_model import CorpusItemModel
 
 def _build_filter(is_curated: bool = None,
                   is_syndicated: bool = None,
-                  domain_id: int = None) -> Filter:
+                  domain: str = None) -> Filter:
     conditions = []
 
     if is_syndicated is not None:
@@ -24,10 +24,10 @@ def _build_filter(is_curated: bool = None,
             key='is_curated',
             match=MatchValue(value=is_curated)
         ))
-    if domain_id is not None:
+    if domain is not None:
         conditions.append(FieldCondition(
-            key='domain_id',
-            match=MatchValue(value=domain_id)
+            key='domain',
+            match=MatchValue(value=domain)
         ))
 
     return Filter(must=conditions)
@@ -41,10 +41,10 @@ class Item2ItemRecommender:
         self.collection = app.config.qdrant["collection"]
         self._client = AsyncApis(host=f"http{'s' if https else ''}://{host}:{port}").points_api
 
-    async def by_publisher(self, resolved_id: int, domain_id: int, count: int) -> List[CorpusItemModel]:
+    async def by_publisher(self, resolved_id: int, domain: str, count: int) -> List[CorpusItemModel]:
         query_filter = _build_filter(
             is_curated=True,
-            domain_id=domain_id)
+            domain=domain)
 
         return await self._recommend(resolved_id, query_filter, count)
 

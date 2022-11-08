@@ -8,13 +8,13 @@ from app.graphql.corpus_slate import CorpusSlate
 from app.graphql.corpus_slate_lineup import CorpusSlateLineup
 from app.graphql.resolvers.corpus_slate_lineup_resolvers import resolve_home_slate_lineup
 from app.graphql.resolvers.corpus_slate_resolvers import resolve_setup_moment_slate
-from app.graphql.resolvers.item2item_resolvers import resolve_publisher, resolve_syndicated
 from app.graphql.resolvers.legacy.slate_lineup_resolver import resolve_get_slate_lineup
 from app.graphql.resolvers.legacy.slate_resolver import resolve_get_slate
 from app.graphql.resolvers.topic_resolvers import list_topics, resolve_recommendation_preference_topics
 from app.graphql.resolvers.user_recommendation_preferences_resolvers import update_user_recommendation_preferences
 from app.graphql.slate import Slate
 from app.graphql.slate_lineup import SlateLineup
+from app.graphql.syndicated_article import SyndicatedArticle
 from app.graphql.topic import Topic
 from app.graphql.user import User
 from app.graphql.user_recommendation_preferences import UserRecommendationPreferences
@@ -58,15 +58,6 @@ class Query:
                            'Data Products team and they will happily provide you with a named query.',
         description='Request a specific `SlateLineup` by id')
 
-    related_syndicated: List[CorpusRecommendation] = strawberry.field(
-       resolver=resolve_syndicated,
-       description='Get similar syndicated articles.'
-    )
-
-    related_publisher: List[CorpusRecommendation] = strawberry.field(
-       resolver=resolve_publisher,
-       description='Get similar articles from the same publisher.'
-    )
 
 @strawberry.type
 class Mutation:
@@ -76,4 +67,4 @@ class Mutation:
     )
 
 
-schema = strawberry.federation.Schema(Query, mutation=Mutation, types=[User], enable_federation_2=True)
+schema = strawberry.federation.Schema(Query, mutation=Mutation, types=[User, SyndicatedArticle], enable_federation_2=True)

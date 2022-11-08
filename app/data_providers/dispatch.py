@@ -42,8 +42,8 @@ class Item2ItemDispatch:
         # return ranked
         return [CorpusRecommendationModel(corpus_item=r) for r in recs]
 
-    async def by_publisher(self, resolved_id: int, domain_id: int, count: int) -> List[CorpusRecommendationModel]:
-        recs = await self.item_recommender.by_publisher(resolved_id, domain_id, count)
+    async def by_publisher(self, resolved_id: int, domain: str, count: int) -> List[CorpusRecommendationModel]:
+        recs = await self.item_recommender.by_publisher(resolved_id, domain, count)
         # ranked = self.metrics_client.rank_items(recs, rankers=[thompson_sampling_28day])
         # return ranked
         return [CorpusRecommendationModel(corpus_item=r) for r in recs]

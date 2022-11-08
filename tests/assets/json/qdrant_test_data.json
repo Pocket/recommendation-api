@@ -4,6 +4,7 @@
     "payload": {
       "corpus_item_id": "b4cbf203-50cd-45fc-97c8-e1fddac2f270",
       "domain_id": 52072490,
+      "domain": "psyche.co",
       "is_curated": true,
       "is_syndicated": false,
       "publisher": "Psyche",
@@ -182,6 +183,7 @@
     "payload": {
       "corpus_item_id": "59b815b7-c8d9-41eb-9901-9ce2ee657928",
       "domain_id": 52072490,
+      "domain": "psyche.co",
       "is_curated": true,
       "is_syndicated": false,
       "publisher": "Psyche",
@@ -360,6 +362,7 @@
     "payload": {
       "corpus_item_id": "253c3f1e-00c3-4ec2-a03a-3e046ab16652",
       "domain_id": 52072490,
+      "domain": "psyche.co",
       "is_curated": true,
       "is_syndicated": false,
       "publisher": "Psyche",
@@ -538,10 +541,11 @@
     "payload": {
       "corpus_item_id": "3edd22f6-0967-4eda-af23-d06d7cfea722",
       "domain_id": 52072490,
+      "domain": "psyche.co",
       "is_curated": true,
       "is_syndicated": false,
       "publisher": "Time",
-      "resolved_url": "https://time.com/6223012/workplaces-of-the-future/",
+      "resolved_url": "https://psyche.co/6223012/workplaces-of-the-future/",
       "save_count": 21,
       "timestamp": 1666175396.0,
       "title": "The Office of the Future Is Greener, More Social, and Might Even Include Childcare",
@@ -716,6 +720,7 @@
     "payload": {
       "corpus_item_id": "ffac0c29-c2d9-4915-aadd-0996b2bf8704",
       "domain_id": 861,
+      "domain": "www.scientificamerican.com",
       "is_curated": true,
       "is_syndicated": false,
       "publisher": "Scientific American",
@@ -894,6 +899,7 @@
     "payload": {
       "corpus_item_id": "66b86a8e-b3f6-45b5-a06d-82d24f4d5c40",
       "domain_id": 17827132,
+      "domain": "www.dw.com",
       "is_curated": true,
       "is_syndicated": true,
       "publisher": "Deutsche Welle",
@@ -1072,6 +1078,7 @@
     "payload": {
       "corpus_item_id": "ec0421ff-e2db-4496-8d64-a675c5824bf7",
       "domain_id": 8574,
+      "domain": "www.si.com",
       "is_curated": true,
       "is_syndicated": true,
       "publisher": "Sports Illustrated",
@@ -1250,6 +1257,7 @@
     "payload": {
       "corpus_item_id": "22bfe98b-857d-4c98-aae2-9e750d0eaa9d",
       "domain_id": 20996206,
+      "domain": "www.quantamagazine.org",
       "is_curated": true,
       "is_syndicated": true,
       "publisher": "Quanta Magazine",
@@ -1428,6 +1436,7 @@
     "payload": {
       "corpus_item_id": "d53a51b9-0df9-4ba6-b4b9-f8a279146f6c",
       "domain_id": 19744141,
+      "domain": "daily.jstor.org",
       "is_curated": true,
       "is_syndicated": true,
       "publisher": "daily.jstor.org",
@@ -1606,6 +1615,7 @@
     "payload": {
       "corpus_item_id": "8c931ca0-9d37-458f-94e8-2fee86a9382a",
       "domain_id": 14432,
+      "domain": "www.smithsonianmag.com",
       "is_curated": true,
       "is_syndicated": true,
       "publisher": "Smithsonian Magazine",
