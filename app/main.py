@@ -19,7 +19,7 @@ from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate_lineup_config import SlateLineupConfigModel, validate_unique_guids
 from app.models.slate_config import SlateConfigModel
 from app.health_status import get_health_status, set_health_status, HealthStatus
-
+from app.singletons import DiContainer
 
 sentry_sdk.init(
     dsn=sentry_config['dsn'],
@@ -110,6 +110,11 @@ async def load_slate_configs():
                             f'in json/slate_configs.json - application start failed')
 
     set_health_status(HealthStatus.HEALTHY)
+
+
+@app.on_event("startup")
+async def startup_event():
+    DiContainer.init()
 
 
 if __name__ == "__main__":

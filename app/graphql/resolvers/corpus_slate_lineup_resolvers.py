@@ -17,12 +17,7 @@ from app.graphql.corpus_slate_lineup import CorpusSlateLineup
 from app.graphql.resolvers.corpus_slate_lineup_slates_resolver import DEFAULT_SLATE_COUNT
 from app.graphql.resolvers.corpus_slate_recommendations_resolver import DEFAULT_RECOMMENDATION_COUNT
 from app.graphql.util import get_field_argument, get_request_user, get_pocket_client
-from app.singletons import (
-    corpus_client,
-    topic_provider,
-    user_impression_cap_provider,
-    user_recommendation_preferences_provider,
-)
+from app.singletons import DiContainer
 
 
 async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
@@ -45,16 +40,16 @@ async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
         unleash_provider = UnleashProvider(graph_client_session, unleash_config=UnleashConfig())
 
         slate_lineup_model = await HomeDispatch(
-            corpus_client=corpus_client,
-            preferences_provider=user_recommendation_preferences_provider,
-            user_impression_cap_provider=user_impression_cap_provider,
-            topic_provider=topic_provider,
-            for_you_slate_provider=ForYouSlateProvider(corpus_client),
-            recommended_reads_slate_provider=RecommendedReadsSlateProvider(corpus_client),
-            topic_slate_providers=TopicSlateProviderFactory(corpus_client),
-            collection_slate_provider=CollectionSlateProvider(corpus_client),
-            pocket_hits_slate_provider=PocketHitsSlateProvider(corpus_client),
-            life_hacks_slate_provider=LifeHacksSlateProvider(corpus_client),
+            corpus_client=DiContainer.get().corpus_client,
+            preferences_provider=DiContainer.get().user_recommendation_preferences_provider,
+            user_impression_cap_provider=DiContainer.get().user_impression_cap_provider,
+            topic_provider=DiContainer.get().topic_provider,
+            for_you_slate_provider=ForYouSlateProvider(DiContainer.get().corpus_client),
+            recommended_reads_slate_provider=RecommendedReadsSlateProvider(DiContainer.get().corpus_client),
+            topic_slate_providers=TopicSlateProviderFactory(DiContainer.get().corpus_client),
+            collection_slate_provider=CollectionSlateProvider(DiContainer.get().corpus_client),
+            pocket_hits_slate_provider=PocketHitsSlateProvider(DiContainer.get().corpus_client),
+            life_hacks_slate_provider=LifeHacksSlateProvider(DiContainer.get().corpus_client),
             unleash_provider=unleash_provider,
         ).get_slate_lineup(
             user=user,
