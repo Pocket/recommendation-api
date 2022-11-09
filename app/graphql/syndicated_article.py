@@ -21,3 +21,4 @@ class SyndicatedArticle:
     @classmethod
     def resolve_reference(cls, itemId: strawberry.ID, publisherUrl: str):
         return SyndicatedArticle(itemId=itemId, publisherUrl=publisherUrl)
+
