@@ -1,9 +1,7 @@
 from typing import List
 
 import strawberry
-from strawberry import ID
 
-from app.graphql.corpus_recommendation import CorpusRecommendation
 from app.graphql.corpus_slate import CorpusSlate
 from app.graphql.corpus_slate_lineup import CorpusSlateLineup
 from app.graphql.resolvers.corpus_slate_lineup_resolvers import resolve_home_slate_lineup
@@ -67,4 +65,5 @@ class Mutation:
     )
 
 
-schema = strawberry.federation.Schema(Query, mutation=Mutation, types=[User, SyndicatedArticle], enable_federation_2=True)
+schema = strawberry.federation.Schema(Query, mutation=Mutation, types=[User, SyndicatedArticle],
+                                      enable_federation_2=True)

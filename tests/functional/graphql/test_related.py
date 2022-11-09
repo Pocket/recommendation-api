@@ -73,7 +73,6 @@ class TestGraphQLRelated(TestCase):
                     },
                 }).json()
 
-            print(response)
             assert not response.get('errors')
             entity = response['data']['_entities'][0]
             recs = entity['relatedEndOfArticle']
