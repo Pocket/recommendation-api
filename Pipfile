@@ -22,7 +22,8 @@ httpx = "*"
 freezegun = "*"
 
 [packages]
-sentry-sdk = "*"
+# pin Sentry, the update causes errors
+sentry-sdk = "==1.9.10"
 aioboto3 = "*"
 gunicorn = "*"
 uvicorn = {extras = ["standard"], version = "*"}
@@ -41,6 +42,7 @@ ujson = "*"
 httptools = "*"
 aio-snowplow-tracker = "*"
 strawberry-graphql = {extras = ["fastapi"], version = "*"}
+qdrant-client = "==0.10.3"
 pytz = "*"
 
 [requires]

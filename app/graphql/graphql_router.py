@@ -12,6 +12,7 @@ from app.graphql.resolvers.topic_resolvers import list_topics, resolve_recommend
 from app.graphql.resolvers.user_recommendation_preferences_resolvers import update_user_recommendation_preferences
 from app.graphql.slate import Slate
 from app.graphql.slate_lineup import SlateLineup
+from app.graphql.syndicated_article import SyndicatedArticle
 from app.graphql.topic import Topic
 from app.graphql.user import User
 from app.graphql.user_recommendation_preferences import UserRecommendationPreferences
@@ -64,4 +65,5 @@ class Mutation:
     )
 
 
-schema = strawberry.federation.Schema(Query, mutation=Mutation, types=[User], enable_federation_2=True)
+schema = strawberry.federation.Schema(Query, mutation=Mutation, types=[User, SyndicatedArticle],
+                                      enable_federation_2=True)

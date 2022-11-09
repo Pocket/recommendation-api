@@ -7,6 +7,7 @@ from typing import List, Coroutine, Any
 
 from aws_xray_sdk.core import xray_recorder
 
+from app.data_providers.item2item import Item2ItemRecommender
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
@@ -24,6 +25,21 @@ from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.topic import TopicModel
 from app.models.request_user import RequestUser
 from app.rankers.algorithms import rank_by_preferred_topics, spread_topics
+
+
+# todo: add thompson sampling
+class Item2ItemDispatch:
+    def __init__(self,
+                 item_recommender: Item2ItemRecommender):
+        self.item_recommender = item_recommender
+
+    async def syndicated(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
+        recs = await self.item_recommender.syndicated(resolved_id, count)
+        return [CorpusRecommendationModel(corpus_item=r) for r in recs]
+
+    async def by_publisher(self, resolved_id: int, domain: str, count: int) -> List[CorpusRecommendationModel]:
+        recs = await self.item_recommender.by_publisher(resolved_id, domain, count)
+        return [CorpusRecommendationModel(corpus_item=r) for r in recs]
 
 
 class SetupMomentDispatch:
@@ -83,7 +99,6 @@ class SetupMomentDispatch:
 
 
 class HomeDispatch:
-
     DEFAULT_TOPICS = [
         '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
         'c6242e35-4ef7-494f-ae9f-51f95b836424',  # Entertainment
