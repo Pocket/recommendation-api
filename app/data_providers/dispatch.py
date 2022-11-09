@@ -29,7 +29,6 @@ from app.rankers.algorithms import rank_by_preferred_topics, spread_topics
 
 # todo: add thompson sampling
 class Item2ItemDispatch:
-
     def __init__(self,
                  item_recommender: Item2ItemRecommender):
         self.item_recommender = item_recommender
