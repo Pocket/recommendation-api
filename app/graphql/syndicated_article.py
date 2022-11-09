@@ -9,7 +9,7 @@ from app.graphql.resolvers.item2item_resolvers import resolve_end_of_article, re
 @strawberry.federation.type(keys=["itemId"])
 class SyndicatedArticle:
     itemId: strawberry.ID  # this corresponds to Snowflake resolved_id
-    publisherUrl: str
+    publisherUrl: str = strawberry.federation.field(shareable=True)
 
     relatedEndOfArticle: List[CorpusRecommendation] = strawberry.field(
         resolver=resolve_end_of_article,
