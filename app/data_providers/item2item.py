@@ -1,9 +1,8 @@
-import logging
 from typing import List
 
 from qdrant_client.http import AsyncApis
 from qdrant_client.http.exceptions import UnexpectedResponse
-from qdrant_client.http.models import Filter, FieldCondition, Range, MatchValue, RecommendRequest
+from qdrant_client.http.models import Filter, FieldCondition, MatchValue, RecommendRequest, ScrollRequest
 
 import app.config
 from app.models.corpus_item_model import CorpusItemModel
@@ -57,7 +56,7 @@ class Item2ItemRecommender:
 
     async def _recommend(self, resolved_id: int, query_filter: Filter, count: int):
         try:
-            recommended = await self._client.recommend_points(
+            res = (await self._client.recommend_points(
                 collection_name=self.collection,
                 recommend_request=RecommendRequest(
                     positive=[resolved_id],
@@ -66,16 +65,23 @@ class Item2ItemRecommender:
                     filter=query_filter,
                     with_vector=False,
                     with_payload=True
-                )
-            )
+                ))).result
         except UnexpectedResponse as ex:
             if ex.status_code == 404:
                 # point or collection does not exist
                 # it can happen when a new syndicated article was just added or qdrant state was reset by accident
-                logging.warning(f'Qdrant error: {ex}, returning empty recommendations')
-                return []
+                # fallback to returning random articles with the same filter
+                # it should fail if the problem is not the article
+                res = (await self._client.scroll_points(
+                    collection_name=self.collection,
+                    scroll_request=ScrollRequest(
+                        limit=count,
+                        filter=query_filter,
+                        with_vector=False,
+                        with_payload=True
+                    ))).result.points
             else:
                 raise
 
         return [CorpusItemModel(id=rec.payload['corpus_item_id'], topic=rec.payload['topic'])
-                for rec in recommended.result]
+                for rec in res]
