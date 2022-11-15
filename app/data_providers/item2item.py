@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from qdrant_client.http import AsyncApis
@@ -80,6 +81,8 @@ class Item2ItemRecommender:
                         with_vector=False,
                         with_payload=True
                     ))).result.points
+                logging.warning(f'Related: article is not found, fallback to Qdrant scroll method. '
+                                f'resolved_id: {resolved_id}, filter: {query_filter}')
             else:
                 raise
 
