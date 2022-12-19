@@ -1,16 +1,29 @@
 import random
 from typing import List, Dict, Optional
 
+from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
+from app.data_providers.feature_group.corpus_engagement_provider import CorpusEngagementProvider
 from app.data_providers.slate_providers.slate_provider import SlateProvider
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
+from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
 from app.models.recommendation_reason_model import RecommendationReasonModel
 from app.models.recommendation_reason_type import RecommendationReasonType
 from app.models.topic import TopicModel
-from app.rankers.algorithms import rank_by_preferred_topics, spread_topics, rank_by_impression_caps
+from app.rankers.algorithms import rank_by_preferred_topics, spread_topics, rank_by_impression_caps, thompson_sampling
 
 
 class ForYouSlateProvider(SlateProvider):
+
+    def __init__(
+            self,
+            corpus_feature_group_client: CorpusFeatureGroupClient,
+            corpus_engagement_provider: CorpusEngagementProvider,
+            recommendation_surface_id: RecommendationSurfaceId,
+    ):
+        super().__init__(corpus_feature_group_client)
+        self.corpus_engagement_provider = corpus_engagement_provider
+        self.recommendation_surface_id = recommendation_surface_id
 
     @property
     def candidate_set_id(self) -> str:
@@ -49,7 +62,16 @@ class ForYouSlateProvider(SlateProvider):
         assert preferred_topics is not None
         assert user_impression_capped_list is not None
 
-        random.shuffle(items)
+        metrics = await self.corpus_engagement_provider.get(
+            self.recommendation_surface_id, self.configuration_id, items)
+
+        items = thompson_sampling(
+            recs=items,
+            metrics=metrics,
+            trailing_period=21,
+            default_alpha_prior=10,
+            default_beta_prior=500)
+
         items = rank_by_impression_caps(items, user_impression_capped_list)
         items = spread_topics(items)
         items = rank_by_preferred_topics(items, preferred_topics)
