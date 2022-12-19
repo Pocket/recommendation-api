@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 
 class CorpusItemEngagementModel(BaseModel):
+    key: str
     recommendation_surface_id: str
     corpus_slate_configuration_id: str
     corpus_item_id: str

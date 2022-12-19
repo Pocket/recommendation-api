@@ -1,5 +1,7 @@
 from typing import List, Dict
 
+from aiocache import multi_cached
+
 from app import config
 from app.data_providers.feature_group.feature_group_client import FeatureGroupClient
 from app.models.corpus_item_model import CorpusItemModel
@@ -24,14 +26,25 @@ class CorpusEngagementProvider:
         :param items: A list of Corpus Item ids.
         :return: Corpus engagement models keyed on corpus item id.
         """
+        engagement = await self._get_engagement_by_keys(
+            [f'{recommendation_surface_id.value}/{corpus_slate_configuration_id}/{item.id}' for item in items])
+
+        return {m.corpus_item_id: m for m in engagement.values()}
+
+    @multi_cached(ttl=600, keys_from_attr='keys')
+    async def _get_engagement_by_keys(self, keys: List[str]) -> Dict[str, CorpusItemEngagementModel]:
+        """
+        :param keys: Engagement is keyed on `recommendation_surface_id/corpus_slate_configuration_id/corpus_item_id`.
+        :return: Dict where the keys are equal to the input parameter and the values are engagement models.
+        """
         records = await self.feature_group_client.batch_get_records(
             feature_group_name=self.feature_group_name,
             feature_names=self.feature_names,
-            ids=[f'{recommendation_surface_id.value}/{corpus_slate_configuration_id}/{item.id}' for item in items]
+            ids=keys
         )
 
         engagement_models = [self.parse_record(r) for r in records]
-        return {m.corpus_item_id: m for m in engagement_models}
+        return {m.key: m for m in engagement_models}
 
     @property
     def feature_group_name(self):
@@ -40,6 +53,7 @@ class CorpusEngagementProvider:
     @property
     def feature_names(self):
         return [
+            'KEY',
             'UPDATED_AT',
             'RECOMMENDATION_SURFACE_ID',
             'CORPUS_SLATE_CONFIGURATION_ID',
