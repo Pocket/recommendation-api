@@ -62,15 +62,18 @@ class ForYouSlateProvider(SlateProvider):
         assert preferred_topics is not None
         assert user_impression_capped_list is not None
 
-        metrics = await self.corpus_engagement_provider.get(
-            self.recommendation_surface_id, self.configuration_id, items)
+        if kwargs.get('enable_thompson_sampling'):
+            metrics = await self.corpus_engagement_provider.get(
+                self.recommendation_surface_id, self.configuration_id, items)
 
-        items = thompson_sampling(
-            recs=items,
-            metrics=metrics,
-            trailing_period=21,
-            default_alpha_prior=10,
-            default_beta_prior=500)
+            items = thompson_sampling(
+                recs=items,
+                metrics=metrics,
+                trailing_period=21,
+                default_alpha_prior=10,
+                default_beta_prior=500)
+        else:
+            random.shuffle(items)
 
         items = rank_by_impression_caps(items, user_impression_capped_list)
         items = spread_topics(items)

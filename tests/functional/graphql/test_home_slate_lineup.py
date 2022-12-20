@@ -188,7 +188,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
     @patch.object(UserRecommendationPreferencesProvider, 'fetch')
     @patch.object(UserImpressionCapProvider, 'get')
     @patch.object(UnleashProvider, '_get_all_assignments')
-    async def test_content_v1_unpersonalized_home_slate_lineup(
+    async def test_thompson_sampling_unpersonalized_home_slate_lineup(
             self,
             mock_get_all_assignments,
             mock_get_user_impression_caps,
@@ -200,7 +200,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         mock_fetch_user_recommendation_preferences.return_value = None  # User has does not have a preferences record
         mock_get_user_impression_caps.return_value = corpus_items_fixture[:6]
         mock_get_all_assignments.return_value = [UnleashAssignmentModel(
-            assigned=True, name='temp.web.recommendation-api.home.contentv1', variant='treatment')]
+            assigned=True, name='temp.web.recommendation-api.home.thompson-sampling', variant='treatment')]
 
         async with AsyncClient(app=app, base_url="http://test") as client:
             response = await client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers=self.headers)

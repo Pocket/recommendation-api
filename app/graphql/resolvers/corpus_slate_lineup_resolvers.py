@@ -51,7 +51,11 @@ async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
                 corpus_engagement_provider=di.corpus_engagement_provider,
                 recommendation_surface_id=RecommendationSurfaceId.HOME,
             ),
-            recommended_reads_slate_provider=RecommendedReadsSlateProvider(di.corpus_client),
+            recommended_reads_slate_provider=RecommendedReadsSlateProvider(
+                di.corpus_client,
+                corpus_engagement_provider=di.corpus_engagement_provider,
+                recommendation_surface_id=RecommendationSurfaceId.HOME,
+            ),
             topic_slate_providers=TopicSlateProviderFactory(di.corpus_client),
             collection_slate_provider=CollectionSlateProvider(di.corpus_client),
             pocket_hits_slate_provider=PocketHitsSlateProvider(di.corpus_client),
