@@ -20,6 +20,7 @@ pytest-asyncio = "*"
 pytest-aiohttp = "*"
 httpx = "*"
 freezegun = "*"
+asgi-lifespan = "==2.*"
 
 [packages]
 # pin Sentry, the update causes errors
