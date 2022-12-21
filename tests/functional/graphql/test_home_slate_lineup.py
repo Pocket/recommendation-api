@@ -4,6 +4,7 @@ import random
 import uuid
 from typing import Sequence
 
+from asgi_lifespan import LifespanManager
 from httpx import AsyncClient
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
@@ -115,7 +116,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         mock_get_all_assignments.return_value = [UnleashAssignmentModel(
             assigned=True, name='temp.web.recommendation-api.home.contentv1', variant='control')]
 
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
             response = await client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers=self.headers)
             data = response.json()
 
@@ -158,7 +159,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         mock_get_all_assignments.return_value = [UnleashAssignmentModel(
             assigned=True, name='temp.web.recommendation-api.home.contentv1', variant='control')]
 
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
             response = await client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers=self.headers)
             data = response.json()
 
@@ -202,7 +203,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         mock_get_all_assignments.return_value = [UnleashAssignmentModel(
             assigned=True, name='temp.web.recommendation-api.home.thompson-sampling', variant='treatment')]
 
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
             response = await client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers=self.headers)
             data = response.json()
 
