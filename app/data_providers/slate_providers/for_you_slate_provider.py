@@ -69,9 +69,9 @@ class ForYouSlateProvider(SlateProvider):
             items = thompson_sampling(
                 recs=items,
                 metrics=metrics,
-                trailing_period=21,
-                default_alpha_prior=10,
-                default_beta_prior=500)
+                trailing_period=14,  # A long period might work better given that some topics get few impressions
+                default_alpha_prior=10,  # beta * P95 item CTR for this slate (1.6%)
+                default_beta_prior=600)  # 5% of average daily item impressions for this slate
         else:
             random.shuffle(items)
 

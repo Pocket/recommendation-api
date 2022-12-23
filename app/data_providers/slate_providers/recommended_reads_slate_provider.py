@@ -51,8 +51,8 @@ class RecommendedReadsSlateProvider(SlateProvider):
             items = thompson_sampling(
                 recs=items,
                 metrics=metrics,
-                trailing_period=21,
-                default_alpha_prior=10,
-                default_beta_prior=500)
+                trailing_period=7,  # Candidate set is relatively small (~20/day). A low trailing period counters drift.
+                default_alpha_prior=7,   # beta * P95 item CTR for this slate (0.7%)
+                default_beta_prior=850)  # 5% of average daily item impressions for this slate
 
         return items
