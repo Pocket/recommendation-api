@@ -170,7 +170,7 @@ class HomeDispatch:
 
         slates += [
             self.pocket_hits_slate_provider.get_slate(),
-            self.collection_slate_provider.get_slate(),
+            self.collection_slate_provider.get_slate(enable_thompson_sampling=enable_thompson_sampling),
             self.life_hacks_slate_provider.get_slate(),
         ]
 

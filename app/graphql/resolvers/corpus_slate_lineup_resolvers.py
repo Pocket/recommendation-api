@@ -21,6 +21,9 @@ from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
 from app.singletons import DiContainer
 
 
+# TODO: This method has reached the point where automatic dependency injection could greatly improve readability.
+#       'Dependency Injector' seems to be by far the most popular, actively-maintained library:
+#       https://python-dependency-injector.ets-labs.org/
 async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
     di = DiContainer.get()
     user = get_request_user(info)
@@ -57,7 +60,11 @@ async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
                 recommendation_surface_id=RecommendationSurfaceId.HOME,
             ),
             topic_slate_providers=TopicSlateProviderFactory(di.corpus_client),
-            collection_slate_provider=CollectionSlateProvider(di.corpus_client),
+            collection_slate_provider=CollectionSlateProvider(
+                di.corpus_client,
+                corpus_engagement_provider=di.corpus_engagement_provider,
+                recommendation_surface_id=RecommendationSurfaceId.HOME,
+            ),
             pocket_hits_slate_provider=PocketHitsSlateProvider(di.corpus_client),
             life_hacks_slate_provider=LifeHacksSlateProvider(di.corpus_client),
             unleash_provider=unleash_provider,
