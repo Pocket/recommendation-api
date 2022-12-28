@@ -11,6 +11,9 @@ from app.models.metrics.corpus_item_engagement_model import CorpusItemEngagement
 
 class CorpusEngagementProvider:
 
+    class MissingRecord:
+        pass
+
     def __init__(self, feature_group_client: FeatureGroupClient):
         self.feature_group_client = feature_group_client
 
@@ -29,13 +32,14 @@ class CorpusEngagementProvider:
         engagement = await self._get_engagement_by_keys(
             [f'{recommendation_surface_id.value}/{corpus_slate_configuration_id}/{item.id}' for item in items])
 
-        return {m.corpus_item_id: m for m in engagement.values()}
+        return {m.corpus_item_id: m for m in engagement.values() if m is not self.MissingRecord}
 
-    @multi_cached(ttl=600, keys_from_attr='keys')
+    @multi_cached(ttl=900, keys_from_attr='keys')
     async def _get_engagement_by_keys(self, keys: List[str]) -> Dict[str, CorpusItemEngagementModel]:
         """
         :param keys: Engagement is keyed on `recommendation_surface_id/corpus_slate_configuration_id/corpus_item_id`.
         :return: Dict where the keys are equal to the input parameter and the values are engagement models.
+                 Returns MissingRecord if key is not found.
         """
         records = await self.feature_group_client.batch_get_records(
             feature_group_name=self.feature_group_name,
@@ -44,7 +48,10 @@ class CorpusEngagementProvider:
         )
 
         engagement_models = [self.parse_record(r) for r in records]
-        return {m.key: m for m in engagement_models}
+
+        models_by_key = {m.key: m for m in engagement_models}
+        # Cache missing records to prevent them from being requested from the feature group in every request.
+        return {key: models_by_key.get(key, self.MissingRecord) for key in keys}
 
     @property
     def feature_group_name(self):
