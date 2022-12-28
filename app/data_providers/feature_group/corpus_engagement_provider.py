@@ -24,8 +24,8 @@ class CorpusEngagementProvider:
             items: List[CorpusItemModel],
     ) -> Dict[str, CorpusItemEngagementModel]:
         """
-        :param recommendation_surface_id: Identifies where (e.g. 'HOME') on which recommendations are surfaced.
-        :param corpus_slate_configuration_id: Identifies the slate in which recommendations are shown.
+        :param recommendation_surface_id: Identifies where recommendations are surfaced. Currently only 'HOME'.
+        :param corpus_slate_configuration_id: Identifies the slate configuration, e.g. a UUID for the 'For You' slate.
         :param items: A list of Corpus Item ids.
         :return: Corpus engagement models keyed on corpus item id.
         """
@@ -38,6 +38,7 @@ class CorpusEngagementProvider:
     async def _get_engagement_by_keys(self, keys: List[str]) -> Dict[str, CorpusItemEngagementModel]:
         """
         :param keys: Engagement is keyed on `recommendation_surface_id/corpus_slate_configuration_id/corpus_item_id`.
+                     The input and output are keyed the same such that @multi_cached can cache this function.
         :return: Dict where the keys are equal to the input parameter and the values are engagement models.
                  Returns MissingRecord if key is not found.
         """
@@ -48,9 +49,9 @@ class CorpusEngagementProvider:
         )
 
         engagement_models = [self.parse_record(r) for r in records]
-
         models_by_key = {m.key: m for m in engagement_models}
-        # Cache missing records to prevent them from being requested from the feature group in every request.
+
+        # Missing records are cached to prevent a request going to the feature group on every function call.
         return {key: models_by_key.get(key, self.MissingRecord) for key in keys}
 
     @property
