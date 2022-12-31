@@ -1,0 +1,13 @@
+{
+  "headline-recommended-reads": "Recommended Reads",
+  "headline-for-you": "For You",
+  "headline-collections": "Popular Collections",
+  "headline-life-hacks": "Life Hacks",
+  "headline-pocket-hits": "Today’s Pocket Hits",
+  "subheadline-recommended-reads": "Curated by Pocket",
+  "subheadline-for-you": "Recommended for your interests",
+  "subheadline-collections": "Curated guides to the best reads on the web",
+  "subheadline-life-hacks": "Tips for better living",
+  "more-collections": "Explore more Collections",
+  "more-topic": "Explore more {{topicName}}"
+}
