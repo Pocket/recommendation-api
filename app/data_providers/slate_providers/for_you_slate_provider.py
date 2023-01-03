@@ -70,8 +70,8 @@ class ForYouSlateProvider(SlateProvider):
                 recs=items,
                 metrics=metrics,
                 trailing_period=14,  # A long period might work better given that some topics get few impressions
-                default_alpha_prior=10,  # beta * P95 item CTR for this slate (1.6%)
-                default_beta_prior=600)  # 5% of average daily item impressions for this slate
+                default_alpha_prior=20,  # beta * P95 item CTR for this slate (1.6%)
+                default_beta_prior=1200)  # 5% of average daily item impressions for this slate
         else:
             random.shuffle(items)
 

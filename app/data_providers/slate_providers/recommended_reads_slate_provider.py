@@ -50,7 +50,7 @@ class RecommendedReadsSlateProvider(SlateProvider):
                 recs=items,
                 metrics=metrics,
                 trailing_period=7,  # With few new items/day and relatively many impressions, a low period is sufficient
-                default_alpha_prior=7,   # beta * P95 item CTR for this slate (0.7%)
-                default_beta_prior=850)  # 5% of average daily item impressions for this slate
+                default_alpha_prior=12,   # beta * P95 item CTR for this slate (0.7%)
+                default_beta_prior=1700)  # 5% of average daily item impressions for this slate
 
         return items
