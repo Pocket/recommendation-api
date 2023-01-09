@@ -1,4 +1,3 @@
-import logging
 from typing import Optional, List
 
 from app.data_providers.slate_providers.slate_provider import SlateProvider
@@ -20,12 +19,8 @@ class CollectionSlateProvider(SlateProvider):
 
         if self.locale == LocaleModel.en_US:
             url = f'{base_url}/collections'
-        elif self.locale == LocaleModel.de_DE:
-            # TODO: Ask Web team how we should generalize this. /de-DE/collections currently points to English content.
-            url = f'{base_url}/de/collections'
         else:
-            logging.warning(f'Unsupported locale for collections {self.locale.value}')
-            return None
+            url = f'{base_url}/{self.locale.value.language}/collections'
 
         return LinkModel(text=self.home_translations['CollectionsSlateProvider.more_link_text'], url=url)
 
