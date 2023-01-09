@@ -3,6 +3,7 @@ import os
 # as this file executes in the 'app' directory, move up one dir to get to the project root
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) + '/../'
 JSON_DIR = os.path.join(ROOT_DIR, 'app/json')
+TRANSLATIONS_DIR = os.path.join(ROOT_DIR, 'app/translations')
 
 ENV_LOCAL = "local"
 ENV_DEV = "development"

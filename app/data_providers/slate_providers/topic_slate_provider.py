@@ -4,8 +4,8 @@ from typing import List, Optional
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.slate_provider import SlateProvider
 from app.models.corpus_item_model import CorpusItemModel
-from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.link import LinkModel
+from app.models.localemodel import LocaleModel
 from app.models.topic import TopicModel
 
 
@@ -32,8 +32,8 @@ class TopicSlateProvider(SlateProvider):
         'GAMING': '465cadb7-638d-41b7-8914-3d6c42f53b57',
     }
 
-    def __init__(self, corpus_feature_group_client: CorpusFeatureGroupClient, topic: TopicModel):
-        super().__init__(corpus_feature_group_client)
+    def __init__(self, topic: TopicModel, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.topic = topic
 
     def __str__(self):
@@ -49,7 +49,13 @@ class TopicSlateProvider(SlateProvider):
 
     @property
     def more_link(self) -> Optional[LinkModel]:
-        return LinkModel(text=f'Explore more {self.topic.name}', url=f'https://getpocket.com/explore/{self.topic.slug}')
+        # Topic pages only exist for en-US.
+        if self.locale == LocaleModel.en_US:
+            return LinkModel(
+                text=f'Explore more {self.topic.name}',
+                url=f'https://getpocket.com/explore/{self.topic.slug}')
+        else:
+            return None
 
     async def rank_corpus_items(self, items: List[CorpusItemModel], *args, **kwargs) -> List[CorpusItemModel]:
         """

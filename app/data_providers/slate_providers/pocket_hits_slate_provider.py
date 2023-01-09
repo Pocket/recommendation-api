@@ -13,10 +13,6 @@ class PocketHitsSlateProvider(SlateProvider):
         return '92411893-ebdb-4a43-ad29-aa79e56e2136'
 
     @property
-    def headline(self) -> str:
-        return 'Today’s Pocket Hits'
-
-    @property
     def subheadline(self) -> str:
         # The date is supposed to progress at 3AM EDT.
         dt = datetime.now(tz=pytz.timezone('America/New_York')) - timedelta(hours=3)
