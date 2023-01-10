@@ -1,9 +1,8 @@
-from functools import lru_cache
 import json
-import os
 from abc import ABC, abstractmethod
+from functools import lru_cache
 from os import path
-from typing import Dict, List, Any
+from typing import Dict, Any
 
 from app.models.localemodel import LocaleModel
 
@@ -13,24 +12,21 @@ class TranslationProvider:
         self.translations_dir = translations_dir
 
     @lru_cache(maxsize=None)
-    def _get_valid_locales(self) -> List[str]:
-        """
-        :return: Locales for which translations are available.
-        """
-        return [f.name for f in os.scandir(self.translations_dir) if f.is_dir()]
-
-    @lru_cache(maxsize=None)
     def load_locales_file(self, locale: str, file: str) -> Dict[str, str]:
         """
-        :param locale: Locale corresponding to a subdirectory of the translations' directory.
-        :param file: Filename without .json extension
+        :param locale: Locale corresponding to a subdirectory of the translations' directory (e.g. en-US)
+        :param file: Filename (e.g. home.json)
         :return: Dict mapping translation keys to translated strings
         """
-        with open(path.join(self.translations_dir, locale, f'{file}.json'), 'r') as fp:
+        with open(path.join(self.translations_dir, locale, file), 'r') as fp:
             return json.load(fp)
 
 
 class Translations(ABC):
+    """
+    Abstract class providing translation strings. A Translations object can be used like a dict:
+    """
+
     def __init__(self, locale: LocaleModel, translations_provider: TranslationProvider):
         self.locale = locale
         self.translations_provider = translations_provider
@@ -39,7 +35,7 @@ class Translations(ABC):
     @abstractmethod
     def _translation_filename(self) -> str:
         """
-        :return: The translations filename without a .json extension
+        :return: The translation filename, e.g. home.json
         """
         return NotImplemented
 
@@ -60,10 +56,4 @@ class Translations(ABC):
 class HomeTranslations(Translations):
     @property
     def _translation_filename(self) -> str:
-        return 'home'
-
-
-class TopicTranslations(Translations):
-    @property
-    def _translation_filename(self) -> str:
-        return 'topic'
+        return 'home.json'

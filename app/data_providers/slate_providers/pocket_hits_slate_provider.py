@@ -16,6 +16,7 @@ class PocketHitsSlateProvider(SlateProvider):
     def subheadline(self) -> str:
         # The date is supposed to progress at 3AM EDT.
         dt = datetime.now(tz=pytz.timezone('America/New_York')) - timedelta(hours=3)
+        # This slate is only shown on the en-US Home, so the subheadline does not need to be localized.
         return f'{dt:%A}, {dt:%B} {dt.day}'
 
     @property

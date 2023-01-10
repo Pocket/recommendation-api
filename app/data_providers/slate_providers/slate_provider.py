@@ -6,7 +6,7 @@ from aws_xray_sdk.core import xray_recorder
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.feature_group.corpus_engagement_provider import CorpusEngagementProvider
-from app.data_providers.translation import HomeTranslations, TopicTranslations
+from app.data_providers.translation import HomeTranslations
 from app.graphql.recommendation_reason_type import RecommendationReasonType
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
