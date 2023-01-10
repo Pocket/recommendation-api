@@ -97,6 +97,19 @@ self_improvement_topic = TopicModel(
     slug='self-improvement'
 )
 
+science_topic = TopicModel(
+    id='058011b8-c70d-4a25-92e5-478e3ff0f0e6',
+    corpus_topic_id='SCIENCE',
+    curator_label='Science',
+    name='Science',
+    display_name='Science',
+    is_displayed=True,
+    is_promoted=False,
+    page_type=PageType.topic_page,
+    query='science space astronomy biology chemistry environment energy geology weather physics',
+    slug='science',
+)
+
 
 all_topic_fixtures = [
     business_topic,
@@ -106,6 +119,7 @@ all_topic_fixtures = [
     travel_topic,
     entertainment_topic,
     self_improvement_topic,
+    science_topic,
 ]
 
 

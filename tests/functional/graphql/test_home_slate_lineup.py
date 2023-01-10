@@ -255,8 +255,8 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             slates = data['data']['homeSlateLineup']['slates']
             assert slates[0]['headline'] == 'Empfohlene Artikel'
             assert slates[0]['subheadline'] == 'Von Pocket kuratiert'
-            assert slates[2]['headline'] == 'Beliebte Collections'
-            assert slates[2]['moreLink']['text'] == 'Mehr Collections entdecken'
+            assert slates[1]['headline'] == 'Beliebte Collections'
+            assert slates[1]['moreLink']['text'] == 'Mehr Collections entdecken'
 
     async def wait_for_snowplow_events(self, max_wait_time: int = 5, n_expected_event: int = 1):
         # Locally the request to Snowplow gets handled in 0.01s, but in CircleCI we need 1 second.

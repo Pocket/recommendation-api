@@ -70,7 +70,7 @@ async def resolve_home_slate_lineup(root, info: Info, locale: Locale = 'en-US') 
             unleash_provider=unleash_provider,
         ).get_slate_lineup(
             user=user,
-            slate_count=slate_count,
+            locale=locale_model,
             recommendation_count=recommendation_count,
         )
 

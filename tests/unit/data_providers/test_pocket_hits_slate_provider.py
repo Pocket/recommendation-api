@@ -19,7 +19,7 @@ def pocket_hits_slate_provider(corpus_feature_group_client, corpus_engagement_pr
 
 
 @pytest.mark.asyncio
-class TestPocketHitsSlateProvider:
+class TestDeDePocketHitsSlateProvider:
 
     async def test_get_slate_reason_type(self, pocket_hits_slate_provider):
         slate = await pocket_hits_slate_provider.get_slate()

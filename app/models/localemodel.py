@@ -6,6 +6,10 @@ class LocaleValue(str):
     def language(self):
         return self.split('-')[0]
 
+    @property
+    def language_variant(self):
+        return self.split('-')[1]
+
 
 class LocaleModel(Enum):
     en_US = LocaleValue('en-US')

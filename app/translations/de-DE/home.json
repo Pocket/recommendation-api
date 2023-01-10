@@ -3,7 +3,5 @@
   "RecommendedReadsSlateProvider.subheadline": "Von Pocket kuratiert",
   "CollectionSlateProvider.headline": "Beliebte Collections",
   "CollectionSlateProvider.subheadline": "Ein Thema, eine Liste, die besten Artikel aus dem Internet",
-  "CollectionsSlateProvider.more_link_text": "Mehr Collections entdecken",
-  "PocketHitsSlateProvider.headline": "",
-  "LifeHacksSlateProvider.headline": ""
+  "CollectionsSlateProvider.more_link_text": "Mehr Collections entdecken"
 }
