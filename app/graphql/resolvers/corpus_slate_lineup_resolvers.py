@@ -14,7 +14,6 @@ from app.data_providers.snowplow.config import create_snowplow_tracker, Snowplow
 from app.data_providers.snowplow.snowplow_corpus_slate_lineup_tracker import SnowplowCorpusSlateLineupTracker
 from app.data_providers.unleash_provider import UnleashProvider, UnleashConfig
 from app.graphql.corpus_slate_lineup import CorpusSlateLineup
-from app.graphql.locale import Locale
 from app.graphql.resolvers.corpus_slate_lineup_slates_resolver import DEFAULT_SLATE_COUNT
 from app.graphql.resolvers.corpus_slate_recommendations_resolver import DEFAULT_RECOMMENDATION_COUNT
 from app.graphql.util import get_field_argument, get_request_user, get_pocket_client
@@ -26,7 +25,7 @@ from app.singletons import DiContainer
 # TODO: This method has reached the point where automatic dependency injection could greatly improve readability.
 #       'Dependency Injector' seems to be by far the most popular, actively-maintained library:
 #       https://python-dependency-injector.ets-labs.org/
-async def resolve_home_slate_lineup(root, info: Info, locale: Locale = 'en-US') -> CorpusSlateLineup:
+async def resolve_home_slate_lineup(root, info: Info, locale: str = 'en-US') -> CorpusSlateLineup:
     di = DiContainer.get()
     user = get_request_user(info)
     api_client = get_pocket_client(info)
