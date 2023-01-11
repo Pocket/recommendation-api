@@ -12,7 +12,19 @@ from app.singletons import DiContainer
 DEFAULT_RECOMMENDATION_COUNT = 10
 
 
-async def resolve_end_of_article(
+async def resolve_similar_to_saved(
+        root: 'Item',
+        info: Info,
+        count: Annotated[Optional[int], argument(
+            description='Maximum number of recommendations to return, defaults to 10')]
+        = DEFAULT_RECOMMENDATION_COUNT,
+) -> List[CorpusRecommendation]:
+    dispatch = Item2ItemDispatch(item_recommender=DiContainer.get().item2item_recommender)
+    recs = await dispatch.related(resolved_id=int(root.itemId), count=count)
+    return [CorpusRecommendation.from_pydantic(rec) for rec in recs]
+
+
+async def resolve_syndicated_end_of_article(
         root: 'SyndicatedArticle',
         info: Info,
         count: Annotated[Optional[int], argument(
@@ -20,12 +32,11 @@ async def resolve_end_of_article(
         = DEFAULT_RECOMMENDATION_COUNT,
 ) -> List[CorpusRecommendation]:
     dispatch = Item2ItemDispatch(item_recommender=DiContainer.get().item2item_recommender)
-
     recs = await dispatch.syndicated(resolved_id=int(root.itemId), count=count)
     return [CorpusRecommendation.from_pydantic(rec) for rec in recs]
 
 
-async def resolve_right_rail(
+async def resolve_syndicated_right_rail(
         root: 'SyndicatedArticle',
         info: Info,
         count: Annotated[Optional[int], argument(

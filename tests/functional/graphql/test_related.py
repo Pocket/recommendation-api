@@ -64,6 +64,7 @@ def syndicated_json(item_id: str, pub_url: str):
         },
     }
 
+
 def publisher_json(item_id: str, pub_url: str):
     return {
         'query': '''
@@ -93,13 +94,104 @@ def publisher_json(item_id: str, pub_url: str):
         },
     }
 
+
+def after_article_json(item_id: str):
+    return {
+        'query': '''
+            query ($representations: [_Any!]!) {
+              _entities(representations: $representations) {
+                ... on Item {
+                    itemId
+                    relatedAfterArticle(count: 3) {
+                        id
+                        corpusItem {
+                          id
+                        }
+                    }
+                }
+              }
+            }
+        ''',
+        'variables': {
+            'representations': [
+                {
+                    '__typename': 'Item',
+                    'itemId': item_id
+                },
+            ],
+        },
+    }
+
+
+def after_save_json(item_id: str):
+    return {
+        'query': '''
+            query ($representations: [_Any!]!) {
+              _entities(representations: $representations) {
+                ... on Item {
+                    itemId
+                    relatedAfterCreate(count: 3) {
+                        id
+                        corpusItem {
+                          id
+                        }
+                    }
+                }
+              }
+            }
+        ''',
+        'variables': {
+            'representations': [
+                {
+                    '__typename': 'Item',
+                    'itemId': item_id
+                },
+            ],
+        },
+    }
+
+
 class TestGraphQLRelated(TestCase):
     @classmethod
     def setUpClass(cls):
         test_data = populate_qdrant()
-        cls.art_by_corpus_id = {d['payload'] ['corpus_item_id']: d['payload'] for d in test_data}
+        cls.art_by_corpus_id = {d['payload']['corpus_item_id']: d['payload'] for d in test_data}
 
-    def test_related_end_of_article_basic(self):
+    def test_related_after_save(self):
+        item_id = '3727699409'
+
+        with TestClient(app) as client:
+            response = client.post("/", json=after_save_json(item_id)).json()
+
+            assert not response.get('errors')
+            entity = response['data']['_entities'][0]
+            recs = entity['relatedAfterCreate']
+            assert entity['itemId'] == item_id
+            assert len(recs) == 3
+            assert 'id' in recs[0]
+            assert 'corpusItem' in recs[0]
+            assert 'id' in recs[0]['corpusItem']
+            print(recs)
+            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
+
+    def test_related_after_article(self):
+        item_id = '3727699409'
+
+        with TestClient(app) as client:
+            response = client.post("/", json=after_article_json(item_id)).json()
+
+            assert not response.get('errors')
+            entity = response['data']['_entities'][0]
+            recs = entity['relatedAfterArticle']
+            assert entity['itemId'] == item_id
+            assert len(recs) == 3
+            assert 'id' in recs[0]
+            assert 'corpusItem' in recs[0]
+            assert 'id' in recs[0]['corpusItem']
+            print(recs)
+            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
+
+    def test_related_end_of_syndicated_basic(self):
         item_id = '3727511744'
         pub_url = 'https://time.com/6223012/workplaces-of-the-future/'
 
@@ -115,9 +207,7 @@ class TestGraphQLRelated(TestCase):
             assert 'id' in recs[0]
             assert 'corpusItem' in recs[0]
             assert 'id' in recs[0]['corpusItem']
-            assert {r['corpusItem']['id'] for r in recs} == {'22bfe98b-857d-4c98-aae2-9e750d0eaa9d',
-                                                             '66b86a8e-b3f6-45b5-a06d-82d24f4d5c40',
-                                                             'ec0421ff-e2db-4496-8d64-a675c5824bf7'}
+            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_syndicated'] for r in recs)
 
     def test_related_right_rail_basic(self):
         item_id = '3727501830'
@@ -135,11 +225,10 @@ class TestGraphQLRelated(TestCase):
             assert 'id' in recs[0]
             assert 'corpusItem' in recs[0]
             assert 'id' in recs[0]['corpusItem']
-            assert {r['corpusItem']['id'] for r in recs} == {"253c3f1e-00c3-4ec2-a03a-3e046ab16652",
-                                                             "3edd22f6-0967-4eda-af23-d06d7cfea722",
-                                                             "b4cbf203-50cd-45fc-97c8-e1fddac2f270"}
+            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['domain'] == 'psyche.co' for r in recs)
+            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
 
-    def test_related_end_of_article_article_doesnt_exist(self):
+    def test_related_syndicated_article_doesnt_exist(self):
         item_id = '11111'
         pub_url = 'xxxx'
 
@@ -185,3 +274,35 @@ class TestGraphQLRelated(TestCase):
             assert not response.get('errors')
             recs = response['data']['_entities'][0]['relatedRightRail']
             assert len(recs) == 0
+
+    def test_related_after_article_article_doesnt_exist(self):
+        item_id = '11111'
+
+        with TestClient(app) as client:
+            response = client.post("/", json=after_article_json(item_id)).json()
+
+            assert not response.get('errors')
+            entity = response['data']['_entities'][0]
+            recs = entity['relatedAfterArticle']
+            assert entity['itemId'] == item_id
+            assert len(recs) == 3
+            assert 'id' in recs[0]
+            assert 'corpusItem' in recs[0]
+            assert 'id' in recs[0]['corpusItem']
+            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
+
+    def test_related_after_save_article_doesnt_exist(self):
+        item_id = '11111'
+
+        with TestClient(app) as client:
+            response = client.post("/", json=after_save_json(item_id)).json()
+
+            assert not response.get('errors')
+            entity = response['data']['_entities'][0]
+            recs = entity['relatedAfterCreate']
+            assert entity['itemId'] == item_id
+            assert len(recs) == 3
+            assert 'id' in recs[0]
+            assert 'corpusItem' in recs[0]
+            assert 'id' in recs[0]['corpusItem']
+            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)

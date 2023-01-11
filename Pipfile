@@ -43,7 +43,7 @@ ujson = "*"
 httptools = "*"
 aio-snowplow-tracker = "*"
 strawberry-graphql = {extras = ["fastapi"], version = "*"}
-qdrant-client = "==0.11.3"
+qdrant-client = "==0.11.6"
 pytz = "*"
 
 [requires]
