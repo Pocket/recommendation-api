@@ -18,16 +18,18 @@ from app.graphql.resolvers.corpus_slate_lineup_slates_resolver import DEFAULT_SL
 from app.graphql.resolvers.corpus_slate_recommendations_resolver import DEFAULT_RECOMMENDATION_COUNT
 from app.graphql.util import get_field_argument, get_request_user, get_pocket_client
 from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
+from app.models.localemodel import LocaleModel
 from app.singletons import DiContainer
 
 
 # TODO: This method has reached the point where automatic dependency injection could greatly improve readability.
 #       'Dependency Injector' seems to be by far the most popular, actively-maintained library:
 #       https://python-dependency-injector.ets-labs.org/
-async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
+async def resolve_home_slate_lineup(root, info: Info, locale: str = 'en-US') -> CorpusSlateLineup:
     di = DiContainer.get()
     user = get_request_user(info)
     api_client = get_pocket_client(info)
+    locale_model = LocaleModel.from_string(locale, default=LocaleModel.en_US)
 
     slate_count = int(get_field_argument(
         fields=info.selected_fields,
@@ -41,6 +43,14 @@ async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
         argument_name='count',
         default_value=DEFAULT_RECOMMENDATION_COUNT))
 
+    slate_provider_kwargs = {
+        'corpus_feature_group_client': di.corpus_client,
+        'recommendation_surface_id': RecommendationSurfaceId.HOME,
+        'corpus_engagement_provider': di.corpus_engagement_provider,
+        'locale': locale_model,
+        'translation_provider': di.translation_provider,
+    }
+
     async with PocketGraphClientSession(PocketGraphConfig()) as graph_client_session:
         unleash_provider = UnleashProvider(graph_client_session, unleash_config=UnleashConfig())
 
@@ -49,28 +59,16 @@ async def resolve_home_slate_lineup(root, info: Info) -> CorpusSlateLineup:
             preferences_provider=di.user_recommendation_preferences_provider,
             user_impression_cap_provider=di.user_impression_cap_provider,
             topic_provider=di.topic_provider,
-            for_you_slate_provider=ForYouSlateProvider(
-                di.corpus_client,
-                corpus_engagement_provider=di.corpus_engagement_provider,
-                recommendation_surface_id=RecommendationSurfaceId.HOME,
-            ),
-            recommended_reads_slate_provider=RecommendedReadsSlateProvider(
-                di.corpus_client,
-                corpus_engagement_provider=di.corpus_engagement_provider,
-                recommendation_surface_id=RecommendationSurfaceId.HOME,
-            ),
-            topic_slate_providers=TopicSlateProviderFactory(di.corpus_client),
-            collection_slate_provider=CollectionSlateProvider(
-                di.corpus_client,
-                corpus_engagement_provider=di.corpus_engagement_provider,
-                recommendation_surface_id=RecommendationSurfaceId.HOME,
-            ),
-            pocket_hits_slate_provider=PocketHitsSlateProvider(di.corpus_client),
-            life_hacks_slate_provider=LifeHacksSlateProvider(di.corpus_client),
+            for_you_slate_provider=ForYouSlateProvider(**slate_provider_kwargs),
+            recommended_reads_slate_provider=RecommendedReadsSlateProvider(**slate_provider_kwargs),
+            topic_slate_providers=TopicSlateProviderFactory(**slate_provider_kwargs),
+            collection_slate_provider=CollectionSlateProvider(**slate_provider_kwargs),
+            pocket_hits_slate_provider=PocketHitsSlateProvider(**slate_provider_kwargs),
+            life_hacks_slate_provider=LifeHacksSlateProvider(**slate_provider_kwargs),
             unleash_provider=unleash_provider,
         ).get_slate_lineup(
             user=user,
-            slate_count=slate_count,
+            locale=locale_model,
             recommendation_count=recommendation_count,
         )
 

@@ -20,6 +20,7 @@ from app.data_providers.user_recommendation_preferences_provider import UserReco
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
+from app.models.localemodel import LocaleModel
 from app.models.unleash_assignment import UnleashAssignmentModel
 from app.models.request_user import RequestUser
 from tests.assets.topics import technology_topic, entertainment_topic, self_improvement_topic
@@ -95,7 +96,8 @@ class TestHomeDispatch:
             MockSlateProvider(_generate_slate(['Self1'], headline='Self-improvement')),
         ]
 
-        lineup = await self.home_dispatch.get_slate_lineup(user=self.request_user, slate_count=10, recommendation_count=2)
+        lineup = await self.home_dispatch.get_slate_lineup(
+            user=self.request_user, locale=LocaleModel.en_US, recommendation_count=2)
 
         assert [
             ['Tech2', 'Ent4'],

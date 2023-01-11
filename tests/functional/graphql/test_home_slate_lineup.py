@@ -49,30 +49,35 @@ def _get_topics_fixture(topics_ids: Sequence[str]) -> List[TopicModel]:
     return [topics_by_id[id] for id in topics_ids]
 
 
-HOME_SLATE_LINEUP_QUERY = '''
-    query {
-      homeSlateLineup {
-        id
-        slates {
-          headline
-          moreLink {
-            url
-            text
-          }
-          recommendationReasonType
-          recommendations(count: 5) {
-            corpusItem {
-              id
-            }
-            reason {
-              name
-              type
+def _get_home_query(locale=None):
+    return '''
+        query {
+          homeSlateLineup''' + (f'(locale: "{locale}")' if locale else '') + ''' {
+            id
+            slates {
+              headline
+              subheadline
+              moreLink {
+                url
+                text
+              }
+              recommendationReasonType
+              recommendations(count: 5) {
+                corpusItem {
+                  id
+                }
+                reason {
+                  name
+                  type
+                }
+              }
             }
           }
         }
-      }
-    }
-'''
+    '''
+
+
+HOME_SLATE_LINEUP_QUERY = _get_home_query()
 
 
 class TestHomeSlateLineup(TestDynamoDBBase):
@@ -221,6 +226,37 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             await self.wait_for_snowplow_events(n_expected_event=2)
             all_snowplow_events = self.snowplow_micro.get_event_counts()
             assert all_snowplow_events == {'total': 2, 'good': 2, 'bad': 0}
+
+    @patch.object(CorpusFeatureGroupClient, 'fetch')
+    @patch.object(UserRecommendationPreferencesProvider, 'fetch')
+    @patch.object(UserImpressionCapProvider, 'get')
+    @patch.object(UnleashProvider, '_get_all_assignments')
+    @patch.object(FeatureGroupClient, 'batch_get_records')
+    async def test_german_unpersonalized_home_slate_lineup(
+            self,
+            mock_batch_get_records,
+            mock_get_all_assignments,
+            mock_get_user_impression_caps,
+            mock_fetch_user_recommendation_preferences,
+            mock_fetch_corpus_items,
+    ):
+        corpus_items_fixture = _corpus_items_fixture(n=100)
+        mock_fetch_corpus_items.return_value = corpus_items_fixture
+        mock_fetch_user_recommendation_preferences.return_value = None  # User has does not have a preferences record
+        mock_get_user_impression_caps.return_value = []
+        mock_get_all_assignments.return_value = []
+        mock_batch_get_records.return_value = []
+
+        async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
+            response = await client.post('/', json={'query': _get_home_query('de-DE')}, headers=self.headers)
+            data = response.json()
+
+            assert not data.get('errors')
+            slates = data['data']['homeSlateLineup']['slates']
+            assert slates[0]['headline'] == 'Empfohlene Artikel'
+            assert slates[0]['subheadline'] == 'Von Pocket kuratiert'
+            assert slates[1]['headline'] == 'Beliebte Collections'
+            assert slates[1]['moreLink']['text'] == 'Mehr Collections entdecken'
 
     async def wait_for_snowplow_events(self, max_wait_time: int = 5, n_expected_event: int = 1):
         # Locally the request to Snowplow gets handled in 0.01s, but in CircleCI we need 1 second.

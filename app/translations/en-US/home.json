@@ -1,0 +1,13 @@
+{
+  "ForYouSlateProvider.headline": "For You",
+  "ForYouSlateProvider.subheadline": "Recommended for your interests",
+  "RecommendedReadsSlateProvider.headline": "Recommended Reads",
+  "RecommendedReadsSlateProvider.subheadline": "Curated by Pocket",
+  "PocketHitsSlateProvider.headline": "Today’s Pocket Hits",
+  "CollectionSlateProvider.headline": "Popular Collections",
+  "CollectionSlateProvider.subheadline": "Curated guides to the best reads on the web",
+  "CollectionsSlateProvider.more_link_text": "Explore more Collections",
+  "LifeHacksSlateProvider.headline": "Life Hacks",
+  "LifeHacksSlateProvider.subheadline": "Tips for better living",
+  "TopicSlateProvider.more_link_text": "Explore more {{topicName}}"
+}

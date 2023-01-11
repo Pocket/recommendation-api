@@ -2,11 +2,13 @@ from typing import Optional
 
 import aioboto3
 
+from app.config import TRANSLATIONS_DIR
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.feature_group.corpus_engagement_provider import CorpusEngagementProvider
 from app.data_providers.feature_group.feature_group_client import FeatureGroupClient
 from app.data_providers.item2item import Item2ItemRecommender
 from app.data_providers.topic_provider import TopicProvider
+from app.data_providers.translation import TranslationProvider
 from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 
@@ -18,6 +20,7 @@ class DiContainer:
         self.item2item_recommender = Item2ItemRecommender()
         self.aioboto3_session = aioboto3.Session()
         self.feature_group_client = FeatureGroupClient(aioboto3_session=self.aioboto3_session)
+        self.translation_provider = TranslationProvider(translations_dir=TRANSLATIONS_DIR)
         self.corpus_client = CorpusFeatureGroupClient(aioboto3_session=self.aioboto3_session)
         self.topic_provider = TopicProvider(aioboto3_session=self.aioboto3_session)
         self.user_recommendation_preferences_provider = UserRecommendationPreferencesProvider(
