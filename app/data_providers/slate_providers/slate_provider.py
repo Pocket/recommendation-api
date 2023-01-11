@@ -6,7 +6,7 @@ from aws_xray_sdk.core import xray_recorder
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.feature_group.corpus_engagement_provider import CorpusEngagementProvider
-from app.data_providers.translation import HomeTranslations
+from app.data_providers.translation import TranslationProvider
 from app.graphql.recommendation_reason_type import RecommendationReasonType
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
@@ -24,13 +24,13 @@ class SlateProvider(ABC):
         corpus_engagement_provider: CorpusEngagementProvider,
         recommendation_surface_id: RecommendationSurfaceId,
         locale: LocaleModel,
-        home_translations: HomeTranslations,
+        translation_provider: TranslationProvider,
     ):
         self.corpus_feature_group_client = corpus_feature_group_client
         self.corpus_engagement_provider = corpus_engagement_provider
         self.recommendation_surface_id = recommendation_surface_id
         self.locale = locale
-        self.home_translations = home_translations
+        self.home_translations = translation_provider.get_translations(self.locale, filename='home.json')
 
     @property
     @abstractmethod
@@ -52,7 +52,7 @@ class SlateProvider(ABC):
         """
         :return: (optional) Slate subheadline
         """
-        return self.home_translations.get(f'{self.provider_name}.subheadline', default=None)
+        return self.home_translations.get(f'{self.provider_name}.subheadline', None)
 
     @property
     def more_link(self) -> Optional[LinkModel]:

@@ -8,13 +8,13 @@ from app.models.recommendation_reason_type import RecommendationReasonType
 
 
 @pytest.fixture
-def pocket_hits_slate_provider(corpus_feature_group_client, corpus_engagement_provider, en_us_home_translations):
+def pocket_hits_slate_provider(corpus_feature_group_client, corpus_engagement_provider, translation_provider):
     return PocketHitsSlateProvider(
         corpus_feature_group_client=corpus_feature_group_client,
         corpus_engagement_provider=corpus_engagement_provider,
         recommendation_surface_id=RecommendationSurfaceId.HOME,
         locale=LocaleModel.en_US,
-        home_translations=en_us_home_translations,
+        translation_provider=translation_provider,
     )
 
 

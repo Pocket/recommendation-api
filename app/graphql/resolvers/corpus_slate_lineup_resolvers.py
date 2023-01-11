@@ -12,7 +12,6 @@ from app.data_providers.slate_providers.recommended_reads_slate_provider import 
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
 from app.data_providers.snowplow.config import create_snowplow_tracker, SnowplowConfig
 from app.data_providers.snowplow.snowplow_corpus_slate_lineup_tracker import SnowplowCorpusSlateLineupTracker
-from app.data_providers.translation import HomeTranslations
 from app.data_providers.unleash_provider import UnleashProvider, UnleashConfig
 from app.graphql.corpus_slate_lineup import CorpusSlateLineup
 from app.graphql.locale import Locale
@@ -50,7 +49,7 @@ async def resolve_home_slate_lineup(root, info: Info, locale: Locale = 'en-US') 
         'recommendation_surface_id': RecommendationSurfaceId.HOME,
         'corpus_engagement_provider': di.corpus_engagement_provider,
         'locale': locale_model,
-        'home_translations': HomeTranslations(locale=locale_model, translations_provider=di.translation_provider),
+        'translation_provider': di.translation_provider,
     }
 
     async with PocketGraphClientSession(PocketGraphConfig()) as graph_client_session:

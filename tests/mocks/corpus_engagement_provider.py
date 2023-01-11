@@ -10,7 +10,7 @@ from mocks.feature_store_mock import FeatureStoreMock
 
 
 @pytest.fixture
-def corpus_engagement_provider(en_us_home_translations, corpus_feature_group_client):
+def corpus_engagement_provider(corpus_feature_group_client):
     feature_store_mock = FeatureStoreMock(
         feature_group_name=f'{config.ENV}-corpus-engagement-v1',
         records_json_path=os.path.join(ROOT_DIR, 'tests/assets/json/empty_feature_group.json')

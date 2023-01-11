@@ -9,13 +9,13 @@ from tests.assets.topics import business_topic, all_topic_fixtures
 
 
 @pytest.fixture
-def for_you_slate_provider(corpus_feature_group_client, corpus_engagement_provider, en_us_home_translations):
+def for_you_slate_provider(corpus_feature_group_client, corpus_engagement_provider, translation_provider):
     return ForYouSlateProvider(
         corpus_feature_group_client=corpus_feature_group_client,
         corpus_engagement_provider=corpus_engagement_provider,
         recommendation_surface_id=RecommendationSurfaceId.HOME,
         locale=LocaleModel.en_US,
-        home_translations=en_us_home_translations,
+        translation_provider=translation_provider,
     )
 
 
