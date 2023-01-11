@@ -6,7 +6,7 @@ from app import config
 from app.config import ROOT_DIR
 from app.data_providers.feature_group.corpus_engagement_provider import CorpusEngagementProvider
 from app.data_providers.feature_group.feature_group_client import FeatureGroupClient
-from mocks.feature_store_mock import FeatureStoreMock
+from tests.mocks.feature_store_mock import FeatureStoreMock
 
 
 @pytest.fixture
