@@ -83,3 +83,17 @@ personalization_fallback_slate_lineup = {
 
 # For running X-Ray locally, set `AWS_XRAY_DAEMON_ADDRESS`, otherwise defaults to production value.
 xray_daemon_address = os.getenv('AWS_XRAY_DAEMON_ADDRESS', '127.0.0.1:2000')
+
+DEFAULT_TOPICS = [
+    '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
+    'c6242e35-4ef7-494f-ae9f-51f95b836424',  # Entertainment
+    '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
+]
+
+# German Home shows different topics by default
+GERMAN_HOME_TOPICS = [
+    '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
+    '1bf756c0-632f-49e8-9cce-324f38f4cc71',  # Business
+    '058011b8-c70d-4a25-92e5-478e3ff0f0e6',  # Science
+    '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
+]

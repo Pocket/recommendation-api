@@ -7,6 +7,7 @@ from typing import List, Coroutine, Any
 
 from aws_xray_sdk.core import xray_recorder
 
+from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS
 from app.data_providers.item2item import Item2ItemRecommender
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
@@ -100,19 +101,6 @@ class SetupMomentDispatch:
 
 
 class HomeDispatch:
-    DEFAULT_TOPICS = [
-        '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
-        'c6242e35-4ef7-494f-ae9f-51f95b836424',  # Entertainment
-        '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
-    ]
-
-    # German Home shows different topics by default
-    GERMAN_HOME_TOPICS = [
-        '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
-        '1bf756c0-632f-49e8-9cce-324f38f4cc71',  # Business
-        '058011b8-c70d-4a25-92e5-478e3ff0f0e6',  # Science
-        '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
-    ]
 
     def __init__(
             self,
@@ -194,7 +182,7 @@ class HomeDispatch:
             self.life_hacks_slate_provider.get_slate(),
         ]
 
-        slates += await self._get_topic_slate_promises(preferred_topics=preferred_topics, default=self.DEFAULT_TOPICS)
+        slates += await self._get_topic_slate_promises(preferred_topics=preferred_topics, default=DEFAULT_TOPICS)
 
         return CorpusSlateLineupModel(
             slates=self._dedupe_and_limit(
@@ -219,7 +207,7 @@ class HomeDispatch:
             self.collection_slate_provider.get_slate(),
         ]
 
-        slates += await self._get_topic_slate_promises(preferred_topics=[], default=self.GERMAN_HOME_TOPICS)
+        slates += await self._get_topic_slate_promises(preferred_topics=[], default=GERMAN_HOME_TOPICS)
 
         return CorpusSlateLineupModel(
             slates=self._dedupe_and_limit(
