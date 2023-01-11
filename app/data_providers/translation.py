@@ -10,7 +10,7 @@ class TranslationProvider:
     def __init__(self, translations_dir: str):
         self.translations_dir = translations_dir
 
-    @lru_cache(maxsize=None)
+    @lru_cache(maxsize=None)  # Python 3.9 adds a @cache decorator for a simple unbounded function cache.
     def get_translations(self, locale: LocaleModel, filename: str) -> Dict[str, str]:
         """
         :param locale: Locale corresponding to a subdirectory of the translations' directory (e.g. en-US)
