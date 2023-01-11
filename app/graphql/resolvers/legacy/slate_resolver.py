@@ -12,10 +12,10 @@ from app.models.slate import SlateModel
 async def resolve_get_slate(
         root,
         info: Info,
-        slate_id: Annotated[str, strawberry.argument(description='The {Slate.id} of the slate to return')],
+        slate_id: Annotated[str, strawberry.argument(description='The Slate.id of the slate to return')],
         recommendation_count: Annotated[
             Optional[int], strawberry.argument(
-                description='Maximum number of recommendations to return in {Slate.recommendations}, defaults to 10')
+                description='Maximum number of recommendations to return in Slate.recommendations, defaults to 10')
         ] = 10
 ) -> Optional[Slate]:
     slate_model = await SlateModel.get_slate(
