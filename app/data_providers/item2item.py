@@ -88,7 +88,10 @@ class Item2ItemRecommender:
                 for rec in res]
 
     async def _fallback(self, count, query_filter):
-        query_filter.must.append(FieldCondition(key='save_count', range=Range(gte=1000)))
+        # use frequently saved articles for all queries except publisher based
+        # because there might be not enough saves for some publishers
+        if 'domain' not in {cond.key for cond in query_filter.must}:
+            query_filter.must.append(FieldCondition(key='save_count', range=Range(gte=1000)))
         res = []
 
         try:

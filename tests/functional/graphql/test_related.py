@@ -158,6 +158,7 @@ class TestGraphQLRelated(TestCase):
         cls.art_by_corpus_id = {d['payload']['corpus_item_id']: d['payload'] for d in test_data}
 
     def test_related_after_save(self):
+        """ recommend similar curated """
         item_id = '3727699409'
 
         with TestClient(app) as client:
@@ -175,6 +176,7 @@ class TestGraphQLRelated(TestCase):
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
 
     def test_related_after_article(self):
+        """ recommend similar curated """
         item_id = '3727699409'
 
         with TestClient(app) as client:
@@ -192,6 +194,7 @@ class TestGraphQLRelated(TestCase):
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
 
     def test_related_end_of_syndicated_basic(self):
+        """ recommend similar syndicated """
         item_id = '3727511744'
         pub_url = 'https://time.com/6223012/workplaces-of-the-future/'
 
@@ -210,6 +213,7 @@ class TestGraphQLRelated(TestCase):
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_syndicated'] for r in recs)
 
     def test_related_right_rail_basic(self):
+        """ recommend similar curated from the same publisher """
         item_id = '3727501830'
         pub_url = 'https://psyche.co/ideas/are-successful-authors-creative-geniuses-or-literary-labourers'
 
@@ -229,6 +233,7 @@ class TestGraphQLRelated(TestCase):
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
 
     def test_related_syndicated_article_doesnt_exist(self):
+        """ fallback to random frequently saved syndicated """
         item_id = '11111'
         pub_url = 'xxxx'
 
@@ -245,8 +250,10 @@ class TestGraphQLRelated(TestCase):
             assert 'corpusItem' in recs[0]
             assert 'id' in recs[0]['corpusItem']
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_syndicated'] for r in recs)
+            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['save_count'] > 1000 for r in recs)
 
     def test_related_right_rail_article_doesnt_exist(self):
+        """ fallback to random from the same publisher """
         item_id = '11111'
         pub_url = 'https://psyche.co/ideas/are-successful-authors-creative-geniuses-or-literary-labourers'
 
@@ -265,6 +272,7 @@ class TestGraphQLRelated(TestCase):
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['domain'] == 'psyche.co' for r in recs)
 
     def test_related_right_rail_article_and_publisher_dont_exist(self):
+        """ do not fallback, having the same publisher is a hard requirement """
         item_id = '11111'
         pub_url = 'https://xxx.co/ideas/'
 
@@ -276,6 +284,7 @@ class TestGraphQLRelated(TestCase):
             assert len(recs) == 0
 
     def test_related_after_article_article_doesnt_exist(self):
+        """ fallback to random frequently saved curated """
         item_id = '11111'
 
         with TestClient(app) as client:
@@ -290,8 +299,10 @@ class TestGraphQLRelated(TestCase):
             assert 'corpusItem' in recs[0]
             assert 'id' in recs[0]['corpusItem']
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
+            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['save_count'] > 1000 for r in recs)
 
     def test_related_after_save_article_doesnt_exist(self):
+        """ fallback to random frequently saved curated """
         item_id = '11111'
 
         with TestClient(app) as client:
@@ -306,3 +317,4 @@ class TestGraphQLRelated(TestCase):
             assert 'corpusItem' in recs[0]
             assert 'id' in recs[0]['corpusItem']
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
+            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['save_count'] > 1000 for r in recs)
