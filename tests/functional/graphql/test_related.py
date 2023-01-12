@@ -172,7 +172,6 @@ class TestGraphQLRelated(TestCase):
             assert 'id' in recs[0]
             assert 'corpusItem' in recs[0]
             assert 'id' in recs[0]['corpusItem']
-            print(recs)
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
 
     def test_related_after_article(self):
