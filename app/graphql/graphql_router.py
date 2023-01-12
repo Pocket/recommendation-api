@@ -66,5 +66,5 @@ class Mutation:
     )
 
 
-schema = strawberry.federation.Schema(Query, mutation=Mutation, types=[User, SyndicatedArticle, Item],
+schema = strawberry.federation.Schema(Query, mutation=Mutation, types=[User, SyndicatedArticle],
                                       enable_federation_2=True)
