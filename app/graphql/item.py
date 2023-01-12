@@ -20,4 +20,4 @@ class Item:
 
     relatedAfterCreate: List[CorpusRecommendation] = strawberry.field(
         resolver=resolve_similar_to_saved,
-        description='Recommend similar articles after saving in Firefox.')
+        description='Recommend similar articles after saving.')
