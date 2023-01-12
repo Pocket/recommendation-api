@@ -5,17 +5,32 @@ from uuid import uuid5, UUID
 from aws_xray_sdk.core import xray_recorder
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
+from app.data_providers.feature_group.corpus_engagement_provider import CorpusEngagementProvider
+from app.data_providers.translation import TranslationProvider
 from app.graphql.recommendation_reason_type import RecommendationReasonType
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
+from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.link import LinkModel
+from app.models.localemodel import LocaleModel
 
 
 class SlateProvider(ABC):
 
-    def __init__(self, corpus_feature_group_client: CorpusFeatureGroupClient):
+    def __init__(
+        self,
+        corpus_feature_group_client: CorpusFeatureGroupClient,
+        corpus_engagement_provider: CorpusEngagementProvider,
+        recommendation_surface_id: RecommendationSurfaceId,
+        locale: LocaleModel,
+        translation_provider: TranslationProvider,
+    ):
         self.corpus_feature_group_client = corpus_feature_group_client
+        self.corpus_engagement_provider = corpus_engagement_provider
+        self.recommendation_surface_id = recommendation_surface_id
+        self.locale = locale
+        self.home_translations = translation_provider.get_translations(self.locale, filename='home.json')
 
     @property
     @abstractmethod
@@ -26,19 +41,18 @@ class SlateProvider(ABC):
         return NotImplemented
 
     @property
-    @abstractmethod
     def headline(self) -> str:
         """
         :return: Slate headline
         """
-        return NotImplemented
+        return self.home_translations[f'{self.provider_name}.headline']
 
     @property
     def subheadline(self) -> Optional[str]:
         """
         :return: (optional) Slate subheadline
         """
-        return None
+        return self.home_translations.get(f'{self.provider_name}.subheadline', None)
 
     @property
     def more_link(self) -> Optional[LinkModel]:

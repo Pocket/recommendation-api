@@ -7,6 +7,7 @@ from typing import List, Coroutine, Any
 
 from aws_xray_sdk.core import xray_recorder
 
+from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS
 from app.data_providers.item2item import Item2ItemRecommender
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
@@ -22,6 +23,7 @@ from app.data_providers.user_recommendation_preferences_provider import UserReco
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel, RecommendationSurfaceId
 from app.models.corpus_slate_model import CorpusSlateModel
+from app.models.localemodel import LocaleModel
 from app.models.topic import TopicModel
 from app.models.request_user import RequestUser
 from app.rankers.algorithms import rank_by_preferred_topics, spread_topics
@@ -103,11 +105,6 @@ class SetupMomentDispatch:
 
 
 class HomeDispatch:
-    DEFAULT_TOPICS = [
-        '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
-        'c6242e35-4ef7-494f-ae9f-51f95b836424',  # Entertainment
-        '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
-    ]
 
     def __init__(
             self,
@@ -137,46 +134,59 @@ class HomeDispatch:
 
     @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
     async def get_slate_lineup(
-            self, user: RequestUser, slate_count: int, recommendation_count: int
+            self, user: RequestUser, locale: LocaleModel, recommendation_count: int
     ) -> CorpusSlateLineupModel:
-        """
-        Returns the Home slate lineup:
-        1. 'For You' slate if preferred topics are available, otherwise this slate is simply not shown.
-        2. Collection slate
-        3. Topic slates according to preferred topics if available, otherwise default topics.
+        if locale == LocaleModel.en_US:
+            return await self.get_en_us_slate_lineup(recommendation_count=recommendation_count, user=user)
+        elif locale == LocaleModel.de_DE:
+            return await self.get_de_de_slate_lineup(recommendation_count=recommendation_count)
+        else:
+            raise ValueError(f'Invalid locale {locale}')
 
+    @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
+    async def get_en_us_slate_lineup(
+            self, user: RequestUser, recommendation_count: int
+    ) -> CorpusSlateLineupModel:
+
+        """
         :param user:
-        :param slate_count:
-        :param recommendation_count:
-        :return:
+        :param recommendation_count: Maximum number of recommendations to return.
+        :return: Slate lineup for en-US Home:
+            1. 'For You' slate if preferred topics are available, or otherwise 'Recommended Reads'
+            2. Pocket Hits
+            3. Collection slate
+            4. 'Life Hacks' slate
+            5. Topic slates according to preferred topics if available, otherwise default topics.
         """
         slates = []
 
-        user_impression_capped_list, preferred_topics, contentv1_assignment = await gather(
+        user_impression_capped_list, preferred_topics, thompson_sampling_assignment = await gather(
             self.user_impression_cap_provider.get(user),
             self._get_preferred_topics(user),
-            self.unleash_provider.get_assignment('temp.web.recommendation-api.home.contentv1', user=user),
+            self.unleash_provider.get_assignment('temp.web.recommendation-api.home.thompson-sampling', user=user),
         )
+
+        enable_thompson_sampling = \
+            thompson_sampling_assignment is not None and thompson_sampling_assignment.variant == 'treatment'
 
         if preferred_topics:
             slates += [self.for_you_slate_provider.get_slate(
                 preferred_topics=preferred_topics,
                 user_impression_capped_list=user_impression_capped_list,
+                enable_thompson_sampling=enable_thompson_sampling,
             )]
         else:
-            slates += [self.recommended_reads_slate_provider.get_slate()]
+            slates += [self.recommended_reads_slate_provider.get_slate(
+                enable_thompson_sampling=enable_thompson_sampling
+            )]
 
-        logging.warning(f'User with locale={user.locale} was assigned to experiment: {contentv1_assignment}')
-        if contentv1_assignment is not None and contentv1_assignment.variant == 'treatment':
-            slates += [
-                self.pocket_hits_slate_provider.get_slate(),
-                self.collection_slate_provider.get_slate(),
-                self.life_hacks_slate_provider.get_slate(),
-            ]
-        else:
-            slates += [self.collection_slate_provider.get_slate()]
+        slates += [
+            self.pocket_hits_slate_provider.get_slate(),
+            self.collection_slate_provider.get_slate(enable_thompson_sampling=enable_thompson_sampling),
+            self.life_hacks_slate_provider.get_slate(),
+        ]
 
-        slates += await self._get_topic_slate_promises(preferred_topics=preferred_topics)
+        slates += await self._get_topic_slate_promises(preferred_topics=preferred_topics, default=DEFAULT_TOPICS)
 
         return CorpusSlateLineupModel(
             slates=self._dedupe_and_limit(
@@ -184,7 +194,31 @@ class HomeDispatch:
                 recommendation_count=recommendation_count,
             ),
             recommendation_surface_id=RecommendationSurfaceId.HOME,
-            experiment=contentv1_assignment,
+            experiment=thompson_sampling_assignment,
+        )
+
+    @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
+    async def get_de_de_slate_lineup(self, recommendation_count: int) -> CorpusSlateLineupModel:
+        """
+        :param recommendation_count:
+        :return: the Home slate lineup:
+            1. Recommended Reads
+            2. Collection slate
+            3. Topic slates according to defaults
+        """
+        slates = [
+            self.recommended_reads_slate_provider.get_slate(),
+            self.collection_slate_provider.get_slate(),
+        ]
+
+        slates += await self._get_topic_slate_promises(preferred_topics=[], default=GERMAN_HOME_TOPICS)
+
+        return CorpusSlateLineupModel(
+            slates=self._dedupe_and_limit(
+                slates=list(await gather(*slates)),
+                recommendation_count=recommendation_count,
+            ),
+            recommendation_surface_id=RecommendationSurfaceId.HOME,
         )
 
     @staticmethod
@@ -216,7 +250,15 @@ class HomeDispatch:
 
     @xray_recorder.capture_async('HomeDispatch._get_topic_slate_promises')
     async def _get_topic_slate_promises(
-            self, preferred_topics: List[TopicModel]) -> List[Coroutine[Any, Any, CorpusSlateModel]]:
+            self,
+            preferred_topics: List[TopicModel],
+            default: List[str],
+    ) -> List[Coroutine[Any, Any, CorpusSlateModel]]:
+        """
+        :param preferred_topics: List topics that the user prefers.
+        :param default: List of default topic ids to fall back to, if the user has no preferred topics.
+        :return: List of callables/promises that return topic slates when awaited.
+        """
         preferred_topic_ids = [t.id for t in preferred_topics]
-        topics = await self.topic_provider.get_topics(preferred_topic_ids or self.DEFAULT_TOPICS)
+        topics = await self.topic_provider.get_topics(preferred_topic_ids or default)
         return [self.topic_slate_providers[topic].get_slate() for topic in topics]

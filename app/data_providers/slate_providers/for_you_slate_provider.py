@@ -7,7 +7,7 @@ from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.recommendation_reason_model import RecommendationReasonModel
 from app.models.recommendation_reason_type import RecommendationReasonType
 from app.models.topic import TopicModel
-from app.rankers.algorithms import rank_by_preferred_topics, spread_topics, rank_by_impression_caps
+from app.rankers.algorithms import rank_by_preferred_topics, spread_topics, rank_by_impression_caps, thompson_sampling
 
 
 class ForYouSlateProvider(SlateProvider):
@@ -15,14 +15,6 @@ class ForYouSlateProvider(SlateProvider):
     @property
     def candidate_set_id(self) -> str:
         return '2066c835-a940-45ec-b1f7-267457d9e0a2'
-
-    @property
-    def headline(self) -> str:
-        return 'For You'
-
-    @property
-    def subheadline(self) -> str:
-        return 'Recommended for your interests'
 
     @property
     def recommendation_reason_type(self) -> Optional[RecommendationReasonType]:
@@ -49,7 +41,19 @@ class ForYouSlateProvider(SlateProvider):
         assert preferred_topics is not None
         assert user_impression_capped_list is not None
 
-        random.shuffle(items)
+        if kwargs.get('enable_thompson_sampling'):
+            metrics = await self.corpus_engagement_provider.get(
+                self.recommendation_surface_id, self.configuration_id, items)
+
+            items = thompson_sampling(
+                recs=items,
+                metrics=metrics,
+                trailing_period=14,  # A long period might work better given that some topics get few impressions
+                default_alpha_prior=20,  # beta * P95 item CTR for this slate (1.6%)
+                default_beta_prior=1200)  # 5% of average daily item impressions for this slate
+        else:
+            random.shuffle(items)
+
         items = rank_by_impression_caps(items, user_impression_capped_list)
         items = spread_topics(items)
         items = rank_by_preferred_topics(items, preferred_topics)

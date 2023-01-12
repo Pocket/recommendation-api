@@ -20,6 +20,7 @@ from app.data_providers.user_recommendation_preferences_provider import UserReco
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
+from app.models.localemodel import LocaleModel
 from app.models.unleash_assignment import UnleashAssignmentModel
 from app.models.request_user import RequestUser
 from tests.assets.topics import technology_topic, entertainment_topic, self_improvement_topic
@@ -80,8 +81,12 @@ class TestHomeDispatch:
         self.preferences_provider.fetch.return_value = None
         self.home_dispatch.recommended_reads_slate_provider.get_slate.return_value = _generate_slate(
             ['Tech2', 'Ent4'], headline='Collections')
+        self.home_dispatch.pocket_hits_slate_provider.get_slate.return_value = _generate_slate(
+            ['PH1', 'PH2', 'PH3'], headline='Pocket Hits')
         self.home_dispatch.collection_slate_provider.get_slate.return_value = _generate_slate(
             ['Tech1', 'Ent2', 'Self1'], headline='Collections')
+        self.home_dispatch.life_hacks_slate_provider.get_slate.return_value = _generate_slate(
+            ['LifeHack1', 'LifeHack2'], headline='Life Hacks')
         self.home_dispatch.topic_provider.get_topics.return_value = [
             technology_topic, entertainment_topic, self_improvement_topic
         ]
@@ -91,37 +96,8 @@ class TestHomeDispatch:
             MockSlateProvider(_generate_slate(['Self1'], headline='Self-improvement')),
         ]
 
-        lineup = await self.home_dispatch.get_slate_lineup(user=self.request_user, slate_count=10, recommendation_count=2)
-
-        assert [
-            ['Tech2', 'Ent4'],
-            ['Tech1', 'Ent2'],
-            ['Tech3', 'Tech4'],
-            ['Ent1', 'Ent3'],  # 'Ent2' is removed because it occurs in the Collection slate.
-            ['Self1'],  # 'Self1' is not removed because it's outside the top 2 of the Collection slate.
-        ] == [[rec.corpus_item.id for rec in slate.recommendations] for slate in lineup.slates]
-
-    async def test_content_experiment(self):
-        """
-        Test that the Pocket Hits slate is returned if the user is in the treatment variant of the experiment.
-        """
-        self.unleash_provider.get_assignment.return_value = UnleashAssignmentModel(
-            assigned=True, name='content_v1', variant='treatment')
-        self.preferences_provider.fetch.return_value = None
-        self.home_dispatch.recommended_reads_slate_provider.get_slate.return_value = _generate_slate(
-            ['Tech2', 'Ent4'], headline='Recommended Reads')
-        self.home_dispatch.pocket_hits_slate_provider.get_slate.return_value = _generate_slate(
-            ['PH1', 'PH2', 'PH3'], headline='Pocket Hits')
-        self.home_dispatch.collection_slate_provider.get_slate.return_value = _generate_slate(
-            ['Tech1', 'Ent2', 'Self1'], headline='Collections')
-        self.home_dispatch.life_hacks_slate_provider.get_slate.return_value = _generate_slate(
-            ['LifeHack1', 'LifeHack2'], headline='Pocket Hits')
-        self.home_dispatch.topic_provider.get_topics.return_value = [technology_topic]
-        self.home_dispatch.topic_slate_providers.__getitem__.side_effect = [
-            MockSlateProvider(_generate_slate(['Tech1', 'Tech2', 'Tech3', 'Tech4'], headline='Technology')),
-        ]
-
-        lineup = await self.home_dispatch.get_slate_lineup(user=self.request_user, slate_count=10, recommendation_count=2)
+        lineup = await self.home_dispatch.get_slate_lineup(
+            user=self.request_user, locale=LocaleModel.en_US, recommendation_count=2)
 
         assert [
             ['Tech2', 'Ent4'],
@@ -129,4 +105,6 @@ class TestHomeDispatch:
             ['Tech1', 'Ent2'],
             ['LifeHack1', 'LifeHack2'],
             ['Tech3', 'Tech4'],
+            ['Ent1', 'Ent3'],  # 'Ent2' is removed because it occurs in the Collection slate.
+            ['Self1'],  # 'Self1' is not removed because it's outside the top 2 of the Collection slate.
         ] == [[rec.corpus_item.id for rec in slate.recommendations] for slate in lineup.slates]
