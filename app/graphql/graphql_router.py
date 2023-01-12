@@ -4,6 +4,7 @@ import strawberry
 
 from app.graphql.corpus_slate import CorpusSlate
 from app.graphql.corpus_slate_lineup import CorpusSlateLineup
+from app.graphql.item import Item
 from app.graphql.resolvers.corpus_slate_lineup_resolvers import resolve_home_slate_lineup
 from app.graphql.resolvers.corpus_slate_resolvers import resolve_setup_moment_slate
 from app.graphql.resolvers.legacy.slate_lineup_resolver import resolve_get_slate_lineup
