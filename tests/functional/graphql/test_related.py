@@ -189,8 +189,7 @@ class TestGraphQLRelated(TestCase):
             assert 'id' in recs[0]
             assert 'corpusItem' in recs[0]
             assert 'id' in recs[0]['corpusItem']
-            print(recs)
-            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
+            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs), recs
 
     def test_related_end_of_syndicated_basic(self):
         """ recommend similar syndicated """
