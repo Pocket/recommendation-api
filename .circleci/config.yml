@@ -111,7 +111,7 @@ jobs:
   test_app:
     machine:
       image: ubuntu-2004:202104-01
-      #docker_layer_caching: true  # Prevents latest snowplow-micro image from being pulled.
+      #docker_layer_caching: true  # This prevents the latest snowplow-micro image from being pulled.
     steps:
       - checkout
       - run:

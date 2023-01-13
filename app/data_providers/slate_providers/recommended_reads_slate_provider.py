@@ -2,6 +2,7 @@ from typing import List
 
 from app.data_providers.slate_providers.slate_provider import SlateProvider
 from app.models.corpus_item_model import CorpusItemModel
+from app.models.localemodel import LocaleModel
 from app.rankers.algorithms import thompson_sampling
 
 
@@ -9,7 +10,12 @@ class RecommendedReadsSlateProvider(SlateProvider):
 
     @property
     def candidate_set_id(self) -> str:
-        return '5f0dae93-a5a8-439a-a2e2-5d418c04bc98'
+        if self.locale == LocaleModel.en_US:
+            return '5f0dae93-a5a8-439a-a2e2-5d418c04bc98'
+        elif self.locale == LocaleModel.de_DE:
+            return '92013292-bc4b-4ee1-815a-0e51c5953ff2'
+        else:
+            raise ValueError(f'Unexpected locale {self.locale} for {self.provider_name}')
 
     async def rank_corpus_items(
             self,

@@ -260,6 +260,10 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             assert slates[-1]['headline'] == 'Für ein glücklicheres Ich'
             assert slates[-1]['moreLink'] == None
 
+            await self.wait_for_snowplow_events(n_expected_event=2)
+            all_snowplow_events = self.snowplow_micro.get_event_counts()
+            assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
+
     async def wait_for_snowplow_events(self, max_wait_time: int = 5, n_expected_event: int = 1):
         # Locally the request to Snowplow gets handled in 0.01s, but in CircleCI we need 1 second.
         for i in range(max_wait_time):
