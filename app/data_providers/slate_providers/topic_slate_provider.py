@@ -1,8 +1,7 @@
 import random
 from typing import List, Optional
 
-from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
-from app.data_providers.slate_providers.candidate_sets import get_topic_candidate_set
+from app.data_providers.slate_providers.candidate_sets import get_topic_candidate_set_id
 from app.data_providers.slate_providers.slate_provider import SlateProvider
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.link import LinkModel
@@ -20,7 +19,7 @@ class TopicSlateProvider(SlateProvider):
 
     @property
     def candidate_set_id(self) -> str:
-        return get_topic_candidate_set(corpus_topic_id=self.topic.corpus_topic_id, locale=self.locale)
+        return get_topic_candidate_set_id(corpus_topic_id=self.topic.corpus_topic_id, locale=self.locale)
 
     @property
     def headline(self) -> str:

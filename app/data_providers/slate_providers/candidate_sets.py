@@ -50,7 +50,7 @@ _TOPIC_CANDIDATE_SETS = {
 }
 
 
-def get_topic_candidate_set(corpus_topic_id: str, locale: LocaleModel) -> str:
+def get_topic_candidate_set_id(corpus_topic_id: str, locale: LocaleModel) -> str:
     """
     This function encapsulates the topic to candidate set mapping, such that we can move this to a data store,
     without requiring changes to callers.
