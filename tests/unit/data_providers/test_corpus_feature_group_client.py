@@ -2,11 +2,9 @@ import os
 import pytest
 
 from aws_xray_sdk import global_sdk_config
-from botocore.exceptions import BotoCoreError
 
 import app.config
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
-from app.data_providers.dispatch import SetupMomentDispatch
 from app.models.corpus_item_model import CorpusItemModel
 from tests.mocks.feature_store_mock import FeatureStoreMock
 
@@ -32,7 +30,7 @@ class TestCorpusFeatureGroupClient:
         Test the case where the queried records exist in the Feature Group.
         """
         corpus_items = await self.client.get_corpus_items(
-            corpus_ids=SetupMomentDispatch.CORPUS_CANDIDATE_SET_IDS
+            corpus_ids='92411893-ebdb-4a43-ad29-aa79e56e2136'  # Exists in tests/assets/json/corpus_candidate_sets.json
         )
 
         # Assert corpus_items reflect the corpus_candidate_sets.json fixture data.
