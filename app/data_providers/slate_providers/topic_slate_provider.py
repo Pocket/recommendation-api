@@ -49,12 +49,12 @@ class TopicSlateProvider(SlateProvider):
 
     @property
     def more_link(self) -> Optional[LinkModel]:
-        # Topic pages only exist for en-US.
         if self.locale == LocaleModel.en_US:
             return LinkModel(
-                text=f'Explore more {self.topic.name}',
+                text=self.home_translations['TopicSlateProvider.more_link_text'].format(topic_name=self.topic.name),
                 url=f'https://getpocket.com/explore/{self.topic.slug}')
         else:
+            # Topic pages only exist for en-US.
             return None
 
     async def rank_corpus_items(self, items: List[CorpusItemModel], *args, **kwargs) -> List[CorpusItemModel]:

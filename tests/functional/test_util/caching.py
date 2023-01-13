@@ -36,7 +36,7 @@ async def clear_function_caches():
     :return:
     """
     cached_functions = [
-        TopicProvider.get_all,
+        TopicProvider._scan_table,
         CorpusFeatureGroupClient._query_corpus_items,
     ]
 
