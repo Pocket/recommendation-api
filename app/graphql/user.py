@@ -1,11 +1,12 @@
 from typing import Optional
 
-import aioboto3
 import strawberry
 
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProviderV2
 from app.graphql.user_recommendation_preferences import UserRecommendationPreferences
+from app.models.localemodel import LocaleModel
+from app.singletons import DiContainer
 
 
 @strawberry.federation.type(keys=["id"])
@@ -16,12 +17,16 @@ class User:
 
     @classmethod
     async def resolve_reference(cls, id: strawberry.ID):
-        aioboto3_session = aioboto3.Session()
+        di = DiContainer.get()
 
-        topic_provider = TopicProvider(aioboto3_session=aioboto3_session)
+        topic_provider = TopicProvider(
+            aioboto3_session=di.aioboto3_session,
+            locale=LocaleModel.en_US,
+            translation_provider=di.translation_provider,
+        )
 
         recommendation_preferences_provider_v2 = UserRecommendationPreferencesProviderV2(
-            aioboto3_session=aioboto3_session,
+            aioboto3_session=di.aioboto3_session,
             topic_provider=topic_provider
         )
 

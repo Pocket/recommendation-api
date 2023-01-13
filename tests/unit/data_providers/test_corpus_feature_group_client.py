@@ -30,7 +30,7 @@ class TestCorpusFeatureGroupClient:
         Test the case where the queried records exist in the Feature Group.
         """
         corpus_items = await self.client.get_corpus_items(
-            corpus_ids='92411893-ebdb-4a43-ad29-aa79e56e2136'  # Exists in tests/assets/json/corpus_candidate_sets.json
+            list(self.feature_store_mock.records_by_id.keys())
         )
 
         # Assert corpus_items reflect the corpus_candidate_sets.json fixture data.

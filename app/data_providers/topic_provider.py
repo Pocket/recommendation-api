@@ -30,13 +30,7 @@ class TopicProvider:
 
         :return: a list of TopicModel objects
         """
-        topic_dicts = await self._scan_table()
-        # Add localized strings to topic dicts.
-        for t in topic_dicts:
-            corpus_topic_id = t['corpus_topic_id']
-            if corpus_topic_id in self.topic_translations:
-                t.update(self.topic_translations[corpus_topic_id])
-
+        topic_dicts = [{**t, **self.topic_translations.get(t['corpus_topic_id'], {})} for t in await self._scan_table()]
         return sorted(list(map(TopicModel.from_dict, topic_dicts)), key=lambda topic: topic.slug)
 
     @cached(ttl=600, key='TopicProvider._scan_table')
