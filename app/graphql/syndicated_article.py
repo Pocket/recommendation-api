@@ -3,7 +3,7 @@ from typing import List
 import strawberry
 
 from app.graphql.corpus_recommendation import CorpusRecommendation
-from app.graphql.resolvers.item2item_resolvers import resolve_end_of_article, resolve_right_rail
+from app.graphql.resolvers.item2item_resolvers import resolve_syndicated_end_of_article, resolve_syndicated_right_rail
 
 
 @strawberry.federation.type(keys=["itemId publisherUrl"])
@@ -12,10 +12,10 @@ class SyndicatedArticle:
     publisherUrl: str
 
     relatedEndOfArticle: List[CorpusRecommendation] = strawberry.field(
-        resolver=resolve_end_of_article,
+        resolver=resolve_syndicated_end_of_article,
         description='Recommend similar syndicated articles.')
     relatedRightRail: List[CorpusRecommendation] = strawberry.field(
-        resolver=resolve_right_rail,
+        resolver=resolve_syndicated_right_rail,
         description='Recommend similar articles from the same publisher.')
 
     @classmethod

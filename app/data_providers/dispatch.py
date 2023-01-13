@@ -35,6 +35,10 @@ class Item2ItemDispatch:
                  item_recommender: Item2ItemRecommender):
         self.item_recommender = item_recommender
 
+    async def related(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
+        recs = await self.item_recommender.related(resolved_id, count)
+        return [CorpusRecommendationModel(corpus_item=r) for r in recs]
+
     async def syndicated(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
         recs = await self.item_recommender.syndicated(resolved_id, count)
         return [CorpusRecommendationModel(corpus_item=r) for r in recs]
