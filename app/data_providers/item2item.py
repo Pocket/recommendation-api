@@ -3,7 +3,7 @@ from typing import List
 
 from qdrant_client.http import AsyncApis
 from qdrant_client.http.exceptions import UnexpectedResponse
-from qdrant_client.http.models import Filter, FieldCondition, MatchValue, RecommendRequest, ScrollRequest
+from qdrant_client.http.models import Filter, FieldCondition, MatchValue, RecommendRequest, ScrollRequest, Range
 
 import app.config
 from app.models.corpus_item_model import CorpusItemModel
@@ -55,6 +55,11 @@ class Item2ItemRecommender:
 
         return await self._recommend(resolved_id, query_filter, count)
 
+    async def related(self, resolved_id: int, count: int) -> List[CorpusItemModel]:
+        query_filter = _build_filter(is_curated=True)
+
+        return await self._recommend(resolved_id, query_filter, count)
+
     async def _recommend(self, resolved_id: int, query_filter: Filter, count: int):
         try:
             res = (await self._client.recommend_points(
@@ -68,23 +73,38 @@ class Item2ItemRecommender:
                     with_payload=True
                 ))).result
         except UnexpectedResponse as ex:
-            if ex.status_code == 404:
-                # point or collection does not exist
-                # it can happen when a new syndicated article was just added or qdrant state was reset by accident
-                # fallback to returning random articles with the same filter
-                # it should fail if the problem is not the article
-                res = (await self._client.scroll_points(
-                    collection_name=self.collection,
-                    scroll_request=ScrollRequest(
-                        limit=count,
-                        filter=query_filter,
-                        with_vector=False,
-                        with_payload=True
-                    ))).result.points
+            if ex.status_code == 404 and 'Not found: No point with id' in ex.content.decode():
+                # article does not exist in qdrant
+                # fallback to returning random popular articles with the same filter
                 logging.warning(f'Related: article is not found, fallback to Qdrant scroll method. '
                                 f'resolved_id: {resolved_id}, filter: {query_filter}')
+                res = await self._fallback(count, query_filter)
             else:
-                raise
+                logging.error(f'Related: unexpected response from qdrant. '
+                              f'Code: {ex.status_code}, reason: {ex.reason_phrase}')
+                res = []
 
         return [CorpusItemModel(id=rec.payload['corpus_item_id'], topic=rec.payload['topic'])
                 for rec in res]
+
+    async def _fallback(self, count, query_filter):
+        # use frequently saved articles for all queries except publisher based
+        # because there might be not enough saves for some publishers
+        if 'domain' not in {cond.key for cond in query_filter.must}:
+            query_filter.must.append(FieldCondition(key='save_count', range=Range(gte=1000)))
+        res = []
+
+        try:
+            res = (await self._client.scroll_points(
+                collection_name=self.collection,
+                scroll_request=ScrollRequest(
+                    limit=count,
+                    filter=query_filter,
+                    with_vector=False,
+                    with_payload=True
+                ))).result.points
+        except UnexpectedResponse as ex:
+            logging.error(f'Related: fallback failed, unexpected response from qdrant. '
+                          f'Code: {ex.status_code}, reason: {ex.reason_phrase}')
+
+        return res
