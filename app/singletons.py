@@ -22,11 +22,6 @@ class DiContainer:
         self.feature_group_client = FeatureGroupClient(aioboto3_session=self.aioboto3_session)
         self.translation_provider = TranslationProvider(translations_dir=TRANSLATIONS_DIR)
         self.corpus_client = CorpusFeatureGroupClient(aioboto3_session=self.aioboto3_session)
-        self.topic_provider = TopicProvider(aioboto3_session=self.aioboto3_session)
-        self.user_recommendation_preferences_provider = UserRecommendationPreferencesProvider(
-            aioboto3_session=self.aioboto3_session,
-            topic_provider=self.topic_provider
-        )
         self.user_impression_cap_provider = UserImpressionCapProvider(aioboto3_session=self.aioboto3_session)
         self.corpus_engagement_provider = CorpusEngagementProvider(feature_group_client=self.feature_group_client)
 

@@ -1,7 +1,6 @@
 import datetime
 import json
 import os
-from unittest.mock import MagicMock
 
 import pytest
 from aws_xray_sdk import global_sdk_config
@@ -11,7 +10,23 @@ from app.data_providers.user_recommendation_preferences_provider import UserReco
 from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
 from tests.assets.topics import technology_topic, business_topic
 from tests.mocks.feature_store_mock import FeatureStoreMock
-from tests.mocks.topic_provider import MockTopicProvider
+
+
+@pytest.fixture
+def feature_store_mock():
+    return FeatureStoreMock(
+        feature_group_name=UserRecommendationPreferencesProvider.get_feature_group_name(),
+        identifier_feature_name='user_id',
+        records_json_path=os.path.join(ROOT_DIR, 'tests/assets/json/user_recommendation_preferences.json')
+    )
+
+
+@pytest.fixture
+def preferences_provider(feature_store_mock, topic_provider_en_us) -> UserRecommendationPreferencesProvider:
+    return UserRecommendationPreferencesProvider(
+        aioboto3_session=feature_store_mock.aioboto3,
+        topic_provider=topic_provider_en_us,
+    )
 
 
 @pytest.mark.asyncio  # This pytest-asyncio decorator allows us to use an async side_effect
@@ -19,22 +34,9 @@ class TestUserRecommendationPreferencesProvider:
 
     def setup(self):
         global_sdk_config.set_sdk_enabled(False)
-
-        self.feature_store_mock = FeatureStoreMock(
-            feature_group_name=UserRecommendationPreferencesProvider.get_feature_group_name(),
-            identifier_feature_name='user_id',
-            records_json_path=os.path.join(ROOT_DIR, 'tests/assets/json/user_recommendation_preferences.json')
-        )
-
         self.existing_user_id = '12341234'  # Defined in the above JSON fixture
 
-        # This is the client that's under test.
-        self.client = UserRecommendationPreferencesProvider(
-            aioboto3_session=self.feature_store_mock.aioboto3,
-            topic_provider=MockTopicProvider(aioboto3_session=MagicMock())
-        )
-
-    async def test_put(self):
+    async def test_put(self, preferences_provider, feature_store_mock):
         """
         Test the case where the queried records exist in the Feature Group.
         """
@@ -44,10 +46,10 @@ class TestUserRecommendationPreferencesProvider:
             preferred_topics=[technology_topic],
         )
 
-        await self.client.put(model)
+        await preferences_provider.put(model)
 
         # Assert corpus_items reflect the corpus_candidate_sets.json fixture data.
-        record = self.feature_store_mock.records_by_id[model.user_id]
+        record = feature_store_mock.records_by_id[model.user_id]
         features = {feature['FeatureName']: feature['ValueAsString'] for feature in record}
 
         assert features['user_id'] == model.user_id
@@ -57,21 +59,21 @@ class TestUserRecommendationPreferencesProvider:
         assert len(preferred_topics_feature) == 1
         assert preferred_topics_feature[0]['id'] == model.preferred_topics[0].id
 
-    async def test_fetch(self):
+    async def test_fetch(self, preferences_provider, feature_store_mock):
         """
         Test the case where the queried records exist in the Feature Group.
         """
-        model = await self.client.fetch(self.existing_user_id)
+        model = await preferences_provider.fetch(self.existing_user_id)
 
         # Assert model matches fixture data in user_recommendation_preferences.json
         assert model.user_id == self.existing_user_id
         assert model.preferred_topics == [business_topic, technology_topic]
 
-    async def test_fetch_non_existing_user(self):
+    async def test_fetch_non_existing_user(self, preferences_provider):
         """
         Test the case where the queried records exist in the Feature Group.
         """
-        model = await self.client.fetch('9999')
+        model = await preferences_provider.fetch('9999')
 
         # Assert model matches fixture data in user_recommendation_preferences.json
         assert model is None
