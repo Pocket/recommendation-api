@@ -1,3 +1,4 @@
+import functools
 import logging
 import random
 import uuid
@@ -8,7 +9,7 @@ from typing import List, Coroutine, Any
 from aws_xray_sdk.core import xray_recorder
 
 from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS
-from app.data_providers.item2item import Item2ItemRecommender
+from app.data_providers.item2item import Item2ItemRecommender, Item2ItemError, QdrantError
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
@@ -29,22 +30,60 @@ from app.models.request_user import RequestUser
 from app.rankers.algorithms import rank_by_preferred_topics, spread_topics
 
 
-# todo: add thompson sampling
+def _empty_on_error(func):
+    """ Fallback to empty recommendations if Qdrant error occurred """
+    @functools.wraps(func)
+    async def wrapper(*args, **kwargs):
+        try:
+            return await func(*args, **kwargs)
+        except QdrantError:
+            return []
+    return wrapper
+
+
 class Item2ItemDispatch:
-    def __init__(self,
-                 item_recommender: Item2ItemRecommender):
+    def __init__(self, item_recommender: Item2ItemRecommender):
         self.item_recommender = item_recommender
 
-    async def related(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
-        recs = await self.item_recommender.related(resolved_id, count)
-        return [CorpusRecommendationModel(corpus_item=r) for r in recs]
+    async def after_save(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
+        try:
+            recs = await self.item_recommender.related(resolved_id, count)
+        except Item2ItemError:
+            # do not fallback for "Similar stores" after saving
+            recs = []
+        return self._sample(recs, count)
 
+    @_empty_on_error
+    async def after_article(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
+        try:
+            recs = await self.item_recommender.related(resolved_id, count)
+        except Item2ItemError:
+            # fallback to frequently saved for "You Might Also Like"
+            recs = await self.item_recommender.frequently_saved(count=100)
+        return self._sample(recs, count)
+
+    @_empty_on_error
     async def syndicated(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
-        recs = await self.item_recommender.syndicated(resolved_id, count)
-        return [CorpusRecommendationModel(corpus_item=r) for r in recs]
+        try:
+            recs = await self.item_recommender.syndicated(resolved_id, count)
+        except Item2ItemError:
+            # fallback to frequently saved syndicated for syndicated "More Stories from Pocket"
+            recs = await self.item_recommender.frequently_saved(count=100, is_syndicated=True)
+        return self._sample(recs, count)
 
+    @_empty_on_error
     async def by_publisher(self, resolved_id: int, domain: str, count: int) -> List[CorpusRecommendationModel]:
-        recs = await self.item_recommender.by_publisher(resolved_id, domain, count)
+        try:
+            recs = await self.item_recommender.by_publisher(resolved_id, domain, count)
+        except Item2ItemError:
+            # fallback to random by the same publisher for syndicated right rail
+            recs = await self.item_recommender.random_by_publisher(domain, count=100)
+        return self._sample(recs, count)
+
+    @staticmethod
+    def _sample(recs, count):
+        """ Randomly sample articles or apply thompson sampling """
+        recs = random.sample(recs, count) if count < len(recs) else recs
         return [CorpusRecommendationModel(corpus_item=r) for r in recs]
 
 
