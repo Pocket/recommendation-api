@@ -9,5 +9,5 @@
   "CollectionsSlateProvider.more_link_text": "Explore more Collections",
   "LifeHacksSlateProvider.headline": "Life Hacks",
   "LifeHacksSlateProvider.subheadline": "Tips for better living",
-  "TopicSlateProvider.more_link_text": "Explore more {{topicName}}"
+  "TopicSlateProvider.more_link_text": "Explore more {topic_name}"
 }

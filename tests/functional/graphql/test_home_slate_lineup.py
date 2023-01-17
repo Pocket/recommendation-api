@@ -257,6 +257,8 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             assert slates[0]['subheadline'] == 'Von Pocket kuratiert'
             assert slates[1]['headline'] == 'Beliebte Collections'
             assert slates[1]['moreLink']['text'] == 'Mehr Collections entdecken'
+            assert slates[-1]['headline'] == 'Für ein glücklicheres Ich'
+            assert slates[-1]['moreLink'] == None
 
             await self.wait_for_snowplow_events(n_expected_event=2)
             all_snowplow_events = self.snowplow_micro.get_event_counts()
