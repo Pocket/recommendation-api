@@ -20,7 +20,19 @@ async def resolve_similar_to_saved(
         = DEFAULT_RECOMMENDATION_COUNT,
 ) -> List[CorpusRecommendation]:
     dispatch = Item2ItemDispatch(item_recommender=DiContainer.get().item2item_recommender)
-    recs = await dispatch.related(resolved_id=int(root.item_id), count=count)
+    recs = await dispatch.after_save(resolved_id=int(root.item_id), count=count)
+    return [CorpusRecommendation.from_pydantic(rec) for rec in recs]
+
+
+async def resolve_after_article(
+        root: 'Item',
+        info: Info,
+        count: Annotated[Optional[int], argument(
+            description='Maximum number of recommendations to return, defaults to 10')]
+        = DEFAULT_RECOMMENDATION_COUNT,
+) -> List[CorpusRecommendation]:
+    dispatch = Item2ItemDispatch(item_recommender=DiContainer.get().item2item_recommender)
+    recs = await dispatch.after_article(resolved_id=int(root.item_id), count=count)
     return [CorpusRecommendation.from_pydantic(rec) for rec in recs]
 
 

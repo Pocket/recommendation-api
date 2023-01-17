@@ -1,9 +1,12 @@
 import json
 import os
 from time import sleep
-from unittest import TestCase
+from unittest import TestCase, mock
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
+from qdrant_client.http.api.points_api import AsyncPointsApi
+from qdrant_client.http.exceptions import UnexpectedResponse
 
 from app import config
 from app.config import ROOT_DIR
@@ -151,13 +154,17 @@ def after_save_json(item_id: str):
     }
 
 
+qdrant_error_mock = mock.Mock()
+qdrant_error_mock.side_effect = UnexpectedResponse(500, 'error', None, None)
+
+
 class TestGraphQLRelated(TestCase):
     @classmethod
     def setUpClass(cls):
         test_data = populate_qdrant()
         cls.art_by_corpus_id = {d['payload']['corpus_item_id']: d['payload'] for d in test_data}
 
-    def test_related_after_save(self):
+    def test_related_after_save_basic(self):
         """ recommend similar curated """
         item_id = '3727699409'
 
@@ -269,6 +276,21 @@ class TestGraphQLRelated(TestCase):
             assert 'id' in recs[0]['corpusItem']
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['domain'] == 'psyche.co' for r in recs)
 
+    def test_related_right_rail_publisher_doesnt_exist(self):
+        """ do not fallback, having the same publisher is a hard requirement """
+        item_id = '3727501830'
+        pub_url = 'https://xxx.co/ideas/'
+
+        with TestClient(app) as client:
+            response = client.post("/", json=publisher_json(item_id, pub_url)).json()
+
+            assert not response.get('errors')
+            entity = response['data']['_entities'][0]
+            recs = entity['relatedRightRail']
+            assert entity['itemId'] == item_id
+            assert entity['publisherUrl'] == pub_url
+            assert len(recs) == 0
+
     def test_related_right_rail_article_and_publisher_dont_exist(self):
         """ do not fallback, having the same publisher is a hard requirement """
         item_id = '11111'
@@ -300,7 +322,7 @@ class TestGraphQLRelated(TestCase):
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['save_count'] > 1000 for r in recs)
 
     def test_related_after_save_article_doesnt_exist(self):
-        """ fallback to random frequently saved curated """
+        """ do not fallback """
         item_id = '11111'
 
         with TestClient(app) as client:
@@ -310,9 +332,100 @@ class TestGraphQLRelated(TestCase):
             entity = response['data']['_entities'][0]
             recs = entity['relatedAfterCreate']
             assert entity['itemId'] == item_id
-            assert len(recs) == 3
-            assert 'id' in recs[0]
-            assert 'corpusItem' in recs[0]
-            assert 'id' in recs[0]['corpusItem']
-            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
-            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['save_count'] > 1000 for r in recs)
+            assert len(recs) == 0
+
+    @patch.object(AsyncPointsApi, 'recommend_points', qdrant_error_mock)
+    @patch.object(AsyncPointsApi, 'scroll_points', qdrant_error_mock)
+    def test_related_after_save_qdrant_outage(self):
+        item_id = '3727501830'
+
+        with TestClient(app) as client:
+            response = client.post("/", json=after_save_json(item_id)).json()
+
+            assert not response.get('errors')
+            assert len(response['data']['_entities'][0]['relatedAfterCreate']) == 0
+
+    @patch.object(AsyncPointsApi, 'recommend_points', qdrant_error_mock)
+    @patch.object(AsyncPointsApi, 'scroll_points', qdrant_error_mock)
+    def test_related_after_article_qdrant_outage(self):
+        item_id = '3727699409'
+
+        with TestClient(app) as client:
+            response = client.post("/", json=after_article_json(item_id)).json()
+
+            assert not response.get('errors')
+            assert len(response['data']['_entities'][0]['relatedAfterArticle']) == 0
+
+    @patch.object(AsyncPointsApi, 'recommend_points', qdrant_error_mock)
+    @patch.object(AsyncPointsApi, 'scroll_points', qdrant_error_mock)
+    def test_related_end_of_syndicated_qdrant_outage(self):
+        item_id = '3727511744'
+        pub_url = 'https://time.com/6223012/workplaces-of-the-future/'
+
+        with TestClient(app) as client:
+            response = client.post("/", json=syndicated_json(item_id, pub_url)).json()
+
+            assert not response.get('errors')
+            assert len(response['data']['_entities'][0]['relatedEndOfArticle']) == 0
+
+    @patch.object(AsyncPointsApi, 'recommend_points', qdrant_error_mock)
+    @patch.object(AsyncPointsApi, 'scroll_points', qdrant_error_mock)
+    def test_related_right_rail_qdrant_outage(self):
+        item_id = '3727501830'
+        pub_url = 'https://psyche.co/ideas/are-successful-authors-creative-geniuses-or-literary-labourers'
+
+        with TestClient(app) as client:
+            response = client.post("/", json=publisher_json(item_id, pub_url)).json()
+
+            assert not response.get('errors')
+            assert len(response['data']['_entities'][0]['relatedRightRail']) == 0
+
+    @patch.object(AsyncPointsApi, 'recommend_points', qdrant_error_mock)
+    def test_related_after_article_fallback_cached(self):
+        item_id = '3727699409'
+
+        with TestClient(app) as client:
+            response = client.post("/", json=after_article_json(item_id)).json()
+
+            assert not response.get('errors')
+            assert len(response['data']['_entities'][0]['relatedAfterArticle']) == 3
+
+            with patch.object(AsyncPointsApi, 'scroll_points', qdrant_error_mock):
+                response = client.post("/", json=after_article_json(item_id)).json()
+
+            assert not response.get('errors')
+            assert len(response['data']['_entities'][0]['relatedAfterArticle']) == 3
+
+    @patch.object(AsyncPointsApi, 'recommend_points', qdrant_error_mock)
+    def test_related_end_of_syndicated_fallback_cached(self):
+        item_id = '3727511744'
+        pub_url = 'https://time.com/6223012/workplaces-of-the-future/'
+
+        with TestClient(app) as client:
+            response = client.post("/", json=syndicated_json(item_id, pub_url)).json()
+
+            assert not response.get('errors')
+            assert len(response['data']['_entities'][0]['relatedEndOfArticle']) == 3
+
+            with patch.object(AsyncPointsApi, 'scroll_points', qdrant_error_mock):
+                response = client.post("/", json=syndicated_json(item_id, pub_url)).json()
+
+            assert not response.get('errors')
+            assert len(response['data']['_entities'][0]['relatedEndOfArticle']) == 3
+
+    @patch.object(AsyncPointsApi, 'recommend_points', qdrant_error_mock)
+    def test_related_right_rail_fallback_cached(self):
+        item_id = '3727501830'
+        pub_url = 'https://psyche.co/ideas/are-successful-authors-creative-geniuses-or-literary-labourers'
+
+        with TestClient(app) as client:
+            response = client.post("/", json=publisher_json(item_id, pub_url)).json()
+
+            assert not response.get('errors')
+            assert len(response['data']['_entities'][0]['relatedRightRail']) == 3
+
+            with patch.object(AsyncPointsApi, 'scroll_points', qdrant_error_mock):
+                response = client.post("/", json=publisher_json(item_id, pub_url)).json()
+
+            assert not response.get('errors')
+            assert len(response['data']['_entities'][0]['relatedRightRail']) == 3
