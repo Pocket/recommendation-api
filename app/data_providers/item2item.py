@@ -93,6 +93,7 @@ class Item2ItemRecommender:
 
     async def _recommend(self, resolved_id: int, query_filter: Filter, count: int) -> List[CorpusItemModel]:
         try:
+            self._log(logging.INFO, 'request', 'recommend', filter=query_filter, resolved_id=resolved_id)
             res = (await self._client.recommend_points(
                 collection_name=self.collection,
                 recommend_request=RecommendRequest(
@@ -107,12 +108,12 @@ class Item2ItemRecommender:
             if ex.status_code == 404 and 'Not found: No point with id' in ex.content.decode():
                 # article does not exist in qdrant
                 # fallback to returning random popular articles with the same filter
-                logging.warning(f'Related: article not found; '
-                                f'resolved_id: {resolved_id}, filter: {query_filter}')
+                self._log(logging.WARNING, 'article not found', 'recommend',
+                          filter=query_filter, code=ex.status_code, reason=ex.reason_phrase, resolved_id=resolved_id)
                 raise ArticleNotFound(resolved_id)
             else:
-                logging.error(f'Related: unexpected response from qdrant; '
-                              f'code: {ex.status_code}, reason: {ex.reason_phrase}')
+                self._log(logging.ERROR, 'unexpected response', 'recommend',
+                          filter=query_filter, code=ex.status_code, reason=ex.reason_phrase)
                 raise QdrantError()
 
         return [CorpusItemModel(id=rec.payload['corpus_item_id'], topic=rec.payload['topic'])
@@ -120,6 +121,7 @@ class Item2ItemRecommender:
 
     async def _scroll(self, query_filter: Filter, count: int) -> List[CorpusItemModel]:
         try:
+            self._log(logging.INFO, 'request', 'scroll', filter=query_filter)
             res = (await self._client.scroll_points(
                 collection_name=self.collection,
                 scroll_request=ScrollRequest(
@@ -129,9 +131,20 @@ class Item2ItemRecommender:
                     with_payload=True
                 ))).result.points
         except UnexpectedResponse as ex:
-            logging.error(f'Related: unexpected response from qdrant; '
-                          f'code: {ex.status_code}, reason: {ex.reason_phrase}')
+            self._log(logging.ERROR, 'unexpected response', 'scroll',
+                      filter=query_filter, code=ex.status_code, reason=ex.reason_phrase)
             raise QdrantError()
 
         return [CorpusItemModel(id=rec.payload['corpus_item_id'], topic=rec.payload['topic'])
                 for rec in res]
+
+    @staticmethod
+    def _log(level, msg, method, filter, resolved_id=None, code=None, reason=None):
+        """ Standardize logging for application metrics based on log parsing """
+        logging.log(level, f'Related: {msg}; '
+                           f'method: {method}, '
+                           # make more readable, we use only must condition
+                           f'filter: {[cond.key for cond in filter.must]}, ' +
+                           (f'resolved_id: {resolved_id}, ' if resolved_id else '') +
+                           (f'code: {code}, ' if code else '') +
+                           (f'reason: {reason}' if reason else ''))

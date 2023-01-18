@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from time import sleep
 from unittest import TestCase, mock
@@ -156,6 +157,8 @@ def after_save_json(item_id: str):
 
 qdrant_error_mock = mock.Mock()
 qdrant_error_mock.side_effect = UnexpectedResponse(500, 'error', None, None)
+
+logging.getLogger().setLevel(logging.INFO)
 
 
 class TestGraphQLRelated(TestCase):
