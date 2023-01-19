@@ -2,6 +2,7 @@ import logging
 from typing import List
 
 from aiocache import cached
+from aiocache.plugins import BasePlugin
 from qdrant_client.http import AsyncApis
 from qdrant_client.http.exceptions import UnexpectedResponse
 from qdrant_client.http.models import Filter, FieldCondition, MatchValue, RecommendRequest, ScrollRequest, Range
@@ -22,6 +23,27 @@ class ArticleNotFound(Item2ItemError):
     def __init__(self, resolved_id):
         super().__init__(self)
         self.resolved_id = resolved_id
+
+
+def _log(level, msg, method, filter=None, resolved_id=None, code=None, reason=None):
+    """ Standardize logging for application metrics based on log parsing """
+    logging.log(level, f'Related: {msg}; '
+                       f'method: {method}, ' +
+                # make more readable, we use only must condition
+                (f'filter: {[cond.key for cond in filter.must]}, ' if filter else '') +
+                (f'resolved_id: {resolved_id}, ' if resolved_id else '') +
+                (f'code: {code}, ' if code else '') +
+                (f'reason: {reason}' if reason else ''))
+
+
+class CacheLogPlugin(BasePlugin):
+    def __init__(self, name):
+        super().__init__()
+        self.name = name
+
+    async def post_get(self, *args, **kwargs):
+        if kwargs['ret'] is not None:
+            _log(logging.INFO, msg=f'got cached {self.name}', method='cache')
 
 
 class Item2ItemRecommender:
@@ -48,14 +70,20 @@ class Item2ItemRecommender:
         query_filter = self._build_filter(is_curated=True)
         return await self._recommend(resolved_id, query_filter, count)
 
-    @cached(ttl=3600)
-    async def frequently_saved(self, count: int, is_syndicated: bool = None) -> List[CorpusItemModel]:
+    @cached(ttl=3600, plugins=[CacheLogPlugin('curated')])
+    async def frequently_saved_curated(self, count: int) -> List[CorpusItemModel]:
         query_filter = self._build_filter(is_curated=True,
-                                          save_count=1000,
-                                          is_syndicated=is_syndicated)
+                                          save_count=1000)
         return await self._scroll(query_filter, count)
 
-    @cached(ttl=3600)
+    @cached(ttl=3600, plugins=[CacheLogPlugin('syndicated')])
+    async def frequently_saved_syndicated(self, count: int) -> List[CorpusItemModel]:
+        query_filter = self._build_filter(is_curated=True,
+                                          save_count=1000,
+                                          is_syndicated=True)
+        return await self._scroll(query_filter, count)
+
+    @cached(ttl=3600, plugins=[CacheLogPlugin('publisher')])
     async def random_by_publisher(self, domain: str, count: int) -> List[CorpusItemModel]:
         query_filter = self._build_filter(is_curated=True,
                                           domain=domain)
@@ -93,7 +121,7 @@ class Item2ItemRecommender:
 
     async def _recommend(self, resolved_id: int, query_filter: Filter, count: int) -> List[CorpusItemModel]:
         try:
-            self._log(logging.INFO, 'request', 'recommend', filter=query_filter, resolved_id=resolved_id)
+            _log(logging.INFO, 'request', 'recommend', filter=query_filter, resolved_id=resolved_id)
             res = (await self._client.recommend_points(
                 collection_name=self.collection,
                 recommend_request=RecommendRequest(
@@ -108,12 +136,12 @@ class Item2ItemRecommender:
             if ex.status_code == 404 and 'Not found: No point with id' in ex.content.decode():
                 # article does not exist in qdrant
                 # fallback to returning random popular articles with the same filter
-                self._log(logging.WARNING, 'article not found', 'recommend',
-                          filter=query_filter, code=ex.status_code, reason=ex.reason_phrase, resolved_id=resolved_id)
+                _log(logging.WARNING, 'article not found', 'recommend',
+                     filter=query_filter, code=ex.status_code, reason=ex.reason_phrase, resolved_id=resolved_id)
                 raise ArticleNotFound(resolved_id)
             else:
-                self._log(logging.ERROR, 'unexpected response', 'recommend',
-                          filter=query_filter, code=ex.status_code, reason=ex.reason_phrase)
+                _log(logging.ERROR, 'unexpected response', 'recommend', resolved_id=resolved_id,
+                     filter=query_filter, code=ex.status_code, reason=ex.reason_phrase)
                 raise QdrantError()
 
         return [CorpusItemModel(id=rec.payload['corpus_item_id'], topic=rec.payload['topic'])
@@ -121,7 +149,7 @@ class Item2ItemRecommender:
 
     async def _scroll(self, query_filter: Filter, count: int) -> List[CorpusItemModel]:
         try:
-            self._log(logging.INFO, 'request', 'scroll', filter=query_filter)
+            _log(logging.INFO, 'request', 'scroll', filter=query_filter)
             res = (await self._client.scroll_points(
                 collection_name=self.collection,
                 scroll_request=ScrollRequest(
@@ -131,20 +159,9 @@ class Item2ItemRecommender:
                     with_payload=True
                 ))).result.points
         except UnexpectedResponse as ex:
-            self._log(logging.ERROR, 'unexpected response', 'scroll',
-                      filter=query_filter, code=ex.status_code, reason=ex.reason_phrase)
+            _log(logging.ERROR, 'unexpected response', 'scroll',
+                 filter=query_filter, code=ex.status_code, reason=ex.reason_phrase)
             raise QdrantError()
 
         return [CorpusItemModel(id=rec.payload['corpus_item_id'], topic=rec.payload['topic'])
                 for rec in res]
-
-    @staticmethod
-    def _log(level, msg, method, filter, resolved_id=None, code=None, reason=None):
-        """ Standardize logging for application metrics based on log parsing """
-        logging.log(level, f'Related: {msg}; '
-                           f'method: {method}, '
-                           # make more readable, we use only must condition
-                           f'filter: {[cond.key for cond in filter.must]}, ' +
-                           (f'resolved_id: {resolved_id}, ' if resolved_id else '') +
-                           (f'code: {code}, ' if code else '') +
-                           (f'reason: {reason}' if reason else ''))
