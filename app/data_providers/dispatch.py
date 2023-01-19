@@ -59,7 +59,7 @@ class Item2ItemDispatch:
             recs = await self.item_recommender.related(resolved_id, count)
         except Item2ItemError:
             # fallback to frequently saved for "You Might Also Like"
-            recs = await self.item_recommender.frequently_saved(count=100)
+            recs = await self.item_recommender.frequently_saved_curated(count=100)
         return self._sample(recs, count)
 
     @_empty_on_error
@@ -68,7 +68,7 @@ class Item2ItemDispatch:
             recs = await self.item_recommender.syndicated(resolved_id, count)
         except Item2ItemError:
             # fallback to frequently saved syndicated for syndicated "More Stories from Pocket"
-            recs = await self.item_recommender.frequently_saved(count=100, is_syndicated=True)
+            recs = await self.item_recommender.frequently_saved_syndicated(count=100)
         return self._sample(recs, count)
 
     @_empty_on_error
