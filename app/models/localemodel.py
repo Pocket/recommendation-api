@@ -16,9 +16,14 @@ class LocaleModel(Enum):
     de_DE = LocaleValue('de-DE')
 
     @classmethod
-    def from_string(cls, val: str, default: en_US) -> 'LocaleModel':
+    def from_string(cls, val: str, default: 'LocaleModel' = None) -> 'LocaleModel':
         for locale in cls:
             if locale.value.lower() == val.lower():
+                return locale
+
+        language = val.split('-')[0].lower()
+        for locale in cls:
+            if locale.value.startswith(language):
                 return locale
 
         return default
