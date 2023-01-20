@@ -12,7 +12,7 @@ from xraysink.asgi.middleware import xray_middleware
 from xraysink.context import AsyncContext
 
 from app.cache import initialize_caches
-from app.config import ENV, ENV_PROD, service, sentry as sentry_config, xray_daemon_address
+from app.config import ENV, ENV_PROD, service, sentry as sentry_config, xray_daemon_address, log_level
 from app.graphql.graphql_router import schema
 from app.models.candidate_set import candidate_set_factory
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
@@ -20,6 +20,8 @@ from app.models.slate_lineup_config import SlateLineupConfigModel, validate_uniq
 from app.models.slate_config import SlateConfigModel
 from app.health_status import get_health_status, set_health_status, HealthStatus
 from app.singletons import DiContainer
+
+logging.getLogger().setLevel(log_level)
 
 sentry_sdk.init(
     dsn=sentry_config['dsn'],
