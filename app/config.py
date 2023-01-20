@@ -13,6 +13,8 @@ ENV = os.getenv("ENVIRONMENT", ENV_DEV)
 
 VERSION = '1'  # RecommendationAPI is not configured to have automatically incrementing versions, so just set it to 1.
 
+log_level = os.getenv("LOG_LEVEL", 'INFO').upper()
+
 service = {
     'domain': 'recommendation-api.readitlater.com' if ENV == ENV_PROD else 'recommendation-api.getpocket.dev'
 }

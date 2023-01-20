@@ -159,8 +159,6 @@ def after_save_json(item_id: str):
 
 qdrant_error_mock = mock.Mock()
 qdrant_error_mock.side_effect = UnexpectedResponse(500, 'error', None, None)
-
-logging.getLogger().setLevel(logging.INFO)
 log_pattern = re.compile(
     'Related: [\w ]+; method: \w+,( filter: [\'\[\] \w,]+,)?( resolved_id: \d+,)?( code: \d+,)?( reason: [\w ]+)?')
 
