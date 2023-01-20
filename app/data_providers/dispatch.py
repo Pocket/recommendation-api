@@ -1,12 +1,10 @@
 import functools
-import logging
 import random
-import uuid
 from asyncio import gather
-from datetime import datetime, timezone
 from typing import List, Coroutine, Any
 
 from aws_xray_sdk.core import xray_recorder
+from dependency_injector.wiring import Provide, inject
 
 from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS
 from app.data_providers.item2item import Item2ItemRecommender, Item2ItemError, QdrantError
@@ -27,7 +25,7 @@ from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.localemodel import LocaleModel
 from app.models.topic import TopicModel
 from app.models.request_user import RequestUser
-from app.rankers.algorithms import rank_by_preferred_topics, spread_topics
+from app.singletons import Container
 
 
 def _empty_on_error(func):
@@ -89,11 +87,11 @@ class Item2ItemDispatch:
 
 class HomeDispatch:
 
+    @inject
     def __init__(
             self,
             corpus_client: CorpusFeatureGroupClient,
             preferences_provider: UserRecommendationPreferencesProvider,
-            user_impression_cap_provider: UserImpressionCapProvider,
             topic_provider: TopicProvider,
             for_you_slate_provider: ForYouSlateProvider,
             recommended_reads_slate_provider: RecommendedReadsSlateProvider,
@@ -102,6 +100,7 @@ class HomeDispatch:
             pocket_hits_slate_provider: PocketHitsSlateProvider,
             life_hacks_slate_provider: LifeHacksSlateProvider,
             unleash_provider: UnleashProvider,
+            user_impression_cap_provider: UserImpressionCapProvider = Provide[Container.user_impression_cap_provider],
     ):
         self.topic_provider = topic_provider
         self.corpus_client = corpus_client

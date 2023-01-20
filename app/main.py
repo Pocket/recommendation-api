@@ -19,7 +19,7 @@ from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate_lineup_config import SlateLineupConfigModel, validate_unique_guids
 from app.models.slate_config import SlateConfigModel
 from app.health_status import get_health_status, set_health_status, HealthStatus
-from app.singletons import DiContainer
+from app.singletons import DiContainer, Container
 
 sentry_sdk.init(
     dsn=sentry_config['dsn'],
@@ -32,8 +32,10 @@ sentry_sdk.integrations.logging.ignore_logger("graphql.execution.utils")
 xray_recorder.configure(
     daemon_address=xray_daemon_address, context=AsyncContext(), service=service.get('domain'), plugins=['ecsplugin'])
 
+container = Container()
 
 app = FastAPI()
+app.container = container
 app.add_middleware(BaseHTTPMiddleware, dispatch=xray_middleware)
 app.add_middleware(SentryAsgiMiddleware)
 

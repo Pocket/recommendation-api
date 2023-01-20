@@ -64,7 +64,6 @@ async def resolve_home_slate_lineup(root, info: Info, locale: str = 'en-US') -> 
         slate_lineup_model = await HomeDispatch(
             corpus_client=di.corpus_client,
             preferences_provider=UserRecommendationPreferencesProvider(di.aioboto3_session, topic_provider),
-            user_impression_cap_provider=di.user_impression_cap_provider,
             topic_provider=topic_provider,
             for_you_slate_provider=ForYouSlateProvider(**slate_provider_kwargs),
             recommended_reads_slate_provider=RecommendedReadsSlateProvider(**slate_provider_kwargs),
