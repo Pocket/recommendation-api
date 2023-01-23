@@ -20,14 +20,9 @@ class CollectionSlateProvider(SlateProvider):
 
     @property
     def more_link(self) -> Optional[LinkModel]:
-        base_url = 'https://getpocket.com'
-
-        if self.locale == LocaleModel.en_US:
-            url = f'{base_url}/collections'
-        else:
-            url = f'{base_url}/{self.locale.value.language}/collections'
-
-        return LinkModel(text=self.home_translations['CollectionsSlateProvider.more_link_text'], url=url)
+        return LinkModel(
+            text=self.home_translations['CollectionsSlateProvider.more_link_text'],
+            url='https://getpocket.com/collections')
 
     async def rank_corpus_items(
             self,
