@@ -256,6 +256,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             assert slates[0]['headline'] == 'Empfohlene Artikel'
             assert slates[0]['subheadline'] == 'Von Pocket kuratiert'
             assert slates[1]['headline'] == 'Beliebte Collections'
+            assert slates[1]['moreLink']['url'] == 'https://getpocket.com/collections'
             assert slates[1]['moreLink']['text'] == 'Mehr Collections entdecken'
             assert slates[-1]['headline'] == 'Für ein glücklicheres Ich'
             assert slates[-1]['moreLink'] == None
