@@ -120,20 +120,21 @@ class HomeDispatch:
             self, user: RequestUser, locale: LocaleModel, recommendation_count: int
     ) -> CorpusSlateLineupModel:
         if locale == LocaleModel.en_US:
-            return await self.get_en_us_slate_lineup(recommendation_count=recommendation_count, user=user)
+            return await self.get_en_us_slate_lineup(recommendation_count=recommendation_count, user=user, locale=locale)
         elif locale == LocaleModel.de_DE:
-            return await self.get_de_de_slate_lineup(recommendation_count=recommendation_count)
+            return await self.get_de_de_slate_lineup(recommendation_count=recommendation_count, locale=locale)
         else:
             raise ValueError(f'Invalid locale {locale}')
 
     @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
     async def get_en_us_slate_lineup(
-            self, user: RequestUser, recommendation_count: int
+            self, user: RequestUser, recommendation_count: int, locale: LocaleModel
     ) -> CorpusSlateLineupModel:
 
         """
         :param user:
         :param recommendation_count: Maximum number of recommendations to return.
+        :param locale:
         :return: Slate lineup for en-US Home:
             1. 'For You' slate if preferred topics are available, or otherwise 'Recommended Reads'
             2. Pocket Hits
@@ -177,13 +178,15 @@ class HomeDispatch:
                 recommendation_count=recommendation_count,
             ),
             recommendation_surface_id=RecommendationSurfaceId.HOME,
+            locale=locale,
             experiment=thompson_sampling_assignment,
         )
 
     @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
-    async def get_de_de_slate_lineup(self, recommendation_count: int) -> CorpusSlateLineupModel:
+    async def get_de_de_slate_lineup(self, recommendation_count: int, locale: LocaleModel) -> CorpusSlateLineupModel:
         """
         :param recommendation_count:
+        :param locale:
         :return: the Home slate lineup:
             1. Recommended Reads
             2. Collection slate
@@ -201,6 +204,7 @@ class HomeDispatch:
                 slates=list(await gather(*slates)),
                 recommendation_count=recommendation_count,
             ),
+            locale=locale,
             recommendation_surface_id=RecommendationSurfaceId.HOME,
         )
 

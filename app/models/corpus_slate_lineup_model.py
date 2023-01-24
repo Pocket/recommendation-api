@@ -6,6 +6,7 @@ from uuid import uuid4
 from pydantic import BaseModel, Field
 
 from app.models.corpus_slate_model import CorpusSlateModel
+from app.models.localemodel import LocaleModel
 from app.models.unleash_assignment import UnleashAssignmentModel
 
 
@@ -25,4 +26,5 @@ class CorpusSlateLineupModel(BaseModel):
         description='UTC time when the slate was recommended')
     recommendation_surface_id: RecommendationSurfaceId = Field(
         description='Identifies the recommendation surface that the slate lineup will be shown on.')
+    locale: LocaleModel = Field(description='Locale that the recommendations and slate copy is targeted to')
     experiment: Optional[UnleashAssignmentModel] = None
