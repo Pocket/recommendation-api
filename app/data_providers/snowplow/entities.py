@@ -94,6 +94,7 @@ def get_corpus_slate_lineup_entity(schema: str, corpus_slate_lineup: CorpusSlate
             'corpus_slate_lineup_id': corpus_slate_lineup.id,
             'recommended_at': int(corpus_slate_lineup.recommended_at.timestamp()),
             'recommendation_surface_id': corpus_slate_lineup.recommendation_surface_id.value,
+            'locale': corpus_slate_lineup.locale.value,
             'slates': [get_corpus_slate_data(corpus_slate) for corpus_slate in corpus_slate_lineup.slates]
         },
     )
