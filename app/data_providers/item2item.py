@@ -54,12 +54,14 @@ class Item2ItemRecommender:
         self.collection = app.config.qdrant["collection"]
         self._client = AsyncApis(host=f"http{'s' if https else ''}://{host}:{port}").points_api
 
+    @cached(ttl=3600, plugins=[CacheLogPlugin('related_publisher')])
     async def by_publisher(self, resolved_id: int, domain: str, count: int) -> List[CorpusItemModel]:
         query_filter = self._build_filter(
             is_curated=True,
             domain=domain)
         return await self._recommend(resolved_id, query_filter, count)
 
+    @cached(ttl=3600, plugins=[CacheLogPlugin('related_syndicated')])
     async def syndicated(self, resolved_id: int, count: int) -> List[CorpusItemModel]:
         query_filter = self._build_filter(
             is_curated=True,
@@ -70,20 +72,20 @@ class Item2ItemRecommender:
         query_filter = self._build_filter(is_curated=True)
         return await self._recommend(resolved_id, query_filter, count)
 
-    @cached(ttl=3600, plugins=[CacheLogPlugin('curated')])
+    @cached(ttl=3600, plugins=[CacheLogPlugin('saved_curated')])
     async def frequently_saved_curated(self, count: int) -> List[CorpusItemModel]:
         query_filter = self._build_filter(is_curated=True,
                                           save_count=1000)
         return await self._scroll(query_filter, count)
 
-    @cached(ttl=3600, plugins=[CacheLogPlugin('syndicated')])
+    @cached(ttl=3600, plugins=[CacheLogPlugin('saved_syndicated')])
     async def frequently_saved_syndicated(self, count: int) -> List[CorpusItemModel]:
         query_filter = self._build_filter(is_curated=True,
                                           save_count=1000,
                                           is_syndicated=True)
         return await self._scroll(query_filter, count)
 
-    @cached(ttl=3600, plugins=[CacheLogPlugin('publisher')])
+    @cached(ttl=3600, plugins=[CacheLogPlugin('random_publisher')])
     async def random_by_publisher(self, domain: str, count: int) -> List[CorpusItemModel]:
         query_filter = self._build_filter(is_curated=True,
                                           domain=domain)
