@@ -9,7 +9,7 @@ from typing import List, Coroutine, Any
 from aws_xray_sdk.core import xray_recorder
 
 from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS
-from app.data_providers.item2item import Item2ItemRecommender, Item2ItemError, QdrantError
+from app.data_providers.item2item import Item2ItemRecommender, Item2ItemError, QdrantError, RelatedItem
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
@@ -21,6 +21,7 @@ from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.unleash_provider import UnleashProvider
 from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
+from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel, RecommendationSurfaceId
 from app.models.corpus_slate_model import CorpusSlateModel
@@ -51,25 +52,29 @@ class Item2ItemDispatch:
         except Item2ItemError:
             # do not fallback for "Similar stores" after saving
             recs = []
-        return self._sample(recs, count)
+        return self._to_corpus_items(recs, count)
 
     @_empty_on_error
     async def after_article(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
         try:
-            recs = await self.item_recommender.related(resolved_id, count)
+            recs = await self.item_recommender.related(resolved_id, 20)
         except Item2ItemError:
             # fallback to frequently saved for "You Might Also Like"
             recs = await self.item_recommender.frequently_saved_curated(count=100)
-        return self._sample(recs, count)
+            random.shuffle(recs)
+        recs = self._unique_domains_first(recs)
+        return self._to_corpus_items(recs, count)
 
     @_empty_on_error
     async def syndicated(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
         try:
-            recs = await self.item_recommender.syndicated(resolved_id, count)
+            recs = await self.item_recommender.syndicated(resolved_id, 20)
         except Item2ItemError:
             # fallback to frequently saved syndicated for syndicated "More Stories from Pocket"
             recs = await self.item_recommender.frequently_saved_syndicated(count=100)
-        return self._sample(recs, count)
+            random.shuffle(recs)
+        recs = self._unique_domains_first(recs)
+        return self._to_corpus_items(recs, count)
 
     @_empty_on_error
     async def by_publisher(self, resolved_id: int, domain: str, count: int) -> List[CorpusRecommendationModel]:
@@ -78,13 +83,26 @@ class Item2ItemDispatch:
         except Item2ItemError:
             # fallback to random by the same publisher for syndicated right rail
             recs = await self.item_recommender.random_by_publisher(domain, count=100)
-        return self._sample(recs, count)
+            random.shuffle(recs)
+        return self._to_corpus_items(recs, count)
 
     @staticmethod
-    def _sample(recs, count):
-        """ Randomly sample articles or apply thompson sampling """
-        recs = random.sample(recs, count) if count < len(recs) else recs
-        return [CorpusRecommendationModel(corpus_item=r) for r in recs]
+    def _unique_domains_first(recs: List[RelatedItem]) -> List[RelatedItem]:
+        seen_domains = set()
+        duplicates = []
+        uniques = []
+        for r in recs:
+            if r.domain not in seen_domains:
+                uniques.append(r)
+                seen_domains.add(r.domain)
+            else:
+                duplicates.append(r)
+        return uniques + duplicates
+
+    @staticmethod
+    def _to_corpus_items(recs, count):
+        return [CorpusRecommendationModel(corpus_item=CorpusItemModel(id=r.corpus_item_id, topic=r.topic))
+                for r in recs[:count]]
 
 
 class HomeDispatch:
