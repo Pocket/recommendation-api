@@ -145,6 +145,10 @@ class Item2ItemRecommender:
                 _log(logging.ERROR, 'unexpected response', 'recommend', resolved_id=resolved_id,
                      filter=query_filter, code=ex.status_code, reason=ex.reason_phrase)
                 raise QdrantError()
+        except Exception as ex:
+            _log(logging.ERROR, 'Qdrant error', 'recommend', resolved_id=resolved_id,
+                 filter=query_filter, reason=str(ex))
+            raise QdrantError()
 
         return [CorpusItemModel(id=rec.payload['corpus_item_id'], topic=rec.payload['topic'])
                 for rec in res]
@@ -163,6 +167,10 @@ class Item2ItemRecommender:
         except UnexpectedResponse as ex:
             _log(logging.ERROR, 'unexpected response', 'scroll',
                  filter=query_filter, code=ex.status_code, reason=ex.reason_phrase)
+            raise QdrantError()
+        except Exception as ex:
+            _log(logging.ERROR, 'Qdrant error', 'scroll',
+                 filter=query_filter, reason=str(ex))
             raise QdrantError()
 
         return [CorpusItemModel(id=rec.payload['corpus_item_id'], topic=rec.payload['topic'])
