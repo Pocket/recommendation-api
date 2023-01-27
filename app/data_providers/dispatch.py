@@ -57,6 +57,7 @@ class Item2ItemDispatch:
     @_empty_on_error
     async def after_article(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
         try:
+            # request more to apply domain diversification
             recs = await self.item_recommender.related(resolved_id, 20)
         except Item2ItemError:
             # fallback to frequently saved for "You Might Also Like"
@@ -68,6 +69,7 @@ class Item2ItemDispatch:
     @_empty_on_error
     async def syndicated(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
         try:
+            # request more to apply domain diversification
             recs = await self.item_recommender.syndicated(resolved_id, 20)
         except Item2ItemError:
             # fallback to frequently saved syndicated for syndicated "More Stories from Pocket"
