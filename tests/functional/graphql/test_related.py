@@ -159,6 +159,8 @@ def after_save_json(item_id: str):
 
 qdrant_error_mock = mock.Mock()
 qdrant_error_mock.side_effect = UnexpectedResponse(500, 'error', None, None)
+qdrant_unexpected_error_mock = mock.Mock()
+qdrant_unexpected_error_mock.side_effect = ValueError('something went wrong')
 log_pattern = re.compile(
     'Related: [\w ]+; method: \w+,( filter: [\'\[\] \w,]+,)?( resolved_id: \d+,)?( code: \d+,)?( reason: [\w ]+)?')
 
@@ -388,8 +390,8 @@ class TestGraphQLRelated(TestCase):
             assert len(response['data']['_entities'][0]['relatedAfterCreate']) == 0
             self.verify_logs(logging.ERROR, msg='unexpected response')
 
-    @patch.object(AsyncPointsApi, 'recommend_points', qdrant_error_mock)
-    @patch.object(AsyncPointsApi, 'scroll_points', qdrant_error_mock)
+    @patch.object(AsyncPointsApi, 'recommend_points', qdrant_unexpected_error_mock)
+    @patch.object(AsyncPointsApi, 'scroll_points', qdrant_unexpected_error_mock)
     def test_related_after_article_qdrant_outage(self):
         item_id = '3727699409'
 
@@ -398,7 +400,7 @@ class TestGraphQLRelated(TestCase):
 
             assert not response.get('errors')
             assert len(response['data']['_entities'][0]['relatedAfterArticle']) == 0
-            self.verify_logs(logging.ERROR, msg='unexpected response')
+            self.verify_logs(logging.ERROR, msg='Qdrant error')
 
     @patch.object(AsyncPointsApi, 'recommend_points', qdrant_error_mock)
     @patch.object(AsyncPointsApi, 'scroll_points', qdrant_error_mock)
