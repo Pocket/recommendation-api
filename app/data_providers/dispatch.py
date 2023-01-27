@@ -1,16 +1,13 @@
 import functools
-import logging
 import random
-import uuid
 from asyncio import gather
-from datetime import datetime, timezone
 from typing import List, Coroutine, Any
 
 from aws_xray_sdk.core import xray_recorder
 
 from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS
-from app.data_providers.item2item import Item2ItemRecommender, Item2ItemError, QdrantError, RelatedItem
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
+from app.data_providers.item2item import Item2ItemRecommender, Item2ItemError, QdrantError
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
 from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
@@ -26,9 +23,9 @@ from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel, RecommendationSurfaceId
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.localemodel import LocaleModel
-from app.models.topic import TopicModel
 from app.models.request_user import RequestUser
-from app.rankers.algorithms import rank_by_preferred_topics, spread_topics
+from app.models.topic import TopicModel
+from app.rankers.algorithms import unique_domains_first
 
 
 def _empty_on_error(func):
@@ -63,7 +60,7 @@ class Item2ItemDispatch:
             # fallback to frequently saved for "You Might Also Like"
             recs = await self.item_recommender.frequently_saved_curated(count=100)
             random.shuffle(recs)
-        recs = self._unique_domains_first(recs)
+        recs = unique_domains_first(recs)
         return self._to_corpus_items(recs, count)
 
     @_empty_on_error
@@ -75,7 +72,7 @@ class Item2ItemDispatch:
             # fallback to frequently saved syndicated for syndicated "More Stories from Pocket"
             recs = await self.item_recommender.frequently_saved_syndicated(count=100)
             random.shuffle(recs)
-        recs = self._unique_domains_first(recs)
+        recs = unique_domains_first(recs)
         return self._to_corpus_items(recs, count)
 
     @_empty_on_error
@@ -87,19 +84,6 @@ class Item2ItemDispatch:
             recs = await self.item_recommender.random_by_publisher(domain, count=100)
             random.shuffle(recs)
         return self._to_corpus_items(recs, count)
-
-    @staticmethod
-    def _unique_domains_first(recs: List[RelatedItem]) -> List[RelatedItem]:
-        seen_domains = set()
-        duplicates = []
-        uniques = []
-        for r in recs:
-            if r.domain not in seen_domains:
-                uniques.append(r)
-                seen_domains.add(r.domain)
-            else:
-                duplicates.append(r)
-        return uniques + duplicates
 
     @staticmethod
     def _to_corpus_items(recs, count):

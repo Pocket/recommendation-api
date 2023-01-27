@@ -33,6 +33,7 @@ RankableListType = Union[List['SlateConfigModel'], List['RecommendationModel'], 
 RecommendationListType = List['RecommendationModel']
 CorpusItemListType = List[CorpusItemModel]
 
+
 def top_n(n: int, items: RankableListType) -> RankableListType:
     """
     Gets the first n recommendations from the list of recommendations.
@@ -52,7 +53,9 @@ top15 = partial(top_n, 15)
 top30 = partial(top_n, 30)
 top45 = partial(top_n, 45)
 
-def rank_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List['SlateConfigModel']:
+
+def rank_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List[
+    'SlateConfigModel']:
     """
     returns the lineup with topic slates sorted by the user's profile.
     :param slates: initial list of slate configs
@@ -62,7 +65,9 @@ def rank_topics(slates: List['SlateConfigModel'], personalized_topics: Personali
 
     return __personalize_topic_slates(slates, personalized_topics, topic_limit=None)
 
-def top1_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List['SlateConfigModel']:
+
+def top1_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List[
+    'SlateConfigModel']:
     """
     returns the lineup with only the top topic slate included
     :param slates: initial list of slate configs
@@ -337,3 +342,22 @@ def spread_publishers(recs: RecommendationListType, spread: int = 3) -> Recommen
             iterator += 1
 
     return reordered
+
+
+def unique_domains_first(recs: List) -> List:
+    """
+    Reranks a list of recommendations to put items with unique domains to the beginning of the list
+    
+    :param recs: a list of objects with attribute 'domain' ranked by a recommender
+    :return: a re-ordered version of recs 
+    """
+    seen_domains = set()
+    duplicates = []
+    uniques = []
+    for r in recs:
+        if r.domain not in seen_domains:
+            uniques.append(r)
+            seen_domains.add(r.domain)
+        else:
+            duplicates.append(r)
+    return uniques + duplicates
