@@ -63,6 +63,7 @@ class Item2ItemRecommender:
     async def by_publisher(self, resolved_id: int, domain: str, count: int) -> List[RelatedItem]:
         query_filter = self._build_filter(
             is_curated=True,
+            is_syndicated=False,
             domain=domain)
         return await self._recommend(resolved_id, query_filter, count)
 
