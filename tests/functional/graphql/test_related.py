@@ -223,6 +223,7 @@ class TestGraphQLRelated(TestCase):
             assert 'corpusItem' in recs[0]
             assert 'id' in recs[0]['corpusItem']
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs), recs
+            assert len(set(self.art_by_corpus_id[r['corpusItem']['id']]['domain'] for r in recs)) == 3
             self.verify_logs(logging.INFO, item_id)
 
     def test_related_end_of_syndicated_basic(self):
@@ -243,12 +244,14 @@ class TestGraphQLRelated(TestCase):
             assert 'corpusItem' in recs[0]
             assert 'id' in recs[0]['corpusItem']
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_syndicated'] for r in recs)
+            assert len(set(self.art_by_corpus_id[r['corpusItem']['id']]['domain'] for r in recs)) == 3
             self.verify_logs(logging.INFO, item_id)
 
     def test_related_right_rail_basic(self):
         """ recommend similar curated from the same publisher """
         item_id = '3727501830'
-        pub_url = 'https://psyche.co/ideas/are-successful-authors-creative-geniuses-or-literary-labourers'
+        # make sure www is ignored
+        pub_url = 'https://www.psyche.co/ideas/are-successful-authors-creative-geniuses-or-literary-labourers'
 
         with TestClient(app) as client:
             response = client.post("/", json=publisher_json(item_id, pub_url)).json()
@@ -264,6 +267,7 @@ class TestGraphQLRelated(TestCase):
             assert 'id' in recs[0]['corpusItem']
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['domain'] == 'psyche.co' for r in recs)
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
+            assert all( not self.art_by_corpus_id[r['corpusItem']['id']]['is_syndicated'] for r in recs)
             self.verify_logs(logging.INFO, item_id)
 
     def test_related_syndicated_article_doesnt_exist(self):
@@ -285,6 +289,7 @@ class TestGraphQLRelated(TestCase):
             assert 'id' in recs[0]['corpusItem']
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_syndicated'] for r in recs)
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['save_count'] > 1000 for r in recs)
+            assert len(set(self.art_by_corpus_id[r['corpusItem']['id']]['domain'] for r in recs)) == 3
             self.verify_logs(logging.WARNING, item_id, msg='article not found')
             self.verify_logs(logging.INFO, msg='scroll')
 
@@ -356,6 +361,7 @@ class TestGraphQLRelated(TestCase):
             assert 'id' in recs[0]['corpusItem']
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['save_count'] > 1000 for r in recs)
+            assert len(set(self.art_by_corpus_id[r['corpusItem']['id']]['domain'] for r in recs)) == 3
             self.verify_logs(logging.WARNING, item_id, msg='article not found')
             self.verify_logs(logging.INFO, msg='scroll')
 
