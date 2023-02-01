@@ -5,7 +5,8 @@ from aiocache import cached
 from aiocache.plugins import BasePlugin
 from qdrant_client.http import AsyncApis
 from qdrant_client.http.exceptions import UnexpectedResponse
-from qdrant_client.http.models import Filter, FieldCondition, MatchValue, RecommendRequest, ScrollRequest, Range
+from qdrant_client.http.models import Filter, FieldCondition, MatchValue, RecommendRequest, ScrollRequest, Range, \
+    HasIdCondition
 
 import app.config
 
@@ -60,11 +61,16 @@ class Item2ItemRecommender:
         self._client = AsyncApis(host=f"http{'s' if https else ''}://{host}:{port}").points_api
 
     @cached(ttl=3600, plugins=[CacheLogPlugin('related_publisher')])
-    async def by_publisher(self, resolved_id: int, domain: str, count: int) -> List[RelatedItem]:
+    async def by_publisher(self,
+                           resolved_id: int,
+                           domain: str,
+                           original_id: int,
+                           count: int) -> List[RelatedItem]:
         query_filter = self._build_filter(
             is_curated=True,
             is_syndicated=False,
-            domain=domain)
+            domain=domain,
+            exclude_id=original_id)
         return await self._recommend(resolved_id, query_filter, count)
 
     @cached(ttl=3600, plugins=[CacheLogPlugin('related_syndicated')])
@@ -101,31 +107,36 @@ class Item2ItemRecommender:
     def _build_filter(is_curated: bool = None,
                       is_syndicated: bool = None,
                       domain: str = None,
-                      save_count: int = None) -> Filter:
-        conditions = []
+                      save_count: int = None,
+                      exclude_id: int = None) -> Filter:
+        must = []
+        must_not = []
 
         if is_syndicated is not None:
-            conditions.append(FieldCondition(
+            must.append(FieldCondition(
                 key='is_syndicated',
                 match=MatchValue(value=is_syndicated)
             ))
         if is_curated is not None:
-            conditions.append(FieldCondition(
+            must.append(FieldCondition(
                 key='is_curated',
                 match=MatchValue(value=is_curated)
             ))
         if domain is not None:
-            conditions.append(FieldCondition(
+            must.append(FieldCondition(
                 key='domain',
                 match=MatchValue(value=domain)
             ))
         if save_count is not None:
-            conditions.append(FieldCondition(
+            must.append(FieldCondition(
                 key='save_count',
                 range=Range(gte=save_count)
             ))
 
-        return Filter(must=conditions)
+        if exclude_id is not None:
+            must_not.append(HasIdCondition(has_id=[exclude_id]))
+
+        return Filter(must=must, must_not=must_not if must_not else None)
 
     async def _recommend(self, resolved_id: int, query_filter: Filter, count: int) -> List[RelatedItem]:
         try:

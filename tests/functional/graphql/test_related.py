@@ -41,7 +41,7 @@ def populate_qdrant():
         return test_data
 
 
-def syndicated_json(item_id: str, pub_url: str):
+def syndicated_json(item_id: str, pub_url: str, original_id: str = '222'):
     return {
         'query': '''
             query ($representations: [_Any!]!) {
@@ -49,6 +49,7 @@ def syndicated_json(item_id: str, pub_url: str):
                 ... on SyndicatedArticle {
                     itemId
                     publisherUrl
+                    originalItemId
                     relatedEndOfArticle(count: 3) {
                         id
                         corpusItem {
@@ -65,13 +66,14 @@ def syndicated_json(item_id: str, pub_url: str):
                     '__typename': 'SyndicatedArticle',
                     'itemId': item_id,
                     'publisherUrl': pub_url,
+                    'originalItemId': original_id
                 },
             ],
         },
     }
 
 
-def publisher_json(item_id: str, pub_url: str):
+def publisher_json(item_id: str, pub_url: str, original_id: str = '222'):
     return {
         'query': '''
             query ($representations: [_Any!]!) {
@@ -79,6 +81,7 @@ def publisher_json(item_id: str, pub_url: str):
                 ... on SyndicatedArticle {
                     itemId
                     publisherUrl
+                    originalItemId
                     relatedRightRail(count: 3) {
                         id
                         corpusItem {
@@ -95,6 +98,7 @@ def publisher_json(item_id: str, pub_url: str):
                     '__typename': 'SyndicatedArticle',
                     'itemId': item_id,
                     'publisherUrl': pub_url,
+                    'originalItemId': original_id
                 },
             ],
         },
@@ -169,7 +173,10 @@ class TestGraphQLRelated(TestCase):
     @classmethod
     def setUpClass(cls):
         test_data = populate_qdrant()
-        cls.art_by_corpus_id = {d['payload']['corpus_item_id']: d['payload'] for d in test_data}
+        cls.art_by_corpus_id = {}
+        for d in test_data:
+            d['payload']['resolved_id'] = d['id']
+            cls.art_by_corpus_id[d['payload']['corpus_item_id']] = d['payload']
 
     @pytest.fixture(autouse=True)
     def inject_fixtures(self, caplog):
@@ -230,9 +237,10 @@ class TestGraphQLRelated(TestCase):
         """ recommend similar syndicated """
         item_id = '3727511744'
         pub_url = 'https://time.com/6223012/workplaces-of-the-future/'
+        original_id = '2345678'
 
         with TestClient(app) as client:
-            response = client.post("/", json=syndicated_json(item_id, pub_url)).json()
+            response = client.post("/", json=syndicated_json(item_id, pub_url, original_id)).json()
 
             assert not response.get('errors')
             entity = response['data']['_entities'][0]
@@ -252,9 +260,10 @@ class TestGraphQLRelated(TestCase):
         item_id = '3727501830'
         # make sure www is ignored
         pub_url = 'https://www.psyche.co/ideas/are-successful-authors-creative-geniuses-or-literary-labourers'
+        original_id = '2345678'
 
         with TestClient(app) as client:
-            response = client.post("/", json=publisher_json(item_id, pub_url)).json()
+            response = client.post("/", json=publisher_json(item_id, pub_url, original_id)).json()
 
             assert not response.get('errors')
             entity = response['data']['_entities'][0]
@@ -268,6 +277,8 @@ class TestGraphQLRelated(TestCase):
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['domain'] == 'psyche.co' for r in recs)
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
             assert all( not self.art_by_corpus_id[r['corpusItem']['id']]['is_syndicated'] for r in recs)
+            # filter original article
+            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['resolved_id'] != 2345678 for r in recs)
             self.verify_logs(logging.INFO, item_id)
 
     def test_related_syndicated_article_doesnt_exist(self):

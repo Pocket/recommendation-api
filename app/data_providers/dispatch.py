@@ -76,9 +76,13 @@ class Item2ItemDispatch:
         return self._to_corpus_items(recs, count)
 
     @_empty_on_error
-    async def by_publisher(self, resolved_id: int, domain: str, count: int) -> List[CorpusRecommendationModel]:
+    async def by_publisher(self,
+                           resolved_id: int,
+                           original_id: int,
+                           domain: str,
+                           count: int) -> List[CorpusRecommendationModel]:
         try:
-            recs = await self.item_recommender.by_publisher(resolved_id, domain, count)
+            recs = await self.item_recommender.by_publisher(resolved_id, domain, original_id, count)
         except Item2ItemError:
             # fallback to random by the same publisher for syndicated right rail
             recs = await self.item_recommender.random_by_publisher(domain, count=100)
