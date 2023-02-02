@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, NamedTuple
 
 from aiocache import cached
 from aiocache.plugins import BasePlugin
@@ -8,7 +8,6 @@ from qdrant_client.http.exceptions import UnexpectedResponse
 from qdrant_client.http.models import Filter, FieldCondition, MatchValue, RecommendRequest, ScrollRequest, Range
 
 import app.config
-from app.models.corpus_item_model import CorpusItemModel
 
 
 class Item2ItemError(Exception):
@@ -46,6 +45,12 @@ class CacheLogPlugin(BasePlugin):
             _log(logging.INFO, msg=f'got cached {self.name}', method='cache')
 
 
+class RelatedItem(NamedTuple):
+    corpus_item_id: str
+    domain: str
+    topic: str = None
+
+
 class Item2ItemRecommender:
     def __init__(self):
         host = app.config.qdrant["host"]
@@ -54,37 +59,40 @@ class Item2ItemRecommender:
         self.collection = app.config.qdrant["collection"]
         self._client = AsyncApis(host=f"http{'s' if https else ''}://{host}:{port}").points_api
 
-    async def by_publisher(self, resolved_id: int, domain: str, count: int) -> List[CorpusItemModel]:
+    @cached(ttl=3600, plugins=[CacheLogPlugin('related_publisher')])
+    async def by_publisher(self, resolved_id: int, domain: str, count: int) -> List[RelatedItem]:
         query_filter = self._build_filter(
             is_curated=True,
+            is_syndicated=False,
             domain=domain)
         return await self._recommend(resolved_id, query_filter, count)
 
-    async def syndicated(self, resolved_id: int, count: int) -> List[CorpusItemModel]:
+    @cached(ttl=3600, plugins=[CacheLogPlugin('related_syndicated')])
+    async def syndicated(self, resolved_id: int, count: int) -> List[RelatedItem]:
         query_filter = self._build_filter(
             is_curated=True,
             is_syndicated=True)
         return await self._recommend(resolved_id, query_filter, count)
 
-    async def related(self, resolved_id: int, count: int) -> List[CorpusItemModel]:
+    async def related(self, resolved_id: int, count: int) -> List[RelatedItem]:
         query_filter = self._build_filter(is_curated=True)
         return await self._recommend(resolved_id, query_filter, count)
 
-    @cached(ttl=3600, plugins=[CacheLogPlugin('curated')])
-    async def frequently_saved_curated(self, count: int) -> List[CorpusItemModel]:
+    @cached(ttl=3600, plugins=[CacheLogPlugin('saved_curated')])
+    async def frequently_saved_curated(self, count: int) -> List[RelatedItem]:
         query_filter = self._build_filter(is_curated=True,
                                           save_count=1000)
         return await self._scroll(query_filter, count)
 
-    @cached(ttl=3600, plugins=[CacheLogPlugin('syndicated')])
-    async def frequently_saved_syndicated(self, count: int) -> List[CorpusItemModel]:
+    @cached(ttl=3600, plugins=[CacheLogPlugin('saved_syndicated')])
+    async def frequently_saved_syndicated(self, count: int) -> List[RelatedItem]:
         query_filter = self._build_filter(is_curated=True,
                                           save_count=1000,
                                           is_syndicated=True)
         return await self._scroll(query_filter, count)
 
-    @cached(ttl=3600, plugins=[CacheLogPlugin('publisher')])
-    async def random_by_publisher(self, domain: str, count: int) -> List[CorpusItemModel]:
+    @cached(ttl=3600, plugins=[CacheLogPlugin('random_publisher')])
+    async def random_by_publisher(self, domain: str, count: int) -> List[RelatedItem]:
         query_filter = self._build_filter(is_curated=True,
                                           domain=domain)
         return await self._scroll(query_filter, count)
@@ -119,7 +127,7 @@ class Item2ItemRecommender:
 
         return Filter(must=conditions)
 
-    async def _recommend(self, resolved_id: int, query_filter: Filter, count: int) -> List[CorpusItemModel]:
+    async def _recommend(self, resolved_id: int, query_filter: Filter, count: int) -> List[RelatedItem]:
         try:
             _log(logging.INFO, 'request', 'recommend', filter=query_filter, resolved_id=resolved_id)
             res = (await self._client.recommend_points(
@@ -143,11 +151,14 @@ class Item2ItemRecommender:
                 _log(logging.ERROR, 'unexpected response', 'recommend', resolved_id=resolved_id,
                      filter=query_filter, code=ex.status_code, reason=ex.reason_phrase)
                 raise QdrantError()
+        except Exception as ex:
+            _log(logging.ERROR, 'Qdrant error', 'recommend', resolved_id=resolved_id,
+                 filter=query_filter, reason=str(ex))
+            raise QdrantError()
 
-        return [CorpusItemModel(id=rec.payload['corpus_item_id'], topic=rec.payload['topic'])
-                for rec in res]
+        return self._convert_response(res)
 
-    async def _scroll(self, query_filter: Filter, count: int) -> List[CorpusItemModel]:
+    async def _scroll(self, query_filter: Filter, count: int) -> List[RelatedItem]:
         try:
             _log(logging.INFO, 'request', 'scroll', filter=query_filter)
             res = (await self._client.scroll_points(
@@ -162,6 +173,17 @@ class Item2ItemRecommender:
             _log(logging.ERROR, 'unexpected response', 'scroll',
                  filter=query_filter, code=ex.status_code, reason=ex.reason_phrase)
             raise QdrantError()
+        except Exception as ex:
+            _log(logging.ERROR, 'Qdrant error', 'scroll',
+                 filter=query_filter, reason=str(ex))
+            raise QdrantError()
 
-        return [CorpusItemModel(id=rec.payload['corpus_item_id'], topic=rec.payload['topic'])
+        return self._convert_response(res)
+
+    @staticmethod
+    def _convert_response(res):
+        logging.debug(f'Related: {res}')
+        return [RelatedItem(corpus_item_id=rec.payload['corpus_item_id'],
+                            domain=rec.payload['domain'],
+                            topic=rec.payload['topic'])
                 for rec in res]

@@ -1,16 +1,13 @@
 import functools
-import logging
 import random
-import uuid
 from asyncio import gather
-from datetime import datetime, timezone
 from typing import List, Coroutine, Any
 
 from aws_xray_sdk.core import xray_recorder
 
 from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS
-from app.data_providers.item2item import Item2ItemRecommender, Item2ItemError, QdrantError
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
+from app.data_providers.item2item import Item2ItemRecommender, Item2ItemError, QdrantError
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
 from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
@@ -21,13 +18,14 @@ from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.unleash_provider import UnleashProvider
 from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
+from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel, RecommendationSurfaceId
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.localemodel import LocaleModel
-from app.models.topic import TopicModel
 from app.models.request_user import RequestUser
-from app.rankers.algorithms import rank_by_preferred_topics, spread_topics
+from app.models.topic import TopicModel
+from app.rankers.algorithms import unique_domains_first
 
 
 def _empty_on_error(func):
@@ -51,25 +49,31 @@ class Item2ItemDispatch:
         except Item2ItemError:
             # do not fallback for "Similar stores" after saving
             recs = []
-        return self._sample(recs, count)
+        return self._to_corpus_items(recs, count)
 
     @_empty_on_error
     async def after_article(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
         try:
-            recs = await self.item_recommender.related(resolved_id, count)
+            # request more to apply domain diversification
+            recs = await self.item_recommender.related(resolved_id, 20)
         except Item2ItemError:
             # fallback to frequently saved for "You Might Also Like"
             recs = await self.item_recommender.frequently_saved_curated(count=100)
-        return self._sample(recs, count)
+            random.shuffle(recs)
+        recs = unique_domains_first(recs)
+        return self._to_corpus_items(recs, count)
 
     @_empty_on_error
     async def syndicated(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
         try:
-            recs = await self.item_recommender.syndicated(resolved_id, count)
+            # request more to apply domain diversification
+            recs = await self.item_recommender.syndicated(resolved_id, 20)
         except Item2ItemError:
             # fallback to frequently saved syndicated for syndicated "More Stories from Pocket"
             recs = await self.item_recommender.frequently_saved_syndicated(count=100)
-        return self._sample(recs, count)
+            random.shuffle(recs)
+        recs = unique_domains_first(recs)
+        return self._to_corpus_items(recs, count)
 
     @_empty_on_error
     async def by_publisher(self, resolved_id: int, domain: str, count: int) -> List[CorpusRecommendationModel]:
@@ -78,13 +82,13 @@ class Item2ItemDispatch:
         except Item2ItemError:
             # fallback to random by the same publisher for syndicated right rail
             recs = await self.item_recommender.random_by_publisher(domain, count=100)
-        return self._sample(recs, count)
+            random.shuffle(recs)
+        return self._to_corpus_items(recs, count)
 
     @staticmethod
-    def _sample(recs, count):
-        """ Randomly sample articles or apply thompson sampling """
-        recs = random.sample(recs, count) if count < len(recs) else recs
-        return [CorpusRecommendationModel(corpus_item=r) for r in recs]
+    def _to_corpus_items(recs, count):
+        return [CorpusRecommendationModel(corpus_item=CorpusItemModel(id=r.corpus_item_id, topic=r.topic))
+                for r in recs[:count]]
 
 
 class HomeDispatch:
@@ -120,20 +124,21 @@ class HomeDispatch:
             self, user: RequestUser, locale: LocaleModel, recommendation_count: int
     ) -> CorpusSlateLineupModel:
         if locale == LocaleModel.en_US:
-            return await self.get_en_us_slate_lineup(recommendation_count=recommendation_count, user=user)
+            return await self.get_en_us_slate_lineup(recommendation_count=recommendation_count, user=user, locale=locale)
         elif locale == LocaleModel.de_DE:
-            return await self.get_de_de_slate_lineup(recommendation_count=recommendation_count)
+            return await self.get_de_de_slate_lineup(recommendation_count=recommendation_count, locale=locale)
         else:
             raise ValueError(f'Invalid locale {locale}')
 
     @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
     async def get_en_us_slate_lineup(
-            self, user: RequestUser, recommendation_count: int
+            self, user: RequestUser, recommendation_count: int, locale: LocaleModel
     ) -> CorpusSlateLineupModel:
 
         """
         :param user:
         :param recommendation_count: Maximum number of recommendations to return.
+        :param locale:
         :return: Slate lineup for en-US Home:
             1. 'For You' slate if preferred topics are available, or otherwise 'Recommended Reads'
             2. Pocket Hits
@@ -177,13 +182,15 @@ class HomeDispatch:
                 recommendation_count=recommendation_count,
             ),
             recommendation_surface_id=RecommendationSurfaceId.HOME,
+            locale=locale,
             experiment=thompson_sampling_assignment,
         )
 
     @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
-    async def get_de_de_slate_lineup(self, recommendation_count: int) -> CorpusSlateLineupModel:
+    async def get_de_de_slate_lineup(self, recommendation_count: int, locale: LocaleModel) -> CorpusSlateLineupModel:
         """
         :param recommendation_count:
+        :param locale:
         :return: the Home slate lineup:
             1. Recommended Reads
             2. Collection slate
@@ -201,6 +208,7 @@ class HomeDispatch:
                 slates=list(await gather(*slates)),
                 recommendation_count=recommendation_count,
             ),
+            locale=locale,
             recommendation_surface_id=RecommendationSurfaceId.HOME,
         )
 

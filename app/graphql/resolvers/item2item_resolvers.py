@@ -57,7 +57,8 @@ async def resolve_syndicated_right_rail(
 ) -> List[CorpusRecommendation]:
     dispatch = Item2ItemDispatch(item_recommender=DiContainer.get().item2item_recommender)
 
-    domain = urlparse(root.publisherUrl).netloc
+    # domains are stored in snowflake without www
+    domain = urlparse(root.publisherUrl).netloc.replace('www.', '')
     recs = await dispatch.by_publisher(resolved_id=int(root.itemId),
                                        domain=domain,
                                        count=count)
