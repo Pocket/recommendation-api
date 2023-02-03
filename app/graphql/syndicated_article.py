@@ -3,6 +3,7 @@ from typing import List
 import strawberry
 
 from app.graphql.corpus_recommendation import CorpusRecommendation
+from app.graphql.directives import CacheControl
 from app.graphql.resolvers.item2item_resolvers import resolve_syndicated_end_of_article, resolve_syndicated_right_rail
 
 
@@ -13,9 +14,11 @@ class SyndicatedArticle:
     originalItemId: strawberry.ID
 
     relatedEndOfArticle: List[CorpusRecommendation] = strawberry.field(
+        directives=[CacheControl(maxAge=3600)],
         resolver=resolve_syndicated_end_of_article,
         description='Recommend similar syndicated articles.')
     relatedRightRail: List[CorpusRecommendation] = strawberry.field(
+        directives=[CacheControl(maxAge=3600)],
         resolver=resolve_syndicated_right_rail,
         description='Recommend similar articles from the same publisher.')
 
