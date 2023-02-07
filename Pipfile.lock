@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "32b38544c9f8a3fb40058e063da4943bc394621cacc095d03185f8e6eef2459b"
+            "sha256": "4f1007a4c33b8762e1b4b6f6b38d8393d9a30580c301954f5756a94d35f0df5d"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -202,14 +202,6 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==22.2.0"
-        },
-        "aws-xray-sdk": {
-            "hashes": [
-                "sha256:693fa3a4c790e131fe1e20814ede415a9eeeab5c3b7c868686d3e3c696b8524d",
-                "sha256:78835fc841f03e550858f18a9973eab8618f47f22d2f59edf130578fa545a867"
-            ],
-            "index": "pypi",
-            "version": "==2.11.0"
         },
         "backoff": {
             "hashes": [
@@ -582,7 +574,7 @@
                 "sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4",
                 "sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2"
             ],
-            "markers": "python_version >= '3.5'",
+            "markers": "python_full_version >= '3.5.0'",
             "version": "==3.4"
         },
         "importlib-resources": {
@@ -1360,14 +1352,6 @@
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
             "version": "==1.14.1"
         },
-        "xraysink": {
-            "hashes": [
-                "sha256:5972263ec16f424529174042ff64c6f8ac2f75eec75f36e7c96948b5f1d1eb86",
-                "sha256:68042638c1e71d0b6798ecde7efccdeba865909cbd16ad1f31b868b6aab9266f"
-            ],
-            "index": "pypi",
-            "version": "==1.6.0"
-        },
         "yarl": {
             "hashes": [
                 "sha256:009a028127e0a1755c38b03244c0bea9d5565630db9c4cf9572496e947137a87",
@@ -1835,7 +1819,7 @@
                 "sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4",
                 "sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2"
             ],
-            "markers": "python_version >= '3.5'",
+            "markers": "python_full_version >= '3.5.0'",
             "version": "==3.4"
         },
         "iniconfig": {

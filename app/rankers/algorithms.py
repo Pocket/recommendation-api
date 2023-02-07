@@ -5,8 +5,6 @@ import logging
 import json
 import random
 
-from aws_xray_sdk.core import xray_recorder
-
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.metrics.corpus_item_engagement_model import CorpusItemEngagementModel
 from app.models.metrics.metrics_model import MetricsModel
@@ -289,8 +287,8 @@ def spread_topics(recs: CorpusItemListType) -> CorpusItemListType:
 
     return result_recs
 
-
-@xray_recorder.capture('rankers_algorithms_spread_publishers')
+# TODO: Replace with OT segment
+#@xray_recorder.capture('rankers_algorithms_spread_publishers')
 def spread_publishers(recs: RecommendationListType, spread: int = 3) -> RecommendationListType:
     """
     Makes sure stories from the same publisher/domain are not listed sequentially, and have a configurable number

@@ -1,6 +1,5 @@
 import uuid
 
-from aws_xray_sdk.core import xray_recorder
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
@@ -28,7 +27,7 @@ class SlateLineupModel(BaseModel):
     slates: List[SlateModel] = Field(description='An ordered list of slates for the client to display')
 
     @staticmethod
-    @xray_recorder.capture_async('models_slate_lineup_get_slate_lineup')
+    # TODO: Replace with OT. 'models_slate_lineup_get_slate_lineup')
     async def get_slate_lineup_with_fallback(slate_lineup_id: str,
                                              user_id: Optional[str] = None,
                                              recommendation_count: Optional[int] = 10,

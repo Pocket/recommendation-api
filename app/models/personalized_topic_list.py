@@ -1,7 +1,6 @@
 import aiohttp
 import logging
 from pydantic import BaseModel
-from aws_xray_sdk.core import xray_recorder
 from typing import List, Dict
 
 import app.config
@@ -18,7 +17,7 @@ class PersonalizedTopicList(BaseModel):
     user_id: str = None
 
     @staticmethod
-    @xray_recorder.capture_async('models.personalized_topic_list.get')
+    # TODO: Replace with OT. 'models.personalized_topic_list.get')
     async def get(user_id: str) -> 'PersonalizedTopicList':
         """
         A request including the user_id is issued to RecIt which returns a list of ranked curator topic labels

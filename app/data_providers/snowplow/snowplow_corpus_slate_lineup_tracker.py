@@ -1,7 +1,6 @@
 import asyncio
 
 from aio_snowplow_tracker import Tracker, SelfDescribingJson
-from aws_xray_sdk.core import xray_recorder
 
 from app.data_providers.snowplow.config import SnowplowConfig
 from app.data_providers.snowplow.entities import (
@@ -26,7 +25,8 @@ class SnowplowCorpusSlateLineupTracker:
         self.tracker = tracker
         self.snowplow_config = snowplow_config
 
-    @xray_recorder.capture_async('SnowplowCorpusSlateLineupTracker.track')
+    # TODO: Replace with OT segment
+    #@xray_recorder.capture_async('SnowplowCorpusSlateLineupTracker.track')
     async def track(self, corpus_slate_lineup: CorpusSlateLineupModel, user: RequestUser, api_client: ApiClient):
         """
         Track the recommendation of a CorpusSlateLineup in Snowplow.

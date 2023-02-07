@@ -1,6 +1,5 @@
 from typing import List, Optional
 
-from aws_xray_sdk.core import xray_recorder
 
 from app.data_providers.PocketGraphClientSession import PocketGraphClientSession
 from app.config import ENV, ENV_PROD
@@ -57,7 +56,7 @@ class UnleashProvider:
 
         return [assignment for assignment in all_assignments if assignment.name in names and assignment.assigned]
 
-    @xray_recorder.capture_async('data_providers.UnleashProvider._get_all_assignments')
+    # TODO: Replace with OT. 'data_providers.UnleashProvider._get_all_assignments')
     async def _get_all_assignments(self, user: RequestUser) -> List[UnleashAssignmentModel]:
         """
         Get all Unleash assignments for the given user/session.

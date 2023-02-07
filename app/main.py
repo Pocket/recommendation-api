@@ -3,7 +3,6 @@ import logging
 import uvicorn
 import sentry_sdk
 
-from aws_xray_sdk.core import xray_recorder
 from fastapi import FastAPI, Response, status
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from strawberry.fastapi import GraphQLRouter

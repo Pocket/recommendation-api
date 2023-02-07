@@ -1,4 +1,3 @@
-from aws_xray_sdk.core import xray_recorder
 from aio_snowplow_tracker import Tracker
 
 from app.data_providers.snowplow.config import SnowplowConfig
@@ -22,7 +21,7 @@ class SnowplowCorpusSlateTracker:
         self.tracker = tracker
         self.snowplow_config = snowplow_config
 
-    @xray_recorder.capture_async('data_providers.SnowplowCorpusSlateTracker.track')
+    # TODO: Replace with OT. 'data_providers.SnowplowCorpusSlateTracker.track')
     async def track(self, corpus_slate: CorpusSlateModel, user: RequestUser):
         """
         Track the recommendation of a CorpusSlate in Snowplow.
