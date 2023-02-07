@@ -61,5 +61,6 @@ async def resolve_syndicated_right_rail(
     domain = urlparse(root.publisherUrl).netloc.replace('www.', '')
     recs = await dispatch.by_publisher(resolved_id=int(root.itemId),
                                        domain=domain,
+                                       original_id=int(root.originalItemId),
                                        count=count)
     return [CorpusRecommendation.from_pydantic(rec) for rec in recs]
