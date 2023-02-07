@@ -1,0 +1,26 @@
+# This config file is only used for local development.
+
+extensions:
+  health_check:
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:55681
+processors:
+  batch:
+
+exporters:
+  logging:
+    loglevel: debug
+  awsxray:
+    region: 'us-east-1'
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [awsxray]

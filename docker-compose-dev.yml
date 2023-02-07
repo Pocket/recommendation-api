@@ -20,19 +20,18 @@ services:
       - "./app:/app:ro"
       - "./app:/opt/project/src:ro" # PyCharm overrides app to /opt/project/src
     depends_on:
-      - xray
+      - aws-ot-collector
 
-  xray:
-    image: amazon/aws-xray-daemon
-    command:
-      - '--region'
-      - 'us-east-1'
-      - '--local-mode' # Don't check for EC2 instance metadata.
-    environment:
-      # Run `source <(maws -o awscli)` to export credentials with AWS CLI
-      - AWS_PROFILE=pocket-dev-PocketSSODataLearning
-    ports:
-      - '2000:2000/udp'
-      - '2000:2000/tcp'
+  # AWS Open Telemetry Collector for sending traces to AWS X-Ray
+  aws-ot-collector:
+    image: public.ecr.aws/aws-observability/aws-otel-collector:latest
+    command: ["--config=/etc/otel-agent-config.yaml"]
+    env_file:
+      - .docker/local-dev.env
+      - .env
     volumes:
-      - "~/.aws:/root/.aws:ro"
+      - "./.docker/aws-ot-collector/local-development.yaml:/etc/otel-agent-config.yaml"
+      - "~/.aws:/root/.aws"
+    ports:
+      - "55679:55679" # zpages extension
+      - "13133"       # health_check
