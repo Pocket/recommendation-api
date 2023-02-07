@@ -1,7 +1,13 @@
 {
-  "RecommendedReadsSlateProvider.headline": "Empfohlene Artikel",
-  "RecommendedReadsSlateProvider.subheadline": "Von Pocket kuratiert",
-  "CollectionSlateProvider.headline": "Beliebte Collections",
-  "CollectionSlateProvider.subheadline": "Ein Thema, eine Liste, die besten Artikel aus dem Internet",
-  "CollectionsSlateProvider.more_link_text": "Mehr Collections entdecken"
+  "ForYouSlateProvider.headline" : "For You",
+  "ForYouSlateProvider.subheadline" : "Recommended for your interests",
+  "RecommendedReadsSlateProvider.headline" : "Empfohlene Artikel",
+  "RecommendedReadsSlateProvider.subheadline" : "Von Pocket kuratiert",
+  "PocketHitsSlateProvider.headline" : "Today’s Pocket Hits",
+  "CollectionSlateProvider.headline" : "Beliebte Collections",
+  "CollectionSlateProvider.subheadline" : "Ein Thema, eine Liste, die besten Artikel aus dem Internet",
+  "CollectionsSlateProvider.more_link_text" : "Mehr Collections entdecken",
+  "LifeHacksSlateProvider.headline" : "Life Hacks",
+  "LifeHacksSlateProvider.subheadline" : "Tips for better living",
+  "TopicSlateProvider.more_link_text" : "Explore more {topic_name}"
 }

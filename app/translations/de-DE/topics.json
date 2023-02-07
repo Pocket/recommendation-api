@@ -1,6 +1,50 @@
 {
-  "SELF_IMPROVEMENT": {"name": "Für ein glücklicheres Ich"},
-  "BUSINESS": {"name": "Business"},
-  "SCIENCE": {"name": "Wissenschaft"},
-  "TECHNOLOGY": {"name": "Technologie"}
+  "SELF_IMPROVEMENT" : {
+    "name" : "Für ein glücklicheres Ich"
+  },
+  "POLITICS" : {
+    "name" : "Politics"
+  },
+  "BUSINESS" : {
+    "name" : "Business"
+  },
+  "HEALTH_FITNESS" : {
+    "name" : "Health & Fitness"
+  },
+  "SCIENCE" : {
+    "name" : "Wissenschaft"
+  },
+  "PARENTING" : {
+    "name" : "Parenting"
+  },
+  "EDUCATION" : {
+    "name" : "Education"
+  },
+  "CORONAVIRUS" : {
+    "name" : "Coronavirus"
+  },
+  "TECHNOLOGY" : {
+    "name" : "Technologie"
+  },
+  "FOOD" : {
+    "name" : "Food"
+  },
+  "ENTERTAINMENT" : {
+    "name" : "Entertainment"
+  },
+  "PERSONAL_FINANCE" : {
+    "name" : "Personal Finance"
+  },
+  "CAREER" : {
+    "name" : "Career"
+  },
+  "TRAVEL" : {
+    "name" : "Travel"
+  },
+  "SPORTS" : {
+    "name" : "Sports"
+  },
+  "GAMING" : {
+    "name" : "Gaming"
+  }
 }
