@@ -152,29 +152,22 @@ class HomeDispatch:
         """
         slates = []
 
-        user_impression_capped_list, preferred_topics, thompson_sampling_assignment = await gather(
+        user_impression_capped_list, preferred_topics = await gather(
             self.user_impression_cap_provider.get(user),
             self._get_preferred_topics(user),
-            self.unleash_provider.get_assignment('temp.web.recommendation-api.home.thompson-sampling', user=user),
         )
-
-        enable_thompson_sampling = \
-            thompson_sampling_assignment is not None and thompson_sampling_assignment.variant == 'treatment'
 
         if preferred_topics:
             slates += [self.for_you_slate_provider.get_slate(
                 preferred_topics=preferred_topics,
                 user_impression_capped_list=user_impression_capped_list,
-                enable_thompson_sampling=enable_thompson_sampling,
             )]
         else:
-            slates += [self.recommended_reads_slate_provider.get_slate(
-                enable_thompson_sampling=enable_thompson_sampling
-            )]
+            slates += [self.recommended_reads_slate_provider.get_slate()]
 
         slates += [
             self.pocket_hits_slate_provider.get_slate(),
-            self.collection_slate_provider.get_slate(enable_thompson_sampling=enable_thompson_sampling),
+            self.collection_slate_provider.get_slate(),
             self.life_hacks_slate_provider.get_slate(),
         ]
 
@@ -187,7 +180,6 @@ class HomeDispatch:
             ),
             recommendation_surface_id=RecommendationSurfaceId.HOME,
             locale=locale,
-            experiment=thompson_sampling_assignment,
         )
 
     @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
