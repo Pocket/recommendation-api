@@ -11,9 +11,10 @@ from app.models.item import ItemModel
 
 @strawberry.experimental.pydantic.type(
     model=ItemModel,
-    directives=[Key(fields="itemId")])
+    directives=[Key(fields="itemId language")])
 class Item:
     item_id: str  # This type is a 'str' and not an 'ID' in our graph.
+    language: str
 
     relatedAfterArticle: List[CorpusRecommendation] = strawberry.field(
         directives=[CacheControl(maxAge=3600)],
