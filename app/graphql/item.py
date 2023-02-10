@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import strawberry
 from strawberry.federation.schema_directives import Key
@@ -14,7 +14,7 @@ from app.models.item import ItemModel
     directives=[Key(fields="itemId language")])
 class Item:
     item_id: str  # This type is a 'str' and not an 'ID' in our graph.
-    language: str
+    language: Optional[str]
 
     relatedAfterArticle: List[CorpusRecommendation] = strawberry.field(
         directives=[CacheControl(maxAge=3600)],
