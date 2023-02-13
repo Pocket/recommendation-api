@@ -14,7 +14,7 @@ from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from strawberry.fastapi import GraphQLRouter
 
 from app.cache import initialize_caches
-from app.config import ENV, ENV_PROD, sentry as sentry_config, log_level
+from app.config import ENV, ENV_PROD, sentry as sentry_config, log_level, otel_daemon_address
 from app.graphql.graphql_router import schema
 from app.health_status import get_health_status, set_health_status, HealthStatus
 from app.models.candidate_set import candidate_set_factory
@@ -42,7 +42,7 @@ app.include_router(graphql_app)
 
 # Instrument the app using Open Telemetry
 # Sends generated traces in the OTLP format to an ADOT Collector running on port 4317
-otlp_exporter = OTLPSpanExporter(endpoint="http://aws-ot-collector:4317")
+otlp_exporter = OTLPSpanExporter(endpoint=otel_daemon_address)
 # Processes traces in batches as opposed to immediately one after the other
 span_processor = BatchSpanProcessor(otlp_exporter)
 # Configures the Global Tracer Provider
