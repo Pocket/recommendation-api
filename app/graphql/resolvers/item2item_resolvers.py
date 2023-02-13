@@ -20,7 +20,10 @@ async def resolve_similar_to_saved(
         = DEFAULT_RECOMMENDATION_COUNT,
 ) -> List[CorpusRecommendation]:
     dispatch = Item2ItemDispatch(item_recommender=DiContainer.get().item2item_recommender)
-    recs = await dispatch.after_save(resolved_id=int(root.item_id), count=count)
+    lang = root.language.lower()[:2] if root.language else 'en'
+    recs = await dispatch.after_save(resolved_id=int(root.item_id),
+                                     lang=lang,
+                                     count=count)
     return [CorpusRecommendation.from_pydantic(rec) for rec in recs]
 
 
@@ -32,7 +35,10 @@ async def resolve_after_article(
         = DEFAULT_RECOMMENDATION_COUNT,
 ) -> List[CorpusRecommendation]:
     dispatch = Item2ItemDispatch(item_recommender=DiContainer.get().item2item_recommender)
-    recs = await dispatch.after_article(resolved_id=int(root.item_id), count=count)
+    lang = root.language.lower()[:2] if root.language else 'en'
+    recs = await dispatch.after_article(resolved_id=int(root.item_id),
+                                        lang=lang,
+                                        count=count)
     return [CorpusRecommendation.from_pydantic(rec) for rec in recs]
 
 

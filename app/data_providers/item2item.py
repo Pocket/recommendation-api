@@ -19,13 +19,19 @@ class QdrantError(Item2ItemError):
     pass
 
 
+class UnsupportedLanguage(Item2ItemError):
+    def __init__(self, lang):
+        super().__init__(self)
+        self.lang = lang
+
+
 class ArticleNotFound(Item2ItemError):
     def __init__(self, resolved_id):
         super().__init__(self)
         self.resolved_id = resolved_id
 
 
-def _log(level, msg, method, filter=None, resolved_id=None, code=None, reason=None):
+def _log(level, msg, method, filter=None, resolved_id=None, code=None, reason=None, lang=None):
     """ Standardize logging for application metrics based on log parsing """
     logging.log(level, f'Related: {msg}; '
                        f'method: {method}, ' +
@@ -33,7 +39,8 @@ def _log(level, msg, method, filter=None, resolved_id=None, code=None, reason=No
                 (f'filter: {[cond.key for cond in filter.must]}, ' if filter else '') +
                 (f'resolved_id: {resolved_id}, ' if resolved_id else '') +
                 (f'code: {code}, ' if code else '') +
-                (f'reason: {reason}' if reason else ''))
+                (f'reason: {reason}' if reason else '') +
+                (f'lang: {lang}' if lang else ''))
 
 
 class CacheLogPlugin(BasePlugin):
@@ -80,9 +87,9 @@ class Item2ItemRecommender:
             is_syndicated=True)
         return await self._recommend(resolved_id, query_filter, count)
 
-    async def related(self, resolved_id: int, count: int) -> List[RelatedItem]:
+    async def related(self, resolved_id: int, count: int, lang: str) -> List[RelatedItem]:
         query_filter = self._build_filter(is_curated=True)
-        return await self._recommend(resolved_id, query_filter, count)
+        return await self._recommend(resolved_id, query_filter, count, lang)
 
     @cached(ttl=3600, plugins=[CacheLogPlugin('saved_curated')])
     async def frequently_saved_curated(self, count: int) -> List[RelatedItem]:
@@ -138,9 +145,20 @@ class Item2ItemRecommender:
 
         return Filter(must=must, must_not=must_not if must_not else None)
 
-    async def _recommend(self, resolved_id: int, query_filter: Filter, count: int) -> List[RelatedItem]:
+    async def _recommend(self,
+                         resolved_id: int,
+                         query_filter: Filter,
+                         count: int,
+                         lang: str = 'en') -> List[RelatedItem]:
+        _log(logging.INFO, 'request', 'recommend', filter=query_filter,
+             resolved_id=resolved_id, lang=lang)
+
+        if lang != 'en':
+            _log(logging.WARNING, 'unsupported language', 'recommend',
+                 filter=query_filter, resolved_id=resolved_id, lang=lang)
+            raise UnsupportedLanguage(lang)
+
         try:
-            _log(logging.INFO, 'request', 'recommend', filter=query_filter, resolved_id=resolved_id)
             res = (await self._client.recommend_points(
                 collection_name=self.collection,
                 recommend_request=RecommendRequest(

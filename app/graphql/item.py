@@ -1,7 +1,7 @@
-from typing import List
+from typing import List, Optional
 
 import strawberry
-from strawberry.federation.schema_directives import Key
+from strawberry.federation.schema_directives import Key, Requires
 
 from app.graphql.corpus_recommendation import CorpusRecommendation
 from app.graphql.directives import CacheControl
@@ -15,12 +15,18 @@ from app.models.item import ItemModel
 class Item:
     item_id: str  # This type is a 'str' and not an 'ID' in our graph.
 
+    # a field from a different subgraph
+    # see https://www.apollographql.com/docs/federation/entities-advanced/#contributing-computed-entity-fields
+    language: Optional[str] = strawberry.federation.field(external=True)
+
     relatedAfterArticle: List[CorpusRecommendation] = strawberry.field(
-        directives=[CacheControl(maxAge=3600)],
+        directives=[CacheControl(maxAge=3600),
+                    Requires(fields='language')],
         resolver=resolve_after_article,
         description='Recommend similar articles to show in the bottom of an article.')
 
     relatedAfterCreate: List[CorpusRecommendation] = strawberry.field(
-        directives=[CacheControl(maxAge=3600)],
+        directives=[CacheControl(maxAge=3600),
+                    Requires(fields='language')],
         resolver=resolve_similar_to_saved,
         description='Recommend similar articles after saving.')

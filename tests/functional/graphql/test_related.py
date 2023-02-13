@@ -105,7 +105,7 @@ def publisher_json(item_id: str, pub_url: str, original_id: str = '222'):
     }
 
 
-def after_article_json(item_id: str):
+def after_article_json(item_id: str, lang='en'):
     return {
         'query': '''
             query ($representations: [_Any!]!) {
@@ -126,14 +126,15 @@ def after_article_json(item_id: str):
             'representations': [
                 {
                     '__typename': 'Item',
-                    'itemId': item_id
+                    'itemId': item_id,
+                    'language': lang
                 },
             ],
         },
     }
 
 
-def after_save_json(item_id: str):
+def after_save_json(item_id: str, lang='en'):
     return {
         'query': '''
             query ($representations: [_Any!]!) {
@@ -154,7 +155,8 @@ def after_save_json(item_id: str):
             'representations': [
                 {
                     '__typename': 'Item',
-                    'itemId': item_id
+                    'itemId': item_id,
+                    'language': lang
                 },
             ],
         },
@@ -166,7 +168,7 @@ qdrant_error_mock.side_effect = UnexpectedResponse(500, 'error', None, None)
 qdrant_unexpected_error_mock = mock.Mock()
 qdrant_unexpected_error_mock.side_effect = ValueError('something went wrong')
 log_pattern = re.compile(
-    'Related: [\w ]+; method: \w+,( filter: [\'\[\] \w,]+,)?( resolved_id: \d+,)?( code: \d+,)?( reason: [\w ]+)?')
+    'Related: [\w ]+; method: \w+,( filter: [\'\[\] \w,]+,)?( resolved_id: \d+,)?( code: \d+,)?( reason: [\w ]+,)?( lang: \w+)?')
 
 
 class TestGraphQLRelated(TestCase):
@@ -182,7 +184,7 @@ class TestGraphQLRelated(TestCase):
     def inject_fixtures(self, caplog):
         self.caplog = caplog
 
-    def verify_logs(self, level: int, resolved_id=None, msg=None, method=None):
+    def verify_logs(self, level: int, resolved_id=None, msg=None, method=None, lang=None):
         related_logs = [rec for rec in self.caplog.records if 'Related:' in rec.message and level == rec.levelno]
         assert related_logs
         for rec in related_logs:
@@ -195,6 +197,8 @@ class TestGraphQLRelated(TestCase):
             assert msg in last_rec
         if method:
             assert f'method: {method}' in last_rec
+        if lang:
+            assert lang in last_rec
 
     def test_related_after_save_basic(self):
         """ recommend similar curated """
@@ -276,7 +280,7 @@ class TestGraphQLRelated(TestCase):
             assert 'id' in recs[0]['corpusItem']
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['domain'] == 'psyche.co' for r in recs)
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
-            assert all( not self.art_by_corpus_id[r['corpusItem']['id']]['is_syndicated'] for r in recs)
+            assert all(not self.art_by_corpus_id[r['corpusItem']['id']]['is_syndicated'] for r in recs)
             # filter original article
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['resolved_id'] != 2345678 for r in recs)
             self.verify_logs(logging.INFO, item_id)
@@ -391,6 +395,38 @@ class TestGraphQLRelated(TestCase):
             self.verify_logs(logging.WARNING, item_id, msg='article not found')
             self.verify_logs(logging.INFO, item_id, msg='recommend')
 
+    def test_related_after_save_lang_not_supported(self):
+        """ do not fallback """
+        item_id = '11111'
+        lang = 'de'
+
+        with TestClient(app) as client:
+            response = client.post("/", json=after_save_json(item_id, lang=lang)).json()
+
+            assert not response.get('errors')
+            entity = response['data']['_entities'][0]
+            recs = entity['relatedAfterCreate']
+            assert entity['itemId'] == item_id
+            assert len(recs) == 0
+            self.verify_logs(logging.WARNING, item_id, lang=lang, msg='unsupported language')
+            self.verify_logs(logging.INFO, item_id, lang=lang, msg='recommend')
+
+    def test_related_after_article_lang_not_supported(self):
+        """ do not fallback """
+        item_id = '11111'
+        lang = 'de'
+
+        with TestClient(app) as client:
+            response = client.post("/", json=after_article_json(item_id, lang=lang)).json()
+
+            assert not response.get('errors')
+            entity = response['data']['_entities'][0]
+            recs = entity['relatedAfterArticle']
+            assert entity['itemId'] == item_id
+            assert len(recs) == 0
+            self.verify_logs(logging.WARNING, item_id, lang=lang, msg='unsupported language')
+            self.verify_logs(logging.INFO, item_id, lang=lang, msg='recommend')
+
     @patch.object(AsyncPointsApi, 'recommend_points', qdrant_error_mock)
     @patch.object(AsyncPointsApi, 'scroll_points', qdrant_error_mock)
     def test_related_after_save_qdrant_outage(self):
@@ -496,4 +532,3 @@ class TestGraphQLRelated(TestCase):
             assert not response.get('errors')
             assert len(response['data']['_entities'][0]['relatedRightRail']) == 3
             self.verify_logs(logging.INFO, method='cache', msg='publisher')
-
