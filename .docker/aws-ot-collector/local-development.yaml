@@ -20,6 +20,9 @@ exporters:
     region: 'us-east-1'
 
 service:
+  telemetry:
+    logs:
+      level: "debug"
   pipelines:
     traces:
       receivers: [otlp]

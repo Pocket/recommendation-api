@@ -10,6 +10,8 @@ services:
     env_file:
       - .docker/local-dev.env
       - .env
+    environment:
+      - OTEL_SERVICE_NAME=RecommendationAPI
     command: /start-reload.sh # Only for development. Reloads Gunicorn when source changes.
     healthcheck:
       disable: true # Disable healthcheck for local development.
@@ -22,7 +24,7 @@ services:
     depends_on:
       - aws-ot-collector
 
-  # AWS Open Telemetry Collector for sending traces to AWS X-Ray
+  # AWS Distro for OpenTelemetry (ADOT) Collector for sending traces to AWS X-Ray
   aws-ot-collector:
     image: public.ecr.aws/aws-observability/aws-otel-collector:latest
     command: ["--config=/etc/otel-agent-config.yaml"]
@@ -33,5 +35,6 @@ services:
       - "./.docker/aws-ot-collector/local-development.yaml:/etc/otel-agent-config.yaml"
       - "~/.aws:/root/.aws"
     ports:
-      - "55679:55679" # zpages extension
+      - "4317:4317"   # grcp port for receiving spans
+      - "55681:55681" # http port for receiving spans
       - "13133"       # health_check

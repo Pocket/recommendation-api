@@ -46,6 +46,11 @@ pytz = "*"
 opentelemetry-api = "*"
 opentelemetry-sdk = "*"
 opentelemetry-instrumentation-fastapi = "*"
+opentelemetry-exporter-otlp = "*"
+opentelemetry-sdk-extension-aws = "*"
+opentelemetry-propagator-aws-xray = "*"
+opentelemetry-instrumentation-botocore = "*"
+ddtrace = "*"
 
 [requires]
 python_version = "3.8"

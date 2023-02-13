@@ -1,21 +1,26 @@
 import logging
 
-import uvicorn
+import ddtrace.contrib.aiobotocore
 import sentry_sdk
-
+import uvicorn
 from fastapi import FastAPI, Response, status
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from strawberry.fastapi import GraphQLRouter
+from opentelemetry.sdk.extension.aws.trace import AwsXRayIdGenerator
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
+from strawberry.fastapi import GraphQLRouter
 
 from app.cache import initialize_caches
 from app.config import ENV, ENV_PROD, sentry as sentry_config, log_level
 from app.graphql.graphql_router import schema
-from app.models.candidate_set import candidate_set_factory
-from app.models.slate_lineup_experiment import SlateLineupExperimentModel
-from app.models.slate_lineup_config import SlateLineupConfigModel, validate_unique_guids
-from app.models.slate_config import SlateConfigModel
 from app.health_status import get_health_status, set_health_status, HealthStatus
+from app.models.candidate_set import candidate_set_factory
+from app.models.slate_config import SlateConfigModel
+from app.models.slate_lineup_config import SlateLineupConfigModel, validate_unique_guids
+from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.singletons import DiContainer
 
 logging.getLogger().setLevel(log_level)
@@ -36,7 +41,14 @@ graphql_app = GraphQLRouter(schema, path='/')
 app.include_router(graphql_app)
 
 # Instrument the app using Open Telemetry
-FastAPIInstrumentor.instrument_app(app)
+# Sends generated traces in the OTLP format to an ADOT Collector running on port 4317
+otlp_exporter = OTLPSpanExporter(endpoint="http://aws-ot-collector:4317")
+# Processes traces in batches as opposed to immediately one after the other
+span_processor = BatchSpanProcessor(otlp_exporter)
+# Configures the Global Tracer Provider
+trace.set_tracer_provider(TracerProvider(active_span_processor=span_processor, id_generator=AwsXRayIdGenerator()))
+FastAPIInstrumentor.instrument_app(app)  # Instruments FastAPI requests
+ddtrace.contrib.aiobotocore.patch()  # Instruments aioboto3 and aiobotocore
 
 
 @app.get("/health-check")
