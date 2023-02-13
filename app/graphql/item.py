@@ -11,7 +11,7 @@ from app.models.item import ItemModel
 
 @strawberry.experimental.pydantic.type(
     model=ItemModel,
-    directives=[Key(fields="itemId", resolvable=False)])
+    directives=[Key(fields="itemId")])
 class Item:
     item_id: str  # This type is a 'str' and not an 'ID' in our graph.
 
