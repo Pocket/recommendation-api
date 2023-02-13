@@ -27,12 +27,12 @@ services:
   # AWS Distro for OpenTelemetry (ADOT) Collector for sending traces to AWS X-Ray
   aws-ot-collector:
     image: public.ecr.aws/aws-observability/aws-otel-collector:latest
-    command: ["--config=/etc/otel-agent-config.yaml"]
+    command: ["--config=/etc/ecs/ecs-default-config.yaml"]
     env_file:
       - .docker/local-dev.env
       - .env
     volumes:
-      - "./.docker/aws-ot-collector/local-development.yaml:/etc/otel-agent-config.yaml"
+#      - "./.docker/aws-ot-collector/local-development.yaml:/etc/otel-agent-config.yaml"
       - "~/.aws:/root/.aws"
     ports:
       - "4317:4317"   # grcp port for receiving spans
