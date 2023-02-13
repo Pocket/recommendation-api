@@ -27,7 +27,7 @@ class RecommendationModel(BaseModel):
     article. The `item` property contains all article details, e.g. title, excerpt, image, etc.
     """
     id: str = Field(
-        default=None, description='A generated id from the Data and Learning team that represents the Recommendation')
+        description='A generated id from the Data and Learning team that represents the Recommendation')
     feed_item_id: str = Field(
         default=None,
         description='A generated id from the Data and Learning team that represents the Recommendation - Deprecated')
