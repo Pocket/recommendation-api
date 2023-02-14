@@ -8,6 +8,7 @@ from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.sdk.extension.aws.trace import AwsXRayIdGenerator
+from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
@@ -42,13 +43,18 @@ app.include_router(graphql_app)
 
 # Instrument the app using Open Telemetry
 # Sends generated traces in the OTLP format to an ADOT Collector running on port 4317
-otlp_exporter = OTLPSpanExporter(endpoint=otel_daemon_address)
-# Processes traces in batches as opposed to immediately one after the other
-span_processor = BatchSpanProcessor(otlp_exporter)
+otlp_exporter = OTLPSpanExporter(
+    endpoint=otel_daemon_address,
+    insecure=True,  # HTTP is safe to use because we're connecting to a Docker sidecar.
+)
 # Configures the Global Tracer Provider
-trace.set_tracer_provider(TracerProvider(active_span_processor=span_processor, id_generator=AwsXRayIdGenerator()))
-FastAPIInstrumentor.instrument_app(app)  # Instruments FastAPI requests
-ddtrace.contrib.aiobotocore.patch()  # Instruments aioboto3 and aiobotocore
+trace.set_tracer_provider(TracerProvider(
+    active_span_processor=BatchSpanProcessor(otlp_exporter),
+    id_generator=AwsXRayIdGenerator(),
+    resource=Resource(attributes={'service.name': 'RecommendationAPI'}),
+))
+FastAPIInstrumentor.instrument_app(app, excluded_urls="/health-check")
+#ddtrace.contrib.aiobotocore.patch()  # Instruments aioboto3 and aiobotocore
 
 
 @app.get("/health-check")

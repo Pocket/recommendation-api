@@ -40,7 +40,7 @@ aiomcache = "==0.6.*"
 ujson = "*"
 httptools = "*"
 aio-snowplow-tracker = "*"
-strawberry-graphql = {extras = ["fastapi"], version = "*"}
+strawberry-graphql = {extras = ["fastapi", "opentelemetry"], version = "*"}
 qdrant-client = "==0.11.6"
 pytz = "*"
 opentelemetry-api = "*"
