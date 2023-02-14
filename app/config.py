@@ -84,7 +84,7 @@ personalization_fallback_slate_lineup = {
 }
 
 # For running Open Telemetry locally, set `OTEL_DAEMON_ADDRESS`, otherwise defaults to production value.
-otel_daemon_address = os.getenv('OTEL_DAEMON_ADDRESS', '127.0.0.1:4317')
+otel_daemon_address = os.getenv('OTEL_DAEMON_ADDRESS', 'http://127.0.0.1:4317')
 
 DEFAULT_TOPICS = [
     '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
