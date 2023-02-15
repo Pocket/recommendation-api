@@ -170,7 +170,9 @@ class AiobotocoreInstrumentor(BaseInstrumentor):
 
         attributes = {
             SpanAttributes.RPC_SYSTEM: "aws-api",
-            SpanAttributes.RPC_SERVICE: call_context.service_id,
+            # X-RAY uses the service for the segment name if it is not empty:
+            # https://aws-otel.github.io/docs/getting-started/x-ray#otel-span-attributes-translation
+            SpanAttributes.RPC_SERVICE: f'{call_context.service_id}.{call_context.operation}',
             SpanAttributes.RPC_METHOD: call_context.operation,
             # TODO: update when semantic conventions exist
             "aws.region": call_context.region,

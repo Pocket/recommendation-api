@@ -68,6 +68,7 @@ def _conv_val_to_len(value) -> Optional[int]:
 _AWS_SAGEMAKER_FEATURESTORE_TABLE_NAMES = 'aws.sagemaker_featurestore.table_names'
 _AWS_SAGEMAKER_FEATURESTORE_RECORD_IDENTIFIERS = 'aws.sagemaker_featurestore.record_identifiers'
 _AWS_SAGEMAKER_FEATURESTORE_FEATURE_NAMES = 'aws.sagemaker_featurestore.feature_names'
+_AWS_SAGEMAKER_FEATURESTORE_BATCH_IDENTIFIERS = 'aws.sagemaker_featurestore.batch_identifiers'
 
 ################################################################################
 # common request attributes
@@ -121,7 +122,7 @@ class _DynamoDbOperation(abc.ABC):
 
 class _OpBatchGetRecord(_DynamoDbOperation):
     start_attributes = {
-        #SpanAttributes.AWS_DYNAMODB_TABLE_NAMES: _REQ_REQITEMS_TABLE_NAMES,
+        _AWS_SAGEMAKER_FEATURESTORE_BATCH_IDENTIFIERS: ("Identifiers", _conv_list_to_json_list),
     }
     response_attributes = {
     }
@@ -197,7 +198,9 @@ class _FeatureStoreExtension(_AwsSdkExtension):
         self._op = _OPERATION_MAPPING.get(call_context.operation)
 
     def extract_attributes(self, attributes: _AttributeMapT):
-        #attributes[SpanAttributes.DB_SYSTEM] = DbSystemValues.DYNAMODB.value
+        feature_group_names = self._format_feature_group_names(self._call_context.params)
+        attributes[SpanAttributes.RPC_SERVICE] = f'FeatureStore.{self._call_context.operation}: {feature_group_names}'
+
         attributes[SpanAttributes.DB_OPERATION] = self._call_context.operation
         attributes[SpanAttributes.NET_PEER_NAME] = self._get_peer_name()
 
@@ -234,6 +237,16 @@ class _FeatureStoreExtension(_AwsSdkExtension):
         self._add_attributes(
             result, self._op.response_attributes, span.set_attribute
         )
+
+    def _format_feature_group_names(self, provider: Dict[str, Any]):
+        if 'FeatureGroupName' in provider:
+            return provider['FeatureGroupName']
+        elif 'Identifiers' in provider:
+            unique_feature_group_names = {identifier['FeatureGroupName'] for identifier in provider['Identifiers']}
+            if len(unique_feature_group_names) == 1:
+                return list(unique_feature_group_names)[0]
+            else:
+                return '<multiple feature groups>'
 
     def _add_attributes(
         self,
