@@ -32,6 +32,7 @@ def _lazy_load(module, cls):
 
 
 _KNOWN_EXTENSIONS = {
+    "dynamodb": _lazy_load(".dynamodb", "_DynamoDbExtension"),
     "sagemaker-featurestore-runtime": _lazy_load(".featurestore", "_FeatureStoreExtension"),
 }
 

@@ -80,24 +80,14 @@ _REQ_RECORD_IDENTIFIER = ('RecordIdentifierValueAsString', None)
 
 _REQ_FEATURE_NAMES = ("FeatureNames", _conv_list_to_json_list)
 
-
-
 ################################################################################
-# common response attributes
-################################################################################
-
-_RES_CONSUMED_CAP = ("ConsumedCapacity", _conv_list_to_json_list)
-_RES_CONSUMED_CAP_SINGLE = ("ConsumedCapacity", _conv_val_to_single_json_tuple)
-_RES_ITEM_COL_METRICS = ("ItemCollectionMetrics", _conv_dict_to_json_str)
-
-################################################################################
-# DynamoDB operations with enhanced attributes
+# FeatureStore operations with enhanced attributes
 ################################################################################
 
 _AttrSpecT = Tuple[_AttributePathT, Optional[Callable]]
 
 
-class _DynamoDbOperation(abc.ABC):
+class _FeatureStoreOperation(abc.ABC):
     start_attributes = None  # type: Optional[Dict[str, _AttrSpecT]]
     request_attributes = None  # type: Optional[Dict[str, _AttrSpecT]]
     response_attributes = None  # type: Optional[Dict[str, _AttrSpecT]]
@@ -120,7 +110,7 @@ class _DynamoDbOperation(abc.ABC):
         pass
 
 
-class _OpBatchGetRecord(_DynamoDbOperation):
+class _OpBatchGetRecord(_FeatureStoreOperation):
     start_attributes = {
         _AWS_SAGEMAKER_FEATURESTORE_BATCH_IDENTIFIERS: ("Identifiers", _conv_list_to_json_list),
     }
@@ -132,7 +122,7 @@ class _OpBatchGetRecord(_DynamoDbOperation):
         return "BatchGetRecord"
 
 
-class _OpDeleteRecord(_DynamoDbOperation):
+class _OpDeleteRecord(_FeatureStoreOperation):
     start_attributes = {
         #SpanAttributes.AWS_DYNAMODB_TABLE_NAMES: _REQ_TABLE_NAME,
     }
@@ -146,7 +136,7 @@ class _OpDeleteRecord(_DynamoDbOperation):
         return "DeleteRecord"
 
 
-class _OpGetRecord(_DynamoDbOperation):
+class _OpGetRecord(_FeatureStoreOperation):
     start_attributes = {
         _AWS_SAGEMAKER_FEATURESTORE_TABLE_NAMES: _REQ_FEATURE_GROUP_NAME,
         _AWS_SAGEMAKER_FEATURESTORE_RECORD_IDENTIFIERS: _REQ_RECORD_IDENTIFIER,
@@ -157,7 +147,7 @@ class _OpGetRecord(_DynamoDbOperation):
         # SpanAttributes.AWS_DYNAMODB_PROJECTION: _REQ_PROJECTION,
     }
     response_attributes = {
-        SpanAttributes.AWS_DYNAMODB_CONSUMED_CAPACITY: _RES_CONSUMED_CAP_SINGLE,
+        # SpanAttributes.AWS_DYNAMODB_CONSUMED_CAPACITY: _RES_CONSUMED_CAP_SINGLE,
     }
 
     @classmethod
@@ -165,7 +155,7 @@ class _OpGetRecord(_DynamoDbOperation):
         return "GetRecord"
 
 
-class _OpPutRecord(_DynamoDbOperation):
+class _OpPutRecord(_FeatureStoreOperation):
     start_attributes = {
         # SpanAttributes.AWS_DYNAMODB_TABLE_NAMES: _REQ_TABLE_NAME
     }
@@ -180,16 +170,16 @@ class _OpPutRecord(_DynamoDbOperation):
 
 
 ################################################################################
-# DynamoDB extension
+# FeatureStore extension
 ################################################################################
 
 _OPERATION_MAPPING = {
     op.operation_name(): op
     for op in globals().values()
     if inspect.isclass(op)
-    and issubclass(op, _DynamoDbOperation)
+    and issubclass(op, _FeatureStoreOperation)
     and not inspect.isabstract(op)
-}  # type: Dict[str, _DynamoDbOperation]
+}  # type: Dict[str, _FeatureStoreOperation]
 
 
 class _FeatureStoreExtension(_AwsSdkExtension):
