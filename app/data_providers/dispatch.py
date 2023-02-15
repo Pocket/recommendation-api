@@ -5,7 +5,7 @@ from typing import List, Coroutine, Any
 
 from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
-from app.data_providers.item2item import Item2ItemRecommender, Item2ItemError, QdrantError
+from app.data_providers.item2item import Item2ItemRecommender, Item2ItemError, QdrantError, UnsupportedLanguage
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
 from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
@@ -41,19 +41,28 @@ class Item2ItemDispatch:
     def __init__(self, item_recommender: Item2ItemRecommender):
         self.item_recommender = item_recommender
 
-    async def after_save(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
+    async def after_save(self,
+                         resolved_id: int,
+                         lang: str,
+                         count: int) -> List[CorpusRecommendationModel]:
         try:
-            recs = await self.item_recommender.related(resolved_id, count)
+            recs = await self.item_recommender.related(resolved_id, count, lang)
         except Item2ItemError:
-            # do not fallback for "Similar stores" after saving
+            # do not fallback for "Similar stories" after saving
             recs = []
         return self._to_corpus_items(recs, count)
 
     @_empty_on_error
-    async def after_article(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
+    async def after_article(self,
+                            resolved_id: int,
+                            lang: str,
+                            count: int) -> List[CorpusRecommendationModel]:
         try:
             # request more to apply domain diversification
-            recs = await self.item_recommender.related(resolved_id, 20)
+            recs = await self.item_recommender.related(resolved_id, count=20, lang=lang)
+        except UnsupportedLanguage:
+            # do not fallback for unsupported language
+            return []
         except Item2ItemError:
             # fallback to frequently saved for "You Might Also Like"
             recs = await self.item_recommender.frequently_saved_curated(count=100)
@@ -152,29 +161,22 @@ class HomeDispatch:
         """
         slates = []
 
-        user_impression_capped_list, preferred_topics, thompson_sampling_assignment = await gather(
+        user_impression_capped_list, preferred_topics = await gather(
             self.user_impression_cap_provider.get(user),
             self._get_preferred_topics(user),
-            self.unleash_provider.get_assignment('temp.web.recommendation-api.home.thompson-sampling', user=user),
         )
-
-        enable_thompson_sampling = \
-            thompson_sampling_assignment is not None and thompson_sampling_assignment.variant == 'treatment'
 
         if preferred_topics:
             slates += [self.for_you_slate_provider.get_slate(
                 preferred_topics=preferred_topics,
                 user_impression_capped_list=user_impression_capped_list,
-                enable_thompson_sampling=enable_thompson_sampling,
             )]
         else:
-            slates += [self.recommended_reads_slate_provider.get_slate(
-                enable_thompson_sampling=enable_thompson_sampling
-            )]
+            slates += [self.recommended_reads_slate_provider.get_slate()]
 
         slates += [
             self.pocket_hits_slate_provider.get_slate(),
-            self.collection_slate_provider.get_slate(enable_thompson_sampling=enable_thompson_sampling),
+            self.collection_slate_provider.get_slate(),
             self.life_hacks_slate_provider.get_slate(),
         ]
 
@@ -187,7 +189,6 @@ class HomeDispatch:
             ),
             recommendation_surface_id=RecommendationSurfaceId.HOME,
             locale=locale,
-            experiment=thompson_sampling_assignment,
         )
 
     # TODO: Replace with OT segment
