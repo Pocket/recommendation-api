@@ -1,12 +1,12 @@
 import logging
 
-import ddtrace.contrib.aiobotocore
 import sentry_sdk
 import uvicorn
 from fastapi import FastAPI, Response, status
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.instrumentation.aiohttp_client import AioHttpClientInstrumentor
 from opentelemetry.sdk.extension.aws.trace import AwsXRayIdGenerator
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
@@ -18,6 +18,7 @@ from app.cache import initialize_caches
 from app.config import ENV, ENV_PROD, sentry as sentry_config, log_level, otel_daemon_address
 from app.graphql.graphql_router import schema
 from app.health_status import get_health_status, set_health_status, HealthStatus
+from app.instrumentation.aiobotocore import AiobotocoreInstrumentor
 from app.models.candidate_set import candidate_set_factory
 from app.models.slate_config import SlateConfigModel
 from app.models.slate_lineup_config import SlateLineupConfigModel, validate_unique_guids
@@ -54,7 +55,8 @@ trace.set_tracer_provider(TracerProvider(
     resource=Resource(attributes={'service.name': 'RecommendationAPI'}),
 ))
 FastAPIInstrumentor.instrument_app(app, excluded_urls="/health-check")
-#ddtrace.contrib.aiobotocore.patch()  # Instruments aioboto3 and aiobotocore
+AiobotocoreInstrumentor().instrument()
+AioHttpClientInstrumentor().instrument()
 
 
 @app.get("/health-check")
