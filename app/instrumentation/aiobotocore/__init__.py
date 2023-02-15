@@ -90,6 +90,8 @@ from opentelemetry import context as context_api
 
 # FIXME: fix the importing of this private attribute when the location of the _SUPPRESS_HTTP_INSTRUMENTATION_KEY is defined.
 from opentelemetry.context import _SUPPRESS_HTTP_INSTRUMENTATION_KEY
+
+from app.instrumentation.aiobotocore.extensions import _find_extension
 from app.instrumentation.aiobotocore.extensions.types import _AwsSdkCallContext, _AwsSdkExtension
 from app.instrumentation.aiobotocore.package import _instruments
 from app.instrumentation.aiobotocore.version import __version__
@@ -162,7 +164,7 @@ class AiobotocoreInstrumentor(BaseInstrumentor):
         if call_context is None:
             return await original_func(*args, **kwargs)
 
-        extension = _AwsSdkExtension(call_context)
+        extension = _find_extension(call_context)
         if not extension.should_trace_service_call():
             return await original_func(*args, **kwargs)
 
