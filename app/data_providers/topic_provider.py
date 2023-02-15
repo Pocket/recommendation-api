@@ -37,7 +37,6 @@ class TopicProvider:
         """
         :return: Items
         """
-        # TODO: Replace with OT. async with xray_recorder.capture_async('TopicProvider._scan_table'):
         async with self.aioboto3_session.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as db:
             table = await db.Table(dynamodb_config['metadata']['table'])
             response = await table.scan()

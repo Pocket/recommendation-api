@@ -63,7 +63,6 @@ class FirefoxNewTabMetricsFactory():
         features = {feature['FeatureName'].lower(): feature['ValueAsString'] for feature in record}
         return FirefoxNewTabMetricsModel.parse_obj(features)
 
-    # TODO: Replace with OT. 'models.MetricsBaseModel._query_metrics')
     async def _query_metrics(self, metrics_keys: List[str]) -> List[FeatureStoreRecordType]:
         """
         Queries metrics from the Feature Group.

@@ -10,7 +10,6 @@ class RecommendationMetricsFactory(AbstractMetricsFactory):
     _dynamodb_table: str = app.config.dynamodb['recommendation_metrics']['table']
     _primary_key_name: str = app.config.dynamodb['recommendation_metrics']['pk']
 
-    # TODO: Replace with OT. 'models.metrics.RecommendationMetricsModel.get')
     async def get(self, slate_id: str, item_ids: List[str]) -> Dict[str, 'MetricsModel']:
         """
         Get metrics for item recommendations in the given slate.

@@ -63,7 +63,6 @@ class AbstractMetricsFactory(ABC):
         """
         return MetricsModel.parse_obj({**value, 'id': value[self._primary_key_name]})
 
-    # TODO: Replace with OT. 'models.metrics.MetricsBaseModel._query_cached_metrics')
     async def _query_cached_metrics(self, metrics_keys: List, ttl: int) -> Dict[str, Optional[Dict]]:
         """
         Queries metrics from cache if available, falling back to the database if they're unavailable in cache.
@@ -92,7 +91,6 @@ class AbstractMetricsFactory(ABC):
         # Map app.cache's NoneValue to None. aiocache treats None as a cache miss, so we need a special token for this.
         return {k: None if v == app.cache.NoneValue else v for k, v in results.items()}
 
-    # TODO: Replace with OT. 'models.MetricsBaseModel._query_metrics')
     async def _query_metrics(self, metrics_keys: List) -> Dict[str, Optional[Dict]]:
         """
         Queries metrics from the Dynamodb table specified in self._dynamodb_table, using self._primary_key_name.

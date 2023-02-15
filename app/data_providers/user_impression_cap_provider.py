@@ -41,7 +41,6 @@ class UserImpressionCapProvider:
     def parse_snowflake_array(arr: str) -> List[str]:
         return arr.strip('[]').split(',')
 
-    # TODO: Replace with OT. 'UserImpressionCapProvider._query_item_list')
     async def _query_item_list(self, user: RequestUser) -> List[str]:
         """
         Queries impressed items to be filtered from the Feature Group.

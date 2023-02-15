@@ -24,8 +24,6 @@ class FeatureGroupClient:
         :param feature_names: List of names of Features to be retrieved. By default, all the Features are returned.
         :return: List of records. Each record is a dict where feature values are keyed on feature names.
         """
-        # TODO: Replace with OT segment
-        #async with xray_recorder.capture_async(f'batch_get_records.{feature_group_name}'):
         async with self.aioboto3_session.client('sagemaker-featurestore-runtime') as featurestore:
             promises = [
                 featurestore.batch_get_record(

@@ -56,7 +56,7 @@ class UnleashProvider:
 
         return [assignment for assignment in all_assignments if assignment.name in names and assignment.assigned]
 
-    # TODO: Replace with OT. 'data_providers.UnleashProvider._get_all_assignments')
+    #@start_as_current_span_async('data_providers.UnleashProvider._get_all_assignments')
     async def _get_all_assignments(self, user: RequestUser) -> List[UnleashAssignmentModel]:
         """
         Get all Unleash assignments for the given user/session.

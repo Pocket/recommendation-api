@@ -31,7 +31,6 @@ class UserRecommendationPreferencesProvider:
         """
         await self._put_feature_store_record(model)
 
-    # TODO: Replace with OT. 'UserRecommendationPreferencesProvider.fetch')
     async def fetch(self, user_id: str) -> Optional[UserRecommendationPreferencesModel]:
         """
         Gets user recommendation preferences for a given user id.
@@ -52,7 +51,6 @@ class UserRecommendationPreferencesProvider:
     def get_feature_group_name(cls):
         return f'{config.ENV}-user-recommendation-preferences-v{cls._FEATURE_GROUP_VERSION}'
 
-    # TODO: Replace with OT. 'UserRecommendationPreferencesProvider._put_feature_store_record')
     async def _put_feature_store_record(self, model: UserRecommendationPreferencesModel):
         """
         Writes a record to the feature group.
@@ -64,7 +62,6 @@ class UserRecommendationPreferencesProvider:
                 Record=self._feature_store_record_from_model(model)
             )
 
-    # TODO: Replace with OT. 'UserRecommendationPreferencesProvider._get_feature_store_record')
     async def _get_feature_store_record(self, user_id: str) -> Optional[Dict[str, Any]]:
         """
         Queries user recommendation preferences from the Feature Group.
@@ -160,7 +157,6 @@ class UserRecommendationPreferencesProviderV2:
     def get_feature_group_name(cls):
         return f'{config.ENV}-user-recommendation-preferences-v{cls._FEATURE_GROUP_VERSION}'
 
-    # TODO: Replace with OT. 'UserRecommendationPreferencesProviderV2._put_feature_store_record')
     async def _put_feature_store_record(self, model: UserRecommendationPreferencesModelV2):
         """
         Writes a record to the feature group.
@@ -172,7 +168,6 @@ class UserRecommendationPreferencesProviderV2:
                 Record=self._feature_store_record_from_model(model)
             )
 
-    # TODO: Replace with OT. 'UserRecommendationPreferencesProviderV2._get_feature_store_record')
     async def _get_feature_store_record(self, hashed_user_id: str) -> Optional[Dict[str, Any]]:
         """
         Queries user recommendation preferences from the Feature Group.
@@ -196,7 +191,6 @@ class UserRecommendationPreferencesProviderV2:
         # Map list of features to dict.
         return {feature['FeatureName']: feature['ValueAsString'] for feature in record['Record']}
 
-    # TODO: Replace with OT. 'UserRecommendationPreferencesProviderV2._model_from_feature_store_record')
     async def _model_from_feature_store_record(
         self, record: Optional[Dict[str, Any]],
     ) -> UserRecommendationPreferencesModelV2:

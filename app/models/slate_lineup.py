@@ -27,7 +27,6 @@ class SlateLineupModel(BaseModel):
     slates: List[SlateModel] = Field(description='An ordered list of slates for the client to display')
 
     @staticmethod
-    # TODO: Replace with OT. 'models_slate_lineup_get_slate_lineup')
     async def get_slate_lineup_with_fallback(slate_lineup_id: str,
                                              user_id: Optional[str] = None,
                                              recommendation_count: Optional[int] = 10,

@@ -130,8 +130,6 @@ class HomeDispatch:
         self.life_hacks_slate_provider = life_hacks_slate_provider
         self.unleash_provider = unleash_provider
 
-    # TODO: Replace with OT segment
-    #@xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
     async def get_slate_lineup(
             self, user: RequestUser, locale: LocaleModel, recommendation_count: int
     ) -> CorpusSlateLineupModel:
@@ -142,8 +140,6 @@ class HomeDispatch:
         else:
             raise ValueError(f'Invalid locale {locale}')
 
-    # TODO: Replace with OT segment
-    #@xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
     async def get_en_us_slate_lineup(
             self, user: RequestUser, recommendation_count: int, locale: LocaleModel
     ) -> CorpusSlateLineupModel:
@@ -191,8 +187,6 @@ class HomeDispatch:
             locale=locale,
         )
 
-    # TODO: Replace with OT segment
-    #@xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
     async def get_de_de_slate_lineup(self, recommendation_count: int, locale: LocaleModel) -> CorpusSlateLineupModel:
         """
         :param recommendation_count:
@@ -237,8 +231,6 @@ class HomeDispatch:
 
         return slates
 
-    # TODO: Replace with OT segment
-    #@xray_recorder.capture_async('HomeDispatch._get_preferred_topics')
     async def _get_preferred_topics(self, user: RequestUser) -> List[TopicModel]:
         preferences = await self.preferences_provider.fetch(str(user.user_id))
         if preferences and preferences.preferred_topics:
@@ -246,8 +238,6 @@ class HomeDispatch:
         else:
             return []
 
-    # TODO: Replace with OT segment
-    #@xray_recorder.capture_async('HomeDispatch._get_topic_slate_promises')
     async def _get_topic_slate_promises(
             self,
             preferred_topics: List[TopicModel],

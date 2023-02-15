@@ -17,7 +17,6 @@ class PersonalizedTopicList(BaseModel):
     user_id: str = None
 
     @staticmethod
-    # TODO: Replace with OT. 'models.personalized_topic_list.get')
     async def get(user_id: str) -> 'PersonalizedTopicList':
         """
         A request including the user_id is issued to RecIt which returns a list of ranked curator topic labels

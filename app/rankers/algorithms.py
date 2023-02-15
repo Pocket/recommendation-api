@@ -287,8 +287,7 @@ def spread_topics(recs: CorpusItemListType) -> CorpusItemListType:
 
     return result_recs
 
-# TODO: Replace with OT segment
-#@xray_recorder.capture('rankers_algorithms_spread_publishers')
+
 def spread_publishers(recs: RecommendationListType, spread: int = 3) -> RecommendationListType:
     """
     Makes sure stories from the same publisher/domain are not listed sequentially, and have a configurable number
