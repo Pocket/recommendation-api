@@ -189,7 +189,7 @@ class _FeatureStoreExtension(_AwsSdkExtension):
 
     def extract_attributes(self, attributes: _AttributeMapT):
         feature_group_names = self._format_feature_group_names(self._call_context.params)
-        attributes[SpanAttributes.RPC_SERVICE] = f'FeatureStore.{self._call_context.operation}: {feature_group_names}'
+        attributes[SpanAttributes.RPC_SERVICE] = f'FeatureStore.{feature_group_names}'
 
         attributes[SpanAttributes.DB_OPERATION] = self._call_context.operation
         attributes[SpanAttributes.NET_PEER_NAME] = self._get_peer_name()
