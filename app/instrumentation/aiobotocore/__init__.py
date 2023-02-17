@@ -1,3 +1,7 @@
+# Based on botocore instrumentation:
+# https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-botocore
+# TODO: Open a PR to have this code merged into the above repo.
+#
 # Copyright The OpenTelemetry Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
