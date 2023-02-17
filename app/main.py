@@ -7,8 +7,9 @@ from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.aiohttp_client import AioHttpClientInstrumentor
+from opentelemetry.sdk.extension.aws.resource import AwsEcsResourceDetector
 from opentelemetry.sdk.extension.aws.trace import AwsXRayIdGenerator
-from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.resources import Resource, get_aggregated_resources
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
@@ -52,7 +53,10 @@ otlp_exporter = OTLPSpanExporter(
 trace.set_tracer_provider(TracerProvider(
     active_span_processor=BatchSpanProcessor(otlp_exporter),
     id_generator=AwsXRayIdGenerator(),
-    resource=Resource(attributes={'service.name': 'RecommendationAPI'}),
+    resource=get_aggregated_resources(
+        initial_resource=Resource(attributes={'service.name': 'RecommendationAPI'}),
+        detectors=[AwsEcsResourceDetector()],
+    ),
 ))
 FastAPIInstrumentor.instrument_app(app, excluded_urls="/health-check")
 AiobotocoreInstrumentor().instrument()
