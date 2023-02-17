@@ -212,6 +212,14 @@ class RecommendationAPI extends TerraformStack {
                             name: 'MEMCACHED_SERVERS',
                             value: elasticache.nodeList.join(','),
                         },
+                        {
+                            name: 'OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_REQUEST',
+                            value: '.*',
+                        },
+                        {
+                            name: 'OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SANITIZE_FIELDS',
+                            value: 'Jwt,Authorization,.*session.*,set-cookie',
+                        },
                     ],
                     secretEnvVars: [
                         {
