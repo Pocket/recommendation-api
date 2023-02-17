@@ -229,10 +229,6 @@ class RecommendationAPI extends TerraformStack {
                             containerPort: 4317,
                         },
                         {
-                            hostPort: 55681, // http port for receiving spans
-                            containerPort: 55681,
-                        },
-                        {
                             hostPort: 13133, // health_check
                             containerPort: 13133,
                         },
