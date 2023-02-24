@@ -47,7 +47,7 @@ export class Elasticache extends Construct {
       nodeList.push(
         `${
           // elasticache.elasticacheCluster.cacheNodes(i.toString()).address
-          elasticache.elasticacheCluster.cacheNodes[i]
+          elasticache.elasticacheCluster.cacheNodes.get(i).address
         }:11211`
       );
     }
