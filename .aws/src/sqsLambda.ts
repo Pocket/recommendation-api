@@ -1,4 +1,3 @@
-import { Resource } from 'cdktf';
 import { Construct } from 'constructs';
 import { config } from './config';
 import {
@@ -10,7 +9,7 @@ import { LAMBDA_RUNTIMES } from '@pocket-tools/terraform-modules';
 import { DataAwsSsmParameter } from '@cdktf/provider-aws/lib/data-aws-ssm-parameter';
 import { PocketPagerDuty } from '@pocket-tools/terraform-modules';
 
-export class SqsLambda extends Resource {
+export class SqsLambda extends Construct {
   constructor(
     scope: Construct,
     private name: string,
