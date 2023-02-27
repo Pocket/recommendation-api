@@ -52,7 +52,7 @@ otlp_exporter = OTLPSpanExporter(
 )
 # Configures the Global Tracer Provider
 trace.set_tracer_provider(TracerProvider(
-    sampler=TraceIdRatioBased(1.0),  # Set to 0 to disable tracing
+    sampler=TraceIdRatioBased(0.1),  # Set to 0 to disable tracing
     active_span_processor=BatchSpanProcessor(otlp_exporter),
     id_generator=AwsXRayIdGenerator(),
     resource=get_aggregated_resources(
