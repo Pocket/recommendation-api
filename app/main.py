@@ -12,6 +12,7 @@ from opentelemetry.sdk.extension.aws.trace import AwsXRayIdGenerator
 from opentelemetry.sdk.resources import Resource, get_aggregated_resources
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.trace.sampling import TraceIdRatioBased
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from strawberry.fastapi import GraphQLRouter
 
@@ -51,6 +52,7 @@ otlp_exporter = OTLPSpanExporter(
 )
 # Configures the Global Tracer Provider
 trace.set_tracer_provider(TracerProvider(
+    sampler=TraceIdRatioBased(1.0),  # Set to 0 to disable tracing
     active_span_processor=BatchSpanProcessor(otlp_exporter),
     id_generator=AwsXRayIdGenerator(),
     resource=get_aggregated_resources(
