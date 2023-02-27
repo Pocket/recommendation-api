@@ -40,7 +40,9 @@ aiomcache = "==0.6.*"
 ujson = "*"
 httptools = "*"
 aio-snowplow-tracker = "*"
-strawberry-graphql = {extras = ["fastapi", "opentelemetry"], version = "*"}
+# strawberry 0.157.0 adds support for Federation 2.1, 2.2, 2.3 which caused the Apollo check to fail.
+# Once our Apollo Gateway is upgrade to 4.0 we can upgrade Strawberry.
+strawberry-graphql = {extras = ["fastapi", "opentelemetry"], version = "==0.156.4"}
 qdrant-client = "==0.11.6"
 pytz = "*"
 opentelemetry-api = "*"

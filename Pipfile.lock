@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "77d6bdf31e2b0336a5e0b81bc8a3bcfc4460b556c37b298a2d538e24681b1d12"
+            "sha256": "7cebec647b1421cf01595eec51bca72bd4940b2b8c4d612aaf44f8c7ddc28f7f"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -1172,11 +1172,11 @@
                 "opentelemetry"
             ],
             "hashes": [
-                "sha256:0650b2a398457981f4a3ae139336f26c1c1bdda3a18118bc84ecb68edc45b663",
-                "sha256:459890ef2f4afb89fc6b13fc24e2453db1904ac37bc85a08990814c19ef06ee2"
+                "sha256:182ff634e3012f0c92a8a44f1d0b137d06f09aa9c56823bcf70f759a9a20857c",
+                "sha256:9bafa2854255aa6b30d20dba3c8acb55ee32b8538883abd1e50c9a57c7597c21"
             ],
             "index": "pypi",
-            "version": "==0.159.0"
+            "version": "==0.156.4"
         },
         "typing-extensions": {
             "hashes": [
@@ -1752,7 +1752,7 @@
                 "sha256:14ddd9c2d3368db7dcec01864dff04d93d26881d5d1368e4b6493f6a2e77f023",
                 "sha256:d6f16d27cd3e2edafe72b6d3aa1fc8fe687feae1337753a67ceafc9a40670bc8"
             ],
-            "markers": "python_version >= '3.7' and python_version < '4'",
+            "markers": "python_version >= '3.7' and python_version < '4.0'",
             "version": "==1.29.79"
         },
         "certifi": {
@@ -2302,7 +2302,7 @@
                 "sha256:35e27f667e882ef7d02f1829499df30c0881d4c3ba12ff698c796b79e87ce09e",
                 "sha256:8df494aff24bdce188381304d6e762b797e2e3e67f610dcb7c2a3725f08cbf67"
             ],
-            "markers": "python_version >= '3.7' and python_version < '4'",
+            "markers": "python_version >= '3.7' and python_version < '4.0'",
             "version": "==0.16.10"
         },
         "typing-extensions": {
