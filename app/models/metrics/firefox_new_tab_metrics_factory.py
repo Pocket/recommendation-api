@@ -5,7 +5,6 @@ from asyncio import gather
 import aioboto3
 
 from app import config
-from aws_xray_sdk.core import xray_recorder
 
 from app.models.metrics.firefox_new_tab_metrics_model import FirefoxNewTabMetricsModel
 from app.models.metrics.metrics_model import MetricsModel
@@ -64,7 +63,6 @@ class FirefoxNewTabMetricsFactory():
         features = {feature['FeatureName'].lower(): feature['ValueAsString'] for feature in record}
         return FirefoxNewTabMetricsModel.parse_obj(features)
 
-    @xray_recorder.capture_async('models.MetricsBaseModel._query_metrics')
     async def _query_metrics(self, metrics_keys: List[str]) -> List[FeatureStoreRecordType]:
         """
         Queries metrics from the Feature Group.

@@ -24,6 +24,12 @@ scenarios:
           body: '{"query":"query HomeLoadTest { homeSlateLineup { slates { slateId: id recommendationReasonType headline subheadline moreLink { url text } recommendations { corpusItem { corpusItemId: id imageUrl url title excerpt language publisher authors { name } } reason { name type } } } } }"}'
           headers:
              Content-Type: application/json
+             userId: 123456
+             encodedId: ABCDEF
+             consumerKey: 123-456-678
+             apiId: 123
+             applicationName: Postman
+             guid: 789
           expect:
             - statusCode: 200
             - contentType: json

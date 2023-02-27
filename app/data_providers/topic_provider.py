@@ -2,7 +2,6 @@ from enum import Enum
 
 import aioboto3
 from aiocache import cached
-from aws_xray_sdk.core import xray_recorder
 from boto3.dynamodb.conditions import Key
 from typing import List, Optional, Set, Sequence, Dict, Any
 
@@ -38,11 +37,10 @@ class TopicProvider:
         """
         :return: Items
         """
-        async with xray_recorder.capture_async('TopicProvider._scan_table'):
-            async with self.aioboto3_session.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as db:
-                table = await db.Table(dynamodb_config['metadata']['table'])
-                response = await table.scan()
-                return response['Items']
+        async with self.aioboto3_session.resource('dynamodb', endpoint_url=dynamodb_config['endpoint_url']) as db:
+            table = await db.Table(dynamodb_config['metadata']['table'])
+            response = await table.scan()
+            return response['Items']
 
     async def get_topics(self, topics_ids: Sequence[str]) -> List[TopicModel]:
         """

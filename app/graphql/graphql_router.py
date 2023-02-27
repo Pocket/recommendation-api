@@ -1,6 +1,7 @@
 from typing import List
 
 import strawberry
+from strawberry.extensions.tracing import OpenTelemetryExtension
 
 from app.graphql.corpus_slate import CorpusSlate
 from app.graphql.corpus_slate_lineup import CorpusSlateLineup
@@ -62,4 +63,4 @@ class Mutation:
 
 
 schema = strawberry.federation.Schema(Query, mutation=Mutation, types=[User, SyndicatedArticle],
-                                      enable_federation_2=True)
+                                      enable_federation_2=True, extensions=[OpenTelemetryExtension])

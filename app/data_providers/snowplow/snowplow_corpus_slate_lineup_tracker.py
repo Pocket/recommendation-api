@@ -1,7 +1,7 @@
 import asyncio
 
 from aio_snowplow_tracker import Tracker, SelfDescribingJson
-from aws_xray_sdk.core import xray_recorder
+from opentelemetry import trace
 
 from app.data_providers.snowplow.config import SnowplowConfig
 from app.data_providers.snowplow.entities import (
@@ -26,7 +26,6 @@ class SnowplowCorpusSlateLineupTracker:
         self.tracker = tracker
         self.snowplow_config = snowplow_config
 
-    @xray_recorder.capture_async('SnowplowCorpusSlateLineupTracker.track')
     async def track(self, corpus_slate_lineup: CorpusSlateLineupModel, user: RequestUser, api_client: ApiClient):
         """
         Track the recommendation of a CorpusSlateLineup in Snowplow.
@@ -34,12 +33,13 @@ class SnowplowCorpusSlateLineupTracker:
         :param user: The user that the slate was recommended to.
         :param api_client: The client that originated the request.
         """
-        track_calls = [self.track_recommendation_metadata(corpus_slate_lineup, user=user)]
-        if corpus_slate_lineup.experiment:
-            track_calls.append(
-                self.track_variant_enroll(assignment=corpus_slate_lineup.experiment, user=user, api_client=api_client))
+        with trace.get_tracer(__name__).start_as_current_span('SnowplowCorpusSlateLineupTracker.track'):
+            track_calls = [self.track_recommendation_metadata(corpus_slate_lineup, user=user)]
+            if corpus_slate_lineup.experiment:
+                track_calls.append(
+                    self.track_variant_enroll(assignment=corpus_slate_lineup.experiment, user=user, api_client=api_client))
 
-        await asyncio.gather(*track_calls)
+            await asyncio.gather(*track_calls)
 
     async def track_recommendation_metadata(self, corpus_slate_lineup: CorpusSlateLineupModel, user: RequestUser):
         """
