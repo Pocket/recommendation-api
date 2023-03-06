@@ -6,7 +6,7 @@ from aiocache.plugins import BasePlugin
 from qdrant_client.http import AsyncApis
 from qdrant_client.http.exceptions import UnexpectedResponse
 from qdrant_client.http.models import Filter, FieldCondition, MatchValue, RecommendRequest, ScrollRequest, Range, \
-    HasIdCondition
+    HasIdCondition, LookupLocation
 
 import app.config
 
@@ -64,7 +64,8 @@ class Item2ItemRecommender:
         host = app.config.qdrant["host"]
         port = app.config.qdrant["port"]
         https = app.config.qdrant["https"]
-        self.collection = app.config.qdrant["collection"]
+        self.recs_collection = app.config.qdrant["collection"] + '_recs'
+        self.all_collection = app.config.qdrant["collection"] + '_all'
         self._client = AsyncApis(host=f"http{'s' if https else ''}://{host}:{port}").points_api
 
     @cached(ttl=3600, plugins=[CacheLogPlugin('related_publisher')])
@@ -160,14 +161,15 @@ class Item2ItemRecommender:
 
         try:
             res = (await self._client.recommend_points(
-                collection_name=self.collection,
+                collection_name=self.recs_collection,
                 recommend_request=RecommendRequest(
                     positive=[resolved_id],
                     negative=[],
                     limit=count,
                     filter=query_filter,
                     with_vector=False,
-                    with_payload=True
+                    with_payload=True,
+                    lookup_from=LookupLocation(collection=self.all_collection)
                 ))).result
         except UnexpectedResponse as ex:
             if ex.status_code == 404 and 'Not found: No point with id' in ex.content.decode():
@@ -191,7 +193,7 @@ class Item2ItemRecommender:
         try:
             _log(logging.INFO, 'request', 'scroll', filter=query_filter)
             res = (await self._client.scroll_points(
-                collection_name=self.collection,
+                collection_name=self.recs_collection,
                 scroll_request=ScrollRequest(
                     limit=count,
                     filter=query_filter,
