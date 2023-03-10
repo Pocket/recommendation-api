@@ -64,7 +64,9 @@ class Item2ItemRecommender:
         host = app.config.qdrant["host"]
         port = app.config.qdrant["port"]
         https = app.config.qdrant["https"]
+        # recommendations corpus
         self.recs_collection = app.config.qdrant["collection"] + '_recs'
+        # all available items for lookup
         self.all_collection = app.config.qdrant["collection"] + '_all'
         self._client = AsyncApis(host=f"http{'s' if https else ''}://{host}:{port}").points_api
 
