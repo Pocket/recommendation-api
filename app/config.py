@@ -61,7 +61,7 @@ qdrant = {
    'host': os.getenv('QDRANT_HOST', 'qdrant.readitlater.com'),
    'port': os.getenv('QDRANT_PORT', 443),
    'https': os.getenv('QDRANT_HTTPS', 'true') == 'true',
-   'collection': os.getenv('QDRANT_COLLECTION', 'articlesprod_v2')
+   'collection': os.getenv('QDRANT_COLLECTION', 'articlesprod_v3')
 }
 
 
