@@ -251,3 +251,17 @@ class HomeDispatch:
         preferred_topic_ids = [t.id for t in preferred_topics]
         topics = await self.topic_provider.get_topics(preferred_topic_ids or default)
         return [self.topic_slate_providers[topic].get_slate() for topic in topics]
+
+
+class NewTabDispatch:
+
+    def __init__(self, recommended_reads_slate_provider: RecommendedReadsSlateProvider):
+        # TODO: The RecommendedReadsSlateProvider is used as a placeholder. In a future PR it will be replaced by a
+        #       provider that gets scheduled items directly from the ScheduledSurface GraphQL query.
+        self.recommended_reads_slate_provider = recommended_reads_slate_provider
+
+    async def get_slate(self) -> CorpusSlateModel:
+        """
+        :return: the New Tab slate
+        """
+        return await self.recommended_reads_slate_provider.get_slate()
