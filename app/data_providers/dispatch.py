@@ -24,6 +24,7 @@ from app.models.localemodel import LocaleModel
 from app.models.request_user import RequestUser
 from app.models.topic import TopicModel
 from app.rankers.algorithms import unique_domains_first
+from app.data_providers.slate_providers.new_tab_slate_provider import NewTabSlateProvider
 
 
 def _empty_on_error(func):
@@ -255,13 +256,20 @@ class HomeDispatch:
 
 class NewTabDispatch:
 
-    def __init__(self, recommended_reads_slate_provider: RecommendedReadsSlateProvider):
-        # TODO: The RecommendedReadsSlateProvider is used as a placeholder. In a future PR it will be replaced by a
-        #       provider that gets scheduled items directly from the ScheduledSurface GraphQL query.
-        self.recommended_reads_slate_provider = recommended_reads_slate_provider
+    def __init__(self, new_tab_slate_provider: NewTabSlateProvider):
+        self.new_tab_slate_provider = new_tab_slate_provider
 
     async def get_slate(self) -> CorpusSlateModel:
         """
         :return: the New Tab slate
         """
-        return await self.recommended_reads_slate_provider.get_slate()
+        return await self.new_tab_slate_provider.get_slate()
+
+    @staticmethod
+    def get_recommendation_surface_id(locale: LocaleModel) -> RecommendationSurfaceId:
+        surface_by_locale = {
+            LocaleModel.en_US: RecommendationSurfaceId.NEW_TAB_EN_US,
+            LocaleModel.de_DE: RecommendationSurfaceId.NEW_TAB_DE_DE,
+        }
+
+        return surface_by_locale[locale]

@@ -4,7 +4,7 @@ import strawberry
 from strawberry.types import Info
 
 from app.data_providers.dispatch import NewTabDispatch
-from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
+from app.data_providers.slate_providers.new_tab_slate_provider import NewTabSlateProvider
 from app.graphql.corpus_slate import CorpusSlate
 from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
 from app.models.localemodel import LocaleModel
@@ -26,13 +26,15 @@ async def resolve_new_tab_slate(
     locale_model = LocaleModel.from_string(locale, default=LocaleModel.en_US)
 
     slate_model = await NewTabDispatch(
-        recommended_reads_slate_provider=RecommendedReadsSlateProvider(
+        new_tab_slate_provider=NewTabSlateProvider(
             corpus_feature_group_client=di.corpus_client,
-            recommendation_surface_id=RecommendationSurfaceId.HOME,
+            recommendation_surface_id=NewTabDispatch.get_recommendation_surface_id(locale=locale_model),
             corpus_engagement_provider=di.corpus_engagement_provider,
             locale=locale_model,
             translation_provider=di.translation_provider,
         )
     ).get_slate()
 
-    return CorpusSlate.from_pydantic(slate_model)
+    slate = CorpusSlate.from_pydantic(slate_model)
+    slate.recommendations = slate_model.recommendations
+    return slate

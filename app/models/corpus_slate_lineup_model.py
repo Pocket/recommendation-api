@@ -16,6 +16,8 @@ class RecommendationSurfaceId(Enum):
     but eventually we'll probably want to merge these concepts.
     """
     HOME = 'HOME'
+    NEW_TAB_EN_US = 'NEW_TAB_EN_US'
+    NEW_TAB_DE_DE = 'NEW_TAB_DE_DE'
 
 
 class CorpusSlateLineupModel(BaseModel):
