@@ -25,11 +25,11 @@ def chunks(sequence: Sequence[T], n: int) -> Generator[Sequence[T], None, None]:
         yield sequence[i: i + n]
 
 
-def integer_hash(s: str, start: int = 0, stop: int = 1 << 64) -> int:
+def integer_hash(s: str, start: int, stop: int) -> int:
     """
     :param s: String to be hashed.
     :param start:
     :param stop:
-    :return: Integer representation of sha256(s) in the range [start, stop)
+    :return: Integer hash of s in the range [start, stop)
     """
     return start + (int(hashlib.sha256(s.encode("utf-8")).hexdigest(), 16) % (stop - start))
