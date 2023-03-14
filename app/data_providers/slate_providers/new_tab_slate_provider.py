@@ -52,5 +52,6 @@ class NewTabSlateProvider(SlateProvider):
         """
         :return: A string that identifiers the scheduled surface, scheduled date, and CorpusItem.
         """
-        return f'{self.recommendation_surface_id}/{item.id}/{item.scheduled_date}'
+        # TODO: When scheduledSurface.items is queried from the Graph, fill in the scheduledDate below. [DIS-452]
+        return f'{self.recommendation_surface_id}/{item.id}/<TODO: pull in ScheduledSurfaceItem.scheduledDate>'
 
