@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
-from app.models.corpus_recommendation_model import CorpusRecommendationModel
+from app.models.corpus_recommendation_model import CorpusRecommendationModel, NewTabCorpusRecommendationModel
 from app.models.link import LinkModel
 from app.models.recommendation_reason_type import RecommendationReasonType
 
@@ -62,3 +62,8 @@ class CorpusSlateModel(BaseModel):
         :return: This slate's CorpusItem ids in-order of recommendation
         """
         return (r.corpus_item.id for r in self.recommendations)
+
+
+class NewTabCorpusSlateModel(CorpusSlateModel):
+    recommendations: List[NewTabCorpusRecommendationModel] = Field(
+        description='New Tab recommendations for the current request context.')
