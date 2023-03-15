@@ -1,13 +1,11 @@
 from typing import List
 
-from opentelemetry import trace
-
 from app.data_providers.slate_providers.slate_provider import SlateProvider
-from app.data_providers.util import integer_hash
 from app.models.corpus_item_model import CorpusItemModel
-from app.models.corpus_recommendation_model import NewTabCorpusRecommendationModel
-from app.models.corpus_slate_model import NewTabCorpusSlateModel
 from app.models.localemodel import LocaleModel
+from app.data_providers.util import integer_hash
+from app.models.corpus_recommendation_model import CorpusRecommendationModel
+
 
 # Maximum tileId that Firefox can support. Firefox uses Javascript to store this value. The max value of a Javascript
 # number can be found using `Number.MAX_SAFE_INTEGER`. which is 2^53 - 1 because it uses a 64-bit IEEE 754 float.
@@ -38,13 +36,13 @@ class NewTabSlateProvider(SlateProvider):
             ranked_items: List[CorpusItemModel],
             *args,
             **kwargs,
-    ) -> List[NewTabCorpusRecommendationModel]:
+    ) -> List[CorpusRecommendationModel]:
         """
         :return: CorpusRecommendationModel with a tileId that's used in Firefox telemetry to identify items. tileId
                  uniquely identifies the scheduled surface, scheduled time, and CorpusItem.id of a recommendation.
         """
         return [
-            NewTabCorpusRecommendationModel(
+            CorpusRecommendationModel(
                 corpus_item=item,
                 tile_id=integer_hash(self._get_tile_id_key(item), start=MIN_TILE_ID, stop=MAX_TILE_ID + 1)
             ) for item in ranked_items
@@ -57,14 +55,3 @@ class NewTabSlateProvider(SlateProvider):
         # TODO: When scheduledSurface.items is queried from the Graph, fill in the scheduledDate below. [DIS-452]
         return f'{self.recommendation_surface_id}/{item.id}/<TODO: pull in ScheduledSurfaceItem.scheduledDate>'
 
-    async def get_slate(self, *args, **kwargs) -> NewTabCorpusSlateModel:
-        with trace.get_tracer(__name__).start_as_current_span(f'{str(self)}.get_slate'):
-            candidate_items = await self.get_candidate_corpus_items()
-            ranked_items = await self.rank_corpus_items(candidate_items, *args, **kwargs)
-            recommendations = await self.get_recommendations(ranked_items, *args, **kwargs)
-
-            return NewTabCorpusSlateModel(
-                configuration_id=self.configuration_id,
-                headline=self.headline,
-                recommendations=recommendations,
-            )

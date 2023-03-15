@@ -19,7 +19,7 @@ from app.data_providers.user_recommendation_preferences_provider import UserReco
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel, RecommendationSurfaceId
-from app.models.corpus_slate_model import CorpusSlateModel, NewTabCorpusSlateModel
+from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.localemodel import LocaleModel
 from app.models.request_user import RequestUser
 from app.models.topic import TopicModel
@@ -259,7 +259,7 @@ class NewTabDispatch:
     def __init__(self, new_tab_slate_provider: NewTabSlateProvider):
         self.new_tab_slate_provider = new_tab_slate_provider
 
-    async def get_slate(self) -> NewTabCorpusSlateModel:
+    async def get_slate(self) -> CorpusSlateModel:
         """
         :return: the New Tab slate
         """
