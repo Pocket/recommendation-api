@@ -99,7 +99,7 @@ class Item2ItemDispatch:
 
     @staticmethod
     def _to_corpus_items(recs, count):
-        return [CorpusRecommendationModel(corpus_item=CorpusItemModel(id=r.corpus_item_id, topic=r.topic))
+        return [CorpusRecommendationModel(corpus_item=CorpusItemModel(id=r.corpus_item_id, topic=None))
                 for r in recs[:count]]
 
 

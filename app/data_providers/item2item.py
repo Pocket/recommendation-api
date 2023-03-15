@@ -217,6 +217,5 @@ class Item2ItemRecommender:
     def _convert_response(res):
         logging.debug(f'Related: {res}')
         return [RelatedItem(corpus_item_id=rec.payload['corpus_item_id'],
-                            domain=rec.payload['domain'],
-                            topic=rec.payload['topic'])
+                            domain=rec.payload['domain'])
                 for rec in res]
