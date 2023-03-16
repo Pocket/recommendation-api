@@ -1,7 +1,8 @@
-from typing import Optional, Annotated
+from typing import Optional
 
 import strawberry
 from strawberry.types import Info
+from typing_extensions import Annotated
 
 from app.data_providers.dispatch import NewTabDispatch
 from app.data_providers.slate_providers.new_tab_slate_provider import NewTabSlateProvider
