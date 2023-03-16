@@ -22,7 +22,7 @@ def _corpus_items_fixture(n: int) -> [CorpusItemModel]:
 def _format_new_tab_query(locale, region, count=50):
     return '''
         query {
-          newTabSlate(locale: "%(locale)s") {
+          newTabSlate(locale: "%(locale)s", region: "%(region)s") {
             recommendations(count: %(count)d) {
               tileId
               corpusItem {
