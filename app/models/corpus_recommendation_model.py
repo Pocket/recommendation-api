@@ -18,7 +18,7 @@ class CorpusRecommendationModel(BaseModel):
     tile_id: float = Field(
         default=0,  # This value should be provided when constructing CorpusRecommendationModel for Firefox New Tab.
         description='Firefox clients require an integer id. Other clients should use `id` instead of this field. '
-                    'tileId uniquely identifies the ScheduledSurface, CorpusItem, and scheduled_date.'
+                    'tileId uniquely identifies the ScheduledSurface, CorpusItem, and scheduled_date. '
                     'tileId is greater than 0 and less than 2^53 to fit in a Javascript number (64-bit IEEE 754 float).'
                     ' The field type is a Float because a GraphQL Int is limited to 32 bit.')
 

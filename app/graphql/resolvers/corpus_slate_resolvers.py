@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Annotated
 
 import strawberry
 from strawberry.types import Info
@@ -14,13 +14,13 @@ from app.singletons import DiContainer
 async def resolve_new_tab_slate(
         root,
         info: Info,
-        locale: str = strawberry.argument(
+        locale: Annotated[str, strawberry.argument(
             description="The Firefox build locale, for example 'fr-FR' or 'fr'. This determines which scheduled surface"
-                        " will be returned."),
-        region: Optional[str] = strawberry.argument(
+                        " will be returned.")],
+        region: Annotated[Optional[str], strawberry.argument(
             description="The geographic region, for example 'FR' or 'IT', or null if unavailable. This is currently not"
                         " used, but will be used in the future to decide which scheduled surface to return when we"
-                        " serve multiple markets with the same language."),
+                        " serve multiple markets with the same language.")],
 ) -> CorpusSlate:
     di = DiContainer.get()
     locale_model = LocaleModel.from_string(locale, default=LocaleModel.en_US)
