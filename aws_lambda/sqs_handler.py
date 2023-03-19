@@ -1,9 +1,9 @@
+import boto3
 import json
 import logging
 import time
 from typing import Dict, Any
 
-import boto3
 import sentry_sdk
 from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
 
