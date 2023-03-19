@@ -1,10 +1,8 @@
 import random
-
-from aiocache import caches, Cache
-from aiocache.serializers import JsonSerializer
-
 import app.config
 from typing import ClassVar
+from aiocache import caches, Cache
+from aiocache.serializers import JsonSerializer
 
 
 # Special token representing a cached None value.
