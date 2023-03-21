@@ -22,7 +22,7 @@ class CorpusRecommendationModel(BaseModel):
                     'tileId is greater than 0 and less than 2^53 to fit in a Javascript number (64-bit IEEE 754 float).'
                     ' The field type is a Float because a GraphQL Int is limited to 32 bit.')
 
-    corpus_item: CorpusItemModel = Field(description='Content meta data.')
+    corpus_item: Optional[CorpusItemModel] = Field(description='Content meta data.')
 
     reason: Optional[RecommendationReasonModel] = Field(
         default=None,
