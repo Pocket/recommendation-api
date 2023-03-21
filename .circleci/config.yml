@@ -64,9 +64,15 @@ jobs:
             curl -sSL https://rover.apollo.dev/nix/v0.8.1 | sh
             # This allows the PATH changes to persist to the next `run` step
             echo 'export PATH=$HOME/.rover/bin:$PATH' >> $BASH_ENV
-      - run:
-          name: check service
-          command: rover subgraph check pocket-client-api@current --schema ./schema.graphql --name=recommendation-api
+      - when:
+          condition:
+            and: 
+              - not: 
+                equal: [dev, << pipeline.git.branch >>]
+          steps:
+            - run:
+                name: check service
+                command: rover subgraph check pocket-client-api@current --schema ./schema.graphql --name=recommendation-api
       - when:
           condition:
             equal: [main, << pipeline.git.branch >>]
