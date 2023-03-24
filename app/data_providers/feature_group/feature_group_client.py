@@ -5,7 +5,7 @@ from typing import List, Dict, Optional
 
 from app.data_providers.util import chunks
 
-_BATCH_GET_RECORD_MAX_ITEMS = 10  # Maximum number of identifies that a Feature Store BatchGetRecord request supports.
+_BATCH_GET_RECORD_MAX_ITEMS = 100  # Maximum number of identifies that a Feature Store BatchGetRecord request supports.
 
 
 class FeatureGroupClient:
