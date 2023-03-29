@@ -1,14 +1,17 @@
+from typing import Dict
+
 from aio_snowplow_tracker import SelfDescribingJson
 
 from app.data_providers.util import get_dict_without_none
 from app.models.api_client import ApiClient
+from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_recommendations_send_event import CorpusRecommendationsSendEvent
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.request_user import RequestUser
 from app.models.unleash_assignment import UnleashAssignmentModel
 
-_CORPUS_RECOMMENDATIONS_SENT_SCHEMA = 'iglu:com.pocket/corpus_recommendations_send/jsonschema/1-0-0'
+_CORPUS_RECOMMENDATIONS_SEND_SCHEMA = 'iglu:com.pocket/corpus_recommendations_send/jsonschema/1-0-0'
 _CORPUS_SLATE_SCHEMA = 'iglu:com.pocket/corpus_slate/jsonschema/4-0-0'
 _CORPUS_SLATE_LINEUP_SCHEMA = 'iglu:com.pocket/corpus_slate_lineup/jsonschema/3-0-0'
 _USER_SCHEMA = 'iglu:com.pocket/user/jsonschema/1-0-0'
@@ -22,7 +25,7 @@ def get_corpus_recommendations_send_event(event: CorpusRecommendationsSendEvent)
     :param event:
     :return: Snowplow corpus_recommendations_send event
     """
-    return SelfDescribingJson(schema=_CORPUS_RECOMMENDATIONS_SENT_SCHEMA, data={
+    return SelfDescribingJson(schema=_CORPUS_RECOMMENDATIONS_SEND_SCHEMA, data={
         'recommended_at': int(event.recommended_at.timestamp()),
         'recommendation_surface_id': event.recommendation_surface_id.value,
         'locale': event.locale.value,
@@ -70,11 +73,15 @@ def get_corpus_slate_entity(corpus_slate: CorpusSlateModel) -> SelfDescribingJso
     return SelfDescribingJson(schema=_CORPUS_SLATE_SCHEMA, data={
         'corpus_slate_id': corpus_slate.id,
         'corpus_slate_configuration_id': corpus_slate.configuration_id,
-        'recommendations': [get_corpus_recommendation_data(r) for r in corpus_slate.recommendations]
+        'recommendations': [_get_corpus_recommendation_data(r) for r in corpus_slate.recommendations]
     })
 
 
-def get_corpus_recommendation_data(recommendation):
+def _get_corpus_recommendation_data(recommendation: CorpusRecommendationModel) -> Dict:
+    """
+    :param recommendation:
+    :return: Dict with attributes that the corpus_slate entity expects for each CorpusRecommendation.
+    """
     data = {
         'corpus_recommendation_id': recommendation.id,
         'corpus_item': {
