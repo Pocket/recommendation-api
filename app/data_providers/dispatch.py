@@ -1,3 +1,4 @@
+import asyncio
 import functools
 import random
 from asyncio import gather
@@ -12,12 +13,15 @@ from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHac
 from app.data_providers.slate_providers.pocket_hits_slate_provider import PocketHitsSlateProvider
 from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
+from app.data_providers.snowplow.snowplow_corpus_recommendations_tracker import SnowplowCorpusRecommendationsTracker
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.unleash_provider import UnleashProvider
 from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
+from app.models.api_client import ApiClient
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
+from app.models.corpus_recommendations_send_event import CorpusRecommendationsSendEvent
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel, RecommendationSurfaceId
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.localemodel import LocaleModel
@@ -210,7 +214,6 @@ class HomeDispatch:
                 recommendation_count=recommendation_count,
             ),
             locale=locale,
-            recommendation_surface_id=RecommendationSurfaceId.HOME,
         )
 
     @staticmethod
@@ -256,15 +259,25 @@ class HomeDispatch:
 
 class NewTabDispatch:
 
-    def __init__(self, new_tab_slate_provider: NewTabSlateProvider):
+    def __init__(self, new_tab_slate_provider: NewTabSlateProvider, snowplow: SnowplowCorpusRecommendationsTracker):
         self.new_tab_slate_provider = new_tab_slate_provider
+        self.snowplow = snowplow
 
-    async def get_slate(self) -> CorpusSlateModel:
+    async def get_slate(self, api_client: ApiClient) -> CorpusSlateModel:
         """
         :return: the New Tab slate
         """
-        return await self.new_tab_slate_provider.get_slate()
+        corpus_slate = await self.new_tab_slate_provider.get_slate()
 
+        asyncio.create_task(
+            self.snowplow.track(event=CorpusRecommendationsSendEvent(
+                corpus_slate=corpus_slate,
+                recommendation_surface_id=self.new_tab_slate_provider.recommendation_surface_id,
+                locale=self.new_tab_slate_provider.locale,
+                api_client=api_client,
+            )))
+
+        return corpus_slate
     @staticmethod
     def get_recommendation_surface_id(locale: LocaleModel) -> RecommendationSurfaceId:
         surface_by_locale = {
