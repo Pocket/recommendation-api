@@ -15,7 +15,7 @@ class CorpusRecommendationModel(BaseModel):
                     'content_open, and engagement events related to this recommendation. This id is different '
                     'across users, across requests, and across corpus items. The recommendation-api service associates '
                     'metadata with this id to join and aggregate recommendations in our data warehouse.')
-    tile_id: float = Field(
+    tile_id: int = Field(
         default=0,  # This value should be provided when constructing CorpusRecommendationModel for Firefox New Tab.
         description='Firefox clients require an integer id. Other clients should use `id` instead of this field. '
                     'tileId uniquely identifies the ScheduledSurface, CorpusItem, and scheduled_date. '

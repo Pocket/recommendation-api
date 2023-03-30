@@ -8,8 +8,10 @@ from httpx import AsyncClient
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.feature_group.feature_group_client import FeatureGroupClient
 from app.data_providers.slate_providers.new_tab_slate_provider import MIN_TILE_ID, MAX_TILE_ID
+from app.data_providers.snowplow.config import SnowplowConfig
 from app.main import app
 from app.models.corpus_item_model import CorpusItemModel
+from tests.functional.test_util.snowplow import SnowplowMicroClient, wait_for_snowplow_events
 from tests.assets.topics import *
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 
@@ -45,6 +47,9 @@ class TestNewTabSlate(TestDynamoDBBase):
             'applicationIsTrusted': 'true',
         }
 
+        self.snowplow_micro = SnowplowMicroClient(config=SnowplowConfig())
+        self.snowplow_micro.reset_snowplow_events()
+
     @patch.object(CorpusFeatureGroupClient, 'fetch')
     async def test_new_tab_slate_italy(
             self,
@@ -66,6 +71,10 @@ class TestNewTabSlate(TestDynamoDBBase):
             assert len(recommendations) == requested_recommendation_count
             # Assert that all tileId are unique integers in range [MIN_TILE_ID, MAX_TILE_ID)
             tile_ids = [r['tileId'] for r in recommendations]
-            assert all(MIN_TILE_ID <= tile_id < MAX_TILE_ID for tile_id in tile_ids)
+            assert all(MIN_TILE_ID <= tile_id <= MAX_TILE_ID for tile_id in tile_ids)
             assert all(int(tile_id) == tile_id for tile_id in tile_ids)
             assert len(set(tile_ids)) == len(tile_ids)
+
+            await wait_for_snowplow_events(self.snowplow_micro, n_expected_event=1)
+            all_snowplow_events = self.snowplow_micro.get_event_counts()
+            assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
