@@ -51,9 +51,10 @@ class SnowplowCorpusRecommendationsTracker:
         if event.corpus_slate_lineup:
             context.append(get_corpus_slate_lineup_entity(event.corpus_slate_lineup))
             context += [get_corpus_slate_entity(slate) for slate in event.corpus_slate_lineup.slates]
-
-        if event.corpus_slate:
+        elif event.corpus_slate:
             context.append(get_corpus_slate_entity(event.corpus_slate))
+        else:
+            raise ValueError("Can't emit a corpus_recommendation_send without corpus_slate_lineup or corpus_slate.")
 
         if event.user:
             context.append(get_user_entity(event.user))
