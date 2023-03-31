@@ -53,8 +53,8 @@ class RecommendationAPI extends TerraformStack {
 
         this.createApplicationCodePipeline(pocketApp);
 
-        const synthetic = new RecommendationApiSynthetics(this, 'synthetics');
         if (config.environment === 'Prod') {
+            const synthetic = new RecommendationApiSynthetics(this, 'synthetics');
             synthetic.createSyntheticCheck(
               pagerduty.snsCriticalAlarmTopic.arn
             );
