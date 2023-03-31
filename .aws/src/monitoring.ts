@@ -148,7 +148,7 @@ export class RecommendationApiSynthetics extends Construct {
       this,
       'synthetic_check',
       {
-        name: `${config.prefix.toLowerCase()}`, // limit of 21 characters
+        name: `${config.prefix.toLowerCase()}`.substring(0, 21), // limit of 21 characters
 
         artifactS3Location: `s3://${syncheckArtifactsS3.bucket}/`,
         executionRoleArn: syncheckRole.arn,
