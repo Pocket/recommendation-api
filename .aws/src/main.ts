@@ -212,6 +212,14 @@ class RecommendationAPI extends TerraformStack {
                             name: 'MEMCACHED_SERVERS',
                             value: elasticache.nodeList.join(','),
                         },
+                        {
+                            name: 'OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_REQUEST',
+                            value: '.*',
+                        },
+                        {
+                            name: 'OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SANITIZE_FIELDS',
+                            value: 'Jwt,Authorization,.*session.*,set-cookie',
+                        },
                     ],
                     secretEnvVars: [
                         {
@@ -221,17 +229,19 @@ class RecommendationAPI extends TerraformStack {
                     ],
                 },
                 {
-                    name: 'xray-daemon',
-                    containerImage: 'amazon/aws-xray-daemon',
-                    repositoryCredentialsParam: `arn:aws:secretsmanager:${region.name}:${caller.accountId}:secret:Shared/DockerHub`,
+                    name: 'aws-ot-collector',
+                    containerImage: 'public.ecr.aws/aws-observability/aws-otel-collector:latest',
                     portMappings: [
                         {
-                            hostPort: 2000,
-                            containerPort: 2000,
-                            protocol: 'udp',
+                            hostPort: 4317, // grcp port for receiving spans
+                            containerPort: 4317,
+                        },
+                        {
+                            hostPort: 13133, // health_check
+                            containerPort: 13133,
                         },
                     ],
-                    command: ['--region', 'us-east-1', '--local-mode'],
+                    command: ['--config=/etc/ecs/ecs-default-config.yaml'],
                 }
             ],
             codeDeploy: {

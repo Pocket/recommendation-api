@@ -3,11 +3,9 @@ import random
 from asyncio import gather
 from typing import List, Coroutine, Any
 
-from aws_xray_sdk.core import xray_recorder
-
 from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
-from app.data_providers.item2item import Item2ItemRecommender, Item2ItemError, QdrantError
+from app.data_providers.item2item import Item2ItemRecommender, Item2ItemError, QdrantError, UnsupportedLanguage
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
 from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
@@ -26,6 +24,7 @@ from app.models.localemodel import LocaleModel
 from app.models.request_user import RequestUser
 from app.models.topic import TopicModel
 from app.rankers.algorithms import unique_domains_first
+from app.data_providers.slate_providers.new_tab_slate_provider import NewTabSlateProvider
 
 
 def _empty_on_error(func):
@@ -43,19 +42,28 @@ class Item2ItemDispatch:
     def __init__(self, item_recommender: Item2ItemRecommender):
         self.item_recommender = item_recommender
 
-    async def after_save(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
+    async def after_save(self,
+                         resolved_id: int,
+                         lang: str,
+                         count: int) -> List[CorpusRecommendationModel]:
         try:
-            recs = await self.item_recommender.related(resolved_id, count)
+            recs = await self.item_recommender.related(resolved_id, count, lang)
         except Item2ItemError:
-            # do not fallback for "Similar stores" after saving
+            # do not fallback for "Similar stories" after saving
             recs = []
         return self._to_corpus_items(recs, count)
 
     @_empty_on_error
-    async def after_article(self, resolved_id: int, count: int) -> List[CorpusRecommendationModel]:
+    async def after_article(self,
+                            resolved_id: int,
+                            lang: str,
+                            count: int) -> List[CorpusRecommendationModel]:
         try:
             # request more to apply domain diversification
-            recs = await self.item_recommender.related(resolved_id, 20)
+            recs = await self.item_recommender.related(resolved_id, count=20, lang=lang)
+        except UnsupportedLanguage:
+            # do not fallback for unsupported language
+            return []
         except Item2ItemError:
             # fallback to frequently saved for "You Might Also Like"
             recs = await self.item_recommender.frequently_saved_curated(count=100)
@@ -91,7 +99,7 @@ class Item2ItemDispatch:
 
     @staticmethod
     def _to_corpus_items(recs, count):
-        return [CorpusRecommendationModel(corpus_item=CorpusItemModel(id=r.corpus_item_id, topic=r.topic))
+        return [CorpusRecommendationModel(corpus_item=CorpusItemModel(id=r.corpus_item_id, topic=None))
                 for r in recs[:count]]
 
 
@@ -123,7 +131,6 @@ class HomeDispatch:
         self.life_hacks_slate_provider = life_hacks_slate_provider
         self.unleash_provider = unleash_provider
 
-    @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
     async def get_slate_lineup(
             self, user: RequestUser, locale: LocaleModel, recommendation_count: int
     ) -> CorpusSlateLineupModel:
@@ -134,7 +141,6 @@ class HomeDispatch:
         else:
             raise ValueError(f'Invalid locale {locale}')
 
-    @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
     async def get_en_us_slate_lineup(
             self, user: RequestUser, recommendation_count: int, locale: LocaleModel
     ) -> CorpusSlateLineupModel:
@@ -152,29 +158,22 @@ class HomeDispatch:
         """
         slates = []
 
-        user_impression_capped_list, preferred_topics, thompson_sampling_assignment = await gather(
+        user_impression_capped_list, preferred_topics = await gather(
             self.user_impression_cap_provider.get(user),
             self._get_preferred_topics(user),
-            self.unleash_provider.get_assignment('temp.web.recommendation-api.home.thompson-sampling', user=user),
         )
-
-        enable_thompson_sampling = \
-            thompson_sampling_assignment is not None and thompson_sampling_assignment.variant == 'treatment'
 
         if preferred_topics:
             slates += [self.for_you_slate_provider.get_slate(
                 preferred_topics=preferred_topics,
                 user_impression_capped_list=user_impression_capped_list,
-                enable_thompson_sampling=enable_thompson_sampling,
             )]
         else:
-            slates += [self.recommended_reads_slate_provider.get_slate(
-                enable_thompson_sampling=enable_thompson_sampling
-            )]
+            slates += [self.recommended_reads_slate_provider.get_slate()]
 
         slates += [
             self.pocket_hits_slate_provider.get_slate(),
-            self.collection_slate_provider.get_slate(enable_thompson_sampling=enable_thompson_sampling),
+            self.collection_slate_provider.get_slate(),
             self.life_hacks_slate_provider.get_slate(),
         ]
 
@@ -187,10 +186,8 @@ class HomeDispatch:
             ),
             recommendation_surface_id=RecommendationSurfaceId.HOME,
             locale=locale,
-            experiment=thompson_sampling_assignment,
         )
 
-    @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
     async def get_de_de_slate_lineup(self, recommendation_count: int, locale: LocaleModel) -> CorpusSlateLineupModel:
         """
         :param recommendation_count:
@@ -235,7 +232,6 @@ class HomeDispatch:
 
         return slates
 
-    @xray_recorder.capture_async('HomeDispatch._get_preferred_topics')
     async def _get_preferred_topics(self, user: RequestUser) -> List[TopicModel]:
         preferences = await self.preferences_provider.fetch(str(user.user_id))
         if preferences and preferences.preferred_topics:
@@ -243,7 +239,6 @@ class HomeDispatch:
         else:
             return []
 
-    @xray_recorder.capture_async('HomeDispatch._get_topic_slate_promises')
     async def _get_topic_slate_promises(
             self,
             preferred_topics: List[TopicModel],
@@ -257,3 +252,24 @@ class HomeDispatch:
         preferred_topic_ids = [t.id for t in preferred_topics]
         topics = await self.topic_provider.get_topics(preferred_topic_ids or default)
         return [self.topic_slate_providers[topic].get_slate() for topic in topics]
+
+
+class NewTabDispatch:
+
+    def __init__(self, new_tab_slate_provider: NewTabSlateProvider):
+        self.new_tab_slate_provider = new_tab_slate_provider
+
+    async def get_slate(self) -> CorpusSlateModel:
+        """
+        :return: the New Tab slate
+        """
+        return await self.new_tab_slate_provider.get_slate()
+
+    @staticmethod
+    def get_recommendation_surface_id(locale: LocaleModel) -> RecommendationSurfaceId:
+        surface_by_locale = {
+            LocaleModel.en_US: RecommendationSurfaceId.NEW_TAB_EN_US,
+            LocaleModel.de_DE: RecommendationSurfaceId.NEW_TAB_DE_DE,
+        }
+
+        return surface_by_locale[locale]

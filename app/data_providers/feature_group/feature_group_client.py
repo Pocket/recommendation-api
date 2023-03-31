@@ -3,11 +3,9 @@ import asyncio
 import aioboto3
 from typing import List, Dict, Optional
 
-from aws_xray_sdk.core import xray_recorder
-
 from app.data_providers.util import chunks
 
-_BATCH_GET_RECORD_MAX_ITEMS = 10  # Maximum number of identifies that a Feature Store BatchGetRecord request supports.
+_BATCH_GET_RECORD_MAX_ITEMS = 100  # Maximum number of identifies that a Feature Store BatchGetRecord request supports.
 
 
 class FeatureGroupClient:
@@ -26,22 +24,21 @@ class FeatureGroupClient:
         :param feature_names: List of names of Features to be retrieved. By default, all the Features are returned.
         :return: List of records. Each record is a dict where feature values are keyed on feature names.
         """
-        async with xray_recorder.capture_async(f'batch_get_records.{feature_group_name}'):
-            async with self.aioboto3_session.client('sagemaker-featurestore-runtime') as featurestore:
-                promises = [
-                    featurestore.batch_get_record(
-                        Identifiers=[
-                            {
-                                'FeatureGroupName': feature_group_name,
-                                'RecordIdentifiersValueAsString': id_chunk,
-                                'FeatureNames': feature_names,
-                            }
-                        ]
-                    )
-                    for id_chunk in chunks(ids, n=_BATCH_GET_RECORD_MAX_ITEMS)
-                ]
+        async with self.aioboto3_session.client('sagemaker-featurestore-runtime') as featurestore:
+            promises = [
+                featurestore.batch_get_record(
+                    Identifiers=[
+                        {
+                            'FeatureGroupName': feature_group_name,
+                            'RecordIdentifiersValueAsString': id_chunk,
+                            'FeatureNames': feature_names,
+                        }
+                    ]
+                )
+                for id_chunk in chunks(ids, n=_BATCH_GET_RECORD_MAX_ITEMS)
+            ]
 
-                record_sets = await asyncio.gather(*promises)
+            record_sets = await asyncio.gather(*promises)
 
         result = []
         for record_set in record_sets:

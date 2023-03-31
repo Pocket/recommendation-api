@@ -1,7 +1,6 @@
 import uuid
 
 from asyncio import gather
-from aws_xray_sdk.core import xray_recorder
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
@@ -30,7 +29,6 @@ class SlateModel(BaseModel):
         default=None, description='An ordered list of the recommendations to show to the user')
 
     @staticmethod
-    @xray_recorder.capture_async('models_slate_get_slate')
     async def get_slate(slate_id: str, user_id: str = None, recommendation_count: Optional[int] = 10) -> 'SlateModel':
         """
         Retrieves a SlateModel from the database
@@ -48,7 +46,6 @@ class SlateModel(BaseModel):
             recommendation_count=recommendation_count)
 
     @staticmethod
-    @xray_recorder.capture_async('models_slate_get_all')
     async def get_all(user_id: str, recommendation_count: Optional[int] = 10) -> List['SlateModel']:
         """
         Retrieves all slates from the database
@@ -62,7 +59,6 @@ class SlateModel(BaseModel):
             recommendation_count=recommendation_count)
 
     @staticmethod
-    @xray_recorder.capture_async('models_slate_get_slates_from_slate_configs')
     async def get_slates_from_slate_configs(slate_configs: List['SlateConfigModel'],
                                             user_id: str,
                                             recommendation_count: Optional[int] = 10) -> List['SlateModel']:
@@ -89,7 +85,6 @@ class SlateModel(BaseModel):
         return slate_models
 
     @staticmethod
-    @xray_recorder.capture_async('models_slate_get_slate_from_slate_config')
     async def __get_slate_from_slate_config(slate_config: 'SlateConfigModel',
                                             user_id: str,
                                             recommendation_count: Optional[int] = 10) -> 'SlateModel':

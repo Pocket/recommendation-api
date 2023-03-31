@@ -1,3 +1,4 @@
+import random
 from typing import Optional
 from uuid import uuid4
 
@@ -14,6 +15,12 @@ class CorpusRecommendationModel(BaseModel):
                     'content_open, and engagement events related to this recommendation. This id is different '
                     'across users, across requests, and across corpus items. The recommendation-api service associates '
                     'metadata with this id to join and aggregate recommendations in our data warehouse.')
+    tile_id: float = Field(
+        default=0,  # This value should be provided when constructing CorpusRecommendationModel for Firefox New Tab.
+        description='Firefox clients require an integer id. Other clients should use `id` instead of this field. '
+                    'tileId uniquely identifies the ScheduledSurface, CorpusItem, and scheduled_date. '
+                    'tileId is greater than 0 and less than 2^53 to fit in a Javascript number (64-bit IEEE 754 float).'
+                    ' The field type is a Float because a GraphQL Int is limited to 32 bit.')
 
     corpus_item: CorpusItemModel = Field(description='Content meta data.')
 

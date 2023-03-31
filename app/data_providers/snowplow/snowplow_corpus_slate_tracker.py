@@ -1,5 +1,5 @@
-from aws_xray_sdk.core import xray_recorder
 from aio_snowplow_tracker import Tracker
+from opentelemetry import trace
 
 from app.data_providers.snowplow.config import SnowplowConfig
 from app.data_providers.snowplow.entities import (
@@ -22,22 +22,22 @@ class SnowplowCorpusSlateTracker:
         self.tracker = tracker
         self.snowplow_config = snowplow_config
 
-    @xray_recorder.capture_async('data_providers.SnowplowCorpusSlateTracker.track')
     async def track(self, corpus_slate: CorpusSlateModel, user: RequestUser):
         """
         Track the recommendation of a CorpusSlate in Snowplow.
         :param corpus_slate: The slate that was recommended.
         :param user: The user that the slate was recommended to.
         """
-        await self.tracker.track_self_describing_event(
-            event_json=get_object_update_event(
-                self.snowplow_config.OBJECT_UPDATE_SCHEMA,
-                object='corpus_slate',
-                trigger='corpus_slate_recommendation'
-            ),
-            event_subject=get_subject(user),
-            context=[
-                get_corpus_slate_entity(self.snowplow_config.CORPUS_SLATE_SCHEMA, corpus_slate),
-                get_user_entity(self.snowplow_config.USER_SCHEMA, user),
-            ],
-        )
+        with trace.get_tracer(__name__).start_as_current_span('SnowplowCorpusSlateTracker.track'):
+            await self.tracker.track_self_describing_event(
+                event_json=get_object_update_event(
+                    self.snowplow_config.OBJECT_UPDATE_SCHEMA,
+                    object='corpus_slate',
+                    trigger='corpus_slate_recommendation'
+                ),
+                event_subject=get_subject(user),
+                context=[
+                    get_corpus_slate_entity(self.snowplow_config.CORPUS_SLATE_SCHEMA, corpus_slate),
+                    get_user_entity(self.snowplow_config.USER_SCHEMA, user),
+                ],
+            )

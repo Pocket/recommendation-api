@@ -1,11 +1,13 @@
 from typing import List
 
 import strawberry
+from strawberry.extensions.tracing import OpenTelemetryExtension
 
 from app.graphql.corpus_slate import CorpusSlate
 from app.graphql.corpus_slate_lineup import CorpusSlateLineup
 from app.graphql.item import Item
 from app.graphql.resolvers.corpus_slate_lineup_resolvers import resolve_home_slate_lineup
+from app.graphql.resolvers.corpus_slate_resolvers import resolve_new_tab_slate
 from app.graphql.resolvers.legacy.slate_lineup_resolver import resolve_get_slate_lineup
 from app.graphql.resolvers.legacy.slate_resolver import resolve_get_slate
 from app.graphql.resolvers.topic_resolvers import list_topics, resolve_recommendation_preference_topics
@@ -20,6 +22,12 @@ from app.graphql.user_recommendation_preferences import UserRecommendationPrefer
 
 @strawberry.type
 class Query:
+    new_tab_slate: CorpusSlate = strawberry.field(
+        resolver=resolve_new_tab_slate,
+        description='Get a slate of ranked recommendations for the Firefox New Tab.'
+                    ' Currently supports the Italy, France, and Spain markets.'
+    )
+
     home_slate_lineup: CorpusSlateLineup = strawberry.field(
         resolver=resolve_home_slate_lineup,
         description='Get ranked corpus slates and recommendations to deliver a unified Home experience. '
@@ -62,4 +70,4 @@ class Mutation:
 
 
 schema = strawberry.federation.Schema(Query, mutation=Mutation, types=[User, SyndicatedArticle],
-                                      enable_federation_2=True)
+                                      enable_federation_2=True, extensions=[OpenTelemetryExtension])

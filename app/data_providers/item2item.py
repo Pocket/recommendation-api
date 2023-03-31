@@ -6,7 +6,7 @@ from aiocache.plugins import BasePlugin
 from qdrant_client.http import AsyncApis
 from qdrant_client.http.exceptions import UnexpectedResponse
 from qdrant_client.http.models import Filter, FieldCondition, MatchValue, RecommendRequest, ScrollRequest, Range, \
-    HasIdCondition
+    HasIdCondition, LookupLocation
 
 import app.config
 
@@ -19,13 +19,19 @@ class QdrantError(Item2ItemError):
     pass
 
 
+class UnsupportedLanguage(Item2ItemError):
+    def __init__(self, lang):
+        super().__init__(self)
+        self.lang = lang
+
+
 class ArticleNotFound(Item2ItemError):
     def __init__(self, resolved_id):
         super().__init__(self)
         self.resolved_id = resolved_id
 
 
-def _log(level, msg, method, filter=None, resolved_id=None, code=None, reason=None):
+def _log(level, msg, method, filter=None, resolved_id=None, code=None, reason=None, lang=None):
     """ Standardize logging for application metrics based on log parsing """
     logging.log(level, f'Related: {msg}; '
                        f'method: {method}, ' +
@@ -33,7 +39,8 @@ def _log(level, msg, method, filter=None, resolved_id=None, code=None, reason=No
                 (f'filter: {[cond.key for cond in filter.must]}, ' if filter else '') +
                 (f'resolved_id: {resolved_id}, ' if resolved_id else '') +
                 (f'code: {code}, ' if code else '') +
-                (f'reason: {reason}' if reason else ''))
+                (f'reason: {reason}' if reason else '') +
+                (f'lang: {lang}' if lang else ''))
 
 
 class CacheLogPlugin(BasePlugin):
@@ -57,7 +64,10 @@ class Item2ItemRecommender:
         host = app.config.qdrant["host"]
         port = app.config.qdrant["port"]
         https = app.config.qdrant["https"]
-        self.collection = app.config.qdrant["collection"]
+        # recommendations corpus
+        self.recs_collection = app.config.qdrant["collection"] + '_recs'
+        # all available items for lookup
+        self.all_collection = app.config.qdrant["collection"] + '_all'
         self._client = AsyncApis(host=f"http{'s' if https else ''}://{host}:{port}").points_api
 
     @cached(ttl=3600, plugins=[CacheLogPlugin('related_publisher')])
@@ -80,9 +90,9 @@ class Item2ItemRecommender:
             is_syndicated=True)
         return await self._recommend(resolved_id, query_filter, count)
 
-    async def related(self, resolved_id: int, count: int) -> List[RelatedItem]:
+    async def related(self, resolved_id: int, count: int, lang: str) -> List[RelatedItem]:
         query_filter = self._build_filter(is_curated=True)
-        return await self._recommend(resolved_id, query_filter, count)
+        return await self._recommend(resolved_id, query_filter, count, lang)
 
     @cached(ttl=3600, plugins=[CacheLogPlugin('saved_curated')])
     async def frequently_saved_curated(self, count: int) -> List[RelatedItem]:
@@ -138,18 +148,30 @@ class Item2ItemRecommender:
 
         return Filter(must=must, must_not=must_not if must_not else None)
 
-    async def _recommend(self, resolved_id: int, query_filter: Filter, count: int) -> List[RelatedItem]:
+    async def _recommend(self,
+                         resolved_id: int,
+                         query_filter: Filter,
+                         count: int,
+                         lang: str = 'en') -> List[RelatedItem]:
+        _log(logging.INFO, 'request', 'recommend', filter=query_filter,
+             resolved_id=resolved_id, lang=lang)
+
+        if lang != 'en':
+            _log(logging.WARNING, 'unsupported language', 'recommend',
+                 filter=query_filter, resolved_id=resolved_id, lang=lang)
+            raise UnsupportedLanguage(lang)
+
         try:
-            _log(logging.INFO, 'request', 'recommend', filter=query_filter, resolved_id=resolved_id)
             res = (await self._client.recommend_points(
-                collection_name=self.collection,
+                collection_name=self.recs_collection,
                 recommend_request=RecommendRequest(
                     positive=[resolved_id],
                     negative=[],
                     limit=count,
                     filter=query_filter,
                     with_vector=False,
-                    with_payload=True
+                    with_payload=True,
+                    lookup_from=LookupLocation(collection=self.all_collection)
                 ))).result
         except UnexpectedResponse as ex:
             if ex.status_code == 404 and 'Not found: No point with id' in ex.content.decode():
@@ -173,7 +195,7 @@ class Item2ItemRecommender:
         try:
             _log(logging.INFO, 'request', 'scroll', filter=query_filter)
             res = (await self._client.scroll_points(
-                collection_name=self.collection,
+                collection_name=self.recs_collection,
                 scroll_request=ScrollRequest(
                     limit=count,
                     filter=query_filter,
@@ -195,6 +217,5 @@ class Item2ItemRecommender:
     def _convert_response(res):
         logging.debug(f'Related: {res}')
         return [RelatedItem(corpus_item_id=rec.payload['corpus_item_id'],
-                            domain=rec.payload['domain'],
-                            topic=rec.payload['topic'])
+                            domain=rec.payload['domain'])
                 for rec in res]

@@ -2,7 +2,6 @@ import logging
 import aioboto3
 from typing import List
 
-from aws_xray_sdk.core import xray_recorder
 
 from app import config
 from app.exceptions.personalization_error import PersonalizationError
@@ -42,7 +41,6 @@ class UserImpressionCapProvider:
     def parse_snowflake_array(arr: str) -> List[str]:
         return arr.strip('[]').split(',')
 
-    @xray_recorder.capture_async('UserImpressionCapProvider._query_item_list')
     async def _query_item_list(self, user: RequestUser) -> List[str]:
         """
         Queries impressed items to be filtered from the Feature Group.

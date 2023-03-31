@@ -3,7 +3,6 @@ import json
 import os
 
 import pytest
-from aws_xray_sdk import global_sdk_config
 
 from app.config import ROOT_DIR
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProviderV2
@@ -33,7 +32,6 @@ def preferences_provider_v2(feature_store_mock, topic_provider_en_us) -> UserRec
 class TestUserRecommendationPreferencesProviderV2:
 
     def setup(self):
-        global_sdk_config.set_sdk_enabled(False)
         self.existing_user_id = 'aaaaaaaaaaaaaaa123'  # Defined in the above JSON fixture
 
     async def test_feature_group_name(self, preferences_provider_v2):

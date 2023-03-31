@@ -3,7 +3,6 @@ from typing import List
 from unittest.mock import MagicMock
 
 import pytest
-from aws_xray_sdk import global_sdk_config
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.dispatch import HomeDispatch
@@ -47,8 +46,6 @@ class MockSlateProvider:
 class TestHomeDispatch:
 
     def setup(self):
-        global_sdk_config.set_sdk_enabled(False)
-
         self.request_user = RequestUser(
             user_id=1,
             hashed_user_id='1-hashed',

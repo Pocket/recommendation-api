@@ -34,15 +34,14 @@ class CollectionSlateProvider(SlateProvider):
         :param items: Candidate corpus items
         :return: Ranks items based on Thompson sampling if enable_thompson_sampling is True.
         """
-        if kwargs.get('enable_thompson_sampling'):
-            metrics = await self.corpus_engagement_provider.get(
-                self.recommendation_surface_id, self.configuration_id, items)
+        metrics = await self.corpus_engagement_provider.get(
+            self.recommendation_surface_id, self.configuration_id, items)
 
-            items = thompson_sampling(
-                recs=items,
-                metrics=metrics,
-                trailing_period=14,  # With a low impression volume, a longer period should help find the best stories
-                default_alpha_prior=18,   # beta * P95 item CTR for this slate (1.5%)
-                default_beta_prior=1200)  # 20% of average daily item impressions for this slate
+        items = thompson_sampling(
+            recs=items,
+            metrics=metrics,
+            trailing_period=14,  # With a low impression volume, a longer period should help find the best stories
+            default_alpha_prior=18,   # beta * P95 item CTR for this slate (1.5%)
+            default_beta_prior=1200)  # 20% of average daily item impressions for this slate
 
         return items
