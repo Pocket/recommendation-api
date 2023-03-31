@@ -33,7 +33,7 @@ export class RecommendationApiSynthetics extends Construct {
   createSyntheticCheck(snsCriticalAlarmTopicARN: string) {
     const caller = new datasources.DataAwsCallerIdentity(this, 'caller');
     const region = new datasources.DataAwsRegion(this, 'region');
-    const pocketVPC = new PocketVPC(this.scope, 'pocket-shared-vpc');
+    const pocketVPC = new PocketVPC(this, 'pocket-shared-vpc');
 
     const syncheckArtifactsS3 = new s3.S3Bucket(
       this,
