@@ -16,6 +16,7 @@ import {PocketPagerDuty} from "@pocket-tools/terraform-modules";
 import {PagerdutyProvider} from "@cdktf/provider-pagerduty";
 import {SqsLambda} from "./sqsLambda";
 import {Elasticache} from "./elasticache";
+import { RecommendationApiSynthetics } from './monitoring';
 
 class RecommendationAPI extends TerraformStack {
     constructor(scope: Construct, name: string) {
@@ -51,6 +52,13 @@ class RecommendationAPI extends TerraformStack {
         });
 
         this.createApplicationCodePipeline(pocketApp);
+
+        const synthetic = new RecommendationApiSynthetics(this, 'synthetics');
+        if (config.environment === 'Prod') {
+            synthetic.createSyntheticCheck(
+              pagerduty.snsCriticalAlarmTopic.arn
+            );
+          }
 
         new SqsLambda(this, 'sqs-lambda', dynamodb.candidateSetsTable, pagerduty);
     }
