@@ -44,7 +44,7 @@ export class RecommendationApiSynthetics extends Construct {
     );
 
     const syntheticCode = new TerraformAsset(this, 'synthetic_check_asset', {
-      path: path.resolve(`${__dirname}`, 'files/synthetic/synthetic.py'),
+      path: path.resolve(`${__dirname}`, 'files/synthetics/synthetic.py'),
       type: AssetType.FILE,
     });
 
