@@ -16,7 +16,7 @@ from app.models.recommendation import RecommendationModel
     description='Represents a Recommendation from Pocket',
 )
 class Recommendation:
-    id: Optional[strawberry.ID]
+    id: strawberry.ID
     feed_item_id: Optional[strawberry.ID] = strawberry.field(deprecation_reason="Use `id`")
     feed_id: auto
     item_id: strawberry.ID
