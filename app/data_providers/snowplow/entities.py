@@ -22,8 +22,8 @@ _API_USER_SCHEMA = 'iglu:com.pocket/api_user/jsonschema/1-0-1'
 
 def get_corpus_recommendations_send_event(event: CorpusRecommendationsSendEvent) -> SelfDescribingJson:
     """
-    :param event:
-    :return: Snowplow corpus_recommendations_send event
+    :return: Snowplow corpus_recommendations_send event, that is emitted with recommendation metadata when recommending
+             a CorpusSlate or CorpusSlateLineup.
     """
     return SelfDescribingJson(schema=_CORPUS_RECOMMENDATIONS_SEND_SCHEMA, data={
         'recommended_at': int(event.recommended_at.timestamp()),
@@ -34,7 +34,8 @@ def get_corpus_recommendations_send_event(event: CorpusRecommendationsSendEvent)
 
 def get_variant_enroll_event():
     """
-    :return: Snowplow event used to track when users are enrolled in an experiment.
+    :return: Snowplow event used to track when users are enrolled in an experiment. Needed for the Mode Experiment
+             Reports.
     """
     return SelfDescribingJson(schema=_VARIANT_ENROLL_SCHEMA, data={})
 
@@ -54,7 +55,7 @@ def get_user_entity(user: RequestUser) -> SelfDescribingJson:
 
 def get_api_user_entity(api_client: ApiClient) -> SelfDescribingJson:
     """
-    :param api_client:
+    :param api_client: ApiClient identifies the Pocket Client (for example the Web Client) that made the request.
     :return: Snowplow api_user entity (a.k.a. 'api client')
     """
     return SelfDescribingJson(schema=_API_USER_SCHEMA, data=get_dict_without_none({
@@ -66,10 +67,6 @@ def get_api_user_entity(api_client: ApiClient) -> SelfDescribingJson:
 
 
 def get_corpus_slate_entity(corpus_slate: CorpusSlateModel) -> SelfDescribingJson:
-    """
-    :param corpus_slate:
-    :return: Snowplow corpus_slate entity
-    """
     return SelfDescribingJson(schema=_CORPUS_SLATE_SCHEMA, data={
         'corpus_slate_id': corpus_slate.id,
         'corpus_slate_configuration_id': corpus_slate.configuration_id,
@@ -79,7 +76,6 @@ def get_corpus_slate_entity(corpus_slate: CorpusSlateModel) -> SelfDescribingJso
 
 def _get_corpus_recommendation_data(recommendation: CorpusRecommendationModel) -> Dict:
     """
-    :param recommendation:
     :return: Dict with attributes that the corpus_slate entity expects for each CorpusRecommendation.
     """
     data = {
@@ -96,10 +92,6 @@ def _get_corpus_recommendation_data(recommendation: CorpusRecommendationModel) -
 
 
 def get_corpus_slate_lineup_entity(corpus_slate_lineup: CorpusSlateLineupModel) -> SelfDescribingJson:
-    """
-    :param corpus_slate_lineup:
-    :return: Snowplow corpus_slate_lineup entity
-    """
     return SelfDescribingJson(
         schema=_CORPUS_SLATE_LINEUP_SCHEMA,
         data={
