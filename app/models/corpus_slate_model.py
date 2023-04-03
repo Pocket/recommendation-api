@@ -1,5 +1,3 @@
-import uuid
-from datetime import datetime, timezone
 from typing import List, Optional, Set, Generator
 from uuid import uuid4
 
@@ -20,9 +18,6 @@ class CorpusSlateModel(BaseModel):
                     'Can be used to aggregate engagement for Thompson sampling, for example.')
     recommendations: List[CorpusRecommendationModel] = Field(
         description='Recommendations for the current request context.')
-    recommended_at: datetime = Field(
-        default_factory=lambda: datetime.now(tz=timezone.utc),
-        description='UTC time when the slate was recommended')
     recommendation_reason_type: Optional[RecommendationReasonType] = Field(
         default=None,
         description="Indicates the main type of reason why recommendations are included in this slate, or null if none "
