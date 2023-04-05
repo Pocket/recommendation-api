@@ -1,5 +1,7 @@
+import logging
 from typing import List, Dict
 
+import botocore.exceptions
 from aiocache import multi_cached
 
 from app import config
@@ -42,11 +44,18 @@ class CorpusEngagementProvider:
         :return: Dict where the keys are equal to the input parameter and the values are engagement models.
                  Returns MissingRecord if key is not found.
         """
-        records = await self.feature_group_client.batch_get_records(
-            feature_group_name=self.feature_group_name,
-            feature_names=self.feature_names,
-            ids=keys
-        )
+        try:
+            records = await self.feature_group_client.batch_get_records(
+                feature_group_name=self.feature_group_name,
+                feature_names=self.feature_names,
+                ids=keys
+            )
+        except Exception as e:
+            # Engagement data powers Thompson sampling on Firefox New Tab and Home. Thompson sampling is an enhancement,
+            # and missing engagement data should not prevent us from delivering recommendations, especially to Firefox.
+            logging.error(f'Getting engagement data from {self.feature_group_name} caused an unexpected exception. '
+                          f'Recommendations can still be served, but without Thompson sampling. {e}')
+            return {}
 
         engagement_models = [self.parse_record(r) for r in records]
         models_by_key = {m.key: m for m in engagement_models}

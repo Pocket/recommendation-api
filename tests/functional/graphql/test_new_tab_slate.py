@@ -51,9 +51,11 @@ class TestNewTabSlate(TestDynamoDBBase):
         self.snowplow_micro.reset_snowplow_events()
 
     @patch.object(CorpusFeatureGroupClient, 'fetch')
+    @patch.object(FeatureGroupClient, 'batch_get_records')
     async def test_new_tab_slate_italy(
             self,
-            mock_fetch_corpus_items
+            mock_batch_get_records,
+            mock_fetch_corpus_items,
     ):
         corpus_items_fixture = _corpus_items_fixture(n=100)
         mock_fetch_corpus_items.return_value = corpus_items_fixture
