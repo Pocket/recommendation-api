@@ -50,15 +50,17 @@ class CorpusEngagementProvider:
                 feature_names=self.feature_names,
                 ids=keys
             )
+
+            engagement_models = [self.parse_record(r) for r in records]
+            models_by_key = {m.key: m for m in engagement_models}
         except Exception as e:
             # Engagement data powers Thompson sampling on Firefox New Tab and Home. Thompson sampling is an enhancement,
             # and missing engagement data should not prevent us from delivering recommendations, especially to Firefox.
             logging.error(f'Getting engagement data from {self.feature_group_name} caused an unexpected exception. '
                           f'Recommendations can still be served, but without Thompson sampling. {e}')
-            return {}
-
-        engagement_models = [self.parse_record(r) for r in records]
-        models_by_key = {m.key: m for m in engagement_models}
+            # Setting models_by_key to an empty dict causes the input keys to be cached as `MissingRecord`. This
+            # prevents cascading errors from happen, by not hitting the Feature Store again until the cache expires.
+            models_by_key = {}
 
         # Missing records are cached to prevent a request going to the feature group on every function call.
         return {key: models_by_key.get(key, self.MissingRecord) for key in keys}
