@@ -5,7 +5,7 @@ from app.models.corpus_item_model import CorpusItemModel
 from app.models.localemodel import LocaleModel
 from app.data_providers.util import integer_hash
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
-
+from app.rankers.algorithms import thompson_sampling
 
 # Maximum tileId that Firefox can support. Firefox uses Javascript to store this value. The max value of a Javascript
 # number can be found using `Number.MAX_SAFE_INTEGER`. which is 2^53 - 1 because it uses a 64-bit IEEE 754 float.
@@ -55,3 +55,19 @@ class NewTabSlateProvider(SlateProvider):
         # TODO: When scheduledSurface.items is queried from the Graph, fill in the scheduledDate below. [DIS-452]
         return f'{self.recommendation_surface_id}/{item.id}/<TODO: pull in ScheduledSurfaceItem.scheduledDate>'
 
+    async def rank_corpus_items(self, items: List[CorpusItemModel], *args, **kwargs) -> List[CorpusItemModel]:
+        """
+        :param items: Candidate corpus items
+        :return: Ranks items based on Thompson sampling.
+        """
+        metrics = await self.corpus_engagement_provider.get(
+            self.recommendation_surface_id, self.configuration_id, items)
+
+        items = thompson_sampling(
+            recs=items,
+            metrics=metrics,
+            trailing_period=1,  # Currently, Prefect only loads the 1-day trailing window for Firefox New Tab.
+            default_alpha_prior=188,  # beta * P99 German NewTab CTR for 2023-03-28 to 2023-04-05 (1.5%)
+            default_beta_prior=12500)  # 0.5% of median German NewTab item impressions for 2023-03-28 to 2023-04-05.
+
+        return items
