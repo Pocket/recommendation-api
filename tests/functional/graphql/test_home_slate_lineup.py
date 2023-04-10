@@ -1,4 +1,3 @@
-import asyncio
 import datetime
 import random
 import uuid
@@ -15,9 +14,9 @@ from app.data_providers.user_impression_cap_provider import UserImpressionCapPro
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.main import app
 from app.models.corpus_item_model import CorpusItemModel
-from app.models.unleash_assignment import UnleashAssignmentModel
 from app.models.request_user import RequestUser
 from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
+from tests.functional.test_util.snowplow import wait_for_snowplow_events
 from tests.assets.topics import *
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 
@@ -148,7 +147,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             recommendation_counts = [len(slate['recommendations']) for slate in slates]
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each
 
-            await self.wait_for_snowplow_events(n_expected_event=2)
+            await wait_for_snowplow_events(self.snowplow_micro, n_expected_event=2)
             all_snowplow_events = self.snowplow_micro.get_event_counts()
             assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
 
@@ -189,7 +188,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             recommendation_counts = [len(slate['recommendations']) for slate in slates]
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each
 
-            await self.wait_for_snowplow_events(n_expected_event=2)
+            await wait_for_snowplow_events(self.snowplow_micro, n_expected_event=2)
             all_snowplow_events = self.snowplow_micro.get_event_counts()
             assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
 
@@ -227,14 +226,6 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             assert slates[-1]['headline'] == 'Für ein glücklicheres Ich'
             assert slates[-1]['moreLink'] == None
 
-            await self.wait_for_snowplow_events(n_expected_event=2)
+            await wait_for_snowplow_events(self.snowplow_micro, n_expected_event=2)
             all_snowplow_events = self.snowplow_micro.get_event_counts()
             assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
-
-    async def wait_for_snowplow_events(self, max_wait_time: int = 5, n_expected_event: int = 1):
-        # Locally the request to Snowplow gets handled in 0.01s, but in CircleCI we need 1 second.
-        for i in range(max_wait_time):
-            if self.snowplow_micro.get_event_counts()['total'] >= n_expected_event:
-                return
-            else:
-                await asyncio.sleep(1)

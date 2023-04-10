@@ -6,8 +6,10 @@ from typing_extensions import Annotated
 
 from app.data_providers.dispatch import NewTabDispatch
 from app.data_providers.slate_providers.new_tab_slate_provider import NewTabSlateProvider
+from app.data_providers.snowplow.config import create_snowplow_tracker, SnowplowConfig
+from app.data_providers.snowplow.snowplow_corpus_recommendations_tracker import SnowplowCorpusRecommendationsTracker
 from app.graphql.corpus_slate import CorpusSlate
-from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
+from app.graphql.util import get_pocket_client
 from app.models.localemodel import LocaleModel
 from app.singletons import DiContainer
 
@@ -33,8 +35,12 @@ async def resolve_new_tab_slate(
             corpus_engagement_provider=di.corpus_engagement_provider,
             locale=locale_model,
             translation_provider=di.translation_provider,
-        )
-    ).get_slate()
+        ),
+        snowplow=SnowplowCorpusRecommendationsTracker(
+            tracker=create_snowplow_tracker(),
+            snowplow_config=SnowplowConfig(),
+        ),
+    ).get_slate(api_client=get_pocket_client(info))
 
     slate = CorpusSlate.from_pydantic(slate_model)
     slate.recommendations = slate_model.recommendations
