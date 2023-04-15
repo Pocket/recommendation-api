@@ -9,6 +9,7 @@ from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlat
 from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
 from app.data_providers.slate_providers.pocket_hits_slate_provider import PocketHitsSlateProvider
 from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
+from app.data_providers.slate_providers.similar_to_engaged_slate_provider import SimilarToEngagedSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
 from app.data_providers.snowplow.config import create_snowplow_tracker, SnowplowConfig
 from app.data_providers.snowplow.snowplow_corpus_recommendations_tracker import SnowplowCorpusRecommendationsTracker
@@ -74,6 +75,8 @@ async def resolve_home_slate_lineup(root, info: Info, locale: str = 'en-US') -> 
             pocket_hits_slate_provider=PocketHitsSlateProvider(**slate_provider_kwargs),
             life_hacks_slate_provider=LifeHacksSlateProvider(**slate_provider_kwargs),
             unleash_provider=unleash_provider,
+            similar_content_slate_provider=SimilarToEngagedSlateProvider(
+                content_based_recommender=di.content_based_recommender, **slate_provider_kwargs)
         ).get_slate_lineup(
             user=user,
             locale=locale_model,

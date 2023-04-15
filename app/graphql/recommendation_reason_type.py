@@ -22,3 +22,8 @@ class RecommendationReasonType(Enum):
         RecommendationReasonTypeModel.PREFERRED_TOPICS.value,
         description='Recommendations that match the user\'s topic preferences are ranked higher.'
     )
+
+    SIMILAR_TO_ENGAGED = strawberry.enum_value(
+        RecommendationReasonTypeModel.SIMILAR_TO_ENGAGED.value,
+        description='Recommendations that are similar to recently engaged items.'
+    )

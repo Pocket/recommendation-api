@@ -11,6 +11,7 @@ from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlat
 from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
 from app.data_providers.slate_providers.pocket_hits_slate_provider import PocketHitsSlateProvider
 from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
+from app.data_providers.slate_providers.similar_to_engaged_slate_provider import SimilarToEngagedSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.unleash_provider import UnleashProvider
@@ -67,6 +68,7 @@ class TestHomeDispatch:
             pocket_hits_slate_provider=MagicMock(PocketHitsSlateProvider),
             life_hacks_slate_provider=MagicMock(LifeHacksSlateProvider),
             unleash_provider=self.unleash_provider,
+            similar_content_slate_provider=MagicMock(SimilarToEngagedSlateProvider)
         )
 
     async def test_dedupe_and_limit(self):

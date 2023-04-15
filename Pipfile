@@ -51,6 +51,7 @@ opentelemetry-sdk-extension-aws = "*"
 opentelemetry-exporter-otlp-proto-grpc = "*"
 opentelemetry-instrumentation-aiohttp-client = "==0.37b0"
 opentelemetry-instrumentation-fastapi = "==0.37b0"
+scikit-learn = "*"
 
 [requires]
 python_version = "3.8"

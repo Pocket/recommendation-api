@@ -4,6 +4,7 @@ import aioboto3
 from opentelemetry import trace
 
 from app.config import TRANSLATIONS_DIR
+from app.data_providers.content_based import ContentBasedRecommender
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.feature_group.corpus_engagement_provider import CorpusEngagementProvider
 from app.data_providers.feature_group.feature_group_client import FeatureGroupClient
@@ -21,6 +22,7 @@ container: Optional['DiContainer'] = None  # place_type: Optional[DiContainer]
 class DiContainer:
     def __init__(self):
         self.item2item_recommender = Item2ItemRecommender()
+        self.content_based_recommender = ContentBasedRecommender()
         self.aioboto3_session = aioboto3.Session()
         self.feature_group_client = FeatureGroupClient(aioboto3_session=self.aioboto3_session)
         self.translation_provider = TranslationProvider(translations_dir=TRANSLATIONS_DIR)

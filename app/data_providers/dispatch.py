@@ -12,6 +12,7 @@ from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlat
 from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
 from app.data_providers.slate_providers.pocket_hits_slate_provider import PocketHitsSlateProvider
 from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
+from app.data_providers.slate_providers.similar_to_engaged_slate_provider import SimilarToEngagedSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
 from app.data_providers.snowplow.snowplow_corpus_recommendations_tracker import SnowplowCorpusRecommendationsTracker
 from app.data_providers.topic_provider import TopicProvider
@@ -122,7 +123,9 @@ class HomeDispatch:
             pocket_hits_slate_provider: PocketHitsSlateProvider,
             life_hacks_slate_provider: LifeHacksSlateProvider,
             unleash_provider: UnleashProvider,
+            similar_content_slate_provider: SimilarToEngagedSlateProvider
     ):
+        self.similar_content_slate_provider = similar_content_slate_provider
         self.topic_provider = topic_provider
         self.corpus_client = corpus_client
         self.preferences_provider = preferences_provider
@@ -162,18 +165,24 @@ class HomeDispatch:
         """
         slates = []
 
-        user_impression_capped_list, preferred_topics = await gather(
+        user_impression_capped_list, preferred_topics, content_based_exp = await gather(
             self.user_impression_cap_provider.get(user),
             self._get_preferred_topics(user),
+            self.unleash_provider.get_assignment('temp.web.recommendation-api.home.content-based', user=user)
         )
 
-        if preferred_topics:
-            slates += [self.for_you_slate_provider.get_slate(
-                preferred_topics=preferred_topics,
-                user_impression_capped_list=user_impression_capped_list,
-            )]
+        if content_based_exp is not None and content_based_exp.variant == 'treatment':
+            # TODO: get user saves
+            user_items = [3797999855, 3708665416, 2308285516, 3538406751, 3779136536, 3755124912, 3789272916]
+            slates.append(self.similar_content_slate_provider.get_slate(user_items=user_items))
         else:
-            slates += [self.recommended_reads_slate_provider.get_slate()]
+            if preferred_topics:
+                slates += [self.for_you_slate_provider.get_slate(
+                    preferred_topics=preferred_topics,
+                    user_impression_capped_list=user_impression_capped_list,
+                )]
+            else:
+                slates += [self.recommended_reads_slate_provider.get_slate()]
 
         slates += [
             self.pocket_hits_slate_provider.get_slate(),
