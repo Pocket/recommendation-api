@@ -30,7 +30,7 @@ export class RecommendationApiSynthetics extends Construct {
     });
   }
 
-  createSyntheticCheck(snsCriticalAlarmTopicARN: string) {
+  createSyntheticCheck(snsCriticalAlarmTopicARNs: string[]) {
     const caller = new datasources.DataAwsCallerIdentity(this, 'caller');
     const region = new datasources.DataAwsRegion(this, 'region');
     const pocketVPC = new PocketVPC(this, 'pocket-shared-vpc');
@@ -104,6 +104,17 @@ export class RecommendationApiSynthetics extends Construct {
             ],
           },
           {
+            effect: 'Allow',
+            actions: [
+                'ec2:CreateNetworkInterface',
+                'ec2:DescribeNetworkInterfaces',
+                'ec2:DeleteNetworkInterface',
+            ],
+            resources: [
+                '*'
+            ],
+          },
+          {
             actions: ['s3:PutObject', 's3:GetObject'],
             resources: [`${syncheckArtifactsS3.arn}/*`],
           },
@@ -152,19 +163,22 @@ export class RecommendationApiSynthetics extends Construct {
 
         artifactS3Location: `s3://${syncheckArtifactsS3.bucket}/`,
         executionRoleArn: syncheckRole.arn,
-        handler: 'synthetic.handler',
+        handler: 'synthetic.handler',  // Must be located in a directory named 'python'.
         runConfig: {
           timeoutInSeconds: 180, // 3 minute timeout
+          environmentVariables: {
+              'RECOMMENDATION_API_DOMAIN': config.domain,
+          }
         },
-        runtimeVersion: 'sync-python-selenium-1.3',
+        runtimeVersion: 'syn-python-selenium-1.3',
         schedule: {
           expression: 'rate(5 minutes)', // run every 5 minutes
         },
-        startCanary: true,
+        startCanary: !config.isDev,
         zipFile: syncheckZipFile.outputPath,
         vpcConfig: {
           subnetIds: pocketVPC.privateSubnetIds,
-          securityGroupIds: [pocketVPC.defaultSecurityGroups.id],
+          securityGroupIds: pocketVPC.defaultSecurityGroups.ids,
         }, 
       }
     );
@@ -185,9 +199,9 @@ export class RecommendationApiSynthetics extends Construct {
       threshold: 66,
       treatMissingData: 'breaching',
 
-      alarmActions: [snsCriticalAlarmTopicARN],
+      alarmActions: snsCriticalAlarmTopicARNs,
       insufficientDataActions: [],
-      okActions: [snsCriticalAlarmTopicARN],
+      okActions: snsCriticalAlarmTopicARNs,
     });
   }
 }
