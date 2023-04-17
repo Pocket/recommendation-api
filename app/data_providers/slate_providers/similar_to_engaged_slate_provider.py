@@ -5,6 +5,7 @@ from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureG
 from app.data_providers.feature_group.corpus_engagement_provider import CorpusEngagementProvider
 from app.data_providers.slate_providers.slate_provider import SlateProvider
 from app.data_providers.translation import TranslationProvider
+from app.data_providers.user_saves_provider import UserSavesProvider
 from app.graphql.recommendation_reason_type import RecommendationReasonType
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
@@ -19,9 +20,11 @@ class SimilarToEngagedSlateProvider(SlateProvider):
                  corpus_engagement_provider: CorpusEngagementProvider,
                  recommendation_surface_id: RecommendationSurfaceId, locale: LocaleModel,
                  translation_provider: TranslationProvider,
-                 content_based_recommender: ContentBasedRecommender):
+                 content_based_recommender: ContentBasedRecommender,
+                 user_saves_provider: UserSavesProvider):
         super().__init__(corpus_feature_group_client, corpus_engagement_provider, recommendation_surface_id, locale,
                          translation_provider)
+        self.user_saves_provider = user_saves_provider
         self._content_based_recommender = content_based_recommender
 
     @property
@@ -41,8 +44,11 @@ class SimilarToEngagedSlateProvider(SlateProvider):
         :return: The CorpusItems from the candidate set, without any rankers or filters applied.
         """
 
-        resolved_ids = kwargs['user_items']
-        ids =  await self._content_based_recommender.search(resolved_ids)
+        user = kwargs['user']
+        saves = await self.user_saves_provider.get_saves(user)
+        if not saves:
+            return []
+        ids = await self._content_based_recommender.search(saves)
         return [CorpusItemModel(id=id) for id in ids]
 
     async def rank_corpus_items(

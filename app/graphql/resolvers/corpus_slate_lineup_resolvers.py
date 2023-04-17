@@ -16,6 +16,7 @@ from app.data_providers.snowplow.snowplow_corpus_recommendations_tracker import 
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.unleash_provider import UnleashProvider, UnleashConfig
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
+from app.data_providers.user_saves_provider import UserSavesProvider
 from app.graphql.corpus_slate_lineup import CorpusSlateLineup
 from app.graphql.resolvers.corpus_slate_lineup_slates_resolver import DEFAULT_SLATE_COUNT
 from app.graphql.resolvers.corpus_slate_recommendations_resolver import DEFAULT_RECOMMENDATION_COUNT
@@ -76,6 +77,7 @@ async def resolve_home_slate_lineup(root, info: Info, locale: str = 'en-US') -> 
             life_hacks_slate_provider=LifeHacksSlateProvider(**slate_provider_kwargs),
             unleash_provider=unleash_provider,
             similar_content_slate_provider=SimilarToEngagedSlateProvider(
+                user_saves_provider=UserSavesProvider(graph_client_session),
                 content_based_recommender=di.content_based_recommender, **slate_provider_kwargs)
         ).get_slate_lineup(
             user=user,
