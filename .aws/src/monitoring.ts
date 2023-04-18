@@ -30,7 +30,7 @@ export class RecommendationApiSynthetics extends Construct {
     });
   }
 
-  createSyntheticCheck(snsCriticalAlarmTopicARNs: string[]) {
+  createSyntheticCheck(snsAlarmTopicARNs: string[]) {
     const caller = new datasources.DataAwsCallerIdentity(this, 'caller');
     const region = new datasources.DataAwsRegion(this, 'region');
     const pocketVPC = new PocketVPC(this, 'pocket-shared-vpc');
@@ -199,9 +199,9 @@ export class RecommendationApiSynthetics extends Construct {
       threshold: 66,
       treatMissingData: 'breaching',
 
-      alarmActions: snsCriticalAlarmTopicARNs,
+      alarmActions: snsAlarmTopicARNs,
       insufficientDataActions: [],
-      okActions: snsCriticalAlarmTopicARNs,
+      okActions: snsAlarmTopicARNs,
     });
   }
 }

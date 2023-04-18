@@ -55,7 +55,7 @@ class RecommendationAPI extends TerraformStack {
 
         const synthetic = new RecommendationApiSynthetics(this, 'synthetics');
         synthetic.createSyntheticCheck(
-          config.environment === 'Prod' ? [pagerduty.snsCriticalAlarmTopic.arn] : []
+          config.environment === 'Prod' ? [pagerduty.snsNonCriticalAlarmTopic.arn] : []
         );
 
         new SqsLambda(this, 'sqs-lambda', dynamodb.candidateSetsTable, pagerduty);
