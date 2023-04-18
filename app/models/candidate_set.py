@@ -3,7 +3,6 @@ import aiohttp
 from aiocache import caches
 import logging
 
-from aws_xray_sdk.core import xray_recorder
 from boto3.dynamodb.conditions import Key
 from pydantic import BaseModel
 from typing import List, Dict, Any, Union, Type
@@ -60,7 +59,6 @@ class RecItCandidateSet(CandidateSetModel):
         return RecItCandidateSet._verify_candidate_set(cs_id)
 
     @staticmethod
-    @xray_recorder.capture_async('models.recit_candidate_set.get')
     async def get(cs_id: str, user_id: str) -> "RecItCandidateSet":
         """Get a candidateSet personalized for a user from RecIt. This makes a network call to RecIt.
         :param cs_id: string identifying which candidateSet to fetch from RecIt. Format is `RECIT_PREFIX`/`RECIT_MODULES`.
@@ -99,7 +97,6 @@ class RecItCandidateSet(CandidateSetModel):
 
 class DynamoDBCandidateSet(CandidateSetModel):
     @staticmethod
-    @xray_recorder.capture_async('models.dynamodb_candidate_set.verify_candidate_set')
     async def verify_candidate_set(cs_id: str) -> bool:
         """
         Ensures the given candidate set exists in the database
@@ -114,7 +111,6 @@ class DynamoDBCandidateSet(CandidateSetModel):
         return True
 
     @staticmethod
-    @xray_recorder.capture_async('models.dynamodb_candidate_set.get')
     async def get(cs_id: str, user_id: str = None) -> 'DynamoDBCandidateSet':
         """
         Retrieves a candidate set from the database and instantiates a CandidateSetModel
@@ -129,7 +125,6 @@ class DynamoDBCandidateSet(CandidateSetModel):
         return DynamoDBCandidateSet.parse_obj(response['Items'][0])
 
     @staticmethod
-    @xray_recorder.capture_async('models.dynamodb_candidate_set._cached_query_by_id')
     async def _cached_query_by_id(cs_id: str) -> Dict[str, Any]:
         """
         Wrap the _query_by_id function in a cache.
@@ -151,7 +146,6 @@ class DynamoDBCandidateSet(CandidateSetModel):
         return result
 
     @staticmethod
-    @xray_recorder.capture_async('models.dynamodb_candidate_set._query_by_id')
     async def _query_by_id(cs_id: str) -> Dict[str, Any]:
         """
         Retrieves a candidate set from the database

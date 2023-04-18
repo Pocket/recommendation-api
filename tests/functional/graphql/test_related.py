@@ -25,19 +25,31 @@ def populate_qdrant():
 
         print(f"Populating Qdrant {config.qdrant['host']}, collection {config.qdrant['collection']} with test data")
         assert config.qdrant['host'] != 'qdrant.readitlater.com'
-        assert config.qdrant['collection'] != 'articlesprod'
+        assert 'articlesprod' not in config.qdrant['collection']
 
         client = QdrantClient(host=config.qdrant['host'],
                               port=config.qdrant['port'],
                               prefer_grpc=False,
                               https=config.qdrant['https'])
+
         points = [PointStruct(id=d['id'], vector=d['vector'], payload=d['payload']) for d in test_data]
+        collection = config.qdrant['collection'] + '_recs'
         client.recreate_collection(
-            collection_name=config.qdrant['collection'],
+            collection_name=collection,
             vectors_config=VectorParams(size=160, distance=Distance.DOT))
-        client.upsert(collection_name=config.qdrant['collection'], points=points)
+        client.upsert(collection_name=collection, points=points)
         sleep(5)
-        assert client.count(config.qdrant['collection']).count == len(test_data)
+        assert client.count(collection).count == len(test_data)
+
+        points = [PointStruct(id=d['id'], vector=d['vector'], payload=None) for d in test_data]
+        collection = config.qdrant['collection'] + '_all'
+        client.recreate_collection(
+            collection_name=collection,
+            vectors_config=VectorParams(size=160, distance=Distance.DOT))
+        client.upsert(collection_name=collection, points=points)
+        sleep(5)
+        assert client.count(collection).count == len(test_data)
+
         return test_data
 
 

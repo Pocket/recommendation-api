@@ -4,6 +4,7 @@ from aiocache import caches
 from app.cache import initialize_caches, candidate_set_alias, metrics_alias
 from app import config
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
+from app.data_providers.feature_group.corpus_engagement_provider import CorpusEngagementProvider
 from app.data_providers.topic_provider import TopicProvider
 
 
@@ -38,6 +39,7 @@ async def clear_function_caches():
     cached_functions = [
         TopicProvider._scan_table,
         CorpusFeatureGroupClient._query_corpus_items,
+        CorpusEngagementProvider._get_engagement_by_keys,
     ]
 
     for f in cached_functions:

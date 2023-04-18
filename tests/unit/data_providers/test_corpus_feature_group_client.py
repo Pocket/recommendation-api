@@ -1,8 +1,6 @@
 import os
 import pytest
 
-from aws_xray_sdk import global_sdk_config
-
 import app.config
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.models.corpus_item_model import CorpusItemModel
@@ -15,8 +13,6 @@ class TestCorpusFeatureGroupClient:
     SLATE_ID = 'f99178fb-6bd0-4fa1-8109-cda181b697f6'  # Matches the slate_id in firefox_new_tab_engagement.json
 
     def setup(self):
-        global_sdk_config.set_sdk_enabled(False)
-
         self.feature_store_mock = FeatureStoreMock(
             feature_group_name=CorpusFeatureGroupClient.get_feature_group_name(),
             records_json_path=os.path.join(app.config.ROOT_DIR, 'tests/assets/json/corpus_candidate_sets.json')

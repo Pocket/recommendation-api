@@ -1,3 +1,4 @@
+import hashlib
 from typing import List, Dict, Generator, TypeVar, Sequence
 
 
@@ -22,3 +23,13 @@ def chunks(sequence: Sequence[T], n: int) -> Generator[Sequence[T], None, None]:
     """Yield successive n-sized chunks from the sequence."""
     for i in range(0, len(sequence), n):
         yield sequence[i: i + n]
+
+
+def integer_hash(s: str, start: int, stop: int) -> int:
+    """
+    :param s: String to be hashed.
+    :param start:
+    :param stop:
+    :return: Integer hash of s in the range [start, stop)
+    """
+    return start + (int(hashlib.sha256(s.encode("utf-8")).hexdigest(), 16) % (stop - start))

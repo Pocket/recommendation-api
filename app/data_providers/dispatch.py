@@ -1,9 +1,8 @@
+import asyncio
 import functools
 import random
 from asyncio import gather
 from typing import List, Coroutine, Any
-
-from aws_xray_sdk.core import xray_recorder
 
 from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
@@ -14,18 +13,22 @@ from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHac
 from app.data_providers.slate_providers.pocket_hits_slate_provider import PocketHitsSlateProvider
 from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
+from app.data_providers.snowplow.snowplow_corpus_recommendations_tracker import SnowplowCorpusRecommendationsTracker
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.unleash_provider import UnleashProvider
 from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
+from app.models.api_client import ApiClient
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
+from app.models.corpus_recommendations_send_event import CorpusRecommendationsSendEvent
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel, RecommendationSurfaceId
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.localemodel import LocaleModel
 from app.models.request_user import RequestUser
 from app.models.topic import TopicModel
 from app.rankers.algorithms import unique_domains_first
+from app.data_providers.slate_providers.new_tab_slate_provider import NewTabSlateProvider
 
 
 def _empty_on_error(func):
@@ -100,7 +103,7 @@ class Item2ItemDispatch:
 
     @staticmethod
     def _to_corpus_items(recs, count):
-        return [CorpusRecommendationModel(corpus_item=CorpusItemModel(id=r.corpus_item_id, topic=r.topic))
+        return [CorpusRecommendationModel(corpus_item=CorpusItemModel(id=r.corpus_item_id, topic=None))
                 for r in recs[:count]]
 
 
@@ -132,7 +135,6 @@ class HomeDispatch:
         self.life_hacks_slate_provider = life_hacks_slate_provider
         self.unleash_provider = unleash_provider
 
-    @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
     async def get_slate_lineup(
             self, user: RequestUser, locale: LocaleModel, recommendation_count: int
     ) -> CorpusSlateLineupModel:
@@ -143,7 +145,6 @@ class HomeDispatch:
         else:
             raise ValueError(f'Invalid locale {locale}')
 
-    @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
     async def get_en_us_slate_lineup(
             self, user: RequestUser, recommendation_count: int, locale: LocaleModel
     ) -> CorpusSlateLineupModel:
@@ -191,7 +192,6 @@ class HomeDispatch:
             locale=locale,
         )
 
-    @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
     async def get_de_de_slate_lineup(self, recommendation_count: int, locale: LocaleModel) -> CorpusSlateLineupModel:
         """
         :param recommendation_count:
@@ -214,7 +214,6 @@ class HomeDispatch:
                 recommendation_count=recommendation_count,
             ),
             locale=locale,
-            recommendation_surface_id=RecommendationSurfaceId.HOME,
         )
 
     @staticmethod
@@ -236,7 +235,6 @@ class HomeDispatch:
 
         return slates
 
-    @xray_recorder.capture_async('HomeDispatch._get_preferred_topics')
     async def _get_preferred_topics(self, user: RequestUser) -> List[TopicModel]:
         preferences = await self.preferences_provider.fetch(str(user.user_id))
         if preferences and preferences.preferred_topics:
@@ -244,7 +242,6 @@ class HomeDispatch:
         else:
             return []
 
-    @xray_recorder.capture_async('HomeDispatch._get_topic_slate_promises')
     async def _get_topic_slate_promises(
             self,
             preferred_topics: List[TopicModel],
@@ -258,3 +255,34 @@ class HomeDispatch:
         preferred_topic_ids = [t.id for t in preferred_topics]
         topics = await self.topic_provider.get_topics(preferred_topic_ids or default)
         return [self.topic_slate_providers[topic].get_slate() for topic in topics]
+
+
+class NewTabDispatch:
+
+    def __init__(self, new_tab_slate_provider: NewTabSlateProvider, snowplow: SnowplowCorpusRecommendationsTracker):
+        self.new_tab_slate_provider = new_tab_slate_provider
+        self.snowplow = snowplow
+
+    async def get_slate(self, api_client: ApiClient) -> CorpusSlateModel:
+        """
+        :return: the New Tab slate
+        """
+        corpus_slate = await self.new_tab_slate_provider.get_slate()
+
+        asyncio.create_task(
+            self.snowplow.track(event=CorpusRecommendationsSendEvent(
+                corpus_slate=corpus_slate,
+                recommendation_surface_id=self.new_tab_slate_provider.recommendation_surface_id,
+                locale=self.new_tab_slate_provider.locale,
+                api_client=api_client,
+            )))
+
+        return corpus_slate
+    @staticmethod
+    def get_recommendation_surface_id(locale: LocaleModel) -> RecommendationSurfaceId:
+        surface_by_locale = {
+            LocaleModel.en_US: RecommendationSurfaceId.NEW_TAB_EN_US,
+            LocaleModel.de_DE: RecommendationSurfaceId.NEW_TAB_DE_DE,
+        }
+
+        return surface_by_locale[locale]

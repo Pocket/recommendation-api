@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
+from opentelemetry import trace
 from typing import List, Optional
 from uuid import uuid5, UUID
-
-from aws_xray_sdk.core import xray_recorder
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.feature_group.corpus_engagement_provider import CorpusEngagementProvider
@@ -113,7 +112,7 @@ class SlateProvider(ABC):
         Fewer may be returned if insufficient content is available.
         :return: A Corpus Slate that can be recommended
         """
-        async with xray_recorder.capture_async(f'{str(self)}.get_slate'):
+        with trace.get_tracer(__name__).start_as_current_span(f'{str(self)}.get_slate'):
             candidate_items = await self.get_candidate_corpus_items()
             ranked_items = await self.rank_corpus_items(candidate_items, *args, **kwargs)
             recommendations = await self.get_recommendations(ranked_items, *args, **kwargs)

@@ -1,5 +1,7 @@
+import logging
 from typing import List, Dict
 
+import botocore.exceptions
 from aiocache import multi_cached
 
 from app import config
@@ -42,14 +44,23 @@ class CorpusEngagementProvider:
         :return: Dict where the keys are equal to the input parameter and the values are engagement models.
                  Returns MissingRecord if key is not found.
         """
-        records = await self.feature_group_client.batch_get_records(
-            feature_group_name=self.feature_group_name,
-            feature_names=self.feature_names,
-            ids=keys
-        )
+        try:
+            records = await self.feature_group_client.batch_get_records(
+                feature_group_name=self.feature_group_name,
+                feature_names=self.feature_names,
+                ids=keys
+            )
 
-        engagement_models = [self.parse_record(r) for r in records]
-        models_by_key = {m.key: m for m in engagement_models}
+            engagement_models = [self.parse_record(r) for r in records]
+            models_by_key = {m.key: m for m in engagement_models}
+        except Exception as e:
+            # Engagement data powers Thompson sampling on Firefox New Tab and Home. Thompson sampling is an enhancement,
+            # and missing engagement data should not prevent us from delivering recommendations, especially to Firefox.
+            logging.error(f'Getting engagement data from {self.feature_group_name} caused an unexpected exception. '
+                          f'Recommendations can still be served, but without Thompson sampling. {e}')
+            # Setting models_by_key to an empty dict causes the input keys to be cached as `MissingRecord`. This
+            # prevents cascading errors from happen, by not hitting the Feature Store again until the cache expires.
+            models_by_key = {}
 
         # Missing records are cached to prevent a request going to the feature group on every function call.
         return {key: models_by_key.get(key, self.MissingRecord) for key in keys}
