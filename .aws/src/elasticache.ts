@@ -48,7 +48,7 @@ export class Elasticache extends Resource {
             // For now we just hardcode to 11211 which is the default memcache port.
             nodeList.push(
                 `${
-                    elasticache.elasticacheCluster.cacheNodes(i.toString()).address
+                    elasticache.elasticacheCluster.cacheNodes.get(i).address
                 }:11211`
             );
         }
