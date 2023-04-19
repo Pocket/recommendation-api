@@ -185,7 +185,7 @@ export class RecommendationApiSynthetics extends Construct {
 
     new cloudwatch.CloudwatchMetricAlarm(this, 'synthetic_check_alarm', {
       alarmDescription: `Alert when ${synCheckCanary.name} canary success percentage has decreased below 66% in the last 15 minutes`,
-      alarmName: `pocket-${synCheckCanary.name.toLowerCase()}-synthetic-check-access`,
+      alarmName: `pocket-${synCheckCanary.name}-synthetic-check-access`,
 
       comparisonOperator: 'LessThanThreshold',
       dimensions: {
