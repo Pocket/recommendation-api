@@ -23,12 +23,17 @@ def corpus_feature_group_client():
     return CorpusFeatureGroupClient(aioboto3_session=feature_store_mock.aioboto3)
 
 
+CORPUS_API_CLIENT_FIXTURE_ITEM_COUNT = 48
+
+
 class DummyCorpusApiClient(CorpusApiClient):
     async def fetch(
             self,
             corpus_id: str,
     ) -> List[CorpusItemModel]:
-        return [CorpusItemModel(id=str(uuid.uuid4()), topic="BUSINESS") for _ in range(48)]
+        return [
+            CorpusItemModel(id=str(uuid.uuid4()), topic="BUSINESS") for _ in range(CORPUS_API_CLIENT_FIXTURE_ITEM_COUNT)
+        ]
 
     def get_scheduled_date(self, corpus_item_id: str) -> str:
         return random.choice(['2023-04-17', '2023-04-18'])
@@ -37,3 +42,14 @@ class DummyCorpusApiClient(CorpusApiClient):
 @pytest.fixture
 def corpus_api_client():
     return DummyCorpusApiClient(pocket_graph_client_session=None)
+
+
+class DummyCorpusApiClientWithoutScheduledDate(DummyCorpusApiClient):
+    def get_scheduled_date(self, corpus_item_id: str) -> str:
+        # Simulate invalid data coming back from the Graph.
+        return None
+
+
+@pytest.fixture
+def corpus_api_client_without_scheduled_date():
+    return DummyCorpusApiClientWithoutScheduledDate(pocket_graph_client_session=None)
