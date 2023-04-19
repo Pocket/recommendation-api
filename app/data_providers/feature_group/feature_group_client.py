@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 import aioboto3
 from typing import List, Dict, Optional
@@ -42,8 +43,14 @@ class FeatureGroupClient:
 
         result = []
         for record_set in record_sets:
-            for record in record_set['Records']:
+            records = record_set['Records']
+            for record in records:
                 result.append(self._record_to_dict(record['Record']))
+
+            errors = record_set.get('Errors')
+            if errors:
+                logging.error(f'batch_get_record received {len(records)} records and {len(errors)} errors. '
+                              f'First error: {errors[0]}')
 
         return result
 

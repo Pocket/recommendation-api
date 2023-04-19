@@ -6,7 +6,6 @@ from asgi_lifespan import LifespanManager
 from httpx import AsyncClient
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
-from app.data_providers.feature_group.feature_group_client import FeatureGroupClient
 from app.data_providers.slate_providers.new_tab_slate_provider import MIN_TILE_ID, MAX_TILE_ID
 from app.data_providers.snowplow.config import SnowplowConfig
 from app.main import app
@@ -53,8 +52,12 @@ class TestNewTabSlate(TestDynamoDBBase):
     @patch.object(CorpusFeatureGroupClient, 'fetch')
     async def test_new_tab_slate_italy(
             self,
-            mock_fetch_corpus_items
+            mock_fetch_corpus_items,
     ):
+        """
+        FeatureGroupClient.batch_get_records is not patched in this test, so no engagement will be available for
+         Thompson sampling. The query should succeed even when access to the feature group is denied.
+        """
         corpus_items_fixture = _corpus_items_fixture(n=100)
         mock_fetch_corpus_items.return_value = corpus_items_fixture
 
