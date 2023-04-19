@@ -16,6 +16,7 @@ import {PocketPagerDuty} from "@pocket-tools/terraform-modules";
 import {PagerdutyProvider} from "@cdktf/provider-pagerduty";
 import {SqsLambda} from "./sqsLambda";
 import {Elasticache} from "./elasticache";
+import { RecommendationApiSynthetics } from './monitoring';
 
 class RecommendationAPI extends TerraformStack {
     constructor(scope: Construct, name: string) {
@@ -51,6 +52,11 @@ class RecommendationAPI extends TerraformStack {
         });
 
         this.createApplicationCodePipeline(pocketApp);
+
+        const synthetic = new RecommendationApiSynthetics(this, 'synthetics');
+        synthetic.createSyntheticCheck(
+          config.environment === 'Prod' ? [pagerduty.snsNonCriticalAlarmTopic.arn] : []
+        );
 
         new SqsLambda(this, 'sqs-lambda', dynamodb.candidateSetsTable, pagerduty);
     }
@@ -119,10 +125,10 @@ class RecommendationAPI extends TerraformStack {
             service: {
                 criticalEscalationPolicyId: incidentManagement.get(
                     'policy_data_eng_critical_id'
-                ),
+                ).toString(),
                 nonCriticalEscalationPolicyId: incidentManagement.get(
                     'policy_data_eng_non_critical_id'
-                )
+                ).toString()
             }
         });
     }
