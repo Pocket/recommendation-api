@@ -1,36 +1,13 @@
-import random
-import uuid
-from unittest.mock import patch
+from typing import Dict
 
+import pytest
 from asgi_lifespan import LifespanManager
 from httpx import AsyncClient
 
-from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.new_tab_slate_provider import MIN_TILE_ID, MAX_TILE_ID
 from app.data_providers.snowplow.config import SnowplowConfig
 from app.main import app
-from app.models.corpus_item_model import CorpusItemModel
 from tests.functional.test_util.snowplow import SnowplowMicroClient, wait_for_snowplow_events
-from tests.assets.topics import *
-from tests.functional.test_dynamodb_base import TestDynamoDBBase
-
-
-def _generate_corpus_items(n: int) -> [CorpusItemModel]:
-    corpus_topic_ids = [t.corpus_topic_id for t in all_topic_fixtures]
-    return [{'id': str(uuid.uuid4()), 'topic': random.choice(corpus_topic_ids)} for _ in range(n)]
-
-
-def _generate_scheduled_surface(n: int) -> [CorpusItemModel]:
-    corpus_items = _generate_corpus_items(n)
-    return {
-        'data': {
-            'scheduledSurface': {
-                "id": "NEW_TAB_EN_US",
-                "items_today": [{'corpusItem': c, 'scheduledDate': '2023-04-18'} for c in corpus_items[:int(n/2)]],
-                "items_yesterday": [{'corpusItem': c, 'scheduledDate': '2023-04-17'} for c in corpus_items[int(n/2):]],
-            }
-        }
-    }
 
 
 def _format_new_tab_query(locale, region, count=50):
@@ -48,42 +25,57 @@ def _format_new_tab_query(locale, region, count=50):
     ''' % {'locale': locale, 'region': region, 'count': count}
 
 
-class TestNewTabSlate:
-    async def asyncSetUp(self):
-        self.headers = {
-            'apiId': '94110',
-            'consumerKey': 'fx-client-consumer-key',
-            'applicationName': 'Firefox',
-            'applicationIsNative': 'true',
-            'applicationIsTrusted': 'true',
-        }
+@pytest.fixture
+def snowplow_micro() -> SnowplowMicroClient:
+    snowplow_micro = SnowplowMicroClient(config=SnowplowConfig())
+    snowplow_micro.reset_snowplow_events()
+    return snowplow_micro
 
-        self.snowplow_micro = SnowplowMicroClient(config=SnowplowConfig())
-        self.snowplow_micro.reset_snowplow_events()
 
-    async def test_new_tab_slate_italy(self):
-        """
-        Note that nothing is
-        FeatureGroupClient.batch_get_records is not patched in this test, so no engagement will be available for
-         Thompson sampling. The query should succeed even when access to the feature group is denied.
-        """
-        async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
-            requested_recommendation_count = 30
-            query = _format_new_tab_query(locale='it-IT', region='IT', count=requested_recommendation_count)
-            response = await client.post('/', json={'query': query}, headers=self.headers)
-            data = response.json()
+@pytest.fixture
+def pocket_graph_request_headers() -> Dict[str, str]:
+    return {
+        'apiId': '94110',
+        'consumerKey': 'fx-client-consumer-key',
+        'applicationName': 'Firefox',
+        'applicationIsNative': 'true',
+        'applicationIsTrusted': 'true',
+    }
 
-            assert not data.get('errors')
-            recommendations = data['data']['newTabSlate']['recommendations']
 
-            # Assert that the expected number of slates is being returned.
-            assert len(recommendations) == requested_recommendation_count
-            # Assert that all tileId are unique integers in range [MIN_TILE_ID, MAX_TILE_ID)
-            tile_ids = [r['tileId'] for r in recommendations]
-            assert all(MIN_TILE_ID <= tile_id <= MAX_TILE_ID for tile_id in tile_ids)
-            assert all(int(tile_id) == tile_id for tile_id in tile_ids)
-            assert len(set(tile_ids)) == len(tile_ids)
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "locale,region",
+    [
+        ('es-ES', 'ES'),
+        ('fr-FR', 'FR'),
+        ('it-IT', 'IT'),
+    ])
+async def test_new_tab_slate(locale, region, snowplow_micro, pocket_graph_request_headers):
+    """
+    Note that nothing is patched for this test. This means that:
+    1. CorpusItems will be fetched from the public production Pocket GraphQL endpoint. This is a stable endpoint that
+        is in the critical path for Firefox New Tab, so it is not expected to make this test fail in an unreliable way.
+    2. Assuming AWS credentials are unavailable, FeatureGroupClient.batch_get_records will fail and no engagement will
+        be available for Thompson sampling. The query should succeed even when access to the feature group is denied.
+    """
+    async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
+        requested_recommendation_count = 30
+        query = _format_new_tab_query(locale=locale, region=region, count=requested_recommendation_count)
+        response = await client.post('/', json={'query': query}, headers=pocket_graph_request_headers)
+        data = response.json()
 
-            await wait_for_snowplow_events(self.snowplow_micro, n_expected_event=1)
-            all_snowplow_events = self.snowplow_micro.get_event_counts()
-            assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
+        assert not data.get('errors')
+        recommendations = data['data']['newTabSlate']['recommendations']
+
+        # Assert that the expected number of slates is being returned.
+        assert len(recommendations) == requested_recommendation_count
+        # Assert that all tileId are unique integers in range [MIN_TILE_ID, MAX_TILE_ID]
+        tile_ids = [r['tileId'] for r in recommendations]
+        assert all(MIN_TILE_ID <= tile_id <= MAX_TILE_ID for tile_id in tile_ids)
+        assert all(int(tile_id) == tile_id for tile_id in tile_ids)
+        assert len(set(tile_ids)) == len(tile_ids)
+
+        await wait_for_snowplow_events(snowplow_micro, n_expected_event=1)
+        all_snowplow_events = snowplow_micro.get_event_counts()
+        assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
