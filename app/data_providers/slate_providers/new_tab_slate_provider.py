@@ -1,4 +1,9 @@
-from typing import List
+import itertools
+from datetime import timedelta, datetime
+from typing import List, Dict
+from uuid import uuid5, UUID
+
+import pytz
 
 from app.data_providers.PocketGraphClientSession import PocketGraphClientSession
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
@@ -21,6 +26,7 @@ MIN_TILE_ID = 100 * 100000
 
 
 class NewTabSlateProvider(SlateProvider):
+    _corpus_item_scheduled_date: Dict[str, str] = {}  # Maps CorpusItem.id to scheduledDate
 
     def __init__(
             self,
@@ -42,13 +48,13 @@ class NewTabSlateProvider(SlateProvider):
 
     @property
     def candidate_set_id(self) -> str:
-        # TODO: Query the candidate from the GraphQL scheduledSurface.items object. [DIS-452]
-        if self.locale == LocaleModel.en_US:
-            return '5f0dae93-a5a8-439a-a2e2-5d418c04bc98'
-        elif self.locale == LocaleModel.de_DE:
-            return '92013292-bc4b-4ee1-815a-0e51c5953ff2'
-        else:
-            raise ValueError(f'Unexpected locale {self.locale} for {self.provider_name}')
+        """
+        :return: UUID candidate set identifier, which identifies the corpus items that serve as the input for this slate
+        """
+        # This class gets candidates from GraphQL, which identifies candidates using a human-readable string identifier
+        # `recommendation_surface_id` (e.g. 'NEW_TAB_EN_US'). This identifier is turned into a UUID, because that's what
+        # SlateProvider expects. The UUID below is arbitrary. 'NEW_TAB_EN_US' uniquely describes the candidate item set.
+        return str(uuid5(UUID('b6396f0d-ea1b-40ba-9192-83accda9c106'), self.recommendation_surface_id.value))
 
     async def get_candidate_corpus_items(self) -> List[CorpusItemModel]:
         """
@@ -60,38 +66,39 @@ class NewTabSlateProvider(SlateProvider):
         :return:
         """
         query = """
-            query UnleashAssignments($context: UnleashContext!) {
-              unleashAssignments(context: $context) {
-                assignments {
-                  assigned
-                  name
-                  payload
-                  variant
-                }
+            query ScheduledSurface($scheduledSurfaceId: ID!, $date_today: Date!, $date_yesterday: Date!) {
+              scheduledSurface(id: $scheduledSurfaceId) {
+                items_today:     items(date: $date_today)     { corpusItem { id topic } scheduledDate }
+                items_yesterday: items(date: $date_yesterday) { corpusItem { id topic } scheduledDate }
               }
             }
-            """
+        """
+
+        # The date is supposed to progress at midnight EST.
+        today = datetime.now(tz=pytz.timezone('America/New_York'))
+        yesterday = today - timedelta(days=1)
 
         body = {
             'query': query,
             'variables': {
-                # @see https://studio.apollographql.com/graph/pocket-client-api/schema/reference/inputs/UnleashContext
-                'context': {
-                    'appName': self.unleash_config.APP_NAME,
-                    'environment': self.unleash_config.ENVIRONMENT,
-                    'userId': user.hashed_user_id,
-                    'sessionId': user.hashed_guid,
-                    'properties': {
-                        'locale': user.locale,
-                    }
-                }
+              'scheduledSurfaceId': self.recommendation_surface_id.value,
+              'date_today': today.strftime('%Y-%m-%d'),
+              'date_yesterday': yesterday.strftime('%Y-%m-%d'),
             }
         }
 
         async with self.pocket_graph_client_session.post(url='/', json=body, raise_for_status=True) as resp:
             response_json = await resp.json()
-            assignments_data = response_json['data']['unleashAssignments']['assignments']
-            return [UnleashAssignmentModel.parse_obj(assignment) for assignment in assignments_data]
+            scheduled_surface = response_json['data']['scheduledSurface']
+            all_items = itertools.chain(scheduled_surface['items_today'], scheduled_surface['items_yesterday'])
+
+            corpus_items = []
+            for item in all_items:
+                corpus_item: CorpusItemModel = CorpusItemModel.parse_obj(item['corpusItem'])
+                corpus_items.append(corpus_item)
+                self._corpus_item_scheduled_date[corpus_item.id] = item['scheduledDate']
+
+        return corpus_items
 
     @property
     def headline(self) -> str:
@@ -118,8 +125,7 @@ class NewTabSlateProvider(SlateProvider):
         """
         :return: A string that identifiers the scheduled surface, scheduled date, and CorpusItem.
         """
-        # TODO: When scheduledSurface.items is queried from the Graph, fill in the scheduledDate below. [DIS-452]
-        return f'{self.recommendation_surface_id}/{item.id}/<TODO: pull in ScheduledSurfaceItem.scheduledDate>'
+        return f'{self.recommendation_surface_id}/{item.id}/{self._corpus_item_scheduled_date[item.id]}'
 
     async def rank_corpus_items(self, items: List[CorpusItemModel], *args, **kwargs) -> List[CorpusItemModel]:
         """
@@ -135,5 +141,8 @@ class NewTabSlateProvider(SlateProvider):
             trailing_period=1,  # Currently, Prefect only loads the 1-day trailing window for Firefox New Tab.
             default_alpha_prior=188,  # beta * P99 German NewTab CTR for 2023-03-28 to 2023-04-05 (1.5%)
             default_beta_prior=12500)  # 0.5% of median German NewTab item impressions for 2023-03-28 to 2023-04-05.
+
+        # Sort newest to oldest. Python is stable, so it will preserve the Thompson sampling within a scheduled date.
+        items.sort(key=lambda item: self._corpus_item_scheduled_date.get(item.id), reverse=True)
 
         return items

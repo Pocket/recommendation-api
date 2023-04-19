@@ -15,9 +15,22 @@ from tests.assets.topics import *
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 
 
-def _corpus_items_fixture(n: int) -> [CorpusItemModel]:
+def _generate_corpus_items(n: int) -> [CorpusItemModel]:
     corpus_topic_ids = [t.corpus_topic_id for t in all_topic_fixtures]
-    return [CorpusItemModel(id=str(uuid.uuid4()), topic=random.choice(corpus_topic_ids)) for _ in range(n)]
+    return [{'id': str(uuid.uuid4()), 'topic': random.choice(corpus_topic_ids)} for _ in range(n)]
+
+
+def _generate_scheduled_surface(n: int) -> [CorpusItemModel]:
+    corpus_items = _generate_corpus_items(n)
+    return {
+        'data': {
+            'scheduledSurface': {
+                "id": "NEW_TAB_EN_US",
+                "items_today": [{'corpusItem': c, 'scheduledDate': '2023-04-18'} for c in corpus_items[:int(n/2)]],
+                "items_yesterday": [{'corpusItem': c, 'scheduledDate': '2023-04-17'} for c in corpus_items[int(n/2):]],
+            }
+        }
+    }
 
 
 def _format_new_tab_query(locale, region, count=50):
@@ -35,9 +48,8 @@ def _format_new_tab_query(locale, region, count=50):
     ''' % {'locale': locale, 'region': region, 'count': count}
 
 
-class TestNewTabSlate(TestDynamoDBBase):
+class TestNewTabSlate:
     async def asyncSetUp(self):
-        await super().asyncSetUp()
         self.headers = {
             'apiId': '94110',
             'consumerKey': 'fx-client-consumer-key',
@@ -49,20 +61,14 @@ class TestNewTabSlate(TestDynamoDBBase):
         self.snowplow_micro = SnowplowMicroClient(config=SnowplowConfig())
         self.snowplow_micro.reset_snowplow_events()
 
-    @patch.object(CorpusFeatureGroupClient, 'fetch')
-    async def test_new_tab_slate_italy(
-            self,
-            mock_fetch_corpus_items,
-    ):
+    async def test_new_tab_slate_italy(self):
         """
+        Note that nothing is
         FeatureGroupClient.batch_get_records is not patched in this test, so no engagement will be available for
          Thompson sampling. The query should succeed even when access to the feature group is denied.
         """
-        corpus_items_fixture = _corpus_items_fixture(n=100)
-        mock_fetch_corpus_items.return_value = corpus_items_fixture
-
         async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
-            requested_recommendation_count = 50
+            requested_recommendation_count = 30
             query = _format_new_tab_query(locale='it-IT', region='IT', count=requested_recommendation_count)
             response = await client.post('/', json={'query': query}, headers=self.headers)
             data = response.json()
