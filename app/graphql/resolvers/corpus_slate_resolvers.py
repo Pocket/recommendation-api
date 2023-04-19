@@ -5,6 +5,7 @@ from strawberry.types import Info
 from typing_extensions import Annotated
 
 from app.data_providers.PocketGraphClientSession import PocketGraphClientSession, PocketGraphConfig
+from app.data_providers.corpus.corpus_api_client import CorpusApiClient
 from app.data_providers.dispatch import NewTabDispatch
 from app.data_providers.slate_providers.new_tab_slate_provider import NewTabSlateProvider
 from app.data_providers.snowplow.config import create_snowplow_tracker, SnowplowConfig
@@ -37,8 +38,7 @@ async def resolve_new_tab_slate(
     async with PocketGraphClientSession(CorpusApiGraphConfig()) as graph_client_session:
         slate_model = await NewTabDispatch(
             new_tab_slate_provider=NewTabSlateProvider(
-                pocket_graph_client_session=graph_client_session,
-                corpus_feature_group_client=di.corpus_client,
+                corpus_api_client=CorpusApiClient(graph_client_session),
                 recommendation_surface_id=NewTabDispatch.get_recommendation_surface_id(locale=locale_model),
                 corpus_engagement_provider=di.corpus_engagement_provider,
                 locale=locale_model,

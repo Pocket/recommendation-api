@@ -52,7 +52,7 @@ async def resolve_home_slate_lineup(root, info: Info, locale: str = 'en-US') -> 
         default_value=DEFAULT_RECOMMENDATION_COUNT))
 
     slate_provider_kwargs = {
-        'corpus_feature_group_client': di.corpus_client,
+        'corpus_fetchable': di.corpus_client,
         'recommendation_surface_id': RecommendationSurfaceId.HOME,
         'corpus_engagement_provider': di.corpus_engagement_provider,
         'locale': locale_model,

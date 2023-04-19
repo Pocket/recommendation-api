@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
-from opentelemetry import trace
 from typing import List, Optional
 from uuid import uuid5, UUID
 
-from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
+from opentelemetry import trace
+
+from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
 from app.data_providers.feature_group.corpus_engagement_provider import CorpusEngagementProvider
 from app.data_providers.translation import TranslationProvider
 from app.graphql.recommendation_reason_type import RecommendationReasonType
@@ -19,13 +20,13 @@ class SlateProvider(ABC):
 
     def __init__(
         self,
-        corpus_feature_group_client: CorpusFeatureGroupClient,
+        corpus_fetchable: CorpusFetchable,
         corpus_engagement_provider: CorpusEngagementProvider,
         recommendation_surface_id: RecommendationSurfaceId,
         locale: LocaleModel,
         translation_provider: TranslationProvider,
     ):
-        self.corpus_feature_group_client = corpus_feature_group_client
+        self.corpus_fetchable = corpus_fetchable
         self.corpus_engagement_provider = corpus_engagement_provider
         self.recommendation_surface_id = recommendation_surface_id
         self.locale = locale
@@ -75,7 +76,12 @@ class SlateProvider(ABC):
         """
         :return: UUID slate's configuration id, identifying the context and type of content that this slate provides.
         """
-        return str(uuid5(UUID(self.candidate_set_id), self.provider_name))
+        try:
+            # Try using the candidate_set_id as the uuid5 namespace.
+            return str(uuid5(UUID(self.candidate_set_id), self.provider_name))
+        except ValueError:
+            # candidate_set_id is not a UUID, so add it to the uuid5 name instead.
+            return str(uuid5(UUID('00000000-0000-0000-0000-000000000000'), self.provider_name + self.candidate_set_id))
 
     @property
     def recommendation_reason_type(self) -> Optional[RecommendationReasonType]:
@@ -88,7 +94,7 @@ class SlateProvider(ABC):
         """
         :return: The CorpusItems from the candidate set, without any rankers or filters applied.
         """
-        return await self.corpus_feature_group_client.fetch(self.candidate_set_id)
+        return await self.corpus_fetchable.fetch(self.candidate_set_id)
 
     async def rank_corpus_items(self, items: List[CorpusItemModel], *args, **kwargs) -> List[CorpusItemModel]:
         """
