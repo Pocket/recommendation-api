@@ -80,7 +80,7 @@ class SlateProvider(ABC):
             # Try using the candidate_set_id as the uuid5 namespace.
             return str(uuid5(UUID(self.candidate_set_id), self.provider_name))
         except ValueError:
-            # candidate_set_id is not a UUID, so add it to the uuid5 name instead.
+            # candidate_set_id is not a UUID (e.g. 'NEW_TAB_EN_US'), so add it to the uuid5 name instead.
             return str(uuid5(UUID('00000000-0000-0000-0000-000000000000'), self.provider_name + self.candidate_set_id))
 
     @property
