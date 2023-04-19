@@ -1,5 +1,6 @@
-from typing import List
+from typing import List, Optional
 
+from pydantic import ValidationError
 from strawberry.types import Info
 from strawberry.types.nodes import SelectedField
 
@@ -62,17 +63,21 @@ def get_request_user(info: Info) -> RequestUser:
     )
 
 
-def get_pocket_client(info: Info) -> ApiClient:
+def get_pocket_client(info: Info) -> Optional[ApiClient]:
     """
     :param info: Request context with headers: https://github.com/Pocket/client-api/blob/main/api-docs/docs/headers.md
-    :return: ApiClient describing the client making the request.
+    :return: ApiClient describing the client making the request, or None if apiId header is missing or not an integer.
     """
     headers = info.context.get('request').headers
 
-    return ApiClient(
-        consumer_key=headers.get('consumerKey'),
-        api_id=headers.get('apiId'),
-        application_name=headers.get('applicationName'),
-        is_trusted=headers.get('applicationIsTrusted'),
-        is_native=headers.get('applicationIsNative'),
-    )
+    try:
+        return ApiClient(
+            consumer_key=headers.get('consumerKey'),
+            api_id=headers.get('apiId'),
+            application_name=headers.get('applicationName'),
+            is_trusted=headers.get('applicationIsTrusted'),
+            is_native=headers.get('applicationIsNative'),
+        )
+    except ValidationError:
+        # api_id is required. The request probable came from the synthetic API monitor or a developer if it is missing.
+        return None
