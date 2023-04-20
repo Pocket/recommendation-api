@@ -67,7 +67,7 @@ def main():
         "variables": {
             "locale": "en-US",
             "region": "US",
-            "count": 50,
+            "count": 30,
         },
         "operationName": "NewTabSlate",
     })

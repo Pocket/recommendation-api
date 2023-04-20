@@ -159,11 +159,11 @@ export class RecommendationApiSynthetics extends Construct {
       this,
       'synthetic_check',
       {
-        name: `${config.prefix.toLowerCase()}`.substring(0, 21), // limit of 21 characters
-
+        // name canary recapi-prod-new-tab to indicate only newTabSlate is covered. Name is limited to 21 characters.
+        name: `${config.shortName}-new-tab-${config.environment}`.toLowerCase().substring(0, 21),
         artifactS3Location: `s3://${syncheckArtifactsS3.bucket}/`,
         executionRoleArn: syncheckRole.arn,
-        handler: 'synthetic.handler',  // Must be located in a directory named 'python'.
+        handler: 'new_tab_synthetic.handler',  // Must be located in a directory named 'python'.
         runConfig: {
           timeoutInSeconds: 180, // 3 minute timeout
           environmentVariables: {
@@ -185,7 +185,7 @@ export class RecommendationApiSynthetics extends Construct {
 
     new cloudwatch.CloudwatchMetricAlarm(this, 'synthetic_check_alarm', {
       alarmDescription: `Alert when ${synCheckCanary.name} canary success percentage has decreased below 66% in the last 15 minutes`,
-      alarmName: `pocket-${config.prefix.toLowerCase()}-synthetic-check-access`,
+      alarmName: `pocket-${synCheckCanary.name}-synthetic-check-access`,
 
       comparisonOperator: 'LessThanThreshold',
       dimensions: {
