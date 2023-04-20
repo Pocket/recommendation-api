@@ -49,7 +49,7 @@ class NewTabSlateProvider(SlateProvider):
         return self.recommendation_surface_id.value
 
     @property
-    def candidate_set_id_uuid(self) -> UUID:
+    def candidate_set_uuid(self) -> UUID:
         """
         :return: A UUID uniquely identifying the candidate_set_id, as is expected by the base class.
         """

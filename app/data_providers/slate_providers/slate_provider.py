@@ -42,7 +42,7 @@ class SlateProvider(ABC):
         return NotImplemented
 
     @property
-    def candidate_set_id_uuid(self) -> UUID:
+    def candidate_set_uuid(self) -> UUID:
         """
         Implementing classes with a candidate_set_id that is not a UUID string should override this to return a UUID.
         :return: Returns the candidate_set_id in UUID format.
@@ -85,7 +85,7 @@ class SlateProvider(ABC):
         """
         :return: UUID slate's configuration id, identifying the context and type of content that this slate provides.
         """
-        return str(uuid5(self.candidate_set_id_uuid, self.provider_name))
+        return str(uuid5(self.candidate_set_uuid, self.provider_name))
 
     @property
     def recommendation_reason_type(self) -> Optional[RecommendationReasonType]:
