@@ -36,9 +36,18 @@ class SlateProvider(ABC):
     @abstractmethod
     def candidate_set_id(self) -> str:
         """
-        :return: UUID candidate set identifier, which identifies the corpus items that serve as the input for this slate
+        :return: candidate set identifier, which identifies the corpus items that serve as the input for this slate.
+                 Feature Group uses a UUID-format, and Curated Corpus API uses a human-readable id (e.g. NEW_TAB_EN_US).
         """
         return NotImplemented
+
+    @property
+    def candidate_set_id_uuid(self) -> UUID:
+        """
+        Implementing classes with a candidate_set_id that is not a UUID string should override this to return a UUID.
+        :return: Returns the candidate_set_id in UUID format.
+        """
+        return UUID(self.candidate_set_id)
 
     @property
     def headline(self) -> str:
@@ -76,12 +85,7 @@ class SlateProvider(ABC):
         """
         :return: UUID slate's configuration id, identifying the context and type of content that this slate provides.
         """
-        try:
-            # Try using the candidate_set_id as the uuid5 namespace.
-            return str(uuid5(UUID(self.candidate_set_id), self.provider_name))
-        except ValueError:
-            # candidate_set_id is not a UUID (e.g. 'NEW_TAB_EN_US'), so add it to the uuid5 name instead.
-            return str(uuid5(UUID('00000000-0000-0000-0000-000000000000'), self.provider_name + self.candidate_set_id))
+        return str(uuid5(self.candidate_set_id_uuid, self.provider_name))
 
     @property
     def recommendation_reason_type(self) -> Optional[RecommendationReasonType]:

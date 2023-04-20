@@ -1,5 +1,6 @@
 import logging
 from typing import List
+from uuid import uuid5, UUID
 
 from app.data_providers.corpus.corpus_api_client import CorpusApiClient
 from app.data_providers.feature_group.corpus_engagement_provider import CorpusEngagementProvider
@@ -46,6 +47,14 @@ class NewTabSlateProvider(SlateProvider):
     def candidate_set_id(self) -> str:
         # The recommendation_surface_id (e.g. NEW_TAB_EN_US) uniquely identifies the candidates for the New Tab slate.
         return self.recommendation_surface_id.value
+
+    @property
+    def candidate_set_id_uuid(self) -> UUID:
+        """
+        :return: A UUID uniquely identifying the candidate_set_id, as is expected by the base class.
+        """
+        # The UUID on the left is an arbitrary one.
+        return uuid5(UUID('8066f150-6e8d-4f1b-a432-d7260e1aad78'), self.candidate_set_id)
 
     @property
     def headline(self) -> str:
