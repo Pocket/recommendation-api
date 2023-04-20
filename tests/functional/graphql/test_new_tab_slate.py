@@ -47,11 +47,14 @@ def pocket_graph_request_headers() -> Dict[str, str]:
 @pytest.mark.parametrize(
     "locale,region",
     [
+        # Test cases based on the values that firefox-api-proxy can pass through:
+        # https://github.com/Pocket/firefox-api-proxy/blob/main/src/generated/openapi/types.ts#L123-L124
         ('es-ES', 'ES'),
+        ('es', 'ES'),  # Firefox uses both 'es' and 'es-ES' format for locale.
+        ('es-ES', 'FR'),  # Spanish-language Firefox geographically located in France.
         ('fr-FR', 'FR'),
-        ('fr-CA', 'CA'),
         ('it-IT', 'IT'),
-        ('it-IT', 'null'),
+        ('it-IT', 'null'),  # Region can be null.
     ])
 async def test_new_tab_slate(locale, region, snowplow_micro, pocket_graph_request_headers):
     """
