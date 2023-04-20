@@ -49,7 +49,9 @@ def pocket_graph_request_headers() -> Dict[str, str]:
     [
         ('es-ES', 'ES'),
         ('fr-FR', 'FR'),
+        ('fr-CA', 'CA'),
         ('it-IT', 'IT'),
+        ('it-IT', 'null'),
     ])
 async def test_new_tab_slate(locale, region, snowplow_micro, pocket_graph_request_headers):
     """
