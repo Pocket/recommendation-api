@@ -53,8 +53,8 @@ class TestNewTabSlateProvider:
 
         assert CORPUS_API_CLIENT_FIXTURE_ITEM_COUNT == len(slate.recommendations)
         errors = [r for r in caplog.records if r.levelname == 'ERROR']
-        assert len(errors) == 1
-        assert 'scheduledDate' in errors[0].message
+        assert len(errors) > 0
+        assert 'scheduled_date' in errors[0].message
 
     async def test_rank_corpus_items(self, new_tab_slate_provider, corpus_items_10, caplog, aiocache_functions_fixture):
         ranked_items = await new_tab_slate_provider.rank_corpus_items(items=corpus_items_10)

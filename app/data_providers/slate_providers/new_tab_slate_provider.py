@@ -81,7 +81,12 @@ class NewTabSlateProvider(SlateProvider):
         """
         :return: A string that identifiers the scheduled surface, scheduled date, and CorpusItem.
         """
-        return f'{self.recommendation_surface_id}/{item.id}/{self.corpus_api_client.get_scheduled_date(item.id)}'
+        scheduled_date = self.corpus_api_client.get_scheduled_date(item.id)
+        if scheduled_date is None:
+            logging.error(f'scheduled_date is None for {item.id}. We will gracefully degrade performance by continuing'
+                          f' to return recommendations with a different `tile_id` value.')
+
+        return f'{self.recommendation_surface_id}/{item.id}/{scheduled_date}'
 
     async def rank_corpus_items(self, items: List[CorpusItemModel], *args, **kwargs) -> List[CorpusItemModel]:
         """
@@ -98,15 +103,7 @@ class NewTabSlateProvider(SlateProvider):
             default_alpha_prior=188,  # beta * P99 German NewTab CTR for 2023-03-28 to 2023-04-05 (1.5%)
             default_beta_prior=12500)  # 0.5% of median German NewTab item impressions for 2023-03-28 to 2023-04-05.
 
-        self._log_error_if_scheduled_dates_are_none(items)
         # Sort newest to oldest. Sort is stable, so it will preserve the Thompson sampling within a scheduled date.
         items.sort(key=lambda item: str(self.corpus_api_client.get_scheduled_date(item.id)), reverse=True)
 
         return items
-
-    def _log_error_if_scheduled_dates_are_none(self, items):
-        items_without_dates = [item for item in items if self.corpus_api_client.get_scheduled_date(item.id) is None]
-        if items_without_dates:
-            logging.error(f'NewTabSlateProvider received {len(items_without_dates)} items with a null scheduledDate for'
-                          f' {self.recommendation_surface_id.value}. It will gracefully degrade by continuing to return'
-                          f' recommendations that aren\'t ranked on age. CorpusItem ids w={[it.id for it in items_without_dates]}.')

@@ -1,6 +1,7 @@
 import itertools
+import logging
 from datetime import datetime, timedelta
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 import pytz
 
@@ -54,9 +55,18 @@ class CorpusApiClient(CorpusFetchable):
 
         return corpus_items
 
-    def get_scheduled_date(self, corpus_item_id: str) -> str:
+    def get_scheduled_date(self, corpus_item_id: str) -> Optional[str]:
         """
         After fetch() is called, this returns the scheduled date for the given CorpusItem.id.
         :return: Date string in format YYYY-MM-DD.
+                 scheduledDate is a required field in ScheduledSurfaceItem GraphQL schema, and fetch sets this value for
+                 every `corpus_item.id` that it returns, so it should never be missing. If it is still missing for some
+                 reason, then None will be returned and an error will be logged.
         """
-        return self._corpus_item_scheduled_date.get(corpus_item_id)
+        if corpus_item_id in self._corpus_item_scheduled_date:
+            return self._corpus_item_scheduled_date[corpus_item_id]
+        else:
+            logging.error(
+                f'CorpusApiClient does not have a scheduledDate for {corpus_item_id}. Although this is not expected to '
+                f'happen, the caller should continue returning recommendations and gracefully degrade performance.')
+            return None
