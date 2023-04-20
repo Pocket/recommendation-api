@@ -47,12 +47,14 @@ class TestNewTabSlateProvider:
         assert CORPUS_API_CLIENT_FIXTURE_ITEM_COUNT == len(slate.recommendations)
         assert not any(r.levelname == 'ERROR' for r in caplog.records)
 
-    async def test_get_slate(
+    async def test_get_slate_without_scheduled_date(
             self, new_tab_slate_provider_without_scheduled_date, corpus_items_10, caplog, aiocache_functions_fixture):
         slate = await new_tab_slate_provider_without_scheduled_date.get_slate()
 
         assert CORPUS_API_CLIENT_FIXTURE_ITEM_COUNT == len(slate.recommendations)
-        assert any(r.levelname == 'ERROR' for r in caplog.records)
+        errors = [r for r in caplog.records if r.levelname == 'ERROR']
+        assert len(errors) == 1
+        assert 'scheduledDate' in errors[0].message
 
     async def test_rank_corpus_items(self, new_tab_slate_provider, corpus_items_10, caplog, aiocache_functions_fixture):
         ranked_items = await new_tab_slate_provider.rank_corpus_items(items=corpus_items_10)

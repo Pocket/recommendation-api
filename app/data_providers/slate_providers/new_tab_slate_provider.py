@@ -96,8 +96,8 @@ class NewTabSlateProvider(SlateProvider):
         return items
 
     def _log_error_if_scheduled_dates_are_none(self, items):
-        items_with_missing_dates = [item for item in items if self.corpus_api_client.get_scheduled_date(item) is None]
-        if items_with_missing_dates:
-            logging.error(f'NewTabSlateProvider received {len(items_with_missing_dates)} without a scheduled_date for '
-                          f'{self.recommendation_surface_id.value}: {items_with_missing_dates}. It will gracefully '
-                          f'degrade by continuing to return recommendations that aren\'t ranked on age.')
+        items_without_dates = [item for item in items if self.corpus_api_client.get_scheduled_date(item.id) is None]
+        if items_without_dates:
+            logging.error(f'NewTabSlateProvider received {len(items_without_dates)} items with a null scheduledDate for'
+                          f' {self.recommendation_surface_id.value}. It will gracefully degrade by continuing to return'
+                          f' recommendations that aren\'t ranked on age. CorpusItem ids w={[it.id for it in items_without_dates]}.')
