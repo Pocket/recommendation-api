@@ -11,7 +11,7 @@ from tests.assets.topics import business_topic, all_topic_fixtures
 @pytest.fixture
 def for_you_slate_provider(corpus_feature_group_client, corpus_engagement_provider, translation_provider):
     return ForYouSlateProvider(
-        corpus_feature_group_client=corpus_feature_group_client,
+        corpus_fetchable=corpus_feature_group_client,
         corpus_engagement_provider=corpus_engagement_provider,
         recommendation_surface_id=RecommendationSurfaceId.HOME,
         locale=LocaleModel.en_US,

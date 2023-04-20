@@ -21,12 +21,6 @@ class CorpusFeatureGroupClient(CorpusFetchable):
     def __init__(self, aioboto3_session: aioboto3.session.Session):
         self.aioboto3_session = aioboto3_session
 
-    async def get_corpus_items(self, corpus_ids: [str]) -> List[CorpusItemModel]:
-        # Fetch Corporeal Candidates
-        aggregate_corpus_response = await gather(*(self.fetch(corpus_id) for corpus_id in corpus_ids))
-
-        return list(itertools.chain(*aggregate_corpus_response))
-
     async def fetch(
             self,
             corpus_id: str,

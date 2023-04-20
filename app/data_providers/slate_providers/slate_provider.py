@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
-from opentelemetry import trace
 from typing import List, Optional
 from uuid import uuid5, UUID
 
-from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
+from opentelemetry import trace
+
+from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
 from app.data_providers.feature_group.corpus_engagement_provider import CorpusEngagementProvider
 from app.data_providers.translation import TranslationProvider
 from app.graphql.recommendation_reason_type import RecommendationReasonType
@@ -19,13 +20,13 @@ class SlateProvider(ABC):
 
     def __init__(
         self,
-        corpus_feature_group_client: CorpusFeatureGroupClient,
+        corpus_fetchable: CorpusFetchable,
         corpus_engagement_provider: CorpusEngagementProvider,
         recommendation_surface_id: RecommendationSurfaceId,
         locale: LocaleModel,
         translation_provider: TranslationProvider,
     ):
-        self.corpus_feature_group_client = corpus_feature_group_client
+        self.corpus_fetchable = corpus_fetchable
         self.corpus_engagement_provider = corpus_engagement_provider
         self.recommendation_surface_id = recommendation_surface_id
         self.locale = locale
@@ -35,9 +36,18 @@ class SlateProvider(ABC):
     @abstractmethod
     def candidate_set_id(self) -> str:
         """
-        :return: UUID candidate set identifier, which identifies the corpus items that serve as the input for this slate
+        :return: candidate set identifier, which identifies the corpus items that serve as the input for this slate.
+                 Feature Group uses a UUID-format, and Curated Corpus API uses a human-readable id (e.g. NEW_TAB_EN_US).
         """
         return NotImplemented
+
+    @property
+    def candidate_set_uuid(self) -> UUID:
+        """
+        Implementing classes with a candidate_set_id that is not a UUID string should override this to return a UUID.
+        :return: Returns the candidate_set_id in UUID format.
+        """
+        return UUID(self.candidate_set_id)
 
     @property
     def headline(self) -> str:
@@ -75,7 +85,7 @@ class SlateProvider(ABC):
         """
         :return: UUID slate's configuration id, identifying the context and type of content that this slate provides.
         """
-        return str(uuid5(UUID(self.candidate_set_id), self.provider_name))
+        return str(uuid5(self.candidate_set_uuid, self.provider_name))
 
     @property
     def recommendation_reason_type(self) -> Optional[RecommendationReasonType]:
@@ -88,7 +98,7 @@ class SlateProvider(ABC):
         """
         :return: The CorpusItems from the candidate set, without any rankers or filters applied.
         """
-        return await self.corpus_feature_group_client.fetch(self.candidate_set_id)
+        return await self.corpus_fetchable.fetch(self.candidate_set_id)
 
     async def rank_corpus_items(self, items: List[CorpusItemModel], *args, **kwargs) -> List[CorpusItemModel]:
         """

@@ -25,8 +25,8 @@ class TestCorpusFeatureGroupClient:
         """
         Test the case where the queried records exist in the Feature Group.
         """
-        corpus_items = await self.client.get_corpus_items(
-            list(self.feature_store_mock.records_by_id.keys())
+        corpus_items = await self.client.fetch(
+            corpus_id=list(self.feature_store_mock.records_by_id.keys())[0]
         )
 
         # Assert corpus_items reflect the corpus_candidate_sets.json fixture data.
@@ -40,4 +40,4 @@ class TestCorpusFeatureGroupClient:
         Test that a ValueError is raised when querying a record that does not exist.
         """
         with pytest.raises(ValueError):
-            await self.client.get_corpus_items(corpus_ids=['i-do-not-exist'])
+            await self.client.fetch(corpus_id='i-do-not-exist')

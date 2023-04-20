@@ -10,7 +10,7 @@ from app.models.recommendation_reason_type import RecommendationReasonType
 @pytest.fixture
 def pocket_hits_slate_provider(corpus_feature_group_client, corpus_engagement_provider, translation_provider):
     return PocketHitsSlateProvider(
-        corpus_feature_group_client=corpus_feature_group_client,
+        corpus_fetchable=corpus_feature_group_client,
         corpus_engagement_provider=corpus_engagement_provider,
         recommendation_surface_id=RecommendationSurfaceId.HOME,
         locale=LocaleModel.en_US,
