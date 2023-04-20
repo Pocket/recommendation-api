@@ -4,6 +4,8 @@ import strawberry
 from strawberry.types import Info
 from typing_extensions import Annotated
 
+from app.data_providers.PocketGraphClientSession import PocketGraphClientSession, PocketGraphConfig
+from app.data_providers.corpus.corpus_api_client import CorpusApiClient
 from app.data_providers.dispatch import NewTabDispatch
 from app.data_providers.slate_providers.new_tab_slate_provider import NewTabSlateProvider
 from app.data_providers.snowplow.config import create_snowplow_tracker, SnowplowConfig
@@ -12,6 +14,11 @@ from app.graphql.corpus_slate import CorpusSlate
 from app.graphql.util import get_pocket_client
 from app.models.localemodel import LocaleModel
 from app.singletons import DiContainer
+
+
+class CorpusApiGraphConfig(PocketGraphConfig):
+    # The dev environment does not have corpus items available, so we only connect to the production endpoint.
+    ENDPOINT_URL = PocketGraphConfig.PROD_ENDPOINT_URL
 
 
 async def resolve_new_tab_slate(
@@ -28,19 +35,20 @@ async def resolve_new_tab_slate(
     di = DiContainer.get()
     locale_model = LocaleModel.from_string(locale, default=LocaleModel.en_US)
 
-    slate_model = await NewTabDispatch(
-        new_tab_slate_provider=NewTabSlateProvider(
-            corpus_feature_group_client=di.corpus_client,
-            recommendation_surface_id=NewTabDispatch.get_recommendation_surface_id(locale=locale_model),
-            corpus_engagement_provider=di.corpus_engagement_provider,
-            locale=locale_model,
-            translation_provider=di.translation_provider,
-        ),
-        snowplow=SnowplowCorpusRecommendationsTracker(
-            tracker=create_snowplow_tracker(),
-            snowplow_config=SnowplowConfig(),
-        ),
-    ).get_slate(api_client=get_pocket_client(info))
+    async with PocketGraphClientSession(CorpusApiGraphConfig()) as graph_client_session:
+        slate_model = await NewTabDispatch(
+            new_tab_slate_provider=NewTabSlateProvider(
+                corpus_api_client=CorpusApiClient(graph_client_session),
+                recommendation_surface_id=NewTabDispatch.get_recommendation_surface_id(locale=locale_model),
+                corpus_engagement_provider=di.corpus_engagement_provider,
+                locale=locale_model,
+                translation_provider=di.translation_provider,
+            ),
+            snowplow=SnowplowCorpusRecommendationsTracker(
+                tracker=create_snowplow_tracker(),
+                snowplow_config=SnowplowConfig(),
+            ),
+        ).get_slate(api_client=get_pocket_client(info))
 
     slate = CorpusSlate.from_pydantic(slate_model)
     slate.recommendations = slate_model.recommendations
