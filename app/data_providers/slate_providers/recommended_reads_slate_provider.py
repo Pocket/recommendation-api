@@ -1,12 +1,12 @@
 from typing import List
 
-from app.data_providers.slate_providers.slate_provider import SlateProvider
+from app.data_providers.slate_providers.slate_provider import HomeSlateProvider
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.localemodel import LocaleModel
 from app.rankers.algorithms import thompson_sampling
 
 
-class RecommendedReadsSlateProvider(SlateProvider):
+class RecommendedReadsSlateProvider(HomeSlateProvider):
 
     @property
     def candidate_set_id(self) -> str:

@@ -11,13 +11,12 @@ from tests.assets.topics import all_topic_fixtures
 
 
 @pytest.fixture
-def new_tab_slate_provider(corpus_api_client, corpus_engagement_provider, translation_provider):
+def new_tab_slate_provider(corpus_api_client, corpus_engagement_provider):
     return NewTabSlateProvider(
         corpus_api_client=corpus_api_client,
         corpus_engagement_provider=corpus_engagement_provider,
         recommendation_surface_id=RecommendationSurfaceId.NEW_TAB_EN_US,
-        locale=LocaleModel.en_US,
-        translation_provider=translation_provider,
+        locale=LocaleModel.en_US
     )
 
 

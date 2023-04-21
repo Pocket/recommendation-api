@@ -108,6 +108,10 @@ class Item2ItemDispatch:
 
 
 class HomeDispatch:
+    AVAILABLE_LOCALES = [
+        LocaleModel.en_US,
+        LocaleModel.de_DE,
+    ]
 
     def __init__(
             self,
@@ -258,6 +262,13 @@ class HomeDispatch:
 
 
 class NewTabDispatch:
+    AVAILABLE_LOCALES = [
+        LocaleModel.en_US,
+        LocaleModel.de_DE,
+        LocaleModel.es_ES,
+        LocaleModel.fr_FR,
+        LocaleModel.it_IT,
+    ]
 
     def __init__(self, new_tab_slate_provider: NewTabSlateProvider, snowplow: SnowplowCorpusRecommendationsTracker):
         self.new_tab_slate_provider = new_tab_slate_provider
@@ -278,11 +289,15 @@ class NewTabDispatch:
             )))
 
         return corpus_slate
+
     @staticmethod
     def get_recommendation_surface_id(locale: LocaleModel) -> RecommendationSurfaceId:
         surface_by_locale = {
             LocaleModel.en_US: RecommendationSurfaceId.NEW_TAB_EN_US,
             LocaleModel.de_DE: RecommendationSurfaceId.NEW_TAB_DE_DE,
+            LocaleModel.es_ES: RecommendationSurfaceId.NEW_TAB_ES_ES,
+            LocaleModel.fr_FR: RecommendationSurfaceId.NEW_TAB_FR_FR,
+            LocaleModel.it_IT: RecommendationSurfaceId.NEW_TAB_IT_IT,
         }
 
         return surface_by_locale[locale]
