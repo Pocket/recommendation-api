@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, timedelta
 from typing import List, NamedTuple
 
 from aiocache import cached
@@ -60,6 +61,11 @@ class RelatedItem(NamedTuple):
 
 
 class Item2ItemRecommender:
+    # article freshness in days for non-syndicated recs
+    FRESHNESS = 90
+    # minimum save count for fallback scroll request
+    MIN_SAVE_COUNT = 1000
+
     def __init__(self):
         host = app.config.qdrant["host"]
         port = app.config.qdrant["port"]
@@ -91,19 +97,20 @@ class Item2ItemRecommender:
         return await self._recommend(resolved_id, query_filter, count)
 
     async def related(self, resolved_id: int, count: int, lang: str) -> List[RelatedItem]:
-        query_filter = self._build_filter(is_curated=True)
+        query_filter = self._build_filter(is_curated=True, freshness_days=self.FRESHNESS)
         return await self._recommend(resolved_id, query_filter, count, lang)
 
     @cached(ttl=3600, plugins=[CacheLogPlugin('saved_curated')])
     async def frequently_saved_curated(self, count: int) -> List[RelatedItem]:
         query_filter = self._build_filter(is_curated=True,
-                                          save_count=1000)
+                                          save_count=self.MIN_SAVE_COUNT,
+                                          freshness_days=self.FRESHNESS)
         return await self._scroll(query_filter, count)
 
     @cached(ttl=3600, plugins=[CacheLogPlugin('saved_syndicated')])
     async def frequently_saved_syndicated(self, count: int) -> List[RelatedItem]:
         query_filter = self._build_filter(is_curated=True,
-                                          save_count=1000,
+                                          save_count=self.MIN_SAVE_COUNT,
                                           is_syndicated=True)
         return await self._scroll(query_filter, count)
 
@@ -118,7 +125,9 @@ class Item2ItemRecommender:
                       is_syndicated: bool = None,
                       domain: str = None,
                       save_count: int = None,
-                      exclude_id: int = None) -> Filter:
+                      exclude_id: int = None,
+                      freshness_days: int = None
+                      ) -> Filter:
         must = []
         must_not = []
 
@@ -142,7 +151,11 @@ class Item2ItemRecommender:
                 key='save_count',
                 range=Range(gte=save_count)
             ))
-
+        if freshness_days is not None:
+            must.append(FieldCondition(
+                key='timestamp',
+                range=Range(gte=(datetime.now() - timedelta(days=freshness_days)).timestamp())
+            ))
         if exclude_id is not None:
             must_not.append(HasIdCondition(has_id=[exclude_id]))
 
