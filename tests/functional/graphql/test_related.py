@@ -5,6 +5,7 @@ from time import sleep
 from unittest import TestCase, mock
 from unittest.mock import patch
 import re
+from datetime import datetime, timedelta
 
 import pytest
 from fastapi.testclient import TestClient
@@ -13,6 +14,7 @@ from qdrant_client.http.exceptions import UnexpectedResponse
 
 from app import config
 from app.config import ROOT_DIR
+from app.data_providers.item2item import Item2ItemRecommender
 from app.main import app
 
 from qdrant_client import QdrantClient
@@ -22,6 +24,12 @@ from qdrant_client.models import PointStruct, VectorParams, Distance
 def populate_qdrant():
     with open(os.path.join(ROOT_DIR, 'tests/assets/json/qdrant_test_data.json')) as fp:
         test_data = json.load(fp)
+        for p in test_data[2:]:
+            p['payload']['timestamp'] = \
+                (datetime.now() - timedelta(days=Item2ItemRecommender.FRESHNESS - 5)).timestamp()
+        for p in test_data[:2]:
+            p['payload']['timestamp'] = \
+                (datetime.now() - timedelta(days=Item2ItemRecommender.FRESHNESS + 5)).timestamp()
 
         print(f"Populating Qdrant {config.qdrant['host']}, collection {config.qdrant['collection']} with test data")
         assert config.qdrant['host'] != 'qdrant.readitlater.com'
@@ -228,6 +236,9 @@ class TestGraphQLRelated(TestCase):
             assert 'corpusItem' in recs[0]
             assert 'id' in recs[0]['corpusItem']
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
+            assert all((datetime.now() - datetime.fromtimestamp
+                    (self.art_by_corpus_id[r['corpusItem']['id']]['timestamp'])).days < Item2ItemRecommender.FRESHNESS
+                       for r in recs)
             self.verify_logs(logging.INFO, item_id)
 
     def test_related_after_article(self):
@@ -245,7 +256,10 @@ class TestGraphQLRelated(TestCase):
             assert 'id' in recs[0]
             assert 'corpusItem' in recs[0]
             assert 'id' in recs[0]['corpusItem']
-            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs), recs
+            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
+            assert all((datetime.now() - datetime.fromtimestamp
+                    (self.art_by_corpus_id[r['corpusItem']['id']]['timestamp'])).days < Item2ItemRecommender.FRESHNESS
+                       for r in recs)
             assert len(set(self.art_by_corpus_id[r['corpusItem']['id']]['domain'] for r in recs)) == 3
             self.verify_logs(logging.INFO, item_id)
 
@@ -315,7 +329,8 @@ class TestGraphQLRelated(TestCase):
             assert 'corpusItem' in recs[0]
             assert 'id' in recs[0]['corpusItem']
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_syndicated'] for r in recs)
-            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['save_count'] > 1000 for r in recs)
+            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['save_count'] > Item2ItemRecommender.MIN_SAVE_COUNT
+                       for r in recs)
             assert len(set(self.art_by_corpus_id[r['corpusItem']['id']]['domain'] for r in recs)) == 3
             self.verify_logs(logging.WARNING, item_id, msg='article not found')
             self.verify_logs(logging.INFO, msg='scroll')
@@ -387,7 +402,11 @@ class TestGraphQLRelated(TestCase):
             assert 'corpusItem' in recs[0]
             assert 'id' in recs[0]['corpusItem']
             assert all(self.art_by_corpus_id[r['corpusItem']['id']]['is_curated'] for r in recs)
-            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['save_count'] > 1000 for r in recs)
+            assert all(self.art_by_corpus_id[r['corpusItem']['id']]['save_count'] > Item2ItemRecommender.MIN_SAVE_COUNT
+                       for r in recs)
+            assert all((datetime.now() - datetime.fromtimestamp
+                    (self.art_by_corpus_id[r['corpusItem']['id']]['timestamp'])).days < Item2ItemRecommender.FRESHNESS
+                       for r in recs)
             assert len(set(self.art_by_corpus_id[r['corpusItem']['id']]['domain'] for r in recs)) == 3
             self.verify_logs(logging.WARNING, item_id, msg='article not found')
             self.verify_logs(logging.INFO, msg='scroll')
