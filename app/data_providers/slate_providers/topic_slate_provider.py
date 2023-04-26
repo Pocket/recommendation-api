@@ -2,14 +2,14 @@ import random
 from typing import List, Optional
 
 from app.data_providers.slate_providers.candidate_sets import get_topic_candidate_set_id
-from app.data_providers.slate_providers.slate_provider import SlateProvider
+from app.data_providers.slate_providers.slate_provider import HomeSlateProvider
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.link import LinkModel
 from app.models.localemodel import LocaleModel
 from app.models.topic import TopicModel
 
 
-class TopicSlateProvider(SlateProvider):
+class TopicSlateProvider(HomeSlateProvider):
     def __init__(self, topic: TopicModel, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.topic = topic
