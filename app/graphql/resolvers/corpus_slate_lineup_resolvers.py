@@ -32,7 +32,11 @@ async def resolve_home_slate_lineup(root, info: Info, locale: str = 'en-US') -> 
     di = DiContainer.get()
     user = get_request_user(info)
     api_client = get_pocket_client(info)
-    locale_model = LocaleModel.from_string(locale, default=LocaleModel.en_US)
+    locale_model = LocaleModel.from_string(
+        locale,
+        available_locales=HomeDispatch.AVAILABLE_LOCALES,
+        default=LocaleModel.en_US,
+    )
     topic_provider = TopicProvider(
         di.aioboto3_session,
         locale=locale_model,
