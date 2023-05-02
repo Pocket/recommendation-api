@@ -90,9 +90,9 @@ class FeatureStoreMock:
                     errors.append({'ErrorMessage': str(e)})
 
         if errors:
-            return {'Records': [], 'Errors': errors}
+            return {'Records': records, 'Errors': errors}
         else:
-            return {'Records': []}
+            return {'Records': records}
 
     def _put_record_stub(self, *args, **kwargs):
         feature_group_name = kwargs['FeatureGroupName']

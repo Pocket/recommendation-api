@@ -70,7 +70,41 @@ class TestNewTabSlateProvider:
         assert not any(r.levelname == 'ERROR' for r in caplog.records)
 
     @pytest.mark.parametrize('repeat', range(10))  # Thompson sampling is non-deterministic, so repeat the test.
-    async def test_publisher_spread(
+    async def test_rank_by_scheduled_date_rank(
+            self, new_tab_slate_provider, corpus_items_10, aiocache_functions_fixture, repeat):
+        ranked_items = await new_tab_slate_provider.rank_corpus_items(items=corpus_items_10)
+
+        assert len(corpus_items_10) == len(ranked_items)
+        # Assert items are ranked by scheduled date in descending order
+        last_scheduled_date = None
+        for corpus_item in ranked_items:
+            scheduled_date = new_tab_slate_provider.corpus_api_client.get_scheduled_date(corpus_item.id)
+            if last_scheduled_date is not None:
+                assert last_scheduled_date >= scheduled_date
+            last_scheduled_date = scheduled_date
+
+    async def test_rank_by_thompson_sampling(
+            self, new_tab_slate_provider_without_scheduled_date, corpus_items_10, aiocache_functions_fixture):
+        # Make all publishers unique, to ensure publisher spreading has no effect on the ranking.
+        for i, corpus_item in enumerate(corpus_items_10):
+            corpus_item.publisher = f'Publisher {i}'
+
+        top_ranked_ids = []
+        bottom_ranked_ids = []
+        for i in range(50):
+            ranked_items = await new_tab_slate_provider_without_scheduled_date.rank_corpus_items(items=corpus_items_10)
+            top_ranked_ids.append(ranked_items[0].id)
+            bottom_ranked_ids.append(ranked_items[-1].id)
+
+        # The NewTabSlateProvider fixture receives engagement data from corpus_engagement.json, which has a 5% CTR for
+        # id=7 with 10,000 impressions. The prior is lower than 5%, so id 7 should be ranked first most often.
+        most_frequent_top_ranked_id = max(set(top_ranked_ids), key=top_ranked_ids.count)
+        assert most_frequent_top_ranked_id == '7'
+        # All other items are ranked by the prior, so the bottom ranked item should vary.
+        assert len(set(bottom_ranked_ids)) > 3  # Should be close to 9 with high probability.
+
+    @pytest.mark.parametrize('repeat', range(10))  # Thompson sampling is non-deterministic, so repeat the test.
+    async def test_rank_by_publisher_spread(
             self, new_tab_slate_provider_without_scheduled_date, corpus_items_10, aiocache_functions_fixture, repeat):
         # Introduce one duplicate publisher 'Publisher 0'
         for i, corpus_item in enumerate(corpus_items_10):

@@ -36,7 +36,7 @@ class DummyCorpusApiClient(CorpusApiClient):
 
     def get_scheduled_date(self, corpus_item_id: str) -> Optional[str]:
         # Return one of two dates arbitrarily, but always give the same value for the same corpus_item_id.
-        return '2023-04-17' if corpus_item_id > '8' else '2023-04-18'
+        return '2023-04-17' if ord(corpus_item_id[-1]) % 2 else '2023-04-18'
 
 
 @pytest.fixture

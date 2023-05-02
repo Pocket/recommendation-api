@@ -13,7 +13,7 @@ from tests.mocks.feature_store_mock import FeatureStoreMock
 def corpus_engagement_provider():
     feature_store_mock = FeatureStoreMock(
         feature_group_name=f'{config.ENV}-corpus-engagement-v1',
-        records_json_path=os.path.join(ROOT_DIR, 'tests/assets/json/empty_feature_group.json')
+        records_json_path=os.path.join(ROOT_DIR, 'tests/assets/json/corpus_engagement.json')
     )
 
     feature_group_client = FeatureGroupClient(aioboto3_session=feature_store_mock.aioboto3)
