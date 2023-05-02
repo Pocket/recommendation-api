@@ -87,7 +87,7 @@ class TestAlgorithmsSpreadPublishers(unittest.TestCase):
         recs[6].publisher = 'walter.com'
         recs[7].publisher = 'abides.com'
 
-        reordered = spread_publishers(recs)
+        reordered = spread_publishers(recs, spread_distance=3)
 
         # ensure the elements are re-ordered in the way we expect
 
@@ -108,7 +108,7 @@ class TestAlgorithmsSpreadPublishers(unittest.TestCase):
         recs[6].publisher = 'donnie.com'
         recs[7].publisher = 'abides.com'
 
-        reordered = spread_publishers(recs)
+        reordered = spread_publishers(recs, spread_distance=3)
 
         # ensure the elements are re-ordered in the way we expect
 
@@ -129,7 +129,7 @@ class TestAlgorithmsSpreadPublishers(unittest.TestCase):
         recs[6].publisher = 'donnie.com'
         recs[7].publisher = 'innout.com'
 
-        reordered = spread_publishers(recs)
+        reordered = spread_publishers(recs, spread_distance=3)
 
         # ensure the elements are re-ordered in the way we expect
 
@@ -149,7 +149,7 @@ class TestAlgorithmsSpreadPublishers(unittest.TestCase):
         recs[6].publisher = 'thedude.com'
         recs[7].publisher = 'donnie.com'
 
-        reordered = spread_publishers(recs)
+        reordered = spread_publishers(recs, spread_distance=3)
 
         # ensure the elements aren't reordered at all (as we don't have enough publisher variance)
         assert [x.item.item_id for x in reordered] == ['1', '2', '3', '4', '5', '6', '7', '8']
