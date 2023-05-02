@@ -24,13 +24,11 @@ class SlateProvider(ABC):
         corpus_engagement_provider: CorpusEngagementProvider,
         recommendation_surface_id: RecommendationSurfaceId,
         locale: LocaleModel,
-        translation_provider: TranslationProvider,
     ):
         self.corpus_fetchable = corpus_fetchable
         self.corpus_engagement_provider = corpus_engagement_provider
         self.recommendation_surface_id = recommendation_surface_id
         self.locale = locale
-        self.home_translations = translation_provider.get_translations(self.locale, filename='home.json')
 
     @property
     @abstractmethod
@@ -54,14 +52,14 @@ class SlateProvider(ABC):
         """
         :return: Slate headline
         """
-        return self.home_translations[f'{self.provider_name}.headline']
+        return NotImplemented
 
     @property
     def subheadline(self) -> Optional[str]:
         """
         :return: (optional) Slate subheadline
         """
-        return self.home_translations.get(f'{self.provider_name}.subheadline', None)
+        return None
 
     @property
     def more_link(self) -> Optional[LinkModel]:
@@ -135,3 +133,30 @@ class SlateProvider(ABC):
                 recommendations=recommendations,
                 recommendation_reason_type=self.recommendation_reason_type,
             )
+
+
+class HomeSlateProvider(SlateProvider, ABC):
+    def __init__(
+            self,
+            corpus_fetchable: CorpusFetchable,
+            corpus_engagement_provider: CorpusEngagementProvider,
+            recommendation_surface_id: RecommendationSurfaceId, locale: LocaleModel,
+            translation_provider: TranslationProvider,
+    ):
+        super().__init__(corpus_fetchable, corpus_engagement_provider, recommendation_surface_id, locale)
+
+        self.home_translations = translation_provider.get_translations(self.locale, filename='home.json')
+
+    @property
+    def headline(self) -> str:
+        """
+        :return: Slate headline
+        """
+        return self.home_translations[f'{self.provider_name}.headline']
+
+    @property
+    def subheadline(self) -> Optional[str]:
+        """
+        :return: (optional) Slate subheadline
+        """
+        return self.home_translations.get(f'{self.provider_name}.subheadline', None)

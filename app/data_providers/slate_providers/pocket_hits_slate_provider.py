@@ -2,11 +2,11 @@ from datetime import datetime, timedelta
 from typing import Optional
 import pytz
 
-from app.data_providers.slate_providers.slate_provider import SlateProvider
+from app.data_providers.slate_providers.slate_provider import HomeSlateProvider
 from app.models.recommendation_reason_type import RecommendationReasonType
 
 
-class PocketHitsSlateProvider(SlateProvider):
+class PocketHitsSlateProvider(HomeSlateProvider):
 
     @property
     def candidate_set_id(self) -> str:

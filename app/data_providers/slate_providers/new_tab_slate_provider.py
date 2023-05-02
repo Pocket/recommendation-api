@@ -5,7 +5,6 @@ from uuid import uuid5, UUID
 from app.data_providers.corpus.corpus_api_client import CorpusApiClient
 from app.data_providers.feature_group.corpus_engagement_provider import CorpusEngagementProvider
 from app.data_providers.slate_providers.slate_provider import SlateProvider
-from app.data_providers.translation import TranslationProvider
 from app.data_providers.util import integer_hash
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
@@ -30,8 +29,7 @@ class NewTabSlateProvider(SlateProvider):
             corpus_api_client: CorpusApiClient,
             corpus_engagement_provider: CorpusEngagementProvider,
             recommendation_surface_id: RecommendationSurfaceId,
-            locale: LocaleModel,
-            translation_provider: TranslationProvider):
+            locale: LocaleModel):
         """
         The only difference between this constructor and the parent one is that it explicitly requires a CorpusApiClient
         :param corpus_api_client: Client that gets corpus from Curated Corpus API.
@@ -40,8 +38,7 @@ class NewTabSlateProvider(SlateProvider):
             corpus_fetchable=corpus_api_client,
             corpus_engagement_provider=corpus_engagement_provider,
             recommendation_surface_id=recommendation_surface_id,
-            locale=locale,
-            translation_provider=translation_provider)
+            locale=locale)
 
         self.corpus_api_client = corpus_api_client
 
