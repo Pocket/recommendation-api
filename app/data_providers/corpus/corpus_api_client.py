@@ -23,14 +23,14 @@ class CorpusApiClient(CorpusFetchable):
         query = """
             query ScheduledSurface($scheduledSurfaceId: ID!, $date_today: Date!, $date_yesterday: Date!) {
               scheduledSurface(id: $scheduledSurfaceId) {
-                items_today:     items(date: $date_today)     { corpusItem { id topic } scheduledDate }
-                items_yesterday: items(date: $date_yesterday) { corpusItem { id topic } scheduledDate }
+                items_today:     items(date: $date_today)     { corpusItem { id topic publisher } scheduledDate }
+                items_yesterday: items(date: $date_yesterday) { corpusItem { id topic publisher } scheduledDate }
               }
             }
         """
 
-        # The date is supposed to progress at midnight EST.
-        today = datetime.now(tz=pytz.timezone('America/New_York'))
+        # The date is supposed to progress at midnight CET (Central European Time).
+        today = datetime.now(tz=pytz.timezone('CET'))
         yesterday = today - timedelta(days=1)
 
         body = {
