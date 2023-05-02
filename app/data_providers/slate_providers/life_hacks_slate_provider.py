@@ -1,7 +1,7 @@
-from app.data_providers.slate_providers.slate_provider import SlateProvider
+from app.data_providers.slate_providers.slate_provider import HomeSlateProvider
 
 
-class LifeHacksSlateProvider(SlateProvider):
+class LifeHacksSlateProvider(HomeSlateProvider):
 
     @property
     def candidate_set_id(self) -> str:
