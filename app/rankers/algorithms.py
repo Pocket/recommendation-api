@@ -269,76 +269,35 @@ def rank_by_preferred_topics(
            [r for r in recs if r.topic not in preferred_corpus_topic_ids]
 
 
-def spread_topics(recs: CorpusItemListType) -> CorpusItemListType:
+def spread_attribute(
+        recs: Union[CorpusItemListType, RecommendationListType],
+        name: str,
+        spread_distance: int = None
+) -> Union[CorpusItemListType, RecommendationListType]:
     """
-    :param recs:
-    :return: Recommendations spread by topic, while otherwise preserving the order.
+    :param recs: The recommendations to be spread
+    :param name: The attribute name to be spread on. All recs should have this attribute.
+    :param spread_distance: The distance that recs with the same attribute value should be spread apart. The default
+        value of None greedily maximizes the distance, by basing the spread distance on the number of unique values.
+    :return: Recommendations spread by an attribute, while otherwise preserving the order.
     """
-    spread_distance = len(set(r.topic for r in recs)) - 1
+    if spread_distance is None:
+        spread_distance = len(set(getattr(r, name) for r in recs)) - 1
     result_recs = []
     remaining_recs = copy(recs)
 
     while remaining_recs:
-        topics_to_avoid = set(r.topic for r in result_recs[-spread_distance:])
-        # Get the first remaining rec which topic which is not a repeat topic, or default to the first remaining rec.
-        rec = next((r for r in remaining_recs if r.topic not in topics_to_avoid), remaining_recs[0])
+        values_to_avoid = set(getattr(r, name) for r in result_recs[-spread_distance:])
+        # Get the first remaining rec which value should not be avoided, or default to the first remaining rec.
+        rec = next((r for r in remaining_recs if getattr(r, name) not in values_to_avoid), remaining_recs[0])
         result_recs.append(rec)
         remaining_recs.remove(rec)
 
     return result_recs
 
 
-def spread_publishers(recs: RecommendationListType, spread: int = 3) -> RecommendationListType:
-    """
-    Makes sure stories from the same publisher/domain are not listed sequentially, and have a configurable number
-    of stories in-between them.
-
-    :param recs: a list of recommendations in the desired order (pre-publisher spread)
-    :param spread: the minimum number of items before we can repeat a publisher/domain
-    :return: a re-ordered version of recs satisfying the spread as best as possible
-    """
-
-    # if there are no recommendations, we done
-    if not len(recs):
-        return recs
-
-    # move first item in list to first item in re-ordered list
-    reordered = [recs.pop(0)]
-
-    # iterator to keep track of spread between domains
-    iterator = 0
-
-    # iterate over remaining items in recs
-    while len(recs):
-        # if there aren't enough items left in recs to satisfy the desired domain spread,
-        # or if the iterator reaches the end of recs, then we cannot spread any further.
-        # just add the rest of the recs as-is to the end of the re-ordered list.
-
-        # note that this is a simplistic take - we could write more logic here to decrease the spread value by
-        # one each time if iterator reaches or exceeds the length of recs
-        if (len(recs) <= spread) or (iterator >= len(recs)):
-            reordered.extend(recs)
-            break
-
-        # get a list of domains that are currently invalid in the sequence
-        if len(reordered) > spread:
-            # if we have enough items in the reordered list, the invalid domains are the last spread number
-            domains_to_check = [x.publisher for x in reordered[-spread:]]
-        else:
-            # if we don't have more than spread items reordered, just get all the domains in reordered
-            domains_to_check = [x.publisher for x in reordered]
-
-        # we can add the rec at iterator position to the re-ordered list if.the rec at iterator has a different
-        # domain than the invalid list retrieved above
-        if recs[iterator].publisher not in domains_to_check:
-            reordered.append(recs.pop(iterator))
-            iterator = 0
-        else:
-            # if we cannot add the rec at position iterator to the re-ordered list, increment the iterator and try
-            # the next item in recs
-            iterator += 1
-
-    return reordered
+spread_topics = partial(spread_attribute, name='topic')
+spread_publishers = partial(spread_attribute, name='publisher', spread_distance=3)
 
 
 def unique_domains_first(recs: List) -> List:
