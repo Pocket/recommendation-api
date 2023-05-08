@@ -336,7 +336,7 @@ class RecommendationAPI extends TerraformStack {
             },
 
             autoscalingConfig: {
-                targetMinCapacity: 2,
+                targetMinCapacity: 4,
                 targetMaxCapacity: 10
             },
             alarms: {
