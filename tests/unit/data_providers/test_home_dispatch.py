@@ -12,16 +12,19 @@ from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHac
 from app.data_providers.slate_providers.pocket_hits_slate_provider import PocketHitsSlateProvider
 from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
+from app.data_providers.snowplow.config import create_snowplow_tracker, SnowplowConfig
+from app.data_providers.snowplow.snowplow_corpus_recommendations_tracker import SnowplowCorpusRecommendationsTracker
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.unleash_provider import UnleashProvider
 from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
+from app.models.api_client import ApiClient
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.localemodel import LocaleModel
-from app.models.unleash_assignment import UnleashAssignmentModel
 from app.models.request_user import RequestUser
+from app.models.unleash_assignment import UnleashAssignmentModel
 from tests.assets.topics import technology_topic, entertainment_topic, self_improvement_topic
 
 
@@ -67,6 +70,8 @@ class TestHomeDispatch:
             pocket_hits_slate_provider=MagicMock(PocketHitsSlateProvider),
             life_hacks_slate_provider=MagicMock(LifeHacksSlateProvider),
             unleash_provider=self.unleash_provider,
+            snowplow=SnowplowCorpusRecommendationsTracker(
+                tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
         )
 
     async def test_dedupe_and_limit(self):
@@ -94,14 +99,21 @@ class TestHomeDispatch:
         ]
 
         lineup = await self.home_dispatch.get_slate_lineup(
-            user=self.request_user, locale=LocaleModel.en_US, recommendation_count=2)
+            user=self.request_user, locale=LocaleModel.en_US, recommendation_count=2,
+            api_client=ApiClient(
+                consumer_key='web-client-consumer-key',
+                api_id='94110',
+                application_name='Pocket web-client',
+                is_native=True,
+                is_trusted=True,
+            ))
 
         assert [
-            ['Tech2', 'Ent4'],
-            ['PH1', 'PH2'],
-            ['Tech1', 'Ent2'],
-            ['LifeHack1', 'LifeHack2'],
-            ['Tech3', 'Tech4'],
-            ['Ent1', 'Ent3'],  # 'Ent2' is removed because it occurs in the Collection slate.
-            ['Self1'],  # 'Self1' is not removed because it's outside the top 2 of the Collection slate.
-        ] == [[rec.corpus_item.id for rec in slate.recommendations] for slate in lineup.slates]
+                   ['Tech2', 'Ent4'],
+                   ['PH1', 'PH2'],
+                   ['Tech1', 'Ent2'],
+                   ['LifeHack1', 'LifeHack2'],
+                   ['Tech3', 'Tech4'],
+                   ['Ent1', 'Ent3'],  # 'Ent2' is removed because it occurs in the Collection slate.
+                   ['Self1'],  # 'Self1' is not removed because it's outside the top 2 of the Collection slate.
+               ] == [[rec.corpus_item.id for rec in slate.recommendations] for slate in lineup.slates]

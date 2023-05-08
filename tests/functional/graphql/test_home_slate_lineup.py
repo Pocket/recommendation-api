@@ -223,7 +223,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             assert not data.get('errors')
             slates = data['data']['homeSlateLineup']['slates']
 
-            await self.wait_for_snowplow_events(n_expected_event=2)
+            await wait_for_snowplow_events(self.snowplow_micro, n_expected_event=2)
             all_snowplow_events = self.snowplow_micro.get_event_counts()
             assert all_snowplow_events == {'total': 2, 'good': 2, 'bad': 0}
 

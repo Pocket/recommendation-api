@@ -2,7 +2,7 @@ import asyncio
 import functools
 import random
 from asyncio import gather
-from typing import List, Coroutine, Any
+from typing import List, Coroutine, Any, Tuple, Optional
 
 from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
@@ -27,6 +27,7 @@ from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.localemodel import LocaleModel
 from app.models.request_user import RequestUser
 from app.models.topic import TopicModel
+from app.models.unleash_assignment import UnleashAssignmentModel
 from app.rankers.algorithms import unique_domains_first
 from app.data_providers.slate_providers.new_tab_slate_provider import NewTabSlateProvider
 
@@ -126,7 +127,9 @@ class HomeDispatch:
             pocket_hits_slate_provider: PocketHitsSlateProvider,
             life_hacks_slate_provider: LifeHacksSlateProvider,
             unleash_provider: UnleashProvider,
+            snowplow: SnowplowCorpusRecommendationsTracker
     ):
+        self.snowplow = snowplow
         self.topic_provider = topic_provider
         self.corpus_client = corpus_client
         self.preferences_provider = preferences_provider
@@ -140,18 +143,31 @@ class HomeDispatch:
         self.unleash_provider = unleash_provider
 
     async def get_slate_lineup(
-            self, user: RequestUser, locale: LocaleModel, recommendation_count: int
+            self, user: RequestUser, locale: LocaleModel, recommendation_count: int,
+            api_client: ApiClient
     ) -> CorpusSlateLineupModel:
         if locale == LocaleModel.en_US:
-            return await self.get_en_us_slate_lineup(recommendation_count=recommendation_count, user=user, locale=locale)
+            slate_lineup_model, experiment = await self.get_en_us_slate_lineup(recommendation_count=recommendation_count, user=user, locale=locale)
         elif locale == LocaleModel.de_DE:
-            return await self.get_de_de_slate_lineup(recommendation_count=recommendation_count, locale=locale)
+            slate_lineup_model, experiment = await self.get_de_de_slate_lineup(recommendation_count=recommendation_count, locale=locale)
         else:
             raise ValueError(f'Invalid locale {locale}')
 
+        asyncio.create_task(
+            self.snowplow.track(CorpusRecommendationsSendEvent(
+                corpus_slate_lineup=slate_lineup_model,
+                recommendation_surface_id=RecommendationSurfaceId.HOME,
+                locale=locale,
+                user=user,
+                api_client=api_client,
+                experiment=experiment
+            )))
+
+        return slate_lineup_model
+
     async def get_en_us_slate_lineup(
             self, user: RequestUser, recommendation_count: int, locale: LocaleModel
-    ) -> CorpusSlateLineupModel:
+    ) -> Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
 
         """
         :param user:
@@ -202,9 +218,10 @@ class HomeDispatch:
             recommendation_surface_id=RecommendationSurfaceId.HOME,
             locale=locale,
             experiment=thompson_sampling_assignment,
-        )
+        ), thompson_sampling_assignment
 
-    async def get_de_de_slate_lineup(self, recommendation_count: int, locale: LocaleModel) -> CorpusSlateLineupModel:
+    async def get_de_de_slate_lineup(self, recommendation_count: int, locale: LocaleModel) -> \
+            Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
         """
         :param recommendation_count:
         :param locale:
@@ -226,7 +243,7 @@ class HomeDispatch:
                 recommendation_count=recommendation_count,
             ),
             locale=locale,
-        )
+        ), None
 
     @staticmethod
     def _dedupe_and_limit(slates: List[CorpusSlateModel], recommendation_count: int) -> List[CorpusSlateModel]:
