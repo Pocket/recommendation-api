@@ -1,5 +1,6 @@
 import random
 import string
+from datetime import datetime, timezone
 
 import pytest
 
@@ -88,6 +89,8 @@ class TestNewTabSlateProvider:
         for i, corpus_item in enumerate(corpus_items_10):
             corpus_item.publisher = f'Publisher {i}'
 
+        fixture_item_id_with_high_ctr = '7'
+
         top_ranked_ids = []
         bottom_ranked_ids = []
         for i in range(50):
@@ -95,10 +98,18 @@ class TestNewTabSlateProvider:
             top_ranked_ids.append(ranked_items[0].id)
             bottom_ranked_ids.append(ranked_items[-1].id)
 
+            for item in ranked_items:
+                if item.id == fixture_item_id_with_high_ctr:
+                    # corpus_engagement.json fixture has UPDATED_AT set to '2023-05-01T12:00:00Z'
+                    assert item.ranked_with_engagement_updated_at == datetime(2023, 5, 1, 12, 0, 0, tzinfo=timezone.utc)
+                else:
+                    # other items do not exist in corpus_engagement.json fixture
+                    assert item.ranked_with_engagement_updated_at is None
+
         # The NewTabSlateProvider fixture receives engagement data from corpus_engagement.json, which has a 5% CTR for
         # id=7 with 10,000 impressions. The prior is lower than 5%, so id 7 should be ranked first most often.
         most_frequent_top_ranked_id = max(set(top_ranked_ids), key=top_ranked_ids.count)
-        assert most_frequent_top_ranked_id == '7'
+        assert most_frequent_top_ranked_id == fixture_item_id_with_high_ctr
         # All other items are ranked by the prior, so the bottom ranked item should vary.
         assert len(set(bottom_ranked_ids)) > 3  # Should be close to 9 with high probability.
 
