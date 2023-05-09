@@ -71,6 +71,10 @@ class TestNewTabSlateProvider:
     @pytest.mark.parametrize('repeat', range(10))  # Thompson sampling is non-deterministic, so repeat the test.
     async def test_rank_by_scheduled_date_rank(
             self, new_tab_slate_provider, corpus_items_10, aiocache_functions_fixture, repeat):
+        # Avoid any duplicate publisher in this test.
+        for i, corpus_item in enumerate(corpus_items_10):
+            corpus_item.publisher = f'Publisher {i}'
+
         ranked_items = await new_tab_slate_provider.rank_corpus_items(items=corpus_items_10)
 
         assert len(corpus_items_10) == len(ranked_items)
