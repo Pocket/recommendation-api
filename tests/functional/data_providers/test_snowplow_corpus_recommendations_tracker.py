@@ -76,7 +76,7 @@ async def test_track_engagement_updated_at(snowplow_micro, snowplow_recs_tracker
     all_snowplow_events = snowplow_micro.get_event_counts()
     assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
 
-    # Check that engagement timestamp was sent to Snowplow
+    # Check that the optional attribute was sent to Snowplow. The assertion above confirms the event schema is valid.
     good_event = json.dumps(snowplow_micro.get_good_events()[0]['event'])
     assert good_event.count('"ranked_with_engagement_updated_at"') == len(recommendations)
 
@@ -90,12 +90,11 @@ async def test_track_tile_id(snowplow_micro, snowplow_recs_tracker, slate_send_e
 
     await snowplow_recs_tracker.track(slate_send_event)
 
-    # Assert two events were sent to Snowplow: an event with recommendation metadata and a variant_enroll event.
     await wait_for_snowplow_events(snowplow_micro, n_expected_event=1)
     all_snowplow_events = snowplow_micro.get_event_counts()
     assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
 
-    # Check that engagement timestamp was sent to Snowplow
+    # Check that the optional tile id was sent to Snowplow. The assertion above confirms the event schema is valid.
     good_event = json.dumps(snowplow_micro.get_good_events()[0]['event'])
     assert good_event.count('"corpus_recommendation_tile_id"') == len(recommendations)
 
@@ -121,7 +120,7 @@ async def test_track_failure_response(slate_lineup_send_event, caplog):
     # Snowplow server errors don't cause an exception. Our service should continue to function independent of Snowplow.
     await corpus_recommendations_tracker.track(slate_lineup_send_event)
 
-    # Assert that a 501 status code was logged.
+    # Assert that an error was logged, which we alert on in Sentry if it happens in production.
     error_logs = [r for r in caplog.records if r.levelname == 'ERROR']
     assert len(error_logs) == 1
     assert "Cannot connect to host localhost" in error_logs[0].message
