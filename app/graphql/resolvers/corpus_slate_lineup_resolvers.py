@@ -78,22 +78,14 @@ async def resolve_home_slate_lineup(root, info: Info, locale: str = 'en-US') -> 
             pocket_hits_slate_provider=PocketHitsSlateProvider(**slate_provider_kwargs),
             life_hacks_slate_provider=LifeHacksSlateProvider(**slate_provider_kwargs),
             unleash_provider=unleash_provider,
+            snowplow=SnowplowCorpusRecommendationsTracker(
+                tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
         ).get_slate_lineup(
             user=user,
             locale=locale_model,
             recommendation_count=recommendation_count,
+            api_client=api_client
         )
-
-    slate_lineup_tracker = SnowplowCorpusRecommendationsTracker(
-        tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
-    asyncio.create_task(
-        slate_lineup_tracker.track(CorpusRecommendationsSendEvent(
-            corpus_slate_lineup=slate_lineup_model,
-            recommendation_surface_id=RecommendationSurfaceId.HOME,
-            locale=locale_model,
-            user=user,
-            api_client=api_client,
-        )))
 
     slate_lineup = CorpusSlateLineup.from_pydantic(slate_lineup_model)
     slate_lineup.slates = slate_lineup_model.slates
