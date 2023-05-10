@@ -5,9 +5,8 @@ from asgi_lifespan import LifespanManager
 from httpx import AsyncClient
 
 from app.data_providers.slate_providers.new_tab_slate_provider import MIN_TILE_ID, MAX_TILE_ID
-from app.data_providers.snowplow.config import SnowplowConfig
 from app.main import app
-from tests.functional.test_util.snowplow import SnowplowMicroClient, wait_for_snowplow_events
+from tests.functional.test_util.snowplow import wait_for_snowplow_events
 
 
 def _format_new_tab_query(locale, region, count=50):
@@ -23,13 +22,6 @@ def _format_new_tab_query(locale, region, count=50):
           }
         }
     ''' % {'locale': locale, 'region': region, 'count': count}
-
-
-@pytest.fixture
-def snowplow_micro() -> SnowplowMicroClient:
-    snowplow_micro = SnowplowMicroClient(config=SnowplowConfig())
-    snowplow_micro.reset_snowplow_events()
-    return snowplow_micro
 
 
 @pytest.fixture

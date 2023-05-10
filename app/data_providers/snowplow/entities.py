@@ -88,6 +88,10 @@ def _get_corpus_recommendation_data(recommendation: CorpusRecommendationModel) -
     if recommendation.tile_id:
         data['corpus_recommendation_tile_id'] = recommendation.tile_id
 
+    if recommendation.corpus_item.ranked_with_engagement_updated_at:
+        data['ranked_with_engagement_updated_at'] = \
+            int(recommendation.corpus_item.ranked_with_engagement_updated_at.timestamp())
+
     return data
 
 
