@@ -31,8 +31,8 @@ class TestCorpusFeatureGroupClient:
 
         # Assert corpus_items reflect the corpus_candidate_sets.json fixture data.
         assert len(corpus_items) > 100
-        assert corpus_items[0].dict() == {
-            "id": "cce6370a-3f54-47e5-a14a-5422cb581123", "topic": "HEALTH_FITNESS", "publisher": None}
+        assert corpus_items[0].id == "cce6370a-3f54-47e5-a14a-5422cb581123"
+        assert corpus_items[0].topic == "HEALTH_FITNESS"
 
         assert all(type(item) == CorpusItemModel for item in corpus_items)
 

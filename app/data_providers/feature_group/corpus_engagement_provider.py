@@ -87,6 +87,7 @@ class CorpusEngagementProvider:
             'TRAILING_21_DAY_IMPRESSIONS',
             'TRAILING_28_DAY_OPENS',
             'TRAILING_28_DAY_IMPRESSIONS',
+            'UPDATED_AT',
         ]
 
     @staticmethod

@@ -165,6 +165,9 @@ def thompson_sampling(
             # sample from posterior for CTR given click data
             score = beta.rvs(opens, no_opens)
             scores.append((rec, score))
+
+            if hasattr(rec, 'ranked_with_engagement_updated_at') and hasattr(metrics_model, 'updated_at'):
+                rec.ranked_with_engagement_updated_at = metrics_model.updated_at
         else:  # no click data, sample from module prior
             scores.append((rec, prior.rvs()))
 
