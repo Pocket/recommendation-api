@@ -6,6 +6,7 @@ import pytest
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.dispatch import HomeDispatch
+from app.data_providers.slate_providers.cf_slate_provider import HybridCFSlateProvider
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
 from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
@@ -64,6 +65,7 @@ class TestHomeDispatch:
             user_impression_cap_provider=MagicMock(UserImpressionCapProvider),
             topic_provider=MagicMock(TopicProvider),
             for_you_slate_provider=MagicMock(ForYouSlateProvider),
+            hybrid_cf_slate_provider=MagicMock(HybridCFSlateProvider),
             recommended_reads_slate_provider=MagicMock(RecommendedReadsSlateProvider),
             topic_slate_providers=MagicMock(TopicSlateProviderFactory),
             collection_slate_provider=MagicMock(CollectionSlateProvider),
@@ -78,8 +80,11 @@ class TestHomeDispatch:
         """
         Test that corpus recommendations are deduplicated across slates in the Home lineup.
         """
-        self.unleash_provider.get_assignment.return_value = UnleashAssignmentModel(
-            assigned=True, name='content_v1', variant='control')
+        self.unleash_provider.get_assignments.return_value = [UnleashAssignmentModel(
+            assigned=True, name='content_v1', variant='control'),
+            UnleashAssignmentModel(
+                assigned=True, name='content_v2', variant='control')
+        ]
         self.preferences_provider.fetch.return_value = None
         self.home_dispatch.recommended_reads_slate_provider.get_slate.return_value = _generate_slate(
             ['Tech2', 'Ent4'], headline='Collections')

@@ -99,3 +99,14 @@ GERMAN_HOME_TOPICS = [
     '058011b8-c70d-4a25-92e5-478e3ff0f0e6',  # Science
     '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
 ]
+
+
+lightfm = {
+    'model_loader': os.getenv('HYBRID_CF_MODEL_LOADER', 's3'),  # or local,
+    'model_bucket': os.getenv('HYBRID_CF_MODEL_BUCKET', 'pocket-data-learning'),
+    'model_artifacts': os.getenv('HYBRID_CF_MODEL_ARTIFACTS',
+                                 'home_personalization/models/model_hybrid_cf/model_artifacts_hybrid_cf_recsys_with_tags_itemsWith5Users.pkl'),
+    'past_engagements': os.getenv('HYBRID_CF_PAST_ENGAGEMENTS',
+                                 'home_personalization/models/model_hybrid_cf/past_engagements_lkp_with_tags_itemsWith5Users.pkl'),
+    'reload_time_sec': 3600
+}
