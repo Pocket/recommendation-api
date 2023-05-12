@@ -350,8 +350,8 @@ class RecommendationAPI extends TerraformStack {
             },
 
             autoscalingConfig: {
-                targetMinCapacity: 4,
-                targetMaxCapacity: 10
+                targetMinCapacity: config.environment === 'Prod' ? 10 : 4,
+                targetMaxCapacity: config.environment === 'Prod' ? 30: 10,
             },
             alarms: {
                 http5xxErrorPercentage: {
