@@ -104,10 +104,11 @@ class NewTabSlateProvider(SlateProvider):
             default_alpha_prior=188,  # beta * P99 German NewTab CTR for 2023-03-28 to 2023-04-05 (1.5%)
             default_beta_prior=12500)  # 0.5% of median German NewTab item impressions for 2023-03-28 to 2023-04-05.
 
-        # 2. Secondary sort order is publisher diversity.
-        items = spread_publishers(items, spread_distance=PUBLISHER_SPREAD_DISTANCE)
-
-        # 1. Primary sort order is recency. Sort is stable, so it will preserve existing order within a scheduled date.
+        # 2. Secondary sort order is recency.
         items.sort(key=lambda item: str(self.corpus_api_client.get_scheduled_date(item.id)), reverse=True)
+
+        # 1. Primary sort order is publisher diversity. Sort is stable, so it will preserve recency order, except
+        #    for duplicate publishers.
+        items = spread_publishers(items, spread_distance=PUBLISHER_SPREAD_DISTANCE)
 
         return items
