@@ -1,3 +1,4 @@
+import logging
 import pickle
 from io import BytesIO
 
@@ -23,6 +24,7 @@ class S3Loader(ModelLoader):
         self._bucket = bucket
 
     def load(self, path: str):
+        logging.info(f'Loading a model from s3, bucket: {self._bucket}, path: {path}')
         s3 = boto3.resource('s3')
         bucket = s3.Bucket(self._bucket)
         object = bucket.Object(path)
