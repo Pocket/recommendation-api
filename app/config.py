@@ -99,7 +99,7 @@ GERMAN_HOME_TOPICS = [
     '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
 ]
 
-lightfm = {
+hybrid_cf = {
     'model_loader': os.getenv('HYBRID_CF_MODEL_LOADER', 's3'),  # or local,
     'model_bucket': os.getenv('HYBRID_CF_MODEL_BUCKET', 'pocket-data-learning'),
     'model_artifacts': os.getenv('HYBRID_CF_MODEL_ARTIFACTS',

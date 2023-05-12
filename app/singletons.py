@@ -27,8 +27,8 @@ class DiContainer:
         self.corpus_feature_group_client = CorpusFeatureGroupClient(aioboto3_session=self.aioboto3_session)
         self.user_impression_cap_provider = UserImpressionCapProvider(aioboto3_session=self.aioboto3_session)
         self.corpus_engagement_provider = CorpusEngagementProvider(feature_group_client=self.feature_group_client)
-        self.model_loader = S3Loader(bucket=config.lightfm['model_bucket']) \
-            if config.lightfm['model_loader'] == 's3' else LocalLoader()
+        self.model_loader = S3Loader(bucket=config.hybrid_cf['model_bucket']) \
+            if config.hybrid_cf['model_loader'] == 's3' else LocalLoader()
         self.hybrid_cf_recommender = HybridCFRecommender(model_loader=self.model_loader)
 
         self.tracer = trace.get_tracer(__name__)

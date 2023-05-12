@@ -53,13 +53,13 @@ class HybridCFRecommender:
 
         self.load_model()
         self.thread = Thread(target=reload_periodically, daemon=True,
-                             args=(self, config.lightfm['reload_time_sec']))
+                             args=(self, config.hybrid_cf['reload_time_sec']))
         self.thread.start()
 
     def load_model(self):
         logging.info('HybridCF: loading models')
-        model_artifacts = self._model_loader.load(config.lightfm['model_artifacts'])
-        past_engagements_lkp = self._model_loader.load(config.lightfm['past_engagements'])
+        model_artifacts = self._model_loader.load(config.hybrid_cf['model_artifacts'])
+        past_engagements_lkp = self._model_loader.load(config.hybrid_cf['past_engagements'])
 
         model = HybridCFModel(artifacts=model_artifacts, past_engagements_lkp=past_engagements_lkp)
         logging.info('HybridCF: models are loaded')
