@@ -30,6 +30,7 @@ export const config = {
   recommendationMetricsDynamodbName: `MODELD-${environment}-RecMetrics`,
   slateMetricsDynamodbName: `MODELD-${environment}-SlateMetrics`,
   modelsBucket: isDev ? 'pocket-data-learning-dev' : 'pocket-data-learning',
+  hybrid_cf_reload_time: isDev ? '60' : '3600',
   cacheNodes,
   cacheSize,
   stateMachines: [

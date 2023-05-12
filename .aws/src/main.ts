@@ -191,6 +191,10 @@ class RecommendationAPI extends TerraformStack {
                             value: config.modelsBucket,
                         },
                         {
+                            name: 'HYBRID_CF_RELOAD_TIME_SEC',
+                            value: config.hybrid_cf_reload_time,
+                        },
+                        {
                             name: 'RECOMMENDATION_API_METADATA_TABLE',
                             value: dynamodb.metadataTable.dynamodb.name,
                         },

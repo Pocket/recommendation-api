@@ -108,5 +108,5 @@ lightfm = {
                                  'home_personalization/models/model_hybrid_cf/model_artifacts_hybrid_cf_recsys_with_tags_itemsWith5Users.pkl'),
     'past_engagements': os.getenv('HYBRID_CF_PAST_ENGAGEMENTS',
                                  'home_personalization/models/model_hybrid_cf/past_engagements_lkp_with_tags_itemsWith5Users.pkl'),
-    'reload_time_sec': 3600
+    'reload_time_sec': int(os.getenv('HYBRID_CF_RELOAD_TIME_SEC', 3600))
 }
