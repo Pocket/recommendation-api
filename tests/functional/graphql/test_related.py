@@ -14,7 +14,7 @@ from qdrant_client.http.exceptions import UnexpectedResponse
 
 from app import config
 from app.config import ROOT_DIR
-from app.data_providers.item2item import Item2ItemRecommender
+from app.recommenders.item2item import Item2ItemRecommender
 from app.main import app
 
 from qdrant_client import QdrantClient

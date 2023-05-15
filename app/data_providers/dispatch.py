@@ -6,7 +6,8 @@ from typing import List, Coroutine, Any, Tuple, Optional
 
 from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
-from app.data_providers.item2item import Item2ItemRecommender, Item2ItemError, QdrantError, UnsupportedLanguage
+from app.data_providers.slate_providers.cf_slate_provider import HybridCFSlateProvider
+from app.recommenders.item2item import Item2ItemRecommender, Item2ItemError, QdrantError, UnsupportedLanguage
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
 from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
@@ -121,6 +122,7 @@ class HomeDispatch:
             user_impression_cap_provider: UserImpressionCapProvider,
             topic_provider: TopicProvider,
             for_you_slate_provider: ForYouSlateProvider,
+            hybrid_cf_slate_provider: HybridCFSlateProvider,
             recommended_reads_slate_provider: RecommendedReadsSlateProvider,
             topic_slate_providers: TopicSlateProviderFactory,
             collection_slate_provider: CollectionSlateProvider,
@@ -129,6 +131,7 @@ class HomeDispatch:
             unleash_provider: UnleashProvider,
             snowplow: SnowplowCorpusRecommendationsTracker
     ):
+        self.hybrid_cf_slate_provider = hybrid_cf_slate_provider
         self.snowplow = snowplow
         self.topic_provider = topic_provider
         self.corpus_client = corpus_client
@@ -147,9 +150,11 @@ class HomeDispatch:
             api_client: ApiClient
     ) -> CorpusSlateLineupModel:
         if locale == LocaleModel.en_US:
-            slate_lineup_model, experiment = await self.get_en_us_slate_lineup(recommendation_count=recommendation_count, user=user, locale=locale)
+            slate_lineup_model, experiment = await self.get_en_us_slate_lineup(
+                recommendation_count=recommendation_count, user=user, locale=locale)
         elif locale == LocaleModel.de_DE:
-            slate_lineup_model, experiment = await self.get_de_de_slate_lineup(recommendation_count=recommendation_count, locale=locale)
+            slate_lineup_model, experiment = await self.get_de_de_slate_lineup(
+                recommendation_count=recommendation_count, locale=locale)
         else:
             raise ValueError(f'Invalid locale {locale}')
 
@@ -182,25 +187,33 @@ class HomeDispatch:
         """
         slates = []
 
-        user_impression_capped_list, preferred_topics, thompson_sampling_assignment = await gather(
+        user_impression_capped_list, \
+        preferred_topics, \
+        assignments = await gather(
             self.user_impression_cap_provider.get(user),
             self._get_preferred_topics(user),
-            self.unleash_provider.get_assignment('temp.web.recommendation-api.home.thompson-sampling-rerun', user=user),
-        )
+            self.unleash_provider.get_assignments(['temp.web.recommendation-api.home.thompson-sampling-rerun',
+                                                   'temp.web.recommendation-api.home.hybrid_cf_test'], user=user))
 
+        thompson_sampling_asn, cf_asn = assignments
         enable_thompson_sampling = \
-            thompson_sampling_assignment is not None and thompson_sampling_assignment.variant == 'treatment'
+            thompson_sampling_asn is not None and thompson_sampling_asn.variant == 'treatment'
+        enable_hybrid_cf = cf_asn is not None and cf_asn.variant == 'treatment'
 
-        if preferred_topics:
-            slates += [self.for_you_slate_provider.get_slate(
-                preferred_topics=preferred_topics,
-                user_impression_capped_list=user_impression_capped_list,
-                enable_thompson_sampling=enable_thompson_sampling,
-            )]
+        if enable_hybrid_cf and self.hybrid_cf_slate_provider.can_recommend(user):
+            slates += [self.hybrid_cf_slate_provider.get_slate(user=user,
+                                                               user_impression_capped_list=user_impression_capped_list)]
         else:
-            slates += [self.recommended_reads_slate_provider.get_slate(
-                enable_thompson_sampling=enable_thompson_sampling
-            )]
+            if preferred_topics:
+                slates += [self.for_you_slate_provider.get_slate(
+                    preferred_topics=preferred_topics,
+                    user_impression_capped_list=user_impression_capped_list,
+                    enable_thompson_sampling=enable_thompson_sampling,
+                )]
+            else:
+                slates += [self.recommended_reads_slate_provider.get_slate(
+                    enable_thompson_sampling=enable_thompson_sampling
+                )]
 
         slates += [
             self.pocket_hits_slate_provider.get_slate(),
@@ -217,8 +230,8 @@ class HomeDispatch:
             ),
             recommendation_surface_id=RecommendationSurfaceId.HOME,
             locale=locale,
-            experiment=thompson_sampling_assignment,
-        ), thompson_sampling_assignment
+            experiment=thompson_sampling_asn,
+        ), thompson_sampling_asn
 
     async def get_de_de_slate_lineup(self, recommendation_count: int, locale: LocaleModel) -> \
             Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:

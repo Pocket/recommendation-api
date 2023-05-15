@@ -159,7 +159,7 @@ class RecommendationAPI extends TerraformStack {
             domain: config.domain,
             taskSize: {
                 cpu: 2048,
-                memory: 4096,
+                memory: 8192,
             },
             containerConfigs: [
                 {
@@ -185,6 +185,10 @@ class RecommendationAPI extends TerraformStack {
                         {
                             name: 'AWS_DYNAMODB_ENDPOINT_URL',
                             value: `https://dynamodb.${region.name}.amazonaws.com`,
+                        },
+                        {
+                            name: 'HYBRID_CF_MODEL_BUCKET',
+                            value: config.modelsBucket,
                         },
                         {
                             name: 'RECOMMENDATION_API_METADATA_TABLE',
@@ -288,6 +292,12 @@ class RecommendationAPI extends TerraformStack {
                     }
                 ],
                 taskRolePolicyStatements: [
+                                // Give read access to a bucket with models
+                      {
+                        actions: ['s3:GetObject*', 's3:ListBucket*'],
+                        resources: [`arn:aws:s3:::${config.modelsBucket}`, `arn:aws:s3:::${config.modelsBucket}/*`],
+                        effect: 'Allow',
+                      },
                     {
                         actions: [
                             'dynamodb:BatchGet*',

@@ -1,9 +1,8 @@
-import asyncio
-
 from strawberry.types import Info
 
 from app.data_providers.PocketGraphClientSession import PocketGraphClientSession, PocketGraphConfig
 from app.data_providers.dispatch import HomeDispatch
+from app.data_providers.slate_providers.cf_slate_provider import HybridCFSlateProvider
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
 from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
@@ -19,7 +18,6 @@ from app.graphql.corpus_slate_lineup import CorpusSlateLineup
 from app.graphql.resolvers.corpus_slate_lineup_slates_resolver import DEFAULT_SLATE_COUNT
 from app.graphql.resolvers.corpus_slate_recommendations_resolver import DEFAULT_RECOMMENDATION_COUNT
 from app.graphql.util import get_field_argument, get_request_user, get_pocket_client
-from app.models.corpus_recommendations_send_event import CorpusRecommendationsSendEvent
 from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
 from app.models.localemodel import LocaleModel
 from app.singletons import DiContainer
@@ -72,6 +70,8 @@ async def resolve_home_slate_lineup(root, info: Info, locale: str = 'en-US') -> 
             user_impression_cap_provider=di.user_impression_cap_provider,
             topic_provider=topic_provider,
             for_you_slate_provider=ForYouSlateProvider(**slate_provider_kwargs),
+            hybrid_cf_slate_provider=HybridCFSlateProvider(**slate_provider_kwargs,
+                                                           hybrid_cf_recommender=di.hybrid_cf_recommender),
             recommended_reads_slate_provider=RecommendedReadsSlateProvider(**slate_provider_kwargs),
             topic_slate_providers=TopicSlateProviderFactory(**slate_provider_kwargs),
             collection_slate_provider=CollectionSlateProvider(**slate_provider_kwargs),

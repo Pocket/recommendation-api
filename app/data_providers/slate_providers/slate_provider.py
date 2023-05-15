@@ -92,7 +92,7 @@ class SlateProvider(ABC):
         """
         return None
 
-    async def get_candidate_corpus_items(self) -> List[CorpusItemModel]:
+    async def get_candidate_corpus_items(self, *args, **kwargs) -> List[CorpusItemModel]:
         """
         :return: The CorpusItems from the candidate set, without any rankers or filters applied.
         """
@@ -121,7 +121,7 @@ class SlateProvider(ABC):
         :return: A Corpus Slate that can be recommended
         """
         with trace.get_tracer(__name__).start_as_current_span(f'{str(self)}.get_slate'):
-            candidate_items = await self.get_candidate_corpus_items()
+            candidate_items = await self.get_candidate_corpus_items(*args, **kwargs)
             ranked_items = await self.rank_corpus_items(candidate_items, *args, **kwargs)
             recommendations = await self.get_recommendations(ranked_items, *args, **kwargs)
 

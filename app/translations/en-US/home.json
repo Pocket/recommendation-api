@@ -1,6 +1,8 @@
 {
   "ForYouSlateProvider.headline": "For You",
   "ForYouSlateProvider.subheadline": "Recommended for your interests",
+  "HybridCFSlateProvider.headline" : "For You",
+  "HybridCFSlateProvider.subheadline" : "Recommended for your interests",
   "RecommendedReadsSlateProvider.headline": "Recommended Reads",
   "RecommendedReadsSlateProvider.subheadline": "Curated by Pocket",
   "PocketHitsSlateProvider.headline": "Today’s Pocket Hits",

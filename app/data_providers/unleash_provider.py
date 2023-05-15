@@ -53,8 +53,10 @@ class UnleashProvider:
         # Currently FeatureFlags only has a query for all assignments:
         # https://github.com/Pocket/feature-flags/blob/main/schema.graphql#L25
         all_assignments = await self._get_all_assignments(user=user)
-
-        return [assignment for assignment in all_assignments if assignment.name in names and assignment.assigned]
+        
+        assignments = {asn.name: asn for asn in all_assignments}
+        return [assignments[name] if name in assignments and assignments[name].assigned else None
+                for name in names]
 
     async def _get_all_assignments(self, user: RequestUser) -> List[UnleashAssignmentModel]:
         """
