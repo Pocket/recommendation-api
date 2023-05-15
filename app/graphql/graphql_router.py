@@ -22,12 +22,6 @@ from app.graphql.user_recommendation_preferences import UserRecommendationPrefer
 
 @strawberry.type
 class Query:
-    new_tab_slate: CorpusSlate = strawberry.field(
-        resolver=resolve_new_tab_slate,
-        description='Get a slate of ranked recommendations for the Firefox New Tab.'
-                    ' Currently supports the Italy, France, and Spain markets.'
-    )
-
     home_slate_lineup: CorpusSlateLineup = strawberry.field(
         resolver=resolve_home_slate_lineup,
         description='Get ranked corpus slates and recommendations to deliver a unified Home experience. '
