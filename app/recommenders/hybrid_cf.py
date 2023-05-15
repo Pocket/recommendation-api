@@ -80,8 +80,7 @@ class HybridCFRecommender:
 
         # run inference
         dot_prod = np.dot(model.item_factors, model.user_factors[user_idx])
-        num_approved = len(model.approved_subset_items)
-        scores = (dot_prod + model.items_bias + model.users_bias[user_idx])[:num_approved]
+        scores = (dot_prod + model.items_bias + model.users_bias[user_idx])
         recs = model.approved_subset_items[np.argsort(-scores)][:k]
 
         # filter already engaged
