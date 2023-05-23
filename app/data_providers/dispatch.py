@@ -199,8 +199,11 @@ class HomeDispatch:
         enable_thompson_sampling = \
             thompson_sampling_asn is not None and thompson_sampling_asn.variant == 'treatment'
         enable_hybrid_cf = cf_asn is not None and cf_asn.variant == 'treatment'
+        cf_can_recommend = self.hybrid_cf_slate_provider.can_recommend(user)
+        if not cf_can_recommend:
+            enable_hybrid_cf = None
 
-        if enable_hybrid_cf and self.hybrid_cf_slate_provider.can_recommend(user):
+        if enable_hybrid_cf and cf_can_recommend:
             slates += [self.hybrid_cf_slate_provider.get_slate(user=user,
                                                                user_impression_capped_list=user_impression_capped_list)]
         else:
@@ -230,8 +233,8 @@ class HomeDispatch:
             ),
             recommendation_surface_id=RecommendationSurfaceId.HOME,
             locale=locale,
-            experiment=thompson_sampling_asn,
-        ), thompson_sampling_asn
+            experiment=cf_can_recommend,
+        ), cf_can_recommend
 
     async def get_de_de_slate_lineup(self, recommendation_count: int, locale: LocaleModel) -> \
             Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
