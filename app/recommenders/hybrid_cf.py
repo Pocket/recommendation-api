@@ -60,11 +60,16 @@ class HybridCFRecommender:
         logging.info('HybridCF: loading models')
         model_artifacts = self._model_loader.load(config.hybrid_cf['model_artifacts'])
         past_engagements_lkp = self._model_loader.load(config.hybrid_cf['past_engagements'])
+        test_predictions = self._model_loader.load(config.hybrid_cf['test_predictions'])
 
         model = HybridCFModel(artifacts=model_artifacts, past_engagements_lkp=past_engagements_lkp)
         logging.info('HybridCF: models are loaded')
 
-        assert len(self.recommend(model.idx2users[0], 10, model=model)) == 10
+        # ensure that RecAPI code produces exactly the same results as Metaflow one
+        test_result = self.recommend(model.idx2users[test_predictions['userid']], k=100, model=model)[:10]
+        if [ci.id for ci in test_result] != test_predictions['top_result'][:10]:
+            raise ValueError('HybridCF: test predictions do not match')
+
         self._model = model
 
     def can_recommend(self, user_id: str) -> bool:
