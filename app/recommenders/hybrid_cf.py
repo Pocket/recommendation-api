@@ -47,6 +47,10 @@ class HybridCFRecommender:
     """
     Hybrid Collaborative Filtering recommender
     """
+    # 230 Mb in the storage utilizes ~30% of RecAPI memory (8GB) (!)
+    # after loading objects take ~650MB per worker x2 = 1300MB + some leakage
+    MAX_STORAGE_ARTIFACTS_SIZE = 500 * 1024 * 1024  # 500Mb
+
     def __init__(self, model_loader: ModelLoader):
         self._model_loader = model_loader
         self._model = None
@@ -57,23 +61,36 @@ class HybridCFRecommender:
         self.thread.start()
 
     def load_model(self):
-        logging.info('HybridCF: loading models')
-        model_artifacts = self._model_loader.load(config.hybrid_cf['model_artifacts'])
-        past_engagements_lkp = self._model_loader.load(config.hybrid_cf['past_engagements'])
-        test_predictions = self._model_loader.load(config.hybrid_cf['test_predictions'])
+        try:
+            logging.info('HybridCF: loading models')
 
-        model = HybridCFModel(artifacts=model_artifacts, past_engagements_lkp=past_engagements_lkp)
-        logging.info('HybridCF: models are loaded')
+            total_storage_size = self._model_loader.get_size(config.hybrid_cf['model_artifacts']) + \
+                                 self._model_loader.get_size(config.hybrid_cf['past_engagements']) + \
+                                 self._model_loader.get_size(config.hybrid_cf['test_predictions'])
+            logging.info(f'HybridCF: total storage artifacts size: {total_storage_size}')
+            if total_storage_size > self.MAX_STORAGE_ARTIFACTS_SIZE:
+                raise ValueError(f'size of model artifacts in the storage {total_storage_size} '
+                                 f'exceeds maximum {self.MAX_STORAGE_ARTIFACTS_SIZE}')
 
-        # ensure that RecAPI code produces exactly the same results as Metaflow one
-        test_result = self.recommend(model.idx2users[test_predictions['userid']], k=100, model=model)[:10]
-        if [ci.id for ci in test_result] != test_predictions['top_result'][:10]:
-            raise ValueError('HybridCF: test predictions do not match')
+            model_artifacts = self._model_loader.load(config.hybrid_cf['model_artifacts'])
+            past_engagements_lkp = self._model_loader.load(config.hybrid_cf['past_engagements'])
+            test_predictions = self._model_loader.load(config.hybrid_cf['test_predictions'])
 
-        self._model = model
+            model = HybridCFModel(artifacts=model_artifacts, past_engagements_lkp=past_engagements_lkp)
+
+            # ensure that RecAPI code produces exactly the same results as Metaflow one
+            test_result = self.recommend(model.idx2users[test_predictions['userid']], k=100, model=model)[:10]
+            if [ci.id for ci in test_result] != test_predictions['top_result'][:10]:
+                raise ValueError('HybridCF: test predictions do not match')
+
+            self._model = model
+            logging.info('HybridCF: models are loaded')
+        except Exception as ex:
+            # we still want the RecAPI to start and serve the fallback recs
+            logging.error(f'HybridCF: error while loading the model - {ex}', exc_info=ex)
 
     def can_recommend(self, user_id: str) -> bool:
-        return user_id in self._model.users2idx
+        return self._model and user_id in self._model.users2idx
 
     def recommend(self, user_id: str, k: int, model: HybridCFModel = None) -> Optional[List[CorpusItemModel]]:
         model = model or self._model
