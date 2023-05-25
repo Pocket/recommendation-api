@@ -185,7 +185,8 @@ class HomeDispatch:
             4. 'Life Hacks' slate
             5. Topic slates according to preferred topics if available, otherwise default topics.
         """
-        slates = []
+        if self.hybrid_cf_slate_provider.can_recommend(user):
+            user.user_models.append('hybrid_cf')
 
         user_impression_capped_list, \
         preferred_topics, \
@@ -200,6 +201,7 @@ class HomeDispatch:
             thompson_sampling_asn is not None and thompson_sampling_asn.variant == 'treatment'
         enable_hybrid_cf = cf_asn is not None and cf_asn.variant == 'treatment'
 
+        slates = []
         if enable_hybrid_cf and self.hybrid_cf_slate_provider.can_recommend(user):
             slates += [self.hybrid_cf_slate_provider.get_slate(user=user,
                                                                user_impression_capped_list=user_impression_capped_list)]
