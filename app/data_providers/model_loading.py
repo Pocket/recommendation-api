@@ -1,6 +1,7 @@
 import logging
 import pickle
 from io import BytesIO
+import os
 
 import boto3
 
@@ -12,11 +13,17 @@ class ModelLoader:
     def load(self, path: str):
         raise NotImplemented
 
+    def get_size(self, path: str) -> int:
+        raise NotImplemented
+
 
 class LocalLoader(ModelLoader):
     def load(self, path: str):
         with open(path, 'rb') as f:
             return pickle.load(f)
+
+    def get_size(self, path: str) -> int:
+        return os.path.getsize(path)
 
 
 class S3Loader(ModelLoader):
@@ -33,3 +40,8 @@ class S3Loader(ModelLoader):
         object.download_fileobj(file_stream)
 
         return pickle.loads(file_stream.getvalue())
+
+    def get_size(self, path: str) -> int:
+        s3_client = boto3.Session().client('s3')
+        response = s3_client.head_object(Bucket=self._bucket, Key=path)
+        return response['ContentLength']
