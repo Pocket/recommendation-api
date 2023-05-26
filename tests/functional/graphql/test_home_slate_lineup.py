@@ -123,8 +123,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         preferences_fixture = _user_recommendation_preferences_fixture(str(self.request_user.user_id), preferred_topics)
         mock_fetch_user_recommendation_preferences.return_value = preferences_fixture
         mock_get_user_impression_caps.return_value = corpus_items_fixture[:6]
-        mock_get_all_assignments.return_value = [UnleashAssignmentModel(
-            assigned=True, name='temp.web.recommendation-api.home.thompson-sampling-rerun', variant='control')]
+        mock_get_all_assignments.return_value = []
 
         async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
             response = await client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers=self.headers)
@@ -153,7 +152,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
 
             await wait_for_snowplow_events(self.snowplow_micro, n_expected_event=2)
             all_snowplow_events = self.snowplow_micro.get_event_counts()
-            assert all_snowplow_events == {'total': 2, 'good': 2, 'bad': 0}
+            assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
 
     @patch.object(CorpusFeatureGroupClient, 'fetch')
     @patch.object(UserRecommendationPreferencesProvider, 'fetch')
@@ -172,8 +171,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         mock_fetch_corpus_items.return_value = corpus_items_fixture
         mock_fetch_user_recommendation_preferences.return_value = None  # User has does not have a preferences record
         mock_get_user_impression_caps.return_value = corpus_items_fixture[:6]
-        mock_get_all_assignments.return_value = [UnleashAssignmentModel(
-            assigned=True, name='temp.web.recommendation-api.home.thompson-sampling-rerun', variant='control')]
+        mock_get_all_assignments.return_value = []
 
         async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
             response = await client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers=self.headers)
@@ -195,39 +193,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
 
             await wait_for_snowplow_events(self.snowplow_micro, n_expected_event=2)
             all_snowplow_events = self.snowplow_micro.get_event_counts()
-            assert all_snowplow_events == {'total': 2, 'good': 2, 'bad': 0}
-
-    @patch.object(CorpusFeatureGroupClient, 'fetch')
-    @patch.object(UserRecommendationPreferencesProvider, 'fetch')
-    @patch.object(UserImpressionCapProvider, 'get')
-    @patch.object(UnleashProvider, '_get_all_assignments')
-    @patch.object(FeatureGroupClient, 'batch_get_records')
-    async def test_thompson_sampling_unpersonalized_home_slate_lineup(
-            self,
-            mock_batch_get_records,
-            mock_get_all_assignments,
-            mock_get_user_impression_caps,
-            mock_fetch_user_recommendation_preferences,
-            mock_fetch_corpus_items,
-    ):
-        corpus_items_fixture = _corpus_items_fixture(n=100)
-        mock_fetch_corpus_items.return_value = corpus_items_fixture
-        mock_fetch_user_recommendation_preferences.return_value = None  # User has does not have a preferences record
-        mock_get_user_impression_caps.return_value = corpus_items_fixture[:6]
-        mock_get_all_assignments.return_value = [UnleashAssignmentModel(
-            assigned=True, name='temp.web.recommendation-api.home.thompson-sampling-rerun', variant='treatment')]
-        mock_batch_get_records.return_value = []
-
-        async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
-            response = await client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers=self.headers)
-            data = response.json()
-
-            assert not data.get('errors')
-            slates = data['data']['homeSlateLineup']['slates']
-
-            await wait_for_snowplow_events(self.snowplow_micro, n_expected_event=2)
-            all_snowplow_events = self.snowplow_micro.get_event_counts()
-            assert all_snowplow_events == {'total': 2, 'good': 2, 'bad': 0}
+            assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
 
     @patch.object(CorpusFeatureGroupClient, 'fetch')
     @patch.object(UserRecommendationPreferencesProvider, 'fetch')
@@ -287,10 +253,9 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         preferences_fixture = _user_recommendation_preferences_fixture(str(self.request_user.user_id), preferred_topics)
         mock_fetch_user_recommendation_preferences.return_value = preferences_fixture
         mock_get_user_impression_caps.return_value = corpus_items_fixture[:6]
-        mock_get_all_assignments.return_value = [UnleashAssignmentModel(
-            assigned=True, name='temp.web.recommendation-api.home.thompson-sampling-rerun', variant='control'),
+        mock_get_all_assignments.return_value = [
             UnleashAssignmentModel(
-                assigned=True, name='temp.web.recommendation-api.home.hybrid_cf_test', variant='treatment'),
+                assigned=True, name='temp.web.recommendation-api.home.hybrid_cf_test', variant='treatment')
         ]
 
         async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):

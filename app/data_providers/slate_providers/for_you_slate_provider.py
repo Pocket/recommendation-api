@@ -41,18 +41,15 @@ class ForYouSlateProvider(HomeSlateProvider):
         assert preferred_topics is not None
         assert user_impression_capped_list is not None
 
-        if kwargs.get('enable_thompson_sampling'):
-            metrics = await self.corpus_engagement_provider.get(
-                self.recommendation_surface_id, self.configuration_id, items)
+        metrics = await self.corpus_engagement_provider.get(
+            self.recommendation_surface_id, self.configuration_id, items)
 
-            items = thompson_sampling(
-                recs=items,
-                metrics=metrics,
-                trailing_period=14,  # A long period might work better given that some topics get few impressions
-                default_alpha_prior=20,  # beta * P95 item CTR for this slate (1.6%)
-                default_beta_prior=1200)  # 5% of average daily item impressions for this slate
-        else:
-            random.shuffle(items)
+        items = thompson_sampling(
+            recs=items,
+            metrics=metrics,
+            trailing_period=14,  # A long period might work better given that some topics get few impressions
+            default_alpha_prior=20,  # beta * P95 item CTR for this slate (1.6%)
+            default_beta_prior=1200)  # 5% of average daily item impressions for this slate
 
         items = rank_by_impression_caps(items, user_impression_capped_list)
         items = spread_topics(items)
