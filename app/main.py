@@ -13,12 +13,12 @@ from opentelemetry.sdk.resources import Resource, get_aggregated_resources
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.trace.sampling import TraceIdRatioBased
-from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from strawberry.fastapi import GraphQLRouter
 
 from app.cache import initialize_caches
 from app.config import ENV, ENV_PROD, sentry as sentry_config, log_level, otel_daemon_address
 from app.graphql.graphql_router import schema
+from app.graphql.sentry_graphql_middleware import GraphqlIntegration
 from app.health_status import get_health_status, set_health_status, HealthStatus
 from app.instrumentation.aiobotocore import AiobotocoreInstrumentor
 from app.models.candidate_set import candidate_set_factory
@@ -32,13 +32,13 @@ logging.getLogger().setLevel(log_level)
 sentry_sdk.init(
     dsn=sentry_config['dsn'],
     release=sentry_config['release'],
-    environment=sentry_config['environment']
+    environment=sentry_config['environment'],
+    integrations=[
+        GraphqlIntegration(),
+    ],
 )
-# Ignore graphql.execution.utils to prevent duplicate Sentry events. Exceptions are handled by GraphQLSentryMiddleware.
-sentry_sdk.integrations.logging.ignore_logger("graphql.execution.utils")
 
 app = FastAPI()
-app.add_middleware(SentryAsgiMiddleware)
 
 # Add our GraphQL route to the main url
 graphql_app = GraphQLRouter(schema, path='/')
