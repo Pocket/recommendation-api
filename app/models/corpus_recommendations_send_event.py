@@ -20,7 +20,7 @@ class CorpusRecommendationsSendEvent(BaseModel):
         description='UTC time when when the recommendations were sent by the Recommendation API.')
     recommendation_surface_id: RecommendationSurfaceId = Field(
         description='Identifies the recommendation surface that the recommendations will be shown on.')
-    locale: LocaleModel = Field(description='Locale that the recommendations and slate copy is targeted to')
+    locale: str = Field(description='Locale that the recommendations and slate copy is targeted to')
     corpus_slate: Optional[CorpusSlateModel] = Field(
         default=None,
         description='The recommended CorpusSlate. Either corpus_slate_lineup or corpus_slate must be set.'

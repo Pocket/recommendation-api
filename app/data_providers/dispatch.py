@@ -1,6 +1,7 @@
 import asyncio
 import functools
 import random
+import re
 from asyncio import gather
 from typing import List, Coroutine, Any, Tuple, Optional
 
@@ -162,7 +163,7 @@ class HomeDispatch:
             self.snowplow.track(CorpusRecommendationsSendEvent(
                 corpus_slate_lineup=slate_lineup_model,
                 recommendation_surface_id=RecommendationSurfaceId.HOME,
-                locale=locale,
+                locale=locale.value,
                 user=user,
                 api_client=api_client,
                 experiment=experiment
@@ -302,19 +303,13 @@ class HomeDispatch:
 
 
 class NewTabDispatch:
-    AVAILABLE_LOCALES = [
-        LocaleModel.en_US,
-        LocaleModel.de_DE,
-        LocaleModel.es_ES,
-        LocaleModel.fr_FR,
-        LocaleModel.it_IT,
-    ]
+    DEFAULT_LANGUAGE = 'en'
 
     def __init__(self, new_tab_slate_provider: NewTabSlateProvider, snowplow: SnowplowCorpusRecommendationsTracker):
         self.new_tab_slate_provider = new_tab_slate_provider
         self.snowplow = snowplow
 
-    async def get_slate(self, api_client: ApiClient) -> CorpusSlateModel:
+    async def get_slate(self, api_client: ApiClient, locale: str) -> CorpusSlateModel:
         """
         :return: the New Tab slate
         """
@@ -324,20 +319,75 @@ class NewTabDispatch:
             self.snowplow.track(event=CorpusRecommendationsSendEvent(
                 corpus_slate=corpus_slate,
                 recommendation_surface_id=self.new_tab_slate_provider.recommendation_surface_id,
-                locale=self.new_tab_slate_provider.locale,
+                locale=self.normalize_locale(locale),
                 api_client=api_client,
             )))
 
         return corpus_slate
 
     @staticmethod
-    def get_recommendation_surface_id(locale: LocaleModel) -> RecommendationSurfaceId:
-        surface_by_locale = {
-            LocaleModel.en_US: RecommendationSurfaceId.NEW_TAB_EN_US,
-            LocaleModel.de_DE: RecommendationSurfaceId.NEW_TAB_DE_DE,
-            LocaleModel.es_ES: RecommendationSurfaceId.NEW_TAB_ES_ES,
-            LocaleModel.fr_FR: RecommendationSurfaceId.NEW_TAB_FR_FR,
-            LocaleModel.it_IT: RecommendationSurfaceId.NEW_TAB_IT_IT,
-        }
+    def get_recommendation_surface_id(locale: str, region: Optional[str]) -> RecommendationSurfaceId:
+        """
+        :param locale: The language variant preferred by the user (e.g. 'en-US', 'en_US', or 'en')
+        :param region: Optionally, the geographic region of the user, e.g. 'US'.
+        :return: The most appropriate RecommendationSurfaceId for the given locale/region.
+                 A value is always returned here. A Firefox pref determines which locales are eligible, so in this
+                 function call we can assume that the locale/region has been deemed suitable to receive NewTab recs.
+        """
 
-        return surface_by_locale[locale]
+        language = NewTabDispatch._extract_language(locale)
+        region = NewTabDispatch._normalize_region(locale=locale, region=region)
+
+        if language == 'de':
+            return RecommendationSurfaceId.NEW_TAB_DE_DE
+        elif language == 'es':
+            return RecommendationSurfaceId.NEW_TAB_ES_ES
+        elif language == 'fr':
+            return RecommendationSurfaceId.NEW_TAB_FR_FR
+        elif language == 'it':
+            return RecommendationSurfaceId.NEW_TAB_IT_IT
+        else:
+            # Default to English language
+            if region is None or region in ['US', 'CA']:
+                return RecommendationSurfaceId.NEW_TAB_EN_US
+            elif region in ['GB', 'IE']:
+                return RecommendationSurfaceId.NEW_TAB_EN_GB
+            else:
+                return RecommendationSurfaceId.NEW_TAB_EN_INTL
+
+    @staticmethod
+    def normalize_locale(locale: str):
+        language = NewTabDispatch._extract_language(locale=locale)
+        variant = NewTabDispatch._normalize_region(locale=locale)
+
+        if variant:
+            return f'{language}-{variant}'
+        else:
+            return language
+
+    @staticmethod
+    def _extract_language(locale: str) -> str:
+        """
+        :return: A 2-letter language code from a locale string like 'en-US', 'en_US', or 'en'. Trims whitespace.
+        """
+        match = re.search(r'[a-zA-Z]{2}', locale)
+        if match:
+            return match.group().lower()
+        else:
+            return NewTabDispatch.DEFAULT_LANGUAGE
+
+    @staticmethod
+    def _normalize_region(locale: str, region: Optional[str] = None) -> Optional[str]:
+        """
+        :return: A 2-letter region like 'US'. If region is malformed, extract it from a locale like 'en-US' or 'en_US'.
+        """
+        if region:
+            m1 = re.search(r'[a-zA-Z]{2}', region)
+            if m1:
+                return m1.group().upper()
+
+        m2 = re.search(r'[_\-]([a-zA-Z]{2})', locale)
+        if m2:
+            return m2.group(1).upper()
+        else:
+            return None

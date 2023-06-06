@@ -33,25 +33,19 @@ async def resolve_new_tab_slate(
                         " serve multiple markets with the same language.")],
 ) -> CorpusSlate:
     di = DiContainer.get()
-    locale_model = LocaleModel.from_string(
-        locale,
-        available_locales=NewTabDispatch.AVAILABLE_LOCALES,
-        default=LocaleModel.en_US,
-    )
 
     async with PocketGraphClientSession(CorpusApiGraphConfig()) as graph_client_session:
         slate_model = await NewTabDispatch(
             new_tab_slate_provider=NewTabSlateProvider(
                 corpus_api_client=CorpusApiClient(graph_client_session),
-                recommendation_surface_id=NewTabDispatch.get_recommendation_surface_id(locale=locale_model),
+                recommendation_surface_id=NewTabDispatch.get_recommendation_surface_id(locale=locale, region=region),
                 corpus_engagement_provider=di.corpus_engagement_provider,
-                locale=locale_model,
             ),
             snowplow=SnowplowCorpusRecommendationsTracker(
                 tracker=create_snowplow_tracker(),
                 snowplow_config=SnowplowConfig(),
             ),
-        ).get_slate(api_client=get_pocket_client(info))
+        ).get_slate(api_client=get_pocket_client(info), locale=locale)
 
     slate = CorpusSlate.from_pydantic(slate_model)
     slate.recommendations = slate_model.recommendations
