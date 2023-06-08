@@ -1,5 +1,6 @@
 import asyncio
 import functools
+import logging
 import random
 from asyncio import gather
 from typing import List, Coroutine, Any, Tuple, Optional
@@ -197,6 +198,9 @@ class HomeDispatch:
 
         cf_asn = unleash_asn[0]
         enable_hybrid_cf = cf_asn is not None and cf_asn.variant == 'treatment'
+
+        if not enable_hybrid_cf and self.hybrid_cf_slate_provider.can_recommend(user):
+            logging.error('The CF experiment should enroll 100% of eligible users.')
 
         slates = []
         if enable_hybrid_cf and self.hybrid_cf_slate_provider.can_recommend(user):
