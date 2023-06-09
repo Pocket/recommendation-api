@@ -43,7 +43,7 @@ def pocket_graph_request_headers() -> Dict[str, str]:
         # https://github.com/Pocket/firefox-api-proxy/blob/main/src/generated/openapi/types.ts#L123-L124
         ('en-US', 'US'),
         ('en-GB', 'GB'),
-        ('en-CA', 'CA'),
+        ('en-IN', 'IN'),
         ('es-ES', 'ES'),
         ('es', 'ES'),  # Firefox uses both 'es' and 'es-ES' format for locale.
         ('es-ES', 'FR'),  # Spanish-language Firefox geographically located in France.
