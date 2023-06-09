@@ -303,8 +303,6 @@ class HomeDispatch:
 
 
 class NewTabDispatch:
-    DEFAULT_LANGUAGE = 'en'
-
     def __init__(self, new_tab_slate_provider: NewTabSlateProvider, snowplow: SnowplowCorpusRecommendationsTracker):
         self.new_tab_slate_provider = new_tab_slate_provider
         self.snowplow = snowplow
@@ -319,7 +317,7 @@ class NewTabDispatch:
             self.snowplow.track(event=CorpusRecommendationsSendEvent(
                 corpus_slate=corpus_slate,
                 recommendation_surface_id=self.new_tab_slate_provider.recommendation_surface_id,
-                locale=self.normalize_locale(locale),
+                locale=locale,
                 api_client=api_client,
             )))
 
@@ -336,7 +334,7 @@ class NewTabDispatch:
         """
 
         language = NewTabDispatch._extract_language(locale)
-        region = NewTabDispatch._normalize_region(locale=locale, region=region)
+        derived_region = NewTabDispatch._derive_region(region=region, locale=locale)
 
         if language == 'de':
             return RecommendationSurfaceId.NEW_TAB_DE_DE
@@ -347,39 +345,34 @@ class NewTabDispatch:
         elif language == 'it':
             return RecommendationSurfaceId.NEW_TAB_IT_IT
         else:
-            # Default to English language
-            if region is None or region in ['US', 'CA']:
+            # Default to English language for all other values of language (including 'en' or None)
+            if derived_region is None or derived_region in ['US', 'CA']:
                 return RecommendationSurfaceId.NEW_TAB_EN_US
-            elif region in ['GB', 'IE']:
+            elif derived_region in ['GB', 'IE']:
                 return RecommendationSurfaceId.NEW_TAB_EN_GB
             else:
+                # Default to the International New Tab if no 2-letter region can be derived from locale or region.
                 return RecommendationSurfaceId.NEW_TAB_EN_INTL
 
     @staticmethod
-    def normalize_locale(locale: str):
-        language = NewTabDispatch._extract_language(locale=locale)
-        variant = NewTabDispatch._normalize_region(locale=locale)
-
-        if variant:
-            return f'{language}-{variant}'
-        else:
-            return language
-
-    @staticmethod
-    def _extract_language(locale: str) -> str:
+    def _extract_language(locale: str) -> Optional[str]:
         """
-        :return: A 2-letter language code from a locale string like 'en-US', 'en_US', or 'en'. Trims whitespace.
+        :return: A 2-letter language code from a locale string like 'en-US' or 'en'.
         """
         match = re.search(r'[a-zA-Z]{2}', locale)
         if match:
             return match.group().lower()
         else:
-            return NewTabDispatch.DEFAULT_LANGUAGE
+            return None
 
     @staticmethod
-    def _normalize_region(locale: str, region: Optional[str] = None) -> Optional[str]:
+    def _derive_region(locale: str, region: Optional[str] = None) -> Optional[str]:
         """
-        :return: A 2-letter region like 'US'. If region is malformed, extract it from a locale like 'en-US' or 'en_US'.
+        Derives the region from the `region` argument if provided, otherwise tries to extract from the locale.
+
+        :param locale: The language-variant preferred by the user (e.g. 'en-US' means English-as-spoken in the US)
+        :param region: Optionally, the geographic region of the user, e.g. 'US'.
+        :return: A 2-letter region like 'US'.
         """
         if region:
             m1 = re.search(r'[a-zA-Z]{2}', region)
