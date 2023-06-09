@@ -24,9 +24,9 @@ from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
         ('en-CA', 'IE', RecommendationSurfaceId.NEW_TAB_EN_GB),
         ('en-GB', 'IE', RecommendationSurfaceId.NEW_TAB_EN_GB),
         ('en-US', 'IE', RecommendationSurfaceId.NEW_TAB_EN_GB),
-        ('fr-FR', 'FR', RecommendationSurfaceId.NEW_TAB_FR_FR),
+        ('fr', 'FR', RecommendationSurfaceId.NEW_TAB_FR_FR),
         ('it', 'IT', RecommendationSurfaceId.NEW_TAB_IT_IT),
-        ('es-ES', 'ES', RecommendationSurfaceId.NEW_TAB_ES_ES),
+        ('es', 'ES', RecommendationSurfaceId.NEW_TAB_ES_ES),
         ('en-CA', 'IN', RecommendationSurfaceId.NEW_TAB_EN_INTL),
         ('en-GB', 'IN', RecommendationSurfaceId.NEW_TAB_EN_INTL),
         ('en-US', 'IN', RecommendationSurfaceId.NEW_TAB_EN_INTL),
@@ -36,33 +36,30 @@ from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
 
         # Locale can be a main language only.
         ('en', 'CA', RecommendationSurfaceId.NEW_TAB_EN_US),
+        ('en', 'US', RecommendationSurfaceId.NEW_TAB_EN_US),
         ('en', 'GB', RecommendationSurfaceId.NEW_TAB_EN_GB),
         ('en', 'IE', RecommendationSurfaceId.NEW_TAB_EN_GB),
         ('en', 'IN', RecommendationSurfaceId.NEW_TAB_EN_INTL),
-        ('en', 'US', RecommendationSurfaceId.NEW_TAB_EN_US),
-        ('es', 'ES', RecommendationSurfaceId.NEW_TAB_ES_ES),
-        ('fr', 'FR', RecommendationSurfaceId.NEW_TAB_FR_FR),
-        ('it', 'IT', RecommendationSurfaceId.NEW_TAB_IT_IT),
 
-        # Explicit region overrides region in locale language variant
-        ('en-GB', 'US', RecommendationSurfaceId.NEW_TAB_EN_US),
-        ('en-US', 'GB', RecommendationSurfaceId.NEW_TAB_EN_GB),
-        ('en-US', 'IE', RecommendationSurfaceId.NEW_TAB_EN_GB),
-        ('en-US', 'IN', RecommendationSurfaceId.NEW_TAB_EN_INTL),
+        # The locale language primarily determines the market, even if it's not the most common language in the region.
+        ('de', 'US', RecommendationSurfaceId.NEW_TAB_DE_DE),
+        ('en', 'FR', RecommendationSurfaceId.NEW_TAB_EN_INTL),
+        ('es', 'DE', RecommendationSurfaceId.NEW_TAB_ES_ES),
+        ('fr', 'ES', RecommendationSurfaceId.NEW_TAB_FR_FR),
+        ('it', 'CA', RecommendationSurfaceId.NEW_TAB_IT_IT),
 
         # Extract region from locale, if it is not explicitly provided.
         ('en-US', None, RecommendationSurfaceId.NEW_TAB_EN_US),
         ('en-GB', None, RecommendationSurfaceId.NEW_TAB_EN_GB),
         ('en-IE', None, RecommendationSurfaceId.NEW_TAB_EN_GB),
 
-        # locale can start/end with whitespace, and case can vary.
+        # locale can vary in case.
         ('eN-US', None, RecommendationSurfaceId.NEW_TAB_EN_US),
         ('En-GB', None, RecommendationSurfaceId.NEW_TAB_EN_GB),
         ('EN-ie', None, RecommendationSurfaceId.NEW_TAB_EN_GB),
-        ('en-IN', None, RecommendationSurfaceId.NEW_TAB_EN_INTL),
+        ('en-cA', None, RecommendationSurfaceId.NEW_TAB_EN_US),
 
-        # region can start/end with whitespace, and case can vary.
-        ('en', 'US', RecommendationSurfaceId.NEW_TAB_EN_US),
+        # region can vary in case.
         ('en', 'gB', RecommendationSurfaceId.NEW_TAB_EN_GB),
         ('en', 'Ie', RecommendationSurfaceId.NEW_TAB_EN_GB),
         ('en', 'in', RecommendationSurfaceId.NEW_TAB_EN_INTL),
@@ -72,7 +69,9 @@ from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
 
         # Default to English when language is unknown.
         ('xx', 'US', RecommendationSurfaceId.NEW_TAB_EN_US),
+        ('xx', 'CA', RecommendationSurfaceId.NEW_TAB_EN_US),
         ('xx', 'GB', RecommendationSurfaceId.NEW_TAB_EN_GB),
+        ('xx', 'IE', RecommendationSurfaceId.NEW_TAB_EN_GB),
         ('xx', 'YY', RecommendationSurfaceId.NEW_TAB_EN_INTL),
     ]
 )
