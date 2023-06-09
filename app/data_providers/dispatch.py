@@ -1,5 +1,6 @@
 import asyncio
 import functools
+import logging
 import random
 import re
 from asyncio import gather
@@ -191,16 +192,16 @@ class HomeDispatch:
 
         user_impression_capped_list, \
         preferred_topics, \
-        assignments = await gather(
+        unleash_asn = await gather(
             self.user_impression_cap_provider.get(user),
             self._get_preferred_topics(user),
-            self.unleash_provider.get_assignments(['temp.web.recommendation-api.home.thompson-sampling-rerun',
-                                                   'temp.web.recommendation-api.home.hybrid_cf_test'], user=user))
+            self.unleash_provider.get_assignments(['temp.web.recommendation-api.home.hybrid_cf_test'], user=user))
 
-        thompson_sampling_asn, cf_asn = assignments
-        enable_thompson_sampling = \
-            thompson_sampling_asn is not None and thompson_sampling_asn.variant == 'treatment'
+        cf_asn = unleash_asn[0]
         enable_hybrid_cf = cf_asn is not None and cf_asn.variant == 'treatment'
+
+        if not enable_hybrid_cf and self.hybrid_cf_slate_provider.can_recommend(user):
+            logging.error('The CF experiment should enroll 100% of eligible users.')
 
         slates = []
         if enable_hybrid_cf and self.hybrid_cf_slate_provider.can_recommend(user):
@@ -210,17 +211,14 @@ class HomeDispatch:
             if preferred_topics:
                 slates += [self.for_you_slate_provider.get_slate(
                     preferred_topics=preferred_topics,
-                    user_impression_capped_list=user_impression_capped_list,
-                    enable_thompson_sampling=enable_thompson_sampling,
+                    user_impression_capped_list=user_impression_capped_list
                 )]
             else:
-                slates += [self.recommended_reads_slate_provider.get_slate(
-                    enable_thompson_sampling=enable_thompson_sampling
-                )]
+                slates += [self.recommended_reads_slate_provider.get_slate()]
 
         slates += [
             self.pocket_hits_slate_provider.get_slate(),
-            self.collection_slate_provider.get_slate(enable_thompson_sampling=enable_thompson_sampling),
+            self.collection_slate_provider.get_slate(),
             self.life_hacks_slate_provider.get_slate(),
         ]
 
@@ -231,10 +229,7 @@ class HomeDispatch:
                 slates=list(await gather(*slates)),
                 recommendation_count=recommendation_count,
             ),
-            recommendation_surface_id=RecommendationSurfaceId.HOME,
-            locale=locale,
-            experiment=thompson_sampling_asn,
-        ), thompson_sampling_asn
+        ), cf_asn
 
     async def get_de_de_slate_lineup(self, recommendation_count: int, locale: LocaleModel) -> \
             Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
@@ -258,7 +253,6 @@ class HomeDispatch:
                 slates=list(await gather(*slates)),
                 recommendation_count=recommendation_count,
             ),
-            locale=locale,
         ), None
 
     @staticmethod
