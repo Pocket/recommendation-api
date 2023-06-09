@@ -320,6 +320,8 @@ class NewTabDispatch:
     @staticmethod
     def get_recommendation_surface_id(locale: str, region: Optional[str]) -> RecommendationSurfaceId:
         """
+        Locale/region mapping is documented here:
+        https://docs.google.com/document/d/1omclr-eETJ7zAWTMI7mvvsc3_-ns2Iiho4jPEfrmZfo/edit
         :param locale: The language variant preferred by the user (e.g. 'en-US', or 'en')
         :param region: Optionally, the geographic region of the user, e.g. 'US'.
         :return: The most appropriate RecommendationSurfaceId for the given locale/region.
