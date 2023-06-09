@@ -85,7 +85,6 @@ class UnleashProvider:
                     'appName': self.unleash_config.APP_NAME,
                     'environment': self.unleash_config.ENVIRONMENT,
                     'userId': user.hashed_user_id,
-                    'sessionId': user.hashed_guid,
                     'properties': {
                         'locale': user.locale
                     }

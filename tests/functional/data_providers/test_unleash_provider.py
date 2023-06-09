@@ -28,13 +28,13 @@ async def test_get_assignments(pocket_graph_server: TestServer, user_1: RequestU
     request = pocket_graph_server.app['requests'][-1]
     request_json = await request.json()
     assert 'unleashAssignments' in request_json['query']
+    
     assert request_json['variables']['context'] == {
         'appName': unleash_config.APP_NAME,
         'environment': unleash_config.ENVIRONMENT,
         'userId': user_1.hashed_user_id,
-        'sessionId': user_1.hashed_guid,
         'properties': {'locale': user_1.locale}
-    }
+    } 
 
     # pocket_graph_server returns data from `tests/assets/json/unleash_assignments.json`
     assert unleash_assignments == [UnleashAssignmentModel(assigned=True, name='test.getstarted', variant='v0')]
