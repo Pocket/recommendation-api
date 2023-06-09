@@ -320,7 +320,7 @@ class NewTabDispatch:
     @staticmethod
     def get_recommendation_surface_id(locale: str, region: Optional[str]) -> RecommendationSurfaceId:
         """
-        :param locale: The language variant preferred by the user (e.g. 'en-US', 'en_US', or 'en')
+        :param locale: The language variant preferred by the user (e.g. 'en-US', or 'en')
         :param region: Optionally, the geographic region of the user, e.g. 'US'.
         :return: The most appropriate RecommendationSurfaceId for the given locale/region.
                  A value is always returned here. A Firefox pref determines which locales are eligible, so in this
