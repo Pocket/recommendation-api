@@ -158,7 +158,7 @@ class RecommendationAPI extends TerraformStack {
             cdn: false,
             domain: config.domain,
             taskSize: {
-                cpu: 2048,
+                cpu: 4096,
                 memory: 8192,
             },
             containerConfigs: [
@@ -346,8 +346,8 @@ class RecommendationAPI extends TerraformStack {
             },
 
             autoscalingConfig: {
-                targetMinCapacity: config.environment === 'Prod' ? 10 : 4,
-                targetMaxCapacity: config.environment === 'Prod' ? 30: 10,
+                targetMinCapacity: config.environment === 'Prod' ? 4 : 4,
+                targetMaxCapacity: config.environment === 'Prod' ? 10: 10,
             },
             alarms: {
                 http5xxErrorPercentage: {
