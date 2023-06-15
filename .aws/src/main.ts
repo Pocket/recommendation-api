@@ -159,7 +159,7 @@ class RecommendationAPI extends TerraformStack {
             domain: config.domain,
             taskSize: {
                 cpu: 4096,
-                memory: 8192,
+                memory: 16384,
             },
             containerConfigs: [
                 {
