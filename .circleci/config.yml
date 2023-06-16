@@ -3,7 +3,7 @@ version: 2.1
 orbs:
   aws-cli: circleci/aws-cli@1.2.1
   aws-ecs: circleci/aws-ecs@2.0.0
-  pocket: pocket/circleci-orbs@1.2.5
+  pocket: pocket/circleci-orbs@2.1.1
 
 # Workflow shortcuts
 not_main: &not_main
@@ -88,7 +88,7 @@ jobs:
     #Sets up the code for the docker image to build in
     #Other repos at Pocket use this to install modules and or compile the code.
     docker:
-      - image: python:3.9
+      - image: python:3.8
     steps:
       - checkout
       # Define the working directory for this job
@@ -135,7 +135,7 @@ jobs:
         default: "aws_lambda/"
         type: string
     docker:
-      - image: python:3.9
+      - image: python:3.8
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
@@ -178,7 +178,7 @@ jobs:
         type: boolean
         default: true
     docker:
-      - image: python:3.9
+      - image: python:3.8
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
