@@ -40,7 +40,7 @@ only_dev: &only_dev
 jobs:
   apollo:
     machine:
-      image: ubuntu-2004:2023.02.1
+      image: ubuntu-2004:2023.04.2
       docker_layer_caching: true
     steps:
       - checkout
@@ -89,7 +89,7 @@ jobs:
     #Other repos at Pocket use this to install modules and or compile the code.
     docker:
       - image: python:3.8
-    resource_class: xlarge
+    resource_class: large
     steps:
       - checkout
       # Define the working directory for this job
