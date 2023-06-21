@@ -14,7 +14,7 @@ COPY Pipfile .
 COPY Pipfile.lock .
 ENV PIPENV_VENV_IN_PROJECT=1
 RUN echo "GIT_SHA=${GIT_SHA}"
-RUN if [ "$GIT_SHA" = "local" ]; then PIPENV_MAX_CONCURRENCY=1 pipenv install --dev; else pipenv install --deploy; fi
+RUN if [ "$GIT_SHA" = "local" ]; then pipenv install --dev --sequential; else pipenv install --deploy --sequential; fi
 
 FROM base AS runtime
 
