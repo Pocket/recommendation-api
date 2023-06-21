@@ -5,7 +5,7 @@ FROM base AS python-deps
 ARG GIT_SHA=local
 
 # Install pipenv
-RUN pip install --upgrade pip==21.3.1
+RUN pip install --upgrade pip
 RUN pip install pipenv
 
 # Install python dependencies in /.venv
