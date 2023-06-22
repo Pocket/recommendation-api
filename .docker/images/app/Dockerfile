@@ -49,4 +49,8 @@ ENV GIT_SHA=$GIT_SHA
 WORKDIR /
 COPY ./app /app
 
+# Add script to print thread count
+COPY print_thread_count.py /print_thread_count.py
+RUN chmod +x /print_thread_count.py
+
 CMD ["/start.sh"]
