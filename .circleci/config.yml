@@ -42,6 +42,7 @@ jobs:
     machine:
       image: ubuntu-2004:2023.02.1
       docker_layer_caching: true
+      resource_class: large
     steps:
       - checkout
       - run:
@@ -140,6 +141,8 @@ jobs:
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
+
+         
     environment:
       WORKON_HOME: '~/.venv'
     steps:
