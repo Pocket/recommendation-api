@@ -4,9 +4,8 @@ FROM python:3.8 as base
 FROM base AS python-deps
 ARG GIT_SHA=local
 
-# Add script to print thread count
-COPY print_thread_count.py /print_thread_count.py
-RUN chmod +x /print_thread_count.py
+# Print thread count
+CMD python -c "import threading; print('Current thread count:', threading.active_count())"
 
 # Install pipenv
 RUN pip install --upgrade pip
