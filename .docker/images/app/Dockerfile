@@ -13,6 +13,10 @@ WORKDIR /
 COPY Pipfile .
 COPY Pipfile.lock .
 ENV PIPENV_VENV_IN_PROJECT=1
+# Add script to print thread count
+COPY print_thread_count.py /print_thread_count.py
+RUN chmod +x /print_thread_count.py
+
 RUN echo "GIT_SHA=${GIT_SHA}"
 RUN if [ "$GIT_SHA" = "local" ]; then pipenv install --dev; else pipenv install --deploy; fi
 
@@ -48,9 +52,5 @@ ENV GIT_SHA=$GIT_SHA
 # Install application into container
 WORKDIR /
 COPY ./app /app
-
-# Add script to print thread count
-COPY print_thread_count.py /print_thread_count.py
-RUN chmod +x /print_thread_count.py
 
 CMD ["/start.sh"]
