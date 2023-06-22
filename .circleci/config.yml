@@ -130,6 +130,7 @@ jobs:
             docker-compose run app_dev pytest tests --junitxml=tests/test-reports/xml_results/junit.xml
       - store_test_results:
           path: tests/test-reports
+    resource_class: large      
 
   test_lambda:
     parameters:
@@ -140,9 +141,7 @@ jobs:
       - image: python:3.8
         auth:
           username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-
-         
+          password: $DOCKERHUB_PASSWORD      
     environment:
       WORKON_HOME: '~/.venv'
     steps:
