@@ -4,6 +4,10 @@ FROM python:3.8 as base
 FROM base AS python-deps
 ARG GIT_SHA=local
 
+# Add script to print thread count
+COPY print_thread_count.py /print_thread_count.py
+RUN chmod +x /print_thread_count.py
+
 # Install pipenv
 RUN pip install --upgrade pip
 RUN pip install pipenv
@@ -13,9 +17,6 @@ WORKDIR /
 COPY Pipfile .
 COPY Pipfile.lock .
 ENV PIPENV_VENV_IN_PROJECT=1
-# Add script to print thread count
-COPY print_thread_count.py /print_thread_count.py
-RUN chmod +x /print_thread_count.py
 
 RUN echo "GIT_SHA=${GIT_SHA}"
 RUN if [ "$GIT_SHA" = "local" ]; then pipenv install --dev; else pipenv install --deploy; fi
