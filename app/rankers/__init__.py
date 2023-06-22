@@ -2,8 +2,6 @@ def get_ranker(name):
     return get_all_rankers()[name]
 
 
-PERSONALIZED_TOPIC_RANKERS = {"top1-topics", "top3-topics", "rank-topics"}
-
 POCKET_THOMPSON_SAMPLING_RANKERS = {"thompson-sampling-1day", "thompson-sampling-7day",
                              "thompson-sampling-14day", "thompson-sampling-28day"}
 

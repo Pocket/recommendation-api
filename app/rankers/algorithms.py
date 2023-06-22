@@ -16,7 +16,6 @@ from operator import itemgetter
 from scipy.stats import beta
 
 from app.models.slate_config import SlateConfigModel
-from app.models.personalized_topic_list import PersonalizedTopicList
 from app.models.topic import TopicModel
 
 DEFAULT_ALPHA_PRIOR = 0.02
