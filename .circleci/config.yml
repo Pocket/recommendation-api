@@ -232,7 +232,6 @@ jobs:
 
 workflows:
   all:
-    resource_class: large
     jobs:
       - test_app:
           <<: *not_main
