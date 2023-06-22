@@ -42,7 +42,7 @@ jobs:
     machine:
       image: ubuntu-2004:2023.02.1
       docker_layer_caching: true
-      resource_class: large
+      
     steps:
       - checkout
       - run:
@@ -90,7 +90,7 @@ jobs:
     #Other repos at Pocket use this to install modules and or compile the code.
     docker:
       - image: python:3.8
-    resource_class: large
+    
     steps:
       - checkout
       # Define the working directory for this job
@@ -130,7 +130,7 @@ jobs:
             docker-compose run app_dev pytest tests --junitxml=tests/test-reports/xml_results/junit.xml
       - store_test_results:
           path: tests/test-reports
-    resource_class: large      
+       
 
   test_lambda:
     parameters:
@@ -232,6 +232,7 @@ jobs:
 
 workflows:
   all:
+    resource_class: large
     jobs:
       - test_app:
           <<: *not_main
