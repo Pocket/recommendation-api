@@ -296,6 +296,7 @@ workflows:
           ecr-url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
           extra-build-args: --build-arg GIT_SHA=${CIRCLE_SHA1}
           push: true
+          resource_class: large 
           requires:
             - build
 
