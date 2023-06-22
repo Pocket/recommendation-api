@@ -71,6 +71,11 @@ class TestGetSlateLineup(TestDynamoDBBase):
             'version': '1'
         })
         self.candidate_set_table.put_item(Item={
+            'id': '493a5556-9800-449f-8f8c-c27bb6c8c810',
+            'candidates': [],
+            'version': '1'
+        })
+        self.candidate_set_table.put_item(Item={
             'id': 'a8425a46-187a-4cdb-8157-5d2f308c52cd',
             'candidates': [],
             'version': '1'

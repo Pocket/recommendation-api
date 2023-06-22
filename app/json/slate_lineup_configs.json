@@ -7,7 +7,7 @@
         "description": "Initial layout",
         "rankers": [],
         "slates": [
-          "631d8077-1462-4397-ad0a-aa340c27570a",
+          "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
           "0f322865-64e6-472d-8147-b3d6637a7d67",
           "626397d3-fa4e-4299-8d07-cbeaa269ebc1",
           "8fa462a6-81d1-47ee-8de3-1e5e0030e6d6",
@@ -24,7 +24,7 @@
         "description": "Initial layout",
         "rankers": [],
         "slates": [
-          "631d8077-1462-4397-ad0a-aa340c27570a",
+          "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
           "0f322865-64e6-472d-8147-b3d6637a7d67",
           "626397d3-fa4e-4299-8d07-cbeaa269ebc1",
           "8fa462a6-81d1-47ee-8de3-1e5e0030e6d6",
@@ -40,7 +40,7 @@
       {
         "description": "default layout",
         "rankers": [
-          "top1-topics"
+
         ],
         "slates": [
           "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
@@ -72,9 +72,7 @@
     "experiments": [
       {
         "description": "default layout",
-        "rankers": [
-          "top1-topics"
-        ],
+        "rankers": [],
         "slates": [
           "af2cc2c0-1286-47a3-b8ce-187b905f94af",
           "00f0c593-3c99-4d5a-9297-c66f8b00be01",
@@ -246,7 +244,6 @@
         "description": "SlateLineup test 1",
         "rankers": [ ],
         "slates": [
-          "ad73c061-5ac5-458f-8691-ab071f7eadd7",
           "de254c5d-57a7-4553-850f-153ee385014d",
           "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
           "0c09627b-a409-4768-b87d-7e1d29259785",
@@ -259,7 +256,6 @@
         "description": "SlateLineup test 2",
         "rankers": [ ],
         "slates": [
-          "ad73c061-5ac5-458f-8691-ab071f7eadd7",
           "de254c5d-57a7-4553-850f-153ee385014d",
           "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
           "e6600ffe-b65a-42d3-b570-f460f3d7326e",
@@ -554,9 +550,8 @@
     "experiments": [
       {
         "description": "default layout",
-        "rankers": ["top3-topics"],
+        "rankers": [],
         "slates": [
-          "631d8077-1462-4397-ad0a-aa340c27570a",
           "2e3ddc90-8def-46d7-b85f-da7525c66fb1",
           "0f322865-64e6-472d-8147-b3d6637a7d67",
           "2f2a3568-901f-4655-8735-daf67e8ecc5d",

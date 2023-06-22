@@ -4,7 +4,9 @@ from enum import Enum
 from pydantic import BaseModel, Field
 
 from app.config import dynamodb as dynamodb_config
-from app.models.candidate_set import candidate_set_factory
+# Needs to exist for pydantic to resolve the model field "item: ItemModel" in the RecommendationModel
+from app.graphql.item import Item
+from app.models.candidate_set import DynamoDBCandidateSet
 from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
 from app.models.metrics.recommendation_metrics_factory import RecommendationMetricsFactory
 from app.models.item import ItemModel
@@ -70,7 +72,7 @@ class RecommendationModel(BaseModel):
         """
         # for each candidate set id, get the candidate set record from the db
         candidate_sets = await gather(
-            *(candidate_set_factory(cs_id).get(cs_id, user_id) for cs_id in experiment.candidate_sets))
+            *(DynamoDBCandidateSet.get(cs_id) for cs_id in experiment.candidate_sets))
 
         recommendations = []
         # get the recommendations

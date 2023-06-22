@@ -8,8 +8,7 @@ from app.json.utils import parse_to_dict
 from app.models.metrics.slate_metrics_factory import SlateMetricsFactory
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate_config import SlateConfigModel
-from app.rankers import get_ranker, PERSONALIZED_TOPIC_RANKERS, POCKET_THOMPSON_SAMPLING_RANKERS
-from app.models.personalized_topic_list import PersonalizedTopicList
+from app.rankers import get_ranker, POCKET_THOMPSON_SAMPLING_RANKERS
 
 
 class SlateLineupConfigModel:
@@ -126,10 +125,6 @@ class SlateLineupConfigModel:
                     'metrics': await SlateMetricsFactory(dynamodb_endpoint=dynamodb["endpoint_url"]).get(
                         slate_lineup_id,
                         [s.id for s in slate_configs])
-                }
-            elif ranker in PERSONALIZED_TOPIC_RANKERS:
-                ranker_kwargs = {
-                    "personalized_topics": await PersonalizedTopicList.get(user_id)
                 }
             # slate configs get ranked and re-assigned for every ranker within the experiment
             # for example we might first take the top 15 slate configs(that is one ranker)

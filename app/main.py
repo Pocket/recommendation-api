@@ -21,7 +21,6 @@ from app.config import ENV, ENV_PROD, sentry as sentry_config, log_level, otel_d
 from app.graphql.graphql_router import schema
 from app.health_status import get_health_status, set_health_status, HealthStatus
 from app.instrumentation.aiobotocore import AiobotocoreInstrumentor
-from app.models.candidate_set import candidate_set_factory
 from app.models.slate_config import SlateConfigModel
 from app.models.slate_lineup_config import SlateLineupConfigModel, validate_unique_guids
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
@@ -115,8 +114,7 @@ async def load_slate_configs():
             for experiment in slate_config.experiments:
                 for cs in experiment.candidate_sets:
                     logging.info(f"Validating candidate set {cs}")
-                    csm = candidate_set_factory(cs)
-                    if not await csm.verify_candidate_set(cs):
+                    if not await DynamoDBCandidateSet.verify_candidate_set(cs):
                         # Send event to Sentry, but don't raise it, because missing candidate sets should not
                         # block successfully starting the application.
                         message = f'candidate set {slate_config.id}|{experiment.description}|{cs} was not found.'

@@ -16,7 +16,6 @@ from operator import itemgetter
 from scipy.stats import beta
 
 from app.models.slate_config import SlateConfigModel
-from app.models.personalized_topic_list import PersonalizedTopicList
 from app.models.topic import TopicModel
 
 DEFAULT_ALPHA_PRIOR = 0.02
@@ -50,43 +49,6 @@ top5 = partial(top_n, 5)
 top15 = partial(top_n, 15)
 top30 = partial(top_n, 30)
 top45 = partial(top_n, 45)
-
-
-def rank_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List[
-    'SlateConfigModel']:
-    """
-    returns the lineup with topic slates sorted by the user's profile.
-    :param slates: initial list of slate configs
-    :param personalized_topics: recit response including sorted list of personalized topics
-    :return: list of slate configs the personalized topics sorted
-    """
-
-    return __personalize_topic_slates(slates, personalized_topics, topic_limit=None)
-
-
-def top1_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List[
-    'SlateConfigModel']:
-    """
-    returns the lineup with only the top topic slate included
-    :param slates: initial list of slate configs
-    :param personalized_topics: recit response including sorted list of personalized topics
-    :return: list of slate configs with only the top topic slate
-    """
-
-    return __personalize_topic_slates(slates, personalized_topics, topic_limit=1)
-
-
-def top3_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List[
-    'SlateConfigModel']:
-    """
-    returns the lineup with only the top 3 topic slates included
-    :param slates: initial list of slate configs
-    :param personalized_topics: recit response including sorted list of personalized topics
-    :return: list of slate configs with only the top 3 topic slate
-    """
-
-    return __personalize_topic_slates(slates, personalized_topics, topic_limit=3)
-
 
 def blocklist(recs: RecommendationListType, blocklist: Optional[List[str]] = None) -> RecommendationListType:
     """
@@ -186,58 +148,6 @@ firefox_thompson_sampling_1day = partial(
     default_alpha_prior=DEFAULT_FIREFOX_ALPHA_PRIOR,
     default_beta_prior=DEFAULT_FIREFOX_BETA_PRIOR,
 )
-
-
-def __personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
-                               personalized_topics: PersonalizedTopicList,
-                               topic_limit: Optional[int] = 1) -> List['SlateConfigModel']:
-    """
-    This routine takes a list of slates as input in which must include slates with an associated curator topic
-    label.  It uses the topic_profile that is supplied by RecIt to re-rank the slates according to affinity
-    with items in the user's list.
-    This version allows non-topic slates within the lineup.  These are left in order in the output configs
-    list.  Personalizable (topic) slates are re-ordered using their initial slots in the config lineup.
-    If the topic_limit parameter is included this will determine the number of topic slates that
-    remain in the output config list.
-    :param input_slate_configs: SlateConfigModel list that includes slates with curatorTopicLabels
-    :param personalized_topics: response from RecIt listing topics ordered by affinity to user
-    :param topic_limit: desired number of topics to return, if this is set the number of slates returned is truncated.
-                        otherwise all personalized topics among the input slate configs are returned
-    :return: SlateLineupExperimentModel with reordered slates
-    """
-    topic_to_score_map = {t.curator_topic_label: t.score for t in personalized_topics.curator_topics}
-    # filter non-topic slates
-    personalizable_configs = list(filter(lambda s: s.curator_topic_label in topic_to_score_map, input_slate_configs))
-    logging.debug(personalizable_configs)
-
-    if not personalizable_configs:
-        raise ValueError(f"Input lineup to personalize_topic_slates includes no topic slates")
-    elif topic_limit and len(personalizable_configs) < topic_limit:
-        raise ValueError(f"Input lineup to personalize_topic_slates includes fewer topic slates than requested")
-
-    # re-rank topic slates
-    personalizable_configs.sort(key=lambda s: topic_to_score_map.get(s.curator_topic_label), reverse=True)
-
-    output_configs = list()
-    added_topic_slates = 0
-    personalized_index = 0
-    for config in input_slate_configs:
-        if config in personalizable_configs:
-            # if slate is personalizable add highest ranked slate remaining
-            if topic_limit:
-                if added_topic_slates < topic_limit:
-                    output_configs.append(personalizable_configs[personalized_index])
-                    added_topic_slates += 1
-                    personalized_index += 1
-            else:
-                output_configs.append(personalizable_configs[personalized_index])
-                personalized_index += 1
-                added_topic_slates += 1
-        else:
-            logging.debug(f"adding topic slate {added_topic_slates}")
-            output_configs.append(config)
-
-    return output_configs
 
 
 def rank_by_impression_caps(
