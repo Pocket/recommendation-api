@@ -10,7 +10,6 @@ RUN whoami
 RUN pwd
 
 # Install pipenv
-RUN pip install --upgrade pip
 RUN pip install pipenv
 
 # Install python dependencies in /.venv
@@ -18,6 +17,7 @@ WORKDIR /
 COPY Pipfile .
 COPY Pipfile.lock .
 ENV PIPENV_VENV_IN_PROJECT=1
+
 RUN echo "GIT_SHA=${GIT_SHA}"
 RUN if [ "$GIT_SHA" = "local" ]; then pipenv install --dev; else pipenv install --deploy; fi
 
