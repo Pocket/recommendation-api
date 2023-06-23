@@ -1,5 +1,7 @@
-FROM python:3.8 as base
-#FROM python:3.8-slim-buster as base
+FROM python:3.8-slim-buster as base
+
+# If we use the blow image the build will fail on package installations
+#FROM python:3.8 as base
 
 # Based on https://sourcery.ai/blog/python-docker/
 FROM base AS python-deps
