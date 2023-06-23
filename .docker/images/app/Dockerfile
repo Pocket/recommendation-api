@@ -1,5 +1,5 @@
-#FROM python:3.8 as base
-FROM python:3.8-slim-buster as base
+FROM python:3.8 as base
+#FROM python:3.8-slim-buster as base
 
 # Based on https://sourcery.ai/blog/python-docker/
 FROM base AS python-deps
