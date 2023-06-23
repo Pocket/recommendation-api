@@ -1,13 +1,9 @@
 #FROM python:3.8 as base
-FROM circleci/python:3.8 as base
+FROM python:3.8-slim-buster as base
 
 # Based on https://sourcery.ai/blog/python-docker/
 FROM base AS python-deps
 ARG GIT_SHA=local
-
-# Troubleshooting CircleCI
-RUN whoami
-RUN pwd
 
 # Install pipenv
 RUN pip install pipenv
