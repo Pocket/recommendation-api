@@ -175,7 +175,7 @@ class RecommendationAPI extends TerraformStack {
                         interval: 15,
                         retries: 3,
                         timeout: 5,
-                        startPeriod: 0,
+                        startPeriod: 60,
                     },
                     envVars: [
                         {
