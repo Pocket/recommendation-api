@@ -28,7 +28,7 @@ sentry-sdk = "==1.9.10"
 aioboto3 = "*"
 gunicorn = "*"
 uvicorn = {extras = ["standard"], version = "*"}
-fastapi = "==0.85.1"
+fastapi = "*"
 gql = "*"
 scipy = "*"
 jsonschema = "*"
