@@ -23,8 +23,7 @@ freezegun = "*"
 asgi-lifespan = "==2.*"
 
 [packages]
-# pin Sentry, the update causes errors
-sentry-sdk = "==1.9.10"
+sentry-sdk = "*"
 aioboto3 = "*"
 gunicorn = "*"
 uvicorn = {extras = ["standard"], version = "*"}
