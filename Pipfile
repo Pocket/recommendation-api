@@ -23,12 +23,11 @@ freezegun = "*"
 asgi-lifespan = "==2.*"
 
 [packages]
-# pin Sentry, the update causes errors
-sentry-sdk = "==1.9.10"
+sentry-sdk = "*"
 aioboto3 = "*"
 gunicorn = "*"
 uvicorn = {extras = ["standard"], version = "*"}
-fastapi = "==0.85.1"
+fastapi = "*"
 gql = "*"
 scipy = "*"
 jsonschema = "*"
@@ -40,9 +39,7 @@ aiomcache = "==0.6.*"
 ujson = "*"
 httptools = "*"
 aio-snowplow-tracker = "*"
-# strawberry 0.157.0 adds support for Federation 2.1, 2.2, 2.3 which caused the Apollo check to fail.
-# Once our Apollo Gateway is upgrade to 4.0 we can upgrade Strawberry.
-strawberry-graphql = {extras = ["fastapi", "opentelemetry"], version = "==0.156.4"}
+strawberry-graphql = {extras = ["fastapi", "opentelemetry", "cli"], version = "*"}
 qdrant-client = "==0.11.6"
 pytz = "*"
 opentelemetry-api = "*"
