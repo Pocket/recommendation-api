@@ -23,12 +23,10 @@ class SlateProvider(ABC):
         corpus_fetchable: CorpusFetchable,
         corpus_engagement_provider: CorpusEngagementProvider,
         recommendation_surface_id: RecommendationSurfaceId,
-        locale: LocaleModel,
     ):
         self.corpus_fetchable = corpus_fetchable
         self.corpus_engagement_provider = corpus_engagement_provider
         self.recommendation_surface_id = recommendation_surface_id
-        self.locale = locale
 
     @property
     @abstractmethod
@@ -140,11 +138,13 @@ class HomeSlateProvider(SlateProvider, ABC):
             self,
             corpus_fetchable: CorpusFetchable,
             corpus_engagement_provider: CorpusEngagementProvider,
-            recommendation_surface_id: RecommendationSurfaceId, locale: LocaleModel,
+            recommendation_surface_id: RecommendationSurfaceId,
+            locale: LocaleModel,
             translation_provider: TranslationProvider,
     ):
-        super().__init__(corpus_fetchable, corpus_engagement_provider, recommendation_surface_id, locale)
+        super().__init__(corpus_fetchable, corpus_engagement_provider, recommendation_surface_id)
 
+        self.locale = locale
         self.home_translations = translation_provider.get_translations(self.locale, filename='home.json')
 
     @property

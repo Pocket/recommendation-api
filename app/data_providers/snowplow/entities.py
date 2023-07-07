@@ -11,7 +11,7 @@ from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.request_user import RequestUser
 from app.models.unleash_assignment import UnleashAssignmentModel
 
-_CORPUS_RECOMMENDATIONS_SEND_SCHEMA = 'iglu:com.pocket/corpus_recommendations_send/jsonschema/1-0-0'
+_CORPUS_RECOMMENDATIONS_SEND_SCHEMA = 'iglu:com.pocket/corpus_recommendations_send/jsonschema/1-0-1'
 _CORPUS_SLATE_SCHEMA = 'iglu:com.pocket/corpus_slate/jsonschema/4-0-0'
 _CORPUS_SLATE_LINEUP_SCHEMA = 'iglu:com.pocket/corpus_slate_lineup/jsonschema/3-0-0'
 _USER_SCHEMA = 'iglu:com.pocket/user/jsonschema/1-0-0'
@@ -28,7 +28,7 @@ def get_corpus_recommendations_send_event(event: CorpusRecommendationsSendEvent)
     return SelfDescribingJson(schema=_CORPUS_RECOMMENDATIONS_SEND_SCHEMA, data={
         'recommended_at': int(event.recommended_at.timestamp()),
         'recommendation_surface_id': event.recommendation_surface_id.value,
-        'locale': event.locale.value,
+        'locale': event.locale,
     })
 
 

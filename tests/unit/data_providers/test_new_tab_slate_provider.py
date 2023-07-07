@@ -18,7 +18,6 @@ def new_tab_slate_provider(corpus_api_client, corpus_engagement_provider):
         corpus_api_client=corpus_api_client,
         corpus_engagement_provider=corpus_engagement_provider,
         recommendation_surface_id=RecommendationSurfaceId.NEW_TAB_EN_US,
-        locale=LocaleModel.en_US
     )
 
 

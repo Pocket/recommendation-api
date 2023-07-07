@@ -28,8 +28,7 @@ class NewTabSlateProvider(SlateProvider):
             self,
             corpus_api_client: CorpusApiClient,
             corpus_engagement_provider: CorpusEngagementProvider,
-            recommendation_surface_id: RecommendationSurfaceId,
-            locale: LocaleModel):
+            recommendation_surface_id: RecommendationSurfaceId):
         """
         The only difference between this constructor and the parent one is that it explicitly requires a CorpusApiClient
         :param corpus_api_client: Client that gets corpus from Curated Corpus API.
@@ -37,8 +36,7 @@ class NewTabSlateProvider(SlateProvider):
         super().__init__(
             corpus_fetchable=corpus_api_client,
             corpus_engagement_provider=corpus_engagement_provider,
-            recommendation_surface_id=recommendation_surface_id,
-            locale=locale)
+            recommendation_surface_id=recommendation_surface_id)
 
         self.corpus_api_client = corpus_api_client
 
