@@ -90,6 +90,14 @@ class SlateProvider(ABC):
         """
         return None
 
+    @property
+    def utm_source(self) -> str:
+        """
+        :return: utm_source value to attribute recommendations to, based on the recommendation_surface_id.
+        """
+        utm_source_surface = self.recommendation_surface_id.value.lower().replace('_', '-').replace('new-tab', 'newtab')
+        return f'pocket-{utm_source_surface}'
+
     async def get_candidate_corpus_items(self, *args, **kwargs) -> List[CorpusItemModel]:
         """
         :return: The CorpusItems from the candidate set, without any rankers or filters applied.
@@ -130,6 +138,7 @@ class SlateProvider(ABC):
                 more_link=self.more_link,
                 recommendations=recommendations,
                 recommendation_reason_type=self.recommendation_reason_type,
+                utm_source=self.utm_source,
             )
 
 
