@@ -138,3 +138,27 @@ class TestNewTabSlateProvider:
         # Recommendations should be returned (without Thompson sampling), and an error should be logged.
         assert len(corpus_items_10) == len(ranked_items)
         assert any(r.levelname == 'ERROR' for r in caplog.records)
+
+    @pytest.mark.parametrize(
+        ('recommendation_surface_id', 'expected_utm_source'),
+        [
+            (RecommendationSurfaceId.NEW_TAB_EN_US, 'pocket-newtab-en-us'),
+            (RecommendationSurfaceId.NEW_TAB_EN_GB, 'pocket-newtab-en-gb'),
+            (RecommendationSurfaceId.NEW_TAB_EN_INTL, 'pocket-newtab-en-intl'),
+            (RecommendationSurfaceId.NEW_TAB_DE_DE, 'pocket-newtab-de-de'),
+            (RecommendationSurfaceId.NEW_TAB_ES_ES, 'pocket-newtab-es-es'),
+            (RecommendationSurfaceId.NEW_TAB_FR_FR, 'pocket-newtab-fr-fr'),
+            (RecommendationSurfaceId.NEW_TAB_IT_IT, 'pocket-newtab-it-it'),
+        ]
+    )
+    async def test_rank_corpus_items(
+            self, recommendation_surface_id, expected_utm_source, corpus_api_client, corpus_engagement_provider):
+        new_tab_slate_provider = NewTabSlateProvider(
+            corpus_api_client=corpus_api_client,
+            corpus_engagement_provider=corpus_engagement_provider,
+            recommendation_surface_id=recommendation_surface_id,
+        )
+
+        slate = await new_tab_slate_provider.get_slate()
+
+        assert expected_utm_source == slate.utm_source

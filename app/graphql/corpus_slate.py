@@ -21,3 +21,4 @@ class CorpusSlate:
         description='Recommendations for the current request context.')
     recommendation_reason_type: Optional[RecommendationReasonType]
     more_link: strawberry.auto
+    utm_source: strawberry.auto
