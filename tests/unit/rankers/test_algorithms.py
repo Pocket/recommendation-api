@@ -5,13 +5,14 @@ import json
 import pytest
 from app.models.corpus_item_model import CorpusItemModel
 
-from tests.assets.engagement_metrics import generate_metrics, generate_firefox_metrics, generate_metrics_model_dict
+from tests.assets.engagement_metrics import generate_metrics, generate_firefox_metrics, generate_metrics_model_dict, \
+    generate_corpus_engagement
 from tests.assets.topics import *
 from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_nontopic_configs, generate_lineup_configs
 from app.config import ROOT_DIR
 from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, rank_topics, \
     thompson_sampling_1day, thompson_sampling_7day, thompson_sampling_14day, blocklist, top1_topics, top3_topics, \
-    firefox_thompson_sampling_1day, rank_by_impression_caps, rank_by_preferred_topics
+    firefox_thompson_sampling_1day, rank_by_impression_caps, rank_by_preferred_topics, boost_syndicated
 from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
 from operator import itemgetter
 
@@ -34,6 +35,15 @@ class MockCorpusItems:
                 recs.append(CorpusItemModel(id=f'{t.name}-rec-{j}', topic=t.corpus_topic_id))
 
         return recs
+
+    @staticmethod
+    def get_syndicated_rec():
+        return CorpusItemModel(
+            id='syndicated-rec',
+            topic=business_topic.corpus_topic_id,
+            publisher='The Original Publisher',
+            url='https://getpocket.com/explore/item/this-is-a-syndicated-article',
+        )
 
 
 @pytest.mark.parametrize("user_prefs", [
@@ -376,3 +386,46 @@ class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
 
         for topic_ranker in [top1_topics, top3_topics, rank_topics]:
             self.assertRaises(ValueError, topic_ranker, input_configs, full_topic_profile)
+
+
+class TestAlgorithmsBoostSyndicated(unittest.TestCase):
+
+    def test_boost_syndicated_article(self):
+        recs = MockCorpusItems.get_recs()
+        recs.append(MockCorpusItems.get_syndicated_rec())
+        metrics = generate_corpus_engagement(recs)
+
+        reordered = boost_syndicated(recs, metrics)
+
+        assert len(recs) == len(reordered)
+        # Last item in recs (-1) is moved to index 1 in reordered.
+        assert recs[-1] == reordered[1]
+        assert recs[:-1] == [reordered[0]] + reordered[2:]
+
+    def test_no_urls(self):
+        recs = MockCorpusItems.get_recs()  # get_recs does not set url to syndicated article
+        metrics = generate_corpus_engagement(recs)
+
+        reordered = boost_syndicated(recs, metrics)
+
+        assert recs == reordered
+
+    def test_disqualify_by_impression_cap(self):
+        recs = MockCorpusItems.get_recs()
+        syndicated_rec = MockCorpusItems.get_syndicated_rec()
+        recs.append(syndicated_rec)
+        metrics = generate_corpus_engagement(recs)
+        metrics[syndicated_rec.id].trailing_1_day_impressions = 10 * 1000 * 1000  # Impression cap is 3 million
+
+        reordered = boost_syndicated(recs, metrics)
+
+        assert recs == reordered
+
+    def test_only_boost_upwards(self):
+        recs = MockCorpusItems.get_recs()
+        recs.insert(0, MockCorpusItems.get_syndicated_rec())
+        metrics = generate_corpus_engagement(recs)
+
+        reordered = boost_syndicated(recs, metrics)
+
+        assert recs == reordered

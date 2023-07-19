@@ -7,9 +7,8 @@ import pytest
 from app.data_providers.slate_providers.new_tab_slate_provider import NewTabSlateProvider, PUBLISHER_SPREAD_DISTANCE
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
-from app.models.localemodel import LocaleModel
 from tests.mocks.corpus_clients import CORPUS_API_CLIENT_FIXTURE_ITEM_COUNT
-from tests.assets.topics import all_topic_fixtures
+from tests.assets.topics import all_topic_fixtures, business_topic
 
 
 @pytest.fixture
@@ -138,6 +137,21 @@ class TestNewTabSlateProvider:
         # Recommendations should be returned (without Thompson sampling), and an error should be logged.
         assert len(corpus_items_10) == len(ranked_items)
         assert any(r.levelname == 'ERROR' for r in caplog.records)
+
+    async def test_boost_syndicated_article(self, new_tab_slate_provider, corpus_items_10, aiocache_functions_fixture):
+        # Append a syndicated article
+        syndicated_article = CorpusItemModel(
+            id='syndicated-rec',
+            topic=business_topic.corpus_topic_id,
+            publisher='The Original Publisher',
+            url='https://getpocket.com/explore/item/this-is-a-syndicated-article',
+        )
+        corpus_items_10.append(syndicated_article)
+
+        ranked_items = await new_tab_slate_provider.rank_corpus_items(items=corpus_items_10)
+
+        assert len(corpus_items_10) == len(ranked_items)
+        assert ranked_items[1] == syndicated_article
 
     @pytest.mark.parametrize(
         ('recommendation_surface_id', 'expected_utm_source'),

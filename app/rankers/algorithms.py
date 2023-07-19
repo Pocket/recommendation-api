@@ -320,3 +320,32 @@ def unique_domains_first(recs: List) -> List:
         else:
             duplicates.append(r)
     return uniques + duplicates
+
+
+def boost_syndicated(
+        recs: CorpusItemListType,
+        metrics: Dict[(int or str), 'CorpusItemEngagementModel'],
+        impression_cap: int = 3000000,
+        boostable_slot: int = 1,
+):
+    """
+    Boost a syndicated article with fewer than `impression_cap` impressions into `boostable_slot`.
+    Requirements and experiment results: https://docs.google.com/document/d/1Vgq63DZQF-pz7R3kvcNXgkUd1I829FZqkIUlpIVY_g4
+
+    :param recs: List of CorpusItem. `url` attribute is used to determine whether a CorpusItem is syndicated.
+    :param metrics: Engagement keyed on CorpusItem.id.
+    :param impression_cap: Syndicated articles need to have fewer than this many impressions to qualify. Defaults to 3M.
+                           See above Google Doc for more details on this threshold.
+    :param boostable_slot: 0-based slot to boost an item into. Defaults to slot 1, which is the second recommendation.
+    """
+    boostable_rec = next(
+        (
+            r for r in recs[boostable_slot + 1:]
+            if r.is_syndicated and (r.id not in metrics or metrics[r.id].trailing_1_day_impressions < impression_cap)
+        ), None)
+    if boostable_rec:
+        recs = copy(recs)  # Don't change the input
+        recs.remove(boostable_rec)
+        recs.insert(boostable_slot, boostable_rec)
+
+    return recs
