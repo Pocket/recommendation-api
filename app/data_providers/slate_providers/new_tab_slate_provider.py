@@ -10,7 +10,7 @@ from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
 from app.models.localemodel import LocaleModel
-from app.rankers.algorithms import thompson_sampling, spread_publishers
+from app.rankers.algorithms import thompson_sampling, spread_publishers, boost_syndicated
 
 # Maximum tileId that Firefox can support. Firefox uses Javascript to store this value. The max value of a Javascript
 # number can be found using `Number.MAX_SAFE_INTEGER`. which is 2^53 - 1 because it uses a 64-bit IEEE 754 float.
@@ -108,5 +108,8 @@ class NewTabSlateProvider(SlateProvider):
         # 1. Primary sort order is publisher diversity. Sort is stable, so it will preserve recency order, except
         #    for duplicate publishers.
         items = spread_publishers(items, spread_distance=PUBLISHER_SPREAD_DISTANCE)
+
+        # Final step is to boost a syndicated article (if one exists).
+        items = boost_syndicated(items, metrics)
 
         return items

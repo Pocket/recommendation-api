@@ -1,5 +1,8 @@
+import datetime
 from typing import Dict, List
 
+from app.models.corpus_item_model import CorpusItemModel
+from app.models.metrics.corpus_item_engagement_model import CorpusItemEngagementModel
 from app.models.metrics.firefox_new_tab_metrics_model import FirefoxNewTabMetricsModel
 from app.models.metrics.metrics_model import MetricsModel
 
@@ -109,3 +112,30 @@ def generate_firefox_metrics(recommendation_ids: List[str]) -> Dict[str, 'Firefo
         metrics.update(_get_firefox_new_tab_metrics_model_dict(**kwargs))
 
     return metrics
+
+
+def generate_corpus_engagement(recommendations: List[CorpusItemModel]) -> Dict[str, 'CorpusItemEngagementModel']:
+    """
+    :return: Dictionary where keys are recommendation ids, and values are CorpusItemEngagementModel, with
+             - trailing_1_day_opens equal to 33 * (i + 1), for the i'th recommendation
+             - trailing_1_day_impressions being equal to 999
+    """
+    return {
+        rec.id: CorpusItemEngagementModel(
+            key=f'NEW_TAB_EN_US/edc5571f-7adb-537a-afd8-5612155d54da/{rec.id}',
+            recommendation_surface_id='NEW_TAB_EN_US',
+            corpus_slate_configuration_id='edc5571f-7adb-537a-afd8-5612155d54da',
+            corpus_item_id=rec.id,
+            trailing_1_day_opens=33 * (index + 1),  # 33, 66, 99, etc.
+            trailing_1_day_impressions=999,
+            trailing_7_day_opens=0,
+            trailing_7_day_impressions=0,
+            trailing_14_day_opens=0,
+            trailing_14_day_impressions=0,
+            trailing_21_day_opens=0,
+            trailing_21_day_impressions=0,
+            trailing_28_day_opens=0,
+            trailing_28_day_impressions=0,
+            updated_at=datetime.datetime.now(),
+        ) for index, rec in enumerate(recommendations)
+    }
