@@ -20,6 +20,12 @@ class CorpusApiClient(CorpusFetchable):
             self,
             corpus_id: str,
     ) -> List[CorpusItemModel]:
+        """
+        @param corpus_id: The id of the ScheduledSurface, for example 'NEW_TAB_FR_FR'.
+        @return: List of corpus items scheduled for today or yesterday on the given ScheduledSurface.
+        """
+        scheduled_surface_id = corpus_id
+
         query = """
             query ScheduledSurface($scheduledSurfaceId: ID!, $date_today: Date!, $date_yesterday: Date!) {
               scheduledSurface(id: $scheduledSurfaceId) {
@@ -30,15 +36,15 @@ class CorpusApiClient(CorpusFetchable):
         """
 
         # The date is supposed to progress at midnight CET (Central European Time).
-        today = datetime.now(tz=pytz.timezone('CET'))
+        today = datetime.now(tz=self.get_surface_timezone(scheduled_surface_id))
         yesterday = today - timedelta(days=1)
 
         body = {
             'query': query,
             'variables': {
-              'scheduledSurfaceId': corpus_id,
-              'date_today': today.strftime('%Y-%m-%d'),
-              'date_yesterday': yesterday.strftime('%Y-%m-%d'),
+                'scheduledSurfaceId': scheduled_surface_id,
+                'date_today': today.strftime('%Y-%m-%d'),
+                'date_yesterday': yesterday.strftime('%Y-%m-%d'),
             }
         }
 
@@ -70,3 +76,24 @@ class CorpusApiClient(CorpusFetchable):
                 f'CorpusApiClient does not have a scheduledDate for {corpus_item_id}. Although this is not expected to '
                 f'happen, the caller should continue returning recommendations and gracefully degrade performance.')
             return None
+
+    @staticmethod
+    def get_surface_timezone(scheduled_surface_id: str) -> pytz.timezone:
+        # TODO: Modify curated-corpus-api to get timezone from query. Timezones are already hardcoded there.
+        zones = {
+            'NEW_TAB_EN_US': 'America/New_York',
+            'NEW_TAB_EN_GB': 'Europe/London',
+            'NEW_TAB_EN_INTL': 'Asia/Kolkata',
+            'NEW_TAB_DE_DE': 'Europe/Berlin',
+            'NEW_TAB_ES_ES': 'Europe/Madrid',
+            'NEW_TAB_FR_FR': 'Europe/Paris',
+            'NEW_TAB_IT_IT': 'Europe/Rome',
+        }
+
+        try:
+            return pytz.timezone(zones[scheduled_surface_id])
+        except (KeyError, pytz.exceptions.UnknownTimeZoneError) as e:
+            # Graceful degradation: continue to serve recommendations if timezone cannot be obtained for the surface.
+            default_tz = pytz.timezone('UTC')
+            logging.error(f'Failed to get timezone for {scheduled_surface_id}, so defaulting to {default_tz}: {e}')
+            return default_tz

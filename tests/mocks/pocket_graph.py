@@ -1,25 +1,33 @@
 import json
 import os
 
-import aiohttp
+import aiohttp.web
 import pytest_asyncio
 from aiohttp.test_utils import TestServer
+from aiohttp.web_request import Request
 
 from app.config import ROOT_DIR
+from app.data_providers.PocketGraphClientSession import PocketGraphConfig
 
 
 @pytest_asyncio.fixture
 async def pocket_graph_server(aiohttp_server) -> TestServer:
-    async def mock_graphql_query(request):
+    async def mock_graphql_query(request: Request):
         if 'requests' not in request.app:
-            request.app['requests'] = []
-        request.app['requests'].append(request)
-        # Calling read() here ensures the request content is available in the test method.
-        await request.read()
+            request.app['request_jsons'] = []
 
-        with open(os.path.join(ROOT_DIR, 'tests/assets/json/unleash_assignments.json')) as fp:
-            unleash_assignments = json.load(fp)
-            return aiohttp.web.json_response(unleash_assignments)
+        request_json = await request.json()
+        request.app['request_jsons'].append(request_json)
+
+        if 'unleashAssignments' in request_json['query']:
+            json_fixture_path = 'tests/assets/json/unleash_assignments.json'
+        elif 'scheduledSurface' in request_json['query']:
+            json_fixture_path = 'tests/assets/json/scheduled_surface.json'
+        else:
+            raise NotImplementedError(f"pocket_graph_server does not implement query {request_json['query']}")
+
+        with open(os.path.join(ROOT_DIR, json_fixture_path)) as fp:
+            return aiohttp.web.json_response(json.load(fp))
 
     app = aiohttp.web.Application()
     app.router.add_post('/', mock_graphql_query)
@@ -34,3 +42,9 @@ async def failing_pocket_graph_server(aiohttp_server) -> TestServer:
     app = aiohttp.web.Application()
     app.router.add_post('/', mock_graphql_query)
     return await aiohttp_server(app)
+
+
+def get_pocket_graph_config(pocket_graph_server: TestServer):
+    config = PocketGraphConfig()
+    config.ENDPOINT_URL = f'http://{pocket_graph_server.host}:{pocket_graph_server.port}'
+    return config
