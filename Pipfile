@@ -25,6 +25,7 @@ asgi-lifespan = "==2.*"
 [packages]
 sentry-sdk = "*"
 aioboto3 = "*"
+aiohttp = "*"
 gunicorn = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 fastapi = "*"
