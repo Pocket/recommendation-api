@@ -3,11 +3,9 @@ import uuid
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
-import app.config
 from app.models.slate_lineup_config import SlateLineupConfigModel
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate import SlateModel, deduplicate_recommendations_across_slates
-from app.exceptions.personalization_error import PersonalizationError
 
 
 class SlateLineupModel(BaseModel):
