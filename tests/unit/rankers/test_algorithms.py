@@ -1,6 +1,4 @@
 import unittest
-import os
-import json
 
 import pytest
 from app.models.corpus_item_model import CorpusItemModel
@@ -8,12 +6,10 @@ from app.models.corpus_item_model import CorpusItemModel
 from tests.assets.engagement_metrics import generate_metrics, generate_firefox_metrics, generate_metrics_model_dict, \
     generate_corpus_engagement
 from tests.assets.topics import *
-from tests.unit.utils import generate_recommendations, generate_curated_configs, generate_nontopic_configs, generate_lineup_configs
-from app.config import ROOT_DIR
-from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, rank_topics, \
-    thompson_sampling_1day, thompson_sampling_7day, thompson_sampling_14day, blocklist, top1_topics, top3_topics, \
+from tests.unit.utils import generate_recommendations
+from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, \
+    thompson_sampling_1day, thompson_sampling_7day, thompson_sampling_14day, blocklist, \
     firefox_thompson_sampling_1day, rank_by_impression_caps, rank_by_preferred_topics, boost_syndicated
-from app.models.personalized_topic_list import PersonalizedTopicList, PersonalizedTopicElement
 from operator import itemgetter
 
 ANDROID_DISCOVER_LINEUP_ID = "b50524d6-4df9-4f15-a0d0-13ccc8bdf4ed"
@@ -307,85 +303,6 @@ class TestAlgorithmsThompsonSampling:
         assert int(ranks['666666']) != ranks['666666']
         assert int(ranks['333333']) != ranks['333333']
         assert int(ranks['222222']) != ranks['222222']
-
-
-class TestAlgorithmsPersonalizeTopics(unittest.TestCase):
-
-    @staticmethod
-    def _read_json_asset(filename: str):
-        with open(os.path.join(ROOT_DIR, 'tests/assets/json/', filename)) as f:
-            response = json.load(f)
-        personalized_topics = [PersonalizedTopicElement(curator_topic_label=x[0], score=x[1])
-                               for x in response["curator_topics"]]
-        return PersonalizedTopicList(curator_topics=personalized_topics, user_id="3636")
-
-
-    def test_personalize_topic_limit(self):
-        full_topic_profile = self._read_json_asset("recit_full_user_profile.json")
-        input_configs = generate_curated_configs()
-        input_topics = [c.curator_topic_label for c in input_configs]
-        # these are already sorted by RecIt
-        personalized_topics = [t.curator_topic_label
-                               for t in full_topic_profile.curator_topics
-                               if t.curator_topic_label in input_topics]
-
-        for test_limit, topic_ranker in zip([1, 3, None], [top1_topics, top3_topics, rank_topics]):
-            if test_limit:
-                num_pers_topics = test_limit
-            else:
-                num_pers_topics = len(personalized_topics)
-            output_configs = topic_ranker(input_configs, full_topic_profile)
-            ordered_output_topics = [c.curator_topic_label for c in output_configs]
-            assert len(output_configs) == num_pers_topics
-            assert ordered_output_topics == personalized_topics[:test_limit]
-
-    def test_hybrid_lineups(self):
-        ''' this test is the case where one topic slate is returned from a
-        lineup with a mix of curated and uncurated slates
-        '''
-        full_topic_profile = self._read_json_asset("recit_full_user_profile.json")
-        personalized_topics = [x.curator_topic_label for x in full_topic_profile.curator_topics]
-
-        for lineup_id in [ANDROID_DISCOVER_LINEUP_ID, WEB_HOME_LINEUP_ID]:
-            input_configs, description = generate_lineup_configs(lineup_id)
-            non_topic_slots = [i for i, c in enumerate(input_configs) if c.curator_topic_label is None]
-            topic_slates = [c.curator_topic_label for c in input_configs if c.curator_topic_label]
-            num_topic_slates = len(topic_slates)
-            # these are already sorted by RecIt
-            first_personalizable_slot = min(set(range(len(input_configs))).difference(set(non_topic_slots)))
-            other_slates_before = [t for i,t in enumerate(input_configs)
-                                   if t.curator_topic_label is None and i < first_personalizable_slot]
-            # this assumes topic slates are contiguous in lineup
-            other_slates_after = [t for i,t in enumerate(input_configs)
-                                  if t.curator_topic_label is None and i > first_personalizable_slot]
-
-            print("Testing: ", description)
-
-            for topic_limit, topic_ranker in zip([1, 3, None], [top1_topics, top3_topics, rank_topics]):
-                print(f"first personalizable lineup slot is {first_personalizable_slot}, topic limit is {topic_limit}")
-                if topic_limit:
-                    num_pers_topics = topic_limit
-                else:
-                    num_pers_topics = num_topic_slates
-                # one non-topic slate should be at start of lineup
-                output_configs = topic_ranker(input_configs, full_topic_profile)
-                ordered_output_topics = [c.curator_topic_label for c in output_configs]
-
-
-                assert len(output_configs) == len(other_slates_before) + num_pers_topics + len(other_slates_after)
-                # if non-personalizable slates are first they should preserve their positions
-                assert output_configs[:len(other_slates_before)] == other_slates_before
-                # returned topic slates should be highest ranked, but only include topics that are in the lineup
-                assert ordered_output_topics[first_personalizable_slot:first_personalizable_slot+num_pers_topics] == [t for t in personalized_topics if t in topic_slates][:topic_limit]
-                # check any trailing slates that are also not personalizable
-                assert output_configs[(first_personalizable_slot + num_pers_topics):] == other_slates_after
-
-    def test_no_topic_slates(self):
-        full_topic_profile = self._read_json_asset("recit_full_user_profile.json")
-        input_configs = generate_nontopic_configs()
-
-        for topic_ranker in [top1_topics, top3_topics, rank_topics]:
-            self.assertRaises(ValueError, topic_ranker, input_configs, full_topic_profile)
 
 
 class TestAlgorithmsBoostSyndicated(unittest.TestCase):

@@ -261,43 +261,6 @@
     ]
   },
   {
-    "id": "631d8077-1462-4397-ad0a-aa340c27570a",
-    "displayName": "Recommended reads, just for you",
-    "description": "Stories to fuel your mind, curated for your interests",
-    "internalDescription": "Curated Personalized",
-    "experiments": [
-      {
-        "description": "recit-personalized curated",
-        "candidateSets": [
-          "recit-personalized/curated"
-        ],
-        "rankers": [
-          "top30-items",
-          "thompson-sampling-28day",
-          "pubspread"
-        ]
-      }
-    ]
-  },
-  {
-    "id": "ad73c061-5ac5-458f-8691-ab071f7eadd7",
-    "displayName": "Popular Pocket picks, curated for you",
-    "description": "Thought-provoking stories and hidden gems that feed your interests",
-    "internalDescription": "Best of Personalized",
-    "experiments": [
-      {
-        "description": "recit-personalized",
-        "candidateSets": [
-          "recit-personalized/bestof"
-        ],
-        "rankers": [
-          "top15-items",
-          "thompson-sampling-28day"
-        ]
-      }
-    ]
-  },
-  {
     "id": "d9c6ddfa-a58d-402d-9664-4190ba197ea6",
     "displayName": "Recommended in Business",
     "description": "Algorithmic Business Slate",

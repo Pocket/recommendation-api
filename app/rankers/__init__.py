@@ -1,9 +1,6 @@
 def get_ranker(name):
     return get_all_rankers()[name]
 
-
-PERSONALIZED_TOPIC_RANKERS = {"top1-topics", "top3-topics", "rank-topics"}
-
 POCKET_THOMPSON_SAMPLING_RANKERS = {"thompson-sampling-1day", "thompson-sampling-7day",
                              "thompson-sampling-14day", "thompson-sampling-28day"}
 
@@ -35,9 +32,6 @@ def get_all_rankers():
         thompson_sampling_28day,
         firefox_thompson_sampling_1day,
         spread_publishers,
-        top1_topics,
-        top3_topics,
-        rank_topics,
     )
 
     return {
@@ -54,8 +48,5 @@ def get_all_rankers():
         'thompson-sampling-14day': thompson_sampling_14day,
         'thompson-sampling-28day': thompson_sampling_28day,
         'firefox-thompson-sampling-1day': firefox_thompson_sampling_1day,
-        'top1-topics': top1_topics,
-        'top3-topics': top3_topics,
-        'rank-topics': rank_topics,
         'pubspread': spread_publishers,
     }

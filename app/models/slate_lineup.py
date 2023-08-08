@@ -3,11 +3,9 @@ import uuid
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
-import app.config
 from app.models.slate_lineup_config import SlateLineupConfigModel
 from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.models.slate import SlateModel, deduplicate_recommendations_across_slates
-from app.exceptions.personalization_error import PersonalizationError
 
 
 class SlateLineupModel(BaseModel):
@@ -27,10 +25,10 @@ class SlateLineupModel(BaseModel):
     slates: List[SlateModel] = Field(description='An ordered list of slates for the client to display')
 
     @staticmethod
-    async def get_slate_lineup_with_fallback(slate_lineup_id: str,
-                                             user_id: Optional[str] = None,
-                                             recommendation_count: Optional[int] = 10,
-                                             slate_count: Optional[int] = 8) -> 'SlateLineupModel':
+    async def get_slate_lineup(slate_lineup_id: str,
+                               user_id: Optional[str] = None,
+                               recommendation_count: Optional[int] = 10,
+                               slate_count: Optional[int] = 8) -> 'SlateLineupModel':
         """
         Retrieves a slate_lineup based on the given `slate_lineup_id`
 
@@ -40,21 +38,9 @@ class SlateLineupModel(BaseModel):
         :param slate_count: int, 0 = no slates, > 0 include this many slates
         :return: SlateLineupModel object
         """
-        try:
-            experiment, slates = await SlateLineupModel.__get_slate_lineup(
-                slate_lineup_id, user_id, recommendation_count, slate_count
-            )
-
-        except PersonalizationError as e:
-            slate_lineup_id = app.config.personalization_fallback_slate_lineup.get(slate_lineup_id, None)
-            if slate_lineup_id:
-                # Retry getting a lineup, but this time with the fallback slate_lineup_id
-                experiment, slates = await SlateLineupModel.__get_slate_lineup(
-                    slate_lineup_id, user_id, recommendation_count, slate_count
-                )
-            else:
-                # Re-raise exception if the lineup does not have a fallback.
-                raise e
+        experiment, slates = await SlateLineupModel.__get_slate_lineup(
+            slate_lineup_id, user_id, recommendation_count, slate_count
+        )
 
         return SlateLineupModel(
             id=slate_lineup_id,
