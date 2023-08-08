@@ -1,21 +1,14 @@
-import asyncio
 import datetime
-from typing import Optional
 
-import aioboto3
 from strawberry.types import Info
 
 from app.data_providers.topic_provider import TopicProvider
-from app.data_providers.user_recommendation_preferences_provider import (
-    UserRecommendationPreferencesProvider,
-    UserRecommendationPreferencesProviderV2,
-)
+from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProviderV2
 from app.graphql.update_user_recommendation_preferences_input import UpdateUserRecommendationPreferencesInput
 from app.graphql.user_recommendation_preferences import UserRecommendationPreferences
 from app.graphql.util import get_request_user
 from app.models.localemodel import LocaleModel
-from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel, \
-    UserRecommendationPreferencesModelV2
+from app.models.user_recommendation_preferences import UserRecommendationPreferencesModelV2
 from app.singletons import DiContainer
 
 
@@ -29,11 +22,6 @@ async def update_user_recommendation_preferences(
         translation_provider=di.translation_provider,
     )
 
-    preferences_provider = UserRecommendationPreferencesProvider(
-        aioboto3_session=di.aioboto3_session,
-        topic_provider=topic_provider
-    )
-
     preferences_provider_v2 = UserRecommendationPreferencesProviderV2(
         aioboto3_session=di.aioboto3_session,
         topic_provider=topic_provider
@@ -42,21 +30,12 @@ async def update_user_recommendation_preferences(
     preferred_topics = await topic_provider.get_topics([t.id for t in input.preferred_topics])
     request_user = get_request_user(info)
 
-    model = UserRecommendationPreferencesModel(
-        user_id=request_user.user_id,  # Integer user id
-        updated_at=datetime.datetime.utcnow(),
-        preferred_topics=preferred_topics
-    )
-
     model_v2 = UserRecommendationPreferencesModelV2(
         hashed_user_id=request_user.hashed_user_id,
         updated_at=datetime.datetime.utcnow(),
         preferred_topics=preferred_topics
     )
 
-    await asyncio.gather(
-        preferences_provider.put(model),
-        preferences_provider_v2.put(model_v2),
-    )
+    await preferences_provider_v2.put(model_v2)
 
-    return UserRecommendationPreferences(preferred_topics=model.preferred_topics)
+    return UserRecommendationPreferences(preferred_topics=model_v2.preferred_topics)

@@ -12,7 +12,7 @@ from app.data_providers.model_loading import S3Loader
 from app.data_providers.snowplow.config import SnowplowConfig
 from app.data_providers.unleash_provider import UnleashProvider
 from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
-from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
+from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProviderV2
 from app.main import app
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.request_user import RequestUser
@@ -104,7 +104,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         self.snowplow_micro.reset_snowplow_events()
 
     @patch.object(CorpusFeatureGroupClient, 'fetch')
-    @patch.object(UserRecommendationPreferencesProvider, 'fetch')
+    @patch.object(UserRecommendationPreferencesProviderV2, 'fetch')
     @patch.object(UserImpressionCapProvider, 'get')
     @patch.object(UnleashProvider, '_get_all_assignments')
     @patch.object(FeatureGroupClient, 'batch_get_records')
@@ -155,7 +155,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
 
     @patch.object(CorpusFeatureGroupClient, 'fetch')
-    @patch.object(UserRecommendationPreferencesProvider, 'fetch')
+    @patch.object(UserRecommendationPreferencesProviderV2, 'fetch')
     @patch.object(UserImpressionCapProvider, 'get')
     @patch.object(UnleashProvider, '_get_all_assignments')
     @patch.object(FeatureGroupClient, 'batch_get_records')
@@ -196,7 +196,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
 
     @patch.object(CorpusFeatureGroupClient, 'fetch')
-    @patch.object(UserRecommendationPreferencesProvider, 'fetch')
+    @patch.object(UserRecommendationPreferencesProviderV2, 'fetch')
     @patch.object(UserImpressionCapProvider, 'get')
     @patch.object(UnleashProvider, '_get_all_assignments')
     @patch.object(FeatureGroupClient, 'batch_get_records')
@@ -234,7 +234,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
 
     @patch.object(CorpusFeatureGroupClient, 'fetch')
-    @patch.object(UserRecommendationPreferencesProvider, 'fetch')
+    @patch.object(UserRecommendationPreferencesProviderV2, 'fetch')
     @patch.object(UserImpressionCapProvider, 'get')
     @patch.object(UnleashProvider, '_get_all_assignments')
     @patch.object(FeatureGroupClient, 'batch_get_records')
