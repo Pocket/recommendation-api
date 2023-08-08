@@ -17,7 +17,7 @@ from app.main import app
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.request_user import RequestUser
 from app.models.unleash_assignment import UnleashAssignmentModel
-from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
+from app.models.user_recommendation_preferences import UserRecommendationPreferencesModelV2
 from tests.functional.test_util.snowplow import wait_for_snowplow_events
 from tests.assets.topics import *
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
@@ -33,10 +33,10 @@ topics_by_id = {t.id: t for t in corpus_topics}
 
 
 def _user_recommendation_preferences_fixture(
-        user_id: str, preferred_topics: List[TopicModel]
-) -> UserRecommendationPreferencesModel:
-    return UserRecommendationPreferencesModel(
-        user_id=user_id,
+        hashed_user_id: str, preferred_topics: List[TopicModel]
+) -> UserRecommendationPreferencesModelV2:
+    return UserRecommendationPreferencesModelV2(
+        hashed_user_id=hashed_user_id,
         updated_at=datetime.datetime(2022, 5, 12, 15, 30),
         preferred_topics=preferred_topics,
     )
@@ -120,7 +120,8 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         mock_fetch_corpus_items.return_value = corpus_items_fixture
 
         preferred_topics = [technology_topic, gaming_topic]
-        preferences_fixture = _user_recommendation_preferences_fixture(str(self.request_user.user_id), preferred_topics)
+        preferences_fixture = _user_recommendation_preferences_fixture(
+            self.request_user.hashed_user_id, preferred_topics)
         mock_fetch_user_recommendation_preferences.return_value = preferences_fixture
         mock_get_user_impression_caps.return_value = corpus_items_fixture[:6]
         mock_get_all_assignments.return_value = []
@@ -250,7 +251,8 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         mock_fetch_corpus_items.return_value = corpus_items_fixture
 
         preferred_topics = [technology_topic, gaming_topic]
-        preferences_fixture = _user_recommendation_preferences_fixture(str(self.request_user.user_id), preferred_topics)
+        preferences_fixture = _user_recommendation_preferences_fixture(
+            self.request_user.hashed_user_id, preferred_topics)
         mock_fetch_user_recommendation_preferences.return_value = preferences_fixture
         mock_get_user_impression_caps.return_value = corpus_items_fixture[:6]
         mock_get_all_assignments.return_value = [
