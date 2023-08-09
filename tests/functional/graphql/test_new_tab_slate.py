@@ -12,7 +12,7 @@ from tests.functional.test_util.snowplow import wait_for_snowplow_events
 def _format_new_tab_query(locale, region, count=50):
     return '''
         query {
-          newTabSlate(locale: "%(locale)s", region: "%(region)s") {
+          newTabSlate(locale: "%(locale)s", region: %(region)s) {
             recommendations(count: %(count)d) {
               tileId
               corpusItem {
@@ -21,7 +21,7 @@ def _format_new_tab_query(locale, region, count=50):
             }
           }
         }
-    ''' % {'locale': locale, 'region': region, 'count': count}
+    ''' % {'locale': locale, 'region': f'"{region}"' if region else 'null', 'count': count}
 
 
 @pytest.fixture
@@ -41,12 +41,15 @@ def pocket_graph_request_headers() -> Dict[str, str]:
     [
         # Test cases based on the values that firefox-api-proxy can pass through:
         # https://github.com/Pocket/firefox-api-proxy/blob/main/src/generated/openapi/types.ts#L123-L124
+        ('en-US', 'US'),
+        ('en-GB', 'GB'),
+        ('en-IN', 'IN'),
         ('es-ES', 'ES'),
         ('es', 'ES'),  # Firefox uses both 'es' and 'es-ES' format for locale.
         ('es-ES', 'FR'),  # Spanish-language Firefox geographically located in France.
         ('fr-FR', 'FR'),
         ('it-IT', 'IT'),
-        ('it-IT', 'null'),  # Region can be null.
+        ('it-IT', None),  # Region can be null.
     ])
 async def test_new_tab_slate(locale, region, snowplow_micro, pocket_graph_request_headers):
     """

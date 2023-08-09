@@ -23,12 +23,10 @@ class SlateProvider(ABC):
         corpus_fetchable: CorpusFetchable,
         corpus_engagement_provider: CorpusEngagementProvider,
         recommendation_surface_id: RecommendationSurfaceId,
-        locale: LocaleModel,
     ):
         self.corpus_fetchable = corpus_fetchable
         self.corpus_engagement_provider = corpus_engagement_provider
         self.recommendation_surface_id = recommendation_surface_id
-        self.locale = locale
 
     @property
     @abstractmethod
@@ -92,6 +90,14 @@ class SlateProvider(ABC):
         """
         return None
 
+    @property
+    def utm_source(self) -> str:
+        """
+        :return: utm_source value to attribute recommendations to, based on the recommendation_surface_id.
+        """
+        utm_source_surface = self.recommendation_surface_id.value.lower().replace('_', '-').replace('new-tab', 'newtab')
+        return f'pocket-{utm_source_surface}'
+
     async def get_candidate_corpus_items(self, *args, **kwargs) -> List[CorpusItemModel]:
         """
         :return: The CorpusItems from the candidate set, without any rankers or filters applied.
@@ -132,6 +138,7 @@ class SlateProvider(ABC):
                 more_link=self.more_link,
                 recommendations=recommendations,
                 recommendation_reason_type=self.recommendation_reason_type,
+                utm_source=self.utm_source,
             )
 
 
@@ -140,11 +147,13 @@ class HomeSlateProvider(SlateProvider, ABC):
             self,
             corpus_fetchable: CorpusFetchable,
             corpus_engagement_provider: CorpusEngagementProvider,
-            recommendation_surface_id: RecommendationSurfaceId, locale: LocaleModel,
+            recommendation_surface_id: RecommendationSurfaceId,
+            locale: LocaleModel,
             translation_provider: TranslationProvider,
     ):
-        super().__init__(corpus_fetchable, corpus_engagement_provider, recommendation_surface_id, locale)
+        super().__init__(corpus_fetchable, corpus_engagement_provider, recommendation_surface_id)
 
+        self.locale = locale
         self.home_translations = translation_provider.get_translations(self.locale, filename='home.json')
 
     @property

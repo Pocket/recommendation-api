@@ -93,7 +93,7 @@ class UnleashProvider:
         }
 
         if user.user_models:
-            # not really related to recit anymore, but it's what the unleash strategy hasUserModel expects
+            # not related to recit anymore, but it's what the unleash strategy hasUserModel expects
             body['variables']['context']['properties']['recItUserProfile'] = {'userModels': user.user_models}
 
         async with self.pocket_graph_client_session.post(url='/', json=body, raise_for_status=True) as resp:

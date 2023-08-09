@@ -33,6 +33,9 @@ class CorpusSlateModel(BaseModel):
         default=None,
         description='Link to a page where the user can explore more recommendations similar to this slate, or null if '
                     'no link is provided.')
+    utm_source: Optional[str] = Field(
+        default=None,
+        description='utm_source value that can be set on the url by the caller to attribute the recommendations.')
 
     def remove_corpus_items(self, corpus_item_ids: Set[str]) -> 'CorpusSlateModel':
         """

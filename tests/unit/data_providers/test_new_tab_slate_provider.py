@@ -7,9 +7,8 @@ import pytest
 from app.data_providers.slate_providers.new_tab_slate_provider import NewTabSlateProvider, PUBLISHER_SPREAD_DISTANCE
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
-from app.models.localemodel import LocaleModel
 from tests.mocks.corpus_clients import CORPUS_API_CLIENT_FIXTURE_ITEM_COUNT
-from tests.assets.topics import all_topic_fixtures
+from tests.assets.topics import all_topic_fixtures, business_topic
 
 
 @pytest.fixture
@@ -18,7 +17,6 @@ def new_tab_slate_provider(corpus_api_client, corpus_engagement_provider):
         corpus_api_client=corpus_api_client,
         corpus_engagement_provider=corpus_engagement_provider,
         recommendation_surface_id=RecommendationSurfaceId.NEW_TAB_EN_US,
-        locale=LocaleModel.en_US
     )
 
 
@@ -139,3 +137,42 @@ class TestNewTabSlateProvider:
         # Recommendations should be returned (without Thompson sampling), and an error should be logged.
         assert len(corpus_items_10) == len(ranked_items)
         assert any(r.levelname == 'ERROR' for r in caplog.records)
+
+    async def test_boost_syndicated_article(self, new_tab_slate_provider, corpus_items_10, aiocache_functions_fixture):
+        # Append a syndicated article
+        syndicated_article = CorpusItemModel(
+            id='syndicated-rec',
+            topic=business_topic.corpus_topic_id,
+            publisher='The Original Publisher',
+            url='https://getpocket.com/explore/item/this-is-a-syndicated-article',
+        )
+        corpus_items_10.append(syndicated_article)
+
+        ranked_items = await new_tab_slate_provider.rank_corpus_items(items=corpus_items_10)
+
+        assert len(corpus_items_10) == len(ranked_items)
+        assert ranked_items[1] == syndicated_article
+
+    @pytest.mark.parametrize(
+        ('recommendation_surface_id', 'expected_utm_source'),
+        [
+            (RecommendationSurfaceId.NEW_TAB_EN_US, 'pocket-newtab-en-us'),
+            (RecommendationSurfaceId.NEW_TAB_EN_GB, 'pocket-newtab-en-gb'),
+            (RecommendationSurfaceId.NEW_TAB_EN_INTL, 'pocket-newtab-en-intl'),
+            (RecommendationSurfaceId.NEW_TAB_DE_DE, 'pocket-newtab-de-de'),
+            (RecommendationSurfaceId.NEW_TAB_ES_ES, 'pocket-newtab-es-es'),
+            (RecommendationSurfaceId.NEW_TAB_FR_FR, 'pocket-newtab-fr-fr'),
+            (RecommendationSurfaceId.NEW_TAB_IT_IT, 'pocket-newtab-it-it'),
+        ]
+    )
+    async def test_rank_corpus_items(
+            self, recommendation_surface_id, expected_utm_source, corpus_api_client, corpus_engagement_provider):
+        new_tab_slate_provider = NewTabSlateProvider(
+            corpus_api_client=corpus_api_client,
+            corpus_engagement_provider=corpus_engagement_provider,
+            recommendation_surface_id=recommendation_surface_id,
+        )
+
+        slate = await new_tab_slate_provider.get_slate()
+
+        assert expected_utm_source == slate.utm_source

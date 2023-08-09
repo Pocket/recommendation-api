@@ -19,7 +19,7 @@ def slate_send_event(corpus_slate_10_business_recs, web_client):
         corpus_slate=corpus_slate_10_business_recs,
         recommendation_surface_id=RecommendationSurfaceId.NEW_TAB_EN_US,
         api_client=web_client,
-        locale=LocaleModel.en_US,
+        locale=LocaleModel.en_US.value,
     )
 
 
@@ -30,7 +30,7 @@ def slate_lineup_send_event(lineup_with_business_slate, user_1, web_client):
         recommendation_surface_id=RecommendationSurfaceId.NEW_TAB_EN_US,
         user=user_1,
         api_client=web_client,
-        locale=LocaleModel.en_US,
+        locale=LocaleModel.en_US.value,
     )
 
 

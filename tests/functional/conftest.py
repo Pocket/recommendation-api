@@ -8,3 +8,4 @@ from tests.mocks.corpus_slate_model import *  # noqa
 from tests.mocks.corpus_slate_lineup_model import lineup_with_business_slate  # noqa
 from tests.mocks.user import *  # noqa
 from tests.mocks.feature_store_mock import *  # noqa
+from tests.mocks.pocket_graph import *  # noqa

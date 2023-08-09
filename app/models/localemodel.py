@@ -13,11 +13,11 @@ class LocaleValue(str):
 
 
 class LocaleModel(Enum):
+    """
+    Locales that exist in the app/translations directory.
+    """
     en_US = LocaleValue('en-US')
     de_DE = LocaleValue('de-DE')
-    es_ES = LocaleValue('es-ES')
-    fr_FR = LocaleValue('fr-FR')
-    it_IT = LocaleValue('it-IT')
 
     @staticmethod
     def from_string(val: str, available_locales: List['LocaleModel'], default: 'LocaleModel' = None) -> 'LocaleModel':

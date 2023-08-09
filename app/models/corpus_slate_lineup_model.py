@@ -14,6 +14,8 @@ class RecommendationSurfaceId(Enum):
     """
     HOME = 'HOME'
     NEW_TAB_EN_US = 'NEW_TAB_EN_US'
+    NEW_TAB_EN_GB = 'NEW_TAB_EN_GB'
+    NEW_TAB_EN_INTL = 'NEW_TAB_EN_INTL'
     NEW_TAB_DE_DE = 'NEW_TAB_DE_DE'
     NEW_TAB_ES_ES = 'NEW_TAB_ES_ES'
     NEW_TAB_FR_FR = 'NEW_TAB_FR_FR'

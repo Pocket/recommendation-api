@@ -122,12 +122,9 @@
                 "title": "The Experiment Candidate Set Items Schema",
                 "default": "",
                 "examples": [
-                  "39d0dc54-f6f8-4f13-bea4-4320b3bd8217",
-                  "recit-personalized/bestof",
-                  "recit-personalized/curated",
-                  "recit-personalized/syndicated"
+                  "39d0dc54-f6f8-4f13-bea4-4320b3bd8217"
                 ],
-                "pattern": "^([0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}|recit-personalized\\/(bestof|syndicated|curated))$"
+                "pattern": "^([0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12})$"
               }
             },
             "rankers": {
