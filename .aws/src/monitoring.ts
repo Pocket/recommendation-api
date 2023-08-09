@@ -1,17 +1,19 @@
-import { config } from './config';
-import { Construct } from 'constructs';
-import { AssetType, TerraformAsset } from 'cdktf';
+import {config} from './config';
+import {Construct} from 'constructs';
+import {AssetType, TerraformAsset} from 'cdktf';
 import * as path from 'path';
-import { DataArchiveFile } from '@cdktf/provider-archive';
-import {
-  cloudwatch,
-  DataAwsDefaultTags,
-  datasources,
-  iam,
-  synthetics,
-  s3,
-} from '@cdktf/provider-aws';
-import { PocketVPC } from '@pocket-tools/terraform-modules';
+import {DataArchiveFile} from '@cdktf/provider-archive/lib/data-archive-file';
+import {PocketVPC} from '@pocket-tools/terraform-modules';
+
+import {CloudwatchMetricAlarm} from '@cdktf/provider-aws/lib/cloudwatch-metric-alarm';
+import {DataAwsCallerIdentity} from '@cdktf/provider-aws/lib/data-aws-caller-identity';
+import {DataAwsIamPolicyDocument} from '@cdktf/provider-aws/lib/data-aws-iam-policy-document';
+import {DataAwsRegion} from '@cdktf/provider-aws/lib/data-aws-region';
+import {IamPolicy} from '@cdktf/provider-aws/lib/iam-policy';
+import {IamRolePolicyAttachment} from '@cdktf/provider-aws/lib/iam-role-policy-attachment';
+import {IamRole} from '@cdktf/provider-aws/lib/iam-role';
+import {S3Bucket} from '@cdktf/provider-aws/lib/s3-bucket';
+import {SyntheticsCanary} from '@cdktf/provider-aws/lib/synthetics-canary';
 
 /**
  * Create additional monitoring
@@ -24,18 +26,14 @@ export class RecommendationApiSynthetics extends Construct {
 
   constructor(scope: Construct, name: string) {
     super(scope, name);
-
-    new DataAwsDefaultTags(this, 'monitoring_default_tags', {
-      tags: config.tags,
-    });
   }
 
   createSyntheticCheck(snsAlarmTopicARNs: string[]) {
-    const caller = new datasources.DataAwsCallerIdentity(this, 'caller');
-    const region = new datasources.DataAwsRegion(this, 'region');
+    const caller = new DataAwsCallerIdentity(this, 'caller');
+    const region = new DataAwsRegion(this, 'region');
     const pocketVPC = new PocketVPC(this, 'pocket-shared-vpc');
 
-    const syncheckArtifactsS3 = new s3.S3Bucket(
+    const syncheckArtifactsS3 = new S3Bucket(
       this,
       'synthetic_check_artifacts',
       {
@@ -55,7 +53,7 @@ export class RecommendationApiSynthetics extends Construct {
     });
 
     // behind the scenes, Cloudwatch Synthetics are AWS-managed Lambdas
-    const dataSyncheckAssume = new iam.DataAwsIamPolicyDocument(
+    const dataSyncheckAssume = new DataAwsIamPolicyDocument(
       this,
       'synthetic_check_assume',
       {
@@ -76,7 +74,7 @@ export class RecommendationApiSynthetics extends Construct {
       }
     );
 
-    const syncheckRole = new iam.IamRole(this, 'synthetic_check_role', {
+    const syncheckRole = new IamRole(this, 'synthetic_check_role', {
       name: `pocket-${config.prefix.toLowerCase()}-synthetic-check`,
 
       assumeRolePolicy: dataSyncheckAssume.json,
@@ -84,7 +82,7 @@ export class RecommendationApiSynthetics extends Construct {
     });
 
     // puts artifacts into s3, stores logs, pushes metrics to Cloudwatch
-    const dataSynCheckAccess = new iam.DataAwsIamPolicyDocument(
+    const dataSynCheckAccess = new DataAwsIamPolicyDocument(
       this,
       'synthetic_check_access',
       {
@@ -141,7 +139,7 @@ export class RecommendationApiSynthetics extends Construct {
       }
     );
 
-    const synCheckAccessPolicy = new iam.IamPolicy(
+    const synCheckAccessPolicy = new IamPolicy(
       this,
       'synthetic_check_access_policy',
       {
@@ -150,12 +148,12 @@ export class RecommendationApiSynthetics extends Construct {
       }
     );
 
-    new iam.IamRolePolicyAttachment(this, 'synthetic_check_access_attach', {
+    new IamRolePolicyAttachment(this, 'synthetic_check_access_attach', {
       role: syncheckRole.id,
       policyArn: synCheckAccessPolicy.arn,
     });
     
-    const synCheckCanary = new synthetics.SyntheticsCanary(
+    const synCheckCanary = new SyntheticsCanary(
       this,
       'synthetic_check',
       {
@@ -183,7 +181,7 @@ export class RecommendationApiSynthetics extends Construct {
       }
     );
 
-    new cloudwatch.CloudwatchMetricAlarm(this, 'synthetic_check_alarm', {
+    new CloudwatchMetricAlarm(this, 'synthetic_check_alarm', {
       alarmDescription: `Runbook: https://getpocket.atlassian.net/l/cp/5wQMswfT`,
       alarmName: `pocket-${synCheckCanary.name}-synthetic-check-access`,
 
