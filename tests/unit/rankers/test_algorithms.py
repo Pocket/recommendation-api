@@ -3,13 +3,13 @@ import unittest
 import pytest
 from app.models.corpus_item_model import CorpusItemModel
 
-from tests.assets.engagement_metrics import generate_metrics, generate_firefox_metrics, generate_metrics_model_dict, \
+from tests.assets.engagement_metrics import generate_metrics, generate_metrics_model_dict, \
     generate_corpus_engagement
 from tests.assets.topics import *
 from tests.unit.utils import generate_recommendations
 from app.rankers.algorithms import spread_publishers, top5, top15, top30, thompson_sampling, \
     thompson_sampling_1day, thompson_sampling_7day, thompson_sampling_14day, blocklist, \
-    firefox_thompson_sampling_1day, rank_by_impression_caps, rank_by_preferred_topics, boost_syndicated
+    rank_by_impression_caps, rank_by_preferred_topics, boost_syndicated
 from operator import itemgetter
 
 ANDROID_DISCOVER_LINEUP_ID = "b50524d6-4df9-4f15-a0d0-13ccc8bdf4ed"
@@ -253,20 +253,12 @@ class TestAlgorithmsThompsonSampling:
                 metrics=generate_metrics_model_dict(),
                 trailing_period=123  # Model does not have 123 day trailing metrics
             )
-        # Invalid trailing_period for Firefox New Tab metrics
-        with pytest.raises(ValueError):
-            thompson_sampling(
-                generate_recommendations(['000-999']),
-                metrics=generate_firefox_metrics(['000-999']),
-                trailing_period=7  # MetricsModel has 7 day trailing period, but FirefoxNewTabMetricsModel does not.
-            )
 
     @pytest.mark.parametrize("thompson_sampling_function,metrics", [
         (thompson_sampling, generate_metrics(28)),  # 28 day is the default
         (thompson_sampling_1day, generate_metrics(1)),
         (thompson_sampling_7day, generate_metrics(7)),
         (thompson_sampling_14day, generate_metrics(14)),
-        (firefox_thompson_sampling_1day, generate_firefox_metrics(["333333", "666666", "999999"])),
     ])
     def test_rank_by_ctr_over_n_trials(self, thompson_sampling_function, metrics, ntrials = 99):
         """
