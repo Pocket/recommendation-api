@@ -1,11 +1,7 @@
-from collections import defaultdict
 from copy import copy
 from functools import partial
 import logging
 import json
-import random
-
-from aws_xray_sdk.core import xray_recorder
 
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.metrics.corpus_item_engagement_model import CorpusItemEngagementModel
@@ -13,12 +9,11 @@ from app.models.metrics.metrics_model import MetricsModel
 from app.models.metrics.firefox_new_tab_metrics_model import FirefoxNewTabMetricsModel
 
 from app.config import ROOT_DIR
-from typing import List, Dict, Optional, Union, Set
+from typing import List, Dict, Optional, Union
 from operator import itemgetter
 from scipy.stats import beta
 
 from app.models.slate_config import SlateConfigModel
-from app.models.personalized_topic_list import PersonalizedTopicList
 from app.models.topic import TopicModel
 
 DEFAULT_ALPHA_PRIOR = 0.02
@@ -52,42 +47,6 @@ top5 = partial(top_n, 5)
 top15 = partial(top_n, 15)
 top30 = partial(top_n, 30)
 top45 = partial(top_n, 45)
-
-
-def rank_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List[
-    'SlateConfigModel']:
-    """
-    returns the lineup with topic slates sorted by the user's profile.
-    :param slates: initial list of slate configs
-    :param personalized_topics: recit response including sorted list of personalized topics
-    :return: list of slate configs the personalized topics sorted
-    """
-
-    return __personalize_topic_slates(slates, personalized_topics, topic_limit=None)
-
-
-def top1_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List[
-    'SlateConfigModel']:
-    """
-    returns the lineup with only the top topic slate included
-    :param slates: initial list of slate configs
-    :param personalized_topics: recit response including sorted list of personalized topics
-    :return: list of slate configs with only the top topic slate
-    """
-
-    return __personalize_topic_slates(slates, personalized_topics, topic_limit=1)
-
-
-def top3_topics(slates: List['SlateConfigModel'], personalized_topics: PersonalizedTopicList) -> List[
-    'SlateConfigModel']:
-    """
-    returns the lineup with only the top 3 topic slates included
-    :param slates: initial list of slate configs
-    :param personalized_topics: recit response including sorted list of personalized topics
-    :return: list of slate configs with only the top 3 topic slate
-    """
-
-    return __personalize_topic_slates(slates, personalized_topics, topic_limit=3)
 
 
 def blocklist(recs: RecommendationListType, blocklist: Optional[List[str]] = None) -> RecommendationListType:
@@ -167,6 +126,9 @@ def thompson_sampling(
             # sample from posterior for CTR given click data
             score = beta.rvs(opens, no_opens)
             scores.append((rec, score))
+
+            if hasattr(rec, 'ranked_with_engagement_updated_at') and hasattr(metrics_model, 'updated_at'):
+                rec.ranked_with_engagement_updated_at = metrics_model.updated_at
         else:  # no click data, sample from module prior
             scores.append((rec, prior.rvs()))
 
@@ -185,58 +147,6 @@ firefox_thompson_sampling_1day = partial(
     default_alpha_prior=DEFAULT_FIREFOX_ALPHA_PRIOR,
     default_beta_prior=DEFAULT_FIREFOX_BETA_PRIOR,
 )
-
-
-def __personalize_topic_slates(input_slate_configs: List['SlateConfigModel'],
-                               personalized_topics: PersonalizedTopicList,
-                               topic_limit: Optional[int] = 1) -> List['SlateConfigModel']:
-    """
-    This routine takes a list of slates as input in which must include slates with an associated curator topic
-    label.  It uses the topic_profile that is supplied by RecIt to re-rank the slates according to affinity
-    with items in the user's list.
-    This version allows non-topic slates within the lineup.  These are left in order in the output configs
-    list.  Personalizable (topic) slates are re-ordered using their initial slots in the config lineup.
-    If the topic_limit parameter is included this will determine the number of topic slates that
-    remain in the output config list.
-    :param input_slate_configs: SlateConfigModel list that includes slates with curatorTopicLabels
-    :param personalized_topics: response from RecIt listing topics ordered by affinity to user
-    :param topic_limit: desired number of topics to return, if this is set the number of slates returned is truncated.
-                        otherwise all personalized topics among the input slate configs are returned
-    :return: SlateLineupExperimentModel with reordered slates
-    """
-    topic_to_score_map = {t.curator_topic_label: t.score for t in personalized_topics.curator_topics}
-    # filter non-topic slates
-    personalizable_configs = list(filter(lambda s: s.curator_topic_label in topic_to_score_map, input_slate_configs))
-    logging.debug(personalizable_configs)
-
-    if not personalizable_configs:
-        raise ValueError(f"Input lineup to personalize_topic_slates includes no topic slates")
-    elif topic_limit and len(personalizable_configs) < topic_limit:
-        raise ValueError(f"Input lineup to personalize_topic_slates includes fewer topic slates than requested")
-
-    # re-rank topic slates
-    personalizable_configs.sort(key=lambda s: topic_to_score_map.get(s.curator_topic_label), reverse=True)
-
-    output_configs = list()
-    added_topic_slates = 0
-    personalized_index = 0
-    for config in input_slate_configs:
-        if config in personalizable_configs:
-            # if slate is personalizable add highest ranked slate remaining
-            if topic_limit:
-                if added_topic_slates < topic_limit:
-                    output_configs.append(personalizable_configs[personalized_index])
-                    added_topic_slates += 1
-                    personalized_index += 1
-            else:
-                output_configs.append(personalizable_configs[personalized_index])
-                personalized_index += 1
-                added_topic_slates += 1
-        else:
-            logging.debug(f"adding topic slate {added_topic_slates}")
-            output_configs.append(config)
-
-    return output_configs
 
 
 def rank_by_impression_caps(
@@ -271,77 +181,35 @@ def rank_by_preferred_topics(
            [r for r in recs if r.topic not in preferred_corpus_topic_ids]
 
 
-def spread_topics(recs: CorpusItemListType) -> CorpusItemListType:
+def spread_attribute(
+        recs: Union[CorpusItemListType, RecommendationListType],
+        name: str,
+        spread_distance: int = None
+) -> Union[CorpusItemListType, RecommendationListType]:
     """
-    :param recs:
-    :return: Recommendations spread by topic, while otherwise preserving the order.
+    :param recs: The recommendations to be spread
+    :param name: The attribute name to be spread on. All recs should have this attribute.
+    :param spread_distance: The distance that recs with the same attribute value should be spread apart. The default
+        value of None greedily maximizes the distance, by basing the spread distance on the number of unique values.
+    :return: Recommendations spread by an attribute, while otherwise preserving the order.
     """
-    spread_distance = len(set(r.topic for r in recs)) - 1
+    if spread_distance is None:
+        spread_distance = len(set(getattr(r, name) for r in recs)) - 1
     result_recs = []
     remaining_recs = copy(recs)
 
     while remaining_recs:
-        topics_to_avoid = set(r.topic for r in result_recs[-spread_distance:])
-        # Get the first remaining rec which topic which is not a repeat topic, or default to the first remaining rec.
-        rec = next((r for r in remaining_recs if r.topic not in topics_to_avoid), remaining_recs[0])
+        values_to_avoid = set(getattr(r, name) for r in result_recs[-spread_distance:])
+        # Get the first remaining rec which value should not be avoided, or default to the first remaining rec.
+        rec = next((r for r in remaining_recs if getattr(r, name) not in values_to_avoid), remaining_recs[0])
         result_recs.append(rec)
         remaining_recs.remove(rec)
 
     return result_recs
 
 
-@xray_recorder.capture('rankers_algorithms_spread_publishers')
-def spread_publishers(recs: RecommendationListType, spread: int = 3) -> RecommendationListType:
-    """
-    Makes sure stories from the same publisher/domain are not listed sequentially, and have a configurable number
-    of stories in-between them.
-
-    :param recs: a list of recommendations in the desired order (pre-publisher spread)
-    :param spread: the minimum number of items before we can repeat a publisher/domain
-    :return: a re-ordered version of recs satisfying the spread as best as possible
-    """
-
-    # if there are no recommendations, we done
-    if not len(recs):
-        return recs
-
-    # move first item in list to first item in re-ordered list
-    reordered = [recs.pop(0)]
-
-    # iterator to keep track of spread between domains
-    iterator = 0
-
-    # iterate over remaining items in recs
-    while len(recs):
-        # if there aren't enough items left in recs to satisfy the desired domain spread,
-        # or if the iterator reaches the end of recs, then we cannot spread any further.
-        # just add the rest of the recs as-is to the end of the re-ordered list.
-
-        # note that this is a simplistic take - we could write more logic here to decrease the spread value by
-        # one each time if iterator reaches or exceeds the length of recs
-        if (len(recs) <= spread) or (iterator >= len(recs)):
-            reordered.extend(recs)
-            break
-
-        # get a list of domains that are currently invalid in the sequence
-        if len(reordered) > spread:
-            # if we have enough items in the reordered list, the invalid domains are the last spread number
-            domains_to_check = [x.publisher for x in reordered[-spread:]]
-        else:
-            # if we don't have more than spread items reordered, just get all the domains in reordered
-            domains_to_check = [x.publisher for x in reordered]
-
-        # we can add the rec at iterator position to the re-ordered list if.the rec at iterator has a different
-        # domain than the invalid list retrieved above
-        if recs[iterator].publisher not in domains_to_check:
-            reordered.append(recs.pop(iterator))
-            iterator = 0
-        else:
-            # if we cannot add the rec at position iterator to the re-ordered list, increment the iterator and try
-            # the next item in recs
-            iterator += 1
-
-    return reordered
+spread_topics = partial(spread_attribute, name='topic')
+spread_publishers = partial(spread_attribute, name='publisher', spread_distance=3)
 
 
 def unique_domains_first(recs: List) -> List:
@@ -361,3 +229,32 @@ def unique_domains_first(recs: List) -> List:
         else:
             duplicates.append(r)
     return uniques + duplicates
+
+
+def boost_syndicated(
+        recs: CorpusItemListType,
+        metrics: Dict[(int or str), 'CorpusItemEngagementModel'],
+        impression_cap: int = 3000000,
+        boostable_slot: int = 1,
+):
+    """
+    Boost a syndicated article with fewer than `impression_cap` impressions into `boostable_slot`.
+    Requirements and experiment results: https://docs.google.com/document/d/1Vgq63DZQF-pz7R3kvcNXgkUd1I829FZqkIUlpIVY_g4
+
+    :param recs: List of CorpusItem. `url` attribute is used to determine whether a CorpusItem is syndicated.
+    :param metrics: Engagement keyed on CorpusItem.id.
+    :param impression_cap: Syndicated articles need to have fewer than this many impressions to qualify. Defaults to 3M.
+                           See above Google Doc for more details on this threshold.
+    :param boostable_slot: 0-based slot to boost an item into. Defaults to slot 1, which is the second recommendation.
+    """
+    boostable_rec = next(
+        (
+            r for r in recs[boostable_slot + 1:]
+            if r.is_syndicated and (r.id not in metrics or metrics[r.id].trailing_1_day_impressions < impression_cap)
+        ), None)
+    if boostable_rec:
+        recs = copy(recs)  # Don't change the input
+        recs.remove(boostable_rec)
+        recs.insert(boostable_slot, boostable_rec)
+
+    return recs

@@ -53,17 +53,12 @@ elasticache = {
     'candidate_set_ttl': int(os.getenv('MEMCACHED_CANDIDATE_SET_TTL', 900)),
 }
 
-recit = {
-    'endpoint_url': os.getenv('RECIT_ENDPOINT_URL', 'https://recit.readitlater.com')
-}
-
 qdrant = {
-   'host': os.getenv('QDRANT_HOST', 'qdrant.readitlater.com'),
-   'port': os.getenv('QDRANT_PORT', 443),
-   'https': os.getenv('QDRANT_HTTPS', 'true') == 'true',
-   'collection': os.getenv('QDRANT_COLLECTION', 'articlesprod_v2')
+    'host': os.getenv('QDRANT_HOST', 'qdrant.readitlater.com'),
+    'port': os.getenv('QDRANT_PORT', 443),
+    'https': os.getenv('QDRANT_HTTPS', 'true') == 'true',
+    'collection': os.getenv('QDRANT_COLLECTION', 'articlesprod_v3')
 }
-
 
 # Slates will be replace for the following set of QA users. See qa_slate_maps below.
 qa_user_ids = ['47372502']
@@ -77,14 +72,8 @@ qa_slate_map = {
     "0f322865-64e6-472d-8147-b3d6637a7d67": "b70d65c6-9171-40bf-bddb-5a60d42dd03f",
 }
 
-# This will redirect to the slate lineup value if the slate lineup id raises a PersonalizationError exception
-personalization_fallback_slate_lineup = {
-    # Web Home - Personalized Curated --> Web Home - Fallback Curated
-    '05027beb-0053-4020-8bdc-4da2fcc0cb68': '249850f0-61c0-46f9-a16a-f0553c222800',
-}
-
-# For running X-Ray locally, set `AWS_XRAY_DAEMON_ADDRESS`, otherwise defaults to production value.
-xray_daemon_address = os.getenv('AWS_XRAY_DAEMON_ADDRESS', '127.0.0.1:2000')
+# For running Open Telemetry locally, set `OTEL_DAEMON_ADDRESS`, otherwise defaults to production value.
+otel_daemon_address = os.getenv('OTEL_DAEMON_ADDRESS', 'http://127.0.0.1:4317')
 
 DEFAULT_TOPICS = [
     '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
@@ -99,3 +88,15 @@ GERMAN_HOME_TOPICS = [
     '058011b8-c70d-4a25-92e5-478e3ff0f0e6',  # Science
     '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
 ]
+
+hybrid_cf = {
+    'model_loader': os.getenv('HYBRID_CF_MODEL_LOADER', 's3'),  # or local,
+    'model_bucket': os.getenv('HYBRID_CF_MODEL_BUCKET', 'pocket-data-learning'),
+    'model_artifacts': os.getenv('HYBRID_CF_MODEL_ARTIFACTS',
+                                 'home_personalization/models_v1_prod/model_artifacts_hybrid_cf_recsys.pkl'),
+    'past_engagements': os.getenv('HYBRID_CF_PAST_ENGAGEMENTS',
+                                  'home_personalization/models_v1_prod/past_engagements_lkp.pkl'),
+    'test_predictions': os.getenv('HYBRID_CF_TEST_PREDICTIONS',
+                                  'home_personalization/models_v1_prod/user_prediction_result_sample.pkl'),
+    'reload_time_sec': 3600 if ENV == ENV_PROD else 600
+}

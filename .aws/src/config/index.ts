@@ -12,7 +12,7 @@ const domain = isDev
 
 // aiocache currently does not support data partitioning, so there's little benefit to having more than 1 node.
 const cacheNodes = isDev ? 1 : 1;
-const cacheSize = isDev ? 'cache.t2.micro' : 'cache.t3.medium';
+const cacheSize = isDev ? 'cache.t3.micro' : 'cache.t3.medium';
 
 export const config = {
   name,
@@ -29,6 +29,7 @@ export const config = {
   domain,
   recommendationMetricsDynamodbName: `MODELD-${environment}-RecMetrics`,
   slateMetricsDynamodbName: `MODELD-${environment}-SlateMetrics`,
+  modelsBucket: isDev ? 'pocket-data-learning-dev' : 'pocket-data-learning',
   cacheNodes,
   cacheSize,
   stateMachines: [

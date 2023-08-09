@@ -1,31 +1,38 @@
+import asyncio
 import functools
+import logging
 import random
+import re
 from asyncio import gather
-from typing import List, Coroutine, Any
-
-from aws_xray_sdk.core import xray_recorder
+from typing import List, Coroutine, Any, Tuple, Optional
 
 from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
-from app.data_providers.item2item import Item2ItemRecommender, Item2ItemError, QdrantError, UnsupportedLanguage
+from app.data_providers.slate_providers.cf_slate_provider import HybridCFSlateProvider
+from app.recommenders.item2item import Item2ItemRecommender, Item2ItemError, QdrantError, UnsupportedLanguage
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
 from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
 from app.data_providers.slate_providers.pocket_hits_slate_provider import PocketHitsSlateProvider
 from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
+from app.data_providers.snowplow.snowplow_corpus_recommendations_tracker import SnowplowCorpusRecommendationsTracker
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.unleash_provider import UnleashProvider
 from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
+from app.models.api_client import ApiClient
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
+from app.models.corpus_recommendations_send_event import CorpusRecommendationsSendEvent
 from app.models.corpus_slate_lineup_model import CorpusSlateLineupModel, RecommendationSurfaceId
 from app.models.corpus_slate_model import CorpusSlateModel
 from app.models.localemodel import LocaleModel
 from app.models.request_user import RequestUser
 from app.models.topic import TopicModel
+from app.models.unleash_assignment import UnleashAssignmentModel
 from app.rankers.algorithms import unique_domains_first
+from app.data_providers.slate_providers.new_tab_slate_provider import NewTabSlateProvider
 
 
 def _empty_on_error(func):
@@ -100,11 +107,15 @@ class Item2ItemDispatch:
 
     @staticmethod
     def _to_corpus_items(recs, count):
-        return [CorpusRecommendationModel(corpus_item=CorpusItemModel(id=r.corpus_item_id, topic=r.topic))
+        return [CorpusRecommendationModel(corpus_item=CorpusItemModel(id=r.corpus_item_id, topic=None))
                 for r in recs[:count]]
 
 
 class HomeDispatch:
+    AVAILABLE_LOCALES = [
+        LocaleModel.en_US,
+        LocaleModel.de_DE,
+    ]
 
     def __init__(
             self,
@@ -113,13 +124,17 @@ class HomeDispatch:
             user_impression_cap_provider: UserImpressionCapProvider,
             topic_provider: TopicProvider,
             for_you_slate_provider: ForYouSlateProvider,
+            hybrid_cf_slate_provider: HybridCFSlateProvider,
             recommended_reads_slate_provider: RecommendedReadsSlateProvider,
             topic_slate_providers: TopicSlateProviderFactory,
             collection_slate_provider: CollectionSlateProvider,
             pocket_hits_slate_provider: PocketHitsSlateProvider,
             life_hacks_slate_provider: LifeHacksSlateProvider,
             unleash_provider: UnleashProvider,
+            snowplow: SnowplowCorpusRecommendationsTracker
     ):
+        self.hybrid_cf_slate_provider = hybrid_cf_slate_provider
+        self.snowplow = snowplow
         self.topic_provider = topic_provider
         self.corpus_client = corpus_client
         self.preferences_provider = preferences_provider
@@ -132,21 +147,34 @@ class HomeDispatch:
         self.life_hacks_slate_provider = life_hacks_slate_provider
         self.unleash_provider = unleash_provider
 
-    @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
     async def get_slate_lineup(
-            self, user: RequestUser, locale: LocaleModel, recommendation_count: int
+            self, user: RequestUser, locale: LocaleModel, recommendation_count: int,
+            api_client: ApiClient
     ) -> CorpusSlateLineupModel:
         if locale == LocaleModel.en_US:
-            return await self.get_en_us_slate_lineup(recommendation_count=recommendation_count, user=user, locale=locale)
+            slate_lineup_model, experiment = await self.get_en_us_slate_lineup(
+                recommendation_count=recommendation_count, user=user, locale=locale)
         elif locale == LocaleModel.de_DE:
-            return await self.get_de_de_slate_lineup(recommendation_count=recommendation_count, locale=locale)
+            slate_lineup_model, experiment = await self.get_de_de_slate_lineup(
+                recommendation_count=recommendation_count, locale=locale)
         else:
             raise ValueError(f'Invalid locale {locale}')
 
-    @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
+        asyncio.create_task(
+            self.snowplow.track(CorpusRecommendationsSendEvent(
+                corpus_slate_lineup=slate_lineup_model,
+                recommendation_surface_id=RecommendationSurfaceId.HOME,
+                locale=locale.value,
+                user=user,
+                api_client=api_client,
+                experiment=experiment
+            )))
+
+        return slate_lineup_model
+
     async def get_en_us_slate_lineup(
             self, user: RequestUser, recommendation_count: int, locale: LocaleModel
-    ) -> CorpusSlateLineupModel:
+    ) -> Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
 
         """
         :param user:
@@ -159,20 +187,34 @@ class HomeDispatch:
             4. 'Life Hacks' slate
             5. Topic slates according to preferred topics if available, otherwise default topics.
         """
-        slates = []
+        if self.hybrid_cf_slate_provider.can_recommend(user):
+            user.user_models.append('hybrid_cf')
 
-        user_impression_capped_list, preferred_topics = await gather(
+        user_impression_capped_list, \
+        preferred_topics, \
+        unleash_asn = await gather(
             self.user_impression_cap_provider.get(user),
             self._get_preferred_topics(user),
-        )
+            self.unleash_provider.get_assignments(['temp.web.recommendation-api.home.hybrid_cf_test'], user=user))
 
-        if preferred_topics:
-            slates += [self.for_you_slate_provider.get_slate(
-                preferred_topics=preferred_topics,
-                user_impression_capped_list=user_impression_capped_list,
-            )]
+        cf_asn = unleash_asn[0]
+        enable_hybrid_cf = cf_asn is not None and cf_asn.variant == 'treatment'
+
+        if not enable_hybrid_cf and self.hybrid_cf_slate_provider.can_recommend(user):
+            logging.error('The CF experiment should enroll 100% of eligible users.')
+
+        slates = []
+        if enable_hybrid_cf and self.hybrid_cf_slate_provider.can_recommend(user):
+            slates += [self.hybrid_cf_slate_provider.get_slate(user=user,
+                                                               user_impression_capped_list=user_impression_capped_list)]
         else:
-            slates += [self.recommended_reads_slate_provider.get_slate()]
+            if preferred_topics:
+                slates += [self.for_you_slate_provider.get_slate(
+                    preferred_topics=preferred_topics,
+                    user_impression_capped_list=user_impression_capped_list
+                )]
+            else:
+                slates += [self.recommended_reads_slate_provider.get_slate()]
 
         slates += [
             self.pocket_hits_slate_provider.get_slate(),
@@ -187,12 +229,10 @@ class HomeDispatch:
                 slates=list(await gather(*slates)),
                 recommendation_count=recommendation_count,
             ),
-            recommendation_surface_id=RecommendationSurfaceId.HOME,
-            locale=locale,
-        )
+        ), cf_asn
 
-    @xray_recorder.capture_async('HomeDispatch.get_slate_lineup')
-    async def get_de_de_slate_lineup(self, recommendation_count: int, locale: LocaleModel) -> CorpusSlateLineupModel:
+    async def get_de_de_slate_lineup(self, recommendation_count: int, locale: LocaleModel) -> \
+            Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
         """
         :param recommendation_count:
         :param locale:
@@ -213,9 +253,7 @@ class HomeDispatch:
                 slates=list(await gather(*slates)),
                 recommendation_count=recommendation_count,
             ),
-            locale=locale,
-            recommendation_surface_id=RecommendationSurfaceId.HOME,
-        )
+        ), None
 
     @staticmethod
     def _dedupe_and_limit(slates: List[CorpusSlateModel], recommendation_count: int) -> List[CorpusSlateModel]:
@@ -236,7 +274,6 @@ class HomeDispatch:
 
         return slates
 
-    @xray_recorder.capture_async('HomeDispatch._get_preferred_topics')
     async def _get_preferred_topics(self, user: RequestUser) -> List[TopicModel]:
         preferences = await self.preferences_provider.fetch(str(user.user_id))
         if preferences and preferences.preferred_topics:
@@ -244,7 +281,6 @@ class HomeDispatch:
         else:
             return []
 
-    @xray_recorder.capture_async('HomeDispatch._get_topic_slate_promises')
     async def _get_topic_slate_promises(
             self,
             preferred_topics: List[TopicModel],
@@ -258,3 +294,89 @@ class HomeDispatch:
         preferred_topic_ids = [t.id for t in preferred_topics]
         topics = await self.topic_provider.get_topics(preferred_topic_ids or default)
         return [self.topic_slate_providers[topic].get_slate() for topic in topics]
+
+
+class NewTabDispatch:
+    def __init__(self, new_tab_slate_provider: NewTabSlateProvider, snowplow: SnowplowCorpusRecommendationsTracker):
+        self.new_tab_slate_provider = new_tab_slate_provider
+        self.snowplow = snowplow
+
+    async def get_slate(self, api_client: ApiClient, locale: str) -> CorpusSlateModel:
+        """
+        :return: the New Tab slate
+        """
+        corpus_slate = await self.new_tab_slate_provider.get_slate()
+
+        asyncio.create_task(
+            self.snowplow.track(event=CorpusRecommendationsSendEvent(
+                corpus_slate=corpus_slate,
+                recommendation_surface_id=self.new_tab_slate_provider.recommendation_surface_id,
+                locale=locale,
+                api_client=api_client,
+            )))
+
+        return corpus_slate
+
+    @staticmethod
+    def get_recommendation_surface_id(locale: str, region: Optional[str]) -> RecommendationSurfaceId:
+        """
+        Locale/region mapping is documented here:
+        https://docs.google.com/document/d/1omclr-eETJ7zAWTMI7mvvsc3_-ns2Iiho4jPEfrmZfo/edit
+        :param locale: The language variant preferred by the user (e.g. 'en-US', or 'en')
+        :param region: Optionally, the geographic region of the user, e.g. 'US'.
+        :return: The most appropriate RecommendationSurfaceId for the given locale/region.
+                 A value is always returned here. A Firefox pref determines which locales are eligible, so in this
+                 function call we can assume that the locale/region has been deemed suitable to receive NewTab recs.
+        """
+
+        language = NewTabDispatch._extract_language(locale)
+        derived_region = NewTabDispatch._derive_region(region=region, locale=locale)
+
+        if language == 'de':
+            return RecommendationSurfaceId.NEW_TAB_DE_DE
+        elif language == 'es':
+            return RecommendationSurfaceId.NEW_TAB_ES_ES
+        elif language == 'fr':
+            return RecommendationSurfaceId.NEW_TAB_FR_FR
+        elif language == 'it':
+            return RecommendationSurfaceId.NEW_TAB_IT_IT
+        else:
+            # Default to English language for all other values of language (including 'en' or None)
+            if derived_region is None or derived_region in ['US', 'CA']:
+                return RecommendationSurfaceId.NEW_TAB_EN_US
+            elif derived_region in ['GB', 'IE']:
+                return RecommendationSurfaceId.NEW_TAB_EN_GB
+            else:
+                # Default to the International New Tab if no 2-letter region can be derived from locale or region.
+                return RecommendationSurfaceId.NEW_TAB_EN_INTL
+
+    @staticmethod
+    def _extract_language(locale: str) -> Optional[str]:
+        """
+        :return: A 2-letter language code from a locale string like 'en-US' or 'en'.
+        """
+        match = re.search(r'[a-zA-Z]{2}', locale)
+        if match:
+            return match.group().lower()
+        else:
+            return None
+
+    @staticmethod
+    def _derive_region(locale: str, region: Optional[str] = None) -> Optional[str]:
+        """
+        Derives the region from the `region` argument if provided, otherwise tries to extract from the locale.
+
+        :param locale: The language-variant preferred by the user (e.g. 'en-US' means English-as-spoken in the US)
+        :param region: Optionally, the geographic region of the user, e.g. 'US'.
+        :return: A 2-letter region like 'US'.
+        """
+        if region:
+            m1 = re.search(r'[a-zA-Z]{2}', region)
+            if m1:
+                return m1.group().upper()
+
+        m2 = re.search(r'[_\-]([a-zA-Z]{2})', locale)
+        if m2:
+            return m2.group(1).upper()
+        else:
+            return None

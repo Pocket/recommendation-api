@@ -1,6 +1,7 @@
+import random
 from typing import List, Dict, Optional
 
-from app.data_providers.slate_providers.slate_provider import SlateProvider
+from app.data_providers.slate_providers.slate_provider import HomeSlateProvider
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
 from app.models.recommendation_reason_model import RecommendationReasonModel
@@ -9,7 +10,7 @@ from app.models.topic import TopicModel
 from app.rankers.algorithms import rank_by_preferred_topics, spread_topics, rank_by_impression_caps, thompson_sampling
 
 
-class ForYouSlateProvider(SlateProvider):
+class ForYouSlateProvider(HomeSlateProvider):
 
     @property
     def candidate_set_id(self) -> str:

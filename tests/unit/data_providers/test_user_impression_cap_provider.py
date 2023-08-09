@@ -1,8 +1,6 @@
 import os
 import pytest
 
-from aws_xray_sdk import global_sdk_config
-
 import app.config
 from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
 from app.models.request_user import RequestUser
@@ -15,8 +13,6 @@ class TestUserImpressionCapProvider:
     HASHED_USER_ID = 'aaaaaaaaaaaaaaa123'
 
     def setup(self):
-        global_sdk_config.set_sdk_enabled(False)
-
         self.feature_store_mock = FeatureStoreMock(
             feature_group_name=UserImpressionCapProvider.get_feature_group_name(),
             records_json_path=os.path.join(app.config.ROOT_DIR, 'tests/assets/json/user_impressions_v2.json')

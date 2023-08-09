@@ -1,6 +1,5 @@
 from typing import List, Optional
 
-from aws_xray_sdk.core import xray_recorder
 
 from app.data_providers.PocketGraphClientSession import PocketGraphClientSession
 from app.config import ENV, ENV_PROD
@@ -54,10 +53,11 @@ class UnleashProvider:
         # Currently FeatureFlags only has a query for all assignments:
         # https://github.com/Pocket/feature-flags/blob/main/schema.graphql#L25
         all_assignments = await self._get_all_assignments(user=user)
+        
+        assignments = {asn.name: asn for asn in all_assignments}
+        return [assignments[name] if name in assignments and assignments[name].assigned else None
+                for name in names]
 
-        return [assignment for assignment in all_assignments if assignment.name in names and assignment.assigned]
-
-    @xray_recorder.capture_async('data_providers.UnleashProvider._get_all_assignments')
     async def _get_all_assignments(self, user: RequestUser) -> List[UnleashAssignmentModel]:
         """
         Get all Unleash assignments for the given user/session.
@@ -85,13 +85,16 @@ class UnleashProvider:
                     'appName': self.unleash_config.APP_NAME,
                     'environment': self.unleash_config.ENVIRONMENT,
                     'userId': user.hashed_user_id,
-                    'sessionId': user.hashed_guid,
                     'properties': {
-                        'locale': user.locale,
+                        'locale': user.locale
                     }
                 }
             }
         }
+
+        if user.user_models:
+            # not related to recit anymore, but it's what the unleash strategy hasUserModel expects
+            body['variables']['context']['properties']['recItUserProfile'] = {'userModels': user.user_models}
 
         async with self.pocket_graph_client_session.post(url='/', json=body, raise_for_status=True) as resp:
             response_json = await resp.json()

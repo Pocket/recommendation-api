@@ -5,7 +5,6 @@ from typing import Dict, List
 import json
 
 import aioboto3
-from aws_xray_sdk.core import xray_recorder
 from aiocache import cached
 
 from app import config
@@ -21,12 +20,6 @@ class CorpusFeatureGroupClient(CorpusFetchable):
 
     def __init__(self, aioboto3_session: aioboto3.session.Session):
         self.aioboto3_session = aioboto3_session
-
-    async def get_corpus_items(self, corpus_ids: [str]) -> List[CorpusItemModel]:
-        # Fetch Corporeal Candidates
-        aggregate_corpus_response = await gather(*(self.fetch(corpus_id) for corpus_id in corpus_ids))
-
-        return list(itertools.chain(*aggregate_corpus_response))
 
     async def fetch(
             self,
@@ -46,7 +39,6 @@ class CorpusFeatureGroupClient(CorpusFetchable):
         # Convert keys to lowercase.
         return CorpusItemModel.parse_obj({k.lower(): v for k, v in obj.items()})
 
-    @xray_recorder.capture_async('CorpusFeatureGroupClient._query_corpus_items')
     @cached(ttl=600)
     async def _query_corpus_items(self, corpus_candidate_set_id: str) -> List[Dict[str, str]]:
         """

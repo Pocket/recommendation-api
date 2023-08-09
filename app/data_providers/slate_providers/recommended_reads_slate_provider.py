@@ -1,12 +1,12 @@
 from typing import List
 
-from app.data_providers.slate_providers.slate_provider import SlateProvider
+from app.data_providers.slate_providers.slate_provider import HomeSlateProvider
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.localemodel import LocaleModel
 from app.rankers.algorithms import thompson_sampling
 
 
-class RecommendedReadsSlateProvider(SlateProvider):
+class RecommendedReadsSlateProvider(HomeSlateProvider):
 
     @property
     def candidate_set_id(self) -> str:
@@ -25,8 +25,9 @@ class RecommendedReadsSlateProvider(SlateProvider):
     ) -> List[CorpusItemModel]:
         """
         :param items: Candidate corpus items
-        :return: Ranks items based on Thompson sampling if enable_thompson_sampling is True.
+        :return: Ranks items based on Thompson sampling.
         """
+
         metrics = await self.corpus_engagement_provider.get(
             self.recommendation_surface_id, self.configuration_id, items)
 

@@ -19,10 +19,14 @@ services:
       - "./tmp:/tmp:rw"  # give permission to export the GraphQL schema here.
       - "./.docker:/.docker:ro"  # Functional Tests read files from .docker/localstack/dynamodb.
     depends_on:
-      - localstack
-      - memcached
-      - snowplow
-      - qdrant
+      localstack:
+        condition: service_started
+      memcached:
+        condition: service_started
+      snowplow:
+        condition: service_healthy  # snowplow needs to be healthy before tests can start.
+      qdrant:
+        condition: service_started
 
   localstack:
     image: localstack/localstack:0.12.11
@@ -52,6 +56,12 @@ services:
     platform: linux/amd64
     ports:
       - '9090:9090'
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:9090/micro/all"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
 
   qdrant:
    image: qdrant/qdrant:v0.11.6

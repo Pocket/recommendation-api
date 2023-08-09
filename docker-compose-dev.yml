@@ -10,6 +10,8 @@ services:
     env_file:
       - .docker/local-dev.env
       - .env
+    environment:
+      - OTEL_SERVICE_NAME=RecommendationAPI
     command: /start-reload.sh # Only for development. Reloads Gunicorn when source changes.
     healthcheck:
       disable: true # Disable healthcheck for local development.
@@ -20,19 +22,21 @@ services:
       - "./app:/app:ro"
       - "./app:/opt/project/src:ro" # PyCharm overrides app to /opt/project/src
     depends_on:
-      - xray
+      - aws-ot-collector
 
-  xray:
-    image: amazon/aws-xray-daemon
-    command:
-      - '--region'
-      - 'us-east-1'
-      - '--local-mode' # Don't check for EC2 instance metadata.
+  # AWS Distro for OpenTelemetry (ADOT) Collector for sending traces to AWS X-Ray
+  aws-ot-collector:
+    image: public.ecr.aws/aws-observability/aws-otel-collector:latest
+    command: [
+      # aws-otel-collector comes packaged with several configuration files:
+      # https://github.com/aws-observability/aws-otel-collector/tree/main/config/ecs
+      "--config=/etc/ecs/ecs-default-config.yaml"
+    ]
     environment:
-      # Run `source <(maws -o awscli)` to export credentials with AWS CLI
+      - AWS_REGION=us-east-1
       - AWS_PROFILE=pocket-dev-PocketSSODataLearning
-    ports:
-      - '2000:2000/udp'
-      - '2000:2000/tcp'
     volumes:
-      - "~/.aws:/root/.aws:ro"
+      - "~/.aws:/root/.aws"
+    ports:
+      - "4317:4317"   # grcp port for receiving spans
+      - "13133"       # health_check

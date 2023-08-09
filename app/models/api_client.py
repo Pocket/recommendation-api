@@ -7,7 +7,7 @@ class ApiClient(BaseModel):
     """
 
     consumer_key: str = None
-    api_id: str = None
+    api_id: str
     application_name: str = None
     is_native: bool = None  # Indicates whether an app is a native Pocket app.
     is_trusted: bool = None  # Indicates the app is non-automated actions and represents real human usage

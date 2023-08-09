@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List
 
 
 class LocaleValue(str):
@@ -12,17 +13,24 @@ class LocaleValue(str):
 
 
 class LocaleModel(Enum):
+    """
+    Locales that exist in the app/translations directory.
+    """
     en_US = LocaleValue('en-US')
     de_DE = LocaleValue('de-DE')
 
-    @classmethod
-    def from_string(cls, val: str, default: 'LocaleModel' = None) -> 'LocaleModel':
-        for locale in cls:
+    @staticmethod
+    def from_string(val: str, available_locales: List['LocaleModel'], default: 'LocaleModel' = None) -> 'LocaleModel':
+        """
+        :return: The first value in `available_locales` that equals `val` (case-insensitive), otherwise the first locale
+                 which language matches the part of `val` before a hyphen (case-insensitive), otherwise the default.
+        """
+        for locale in available_locales:
             if locale.value.lower() == val.lower():
                 return locale
 
         language = val.split('-')[0].lower()
-        for locale in cls:
+        for locale in available_locales:
             if locale.value.startswith(language):
                 return locale
 

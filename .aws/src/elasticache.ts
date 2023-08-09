@@ -45,7 +45,9 @@ export class Elasticache extends Construct {
       // its rendering -1.8881545897087503e+289 for some weird reason...
       // For now we just hardcode to 11211 which is the default memcache port.
       nodeList.push(
-        `${elasticache.elasticacheCluster.cacheNodes.get(i).address}:11211`
+        `${
+            elasticache.elasticacheCluster.cacheNodes.get(i).address
+        }:11211`
       );
     }
     return nodeList;

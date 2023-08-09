@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 from uuid import uuid5, UUID
 
-from aws_xray_sdk.core import xray_recorder
+from opentelemetry import trace
 
-from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
+from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
 from app.data_providers.feature_group.corpus_engagement_provider import CorpusEngagementProvider
 from app.data_providers.translation import TranslationProvider
 from app.graphql.recommendation_reason_type import RecommendationReasonType
@@ -20,39 +20,44 @@ class SlateProvider(ABC):
 
     def __init__(
         self,
-        corpus_feature_group_client: CorpusFeatureGroupClient,
+        corpus_fetchable: CorpusFetchable,
         corpus_engagement_provider: CorpusEngagementProvider,
         recommendation_surface_id: RecommendationSurfaceId,
-        locale: LocaleModel,
-        translation_provider: TranslationProvider,
     ):
-        self.corpus_feature_group_client = corpus_feature_group_client
+        self.corpus_fetchable = corpus_fetchable
         self.corpus_engagement_provider = corpus_engagement_provider
         self.recommendation_surface_id = recommendation_surface_id
-        self.locale = locale
-        self.home_translations = translation_provider.get_translations(self.locale, filename='home.json')
 
     @property
     @abstractmethod
     def candidate_set_id(self) -> str:
         """
-        :return: UUID candidate set identifier, which identifies the corpus items that serve as the input for this slate
+        :return: candidate set identifier, which identifies the corpus items that serve as the input for this slate.
+                 Feature Group uses a UUID-format, and Curated Corpus API uses a human-readable id (e.g. NEW_TAB_EN_US).
         """
         return NotImplemented
+
+    @property
+    def candidate_set_uuid(self) -> UUID:
+        """
+        Implementing classes with a candidate_set_id that is not a UUID string should override this to return a UUID.
+        :return: Returns the candidate_set_id in UUID format.
+        """
+        return UUID(self.candidate_set_id)
 
     @property
     def headline(self) -> str:
         """
         :return: Slate headline
         """
-        return self.home_translations[f'{self.provider_name}.headline']
+        return NotImplemented
 
     @property
     def subheadline(self) -> Optional[str]:
         """
         :return: (optional) Slate subheadline
         """
-        return self.home_translations.get(f'{self.provider_name}.subheadline', None)
+        return None
 
     @property
     def more_link(self) -> Optional[LinkModel]:
@@ -76,7 +81,7 @@ class SlateProvider(ABC):
         """
         :return: UUID slate's configuration id, identifying the context and type of content that this slate provides.
         """
-        return str(uuid5(UUID(self.candidate_set_id), self.provider_name))
+        return str(uuid5(self.candidate_set_uuid, self.provider_name))
 
     @property
     def recommendation_reason_type(self) -> Optional[RecommendationReasonType]:
@@ -85,11 +90,19 @@ class SlateProvider(ABC):
         """
         return None
 
-    async def get_candidate_corpus_items(self) -> List[CorpusItemModel]:
+    @property
+    def utm_source(self) -> str:
+        """
+        :return: utm_source value to attribute recommendations to, based on the recommendation_surface_id.
+        """
+        utm_source_surface = self.recommendation_surface_id.value.lower().replace('_', '-').replace('new-tab', 'newtab')
+        return f'pocket-{utm_source_surface}'
+
+    async def get_candidate_corpus_items(self, *args, **kwargs) -> List[CorpusItemModel]:
         """
         :return: The CorpusItems from the candidate set, without any rankers or filters applied.
         """
-        return await self.corpus_feature_group_client.fetch(self.candidate_set_id)
+        return await self.corpus_fetchable.fetch(self.candidate_set_id)
 
     async def rank_corpus_items(self, items: List[CorpusItemModel], *args, **kwargs) -> List[CorpusItemModel]:
         """
@@ -113,8 +126,8 @@ class SlateProvider(ABC):
         Fewer may be returned if insufficient content is available.
         :return: A Corpus Slate that can be recommended
         """
-        async with xray_recorder.capture_async(f'{str(self)}.get_slate'):
-            candidate_items = await self.get_candidate_corpus_items()
+        with trace.get_tracer(__name__).start_as_current_span(f'{str(self)}.get_slate'):
+            candidate_items = await self.get_candidate_corpus_items(*args, **kwargs)
             ranked_items = await self.rank_corpus_items(candidate_items, *args, **kwargs)
             recommendations = await self.get_recommendations(ranked_items, *args, **kwargs)
 
@@ -125,4 +138,34 @@ class SlateProvider(ABC):
                 more_link=self.more_link,
                 recommendations=recommendations,
                 recommendation_reason_type=self.recommendation_reason_type,
+                utm_source=self.utm_source,
             )
+
+
+class HomeSlateProvider(SlateProvider, ABC):
+    def __init__(
+            self,
+            corpus_fetchable: CorpusFetchable,
+            corpus_engagement_provider: CorpusEngagementProvider,
+            recommendation_surface_id: RecommendationSurfaceId,
+            locale: LocaleModel,
+            translation_provider: TranslationProvider,
+    ):
+        super().__init__(corpus_fetchable, corpus_engagement_provider, recommendation_surface_id)
+
+        self.locale = locale
+        self.home_translations = translation_provider.get_translations(self.locale, filename='home.json')
+
+    @property
+    def headline(self) -> str:
+        """
+        :return: Slate headline
+        """
+        return self.home_translations[f'{self.provider_name}.headline']
+
+    @property
+    def subheadline(self) -> Optional[str]:
+        """
+        :return: (optional) Slate subheadline
+        """
+        return self.home_translations.get(f'{self.provider_name}.subheadline', None)

@@ -36,6 +36,7 @@ class FeatureStoreMock:
         # Use partial pass in 'self' so it can access attributes loaded during setup.
         context_feature_store_client.get_record.side_effect = partial(self._get_record_stub, self)
         context_feature_store_client.put_record.side_effect = partial(self._put_record_stub, self)
+        context_feature_store_client.batch_get_record.side_effect = partial(self._batch_get_record_stub, self)
 
     def _get_id_from_record(self, record: List[Dict]) -> str:
         """
@@ -69,6 +70,29 @@ class FeatureStoreMock:
         # Only return requested features to check that a valid model can be constructed from the requested features.
         filtered_record = [feature for feature in full_record if feature['FeatureName'] in feature_names]
         return {'Record': filtered_record}
+
+    def _batch_get_record_stub(self, *args, **kwargs):
+        errors = []
+        records = []
+
+        for identifier in kwargs['Identifiers']:
+            for record_identifier in identifier['RecordIdentifiersValueAsString']:
+                try:
+                    record = self._get_record_stub(
+                        RecordIdentifierValueAsString=record_identifier,
+                        FeatureGroupName=identifier['FeatureGroupName'],
+                        FeatureNames=identifier['FeatureNames'],
+                    )
+
+                    if record:
+                        records.append(record)
+                except BotoCoreError as e:
+                    errors.append({'ErrorMessage': str(e)})
+
+        if errors:
+            return {'Records': records, 'Errors': errors}
+        else:
+            return {'Records': records}
 
     def _put_record_stub(self, *args, **kwargs):
         feature_group_name = kwargs['FeatureGroupName']
