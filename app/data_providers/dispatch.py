@@ -9,7 +9,7 @@ from typing import List, Coroutine, Any, Tuple, Optional
 from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.cf_slate_provider import HybridCFSlateProvider
-from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProviderV2
+from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.recommenders.item2item import Item2ItemRecommender, Item2ItemError, QdrantError, UnsupportedLanguage
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
@@ -120,7 +120,7 @@ class HomeDispatch:
     def __init__(
             self,
             corpus_client: CorpusFeatureGroupClient,
-            preferences_provider: UserRecommendationPreferencesProviderV2,
+            preferences_provider: UserRecommendationPreferencesProvider,
             user_impression_cap_provider: UserImpressionCapProvider,
             topic_provider: TopicProvider,
             for_you_slate_provider: ForYouSlateProvider,

@@ -7,14 +7,14 @@ import dateutil.parser
 from app import config
 from app.data_providers.topic_provider import TopicProvider
 from app.models.topic import TopicModel
-from app.models.user_recommendation_preferences import UserRecommendationPreferencesModelV2
+from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
 
 
-class UserRecommendationPreferencesProviderV2:
+class UserRecommendationPreferencesProvider:
     """
     Put or fetch user preferred topics in a Feature Group keyed on the hashed user id.
     """
-    _FEATURE_GROUP_VERSION = 2
+    _FEATURE_GROUP_VERSION = 2  # In v2 records are keyed on hashed_user_id instead of the integer user_id.
     _FEATURE_NAMES: List[str] = ['hashed_user_id', 'updated_at', 'preferred_topics']
     _FEATURE_ID_NAME: str = 'hashed_user_id'
 
@@ -22,14 +22,14 @@ class UserRecommendationPreferencesProviderV2:
         self.aioboto3_session = aioboto3_session
         self.topic_provider = topic_provider
 
-    async def put(self, model: UserRecommendationPreferencesModelV2):
+    async def put(self, model: UserRecommendationPreferencesModel):
         """
         Inserts or updates user recommendation preferences.
         :param model:
         """
         await self._put_feature_store_record(model)
 
-    async def fetch(self, hashed_user_id: str) -> Optional[UserRecommendationPreferencesModelV2]:
+    async def fetch(self, hashed_user_id: str) -> Optional[UserRecommendationPreferencesModel]:
         """
         Gets user recommendation preferences for a given user id.
         :param hashed_user_id:
@@ -49,7 +49,7 @@ class UserRecommendationPreferencesProviderV2:
     def get_feature_group_name(cls):
         return f'{config.ENV}-user-recommendation-preferences-v{cls._FEATURE_GROUP_VERSION}'
 
-    async def _put_feature_store_record(self, model: UserRecommendationPreferencesModelV2):
+    async def _put_feature_store_record(self, model: UserRecommendationPreferencesModel):
         """
         Writes a record to the feature group.
         :param model:
@@ -85,17 +85,17 @@ class UserRecommendationPreferencesProviderV2:
 
     async def _model_from_feature_store_record(
         self, record: Optional[Dict[str, Any]],
-    ) -> UserRecommendationPreferencesModelV2:
+    ) -> UserRecommendationPreferencesModel:
         preferred_topics = json.loads(record['preferred_topics'])
 
-        return UserRecommendationPreferencesModelV2(
+        return UserRecommendationPreferencesModel(
             hashed_user_id=record[self._FEATURE_ID_NAME],
             updated_at=dateutil.parser.isoparse(record['updated_at']),
             preferred_topics=await self.topic_provider.get_topics([t['id'] for t in preferred_topics])
         )
 
     @classmethod
-    def _feature_store_record_from_model(cls, model: UserRecommendationPreferencesModelV2) -> List[Dict[str, Any]]:
+    def _feature_store_record_from_model(cls, model: UserRecommendationPreferencesModel) -> List[Dict[str, Any]]:
         return [
             {
                 'FeatureName': cls._FEATURE_ID_NAME,

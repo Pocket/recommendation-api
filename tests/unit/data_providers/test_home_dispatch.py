@@ -18,7 +18,7 @@ from app.data_providers.snowplow.snowplow_corpus_recommendations_tracker import 
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.unleash_provider import UnleashProvider
 from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
-from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProviderV2
+from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.models.api_client import ApiClient
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
@@ -56,7 +56,7 @@ class TestHomeDispatch:
         )
 
         self.corpus_client = MagicMock(CorpusFeatureGroupClient)
-        self.preferences_provider = MagicMock(UserRecommendationPreferencesProviderV2)
+        self.preferences_provider = MagicMock(UserRecommendationPreferencesProvider)
         self.unleash_provider = MagicMock(UnleashProvider)
 
         self.home_dispatch = HomeDispatch(
