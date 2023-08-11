@@ -124,10 +124,10 @@ class RecommendationAPI extends TerraformStack {
             prefix: config.prefix,
             service: {
                 criticalEscalationPolicyId: incidentManagement.get(
-                    'policy_data_eng_critical_id'
+                    'policy_generation_critical_id'
                 ).toString(),
                 nonCriticalEscalationPolicyId: incidentManagement.get(
-                    'policy_data_eng_non_critical_id'
+                    'policy_generation_non_critical_id'
                 ).toString()
             }
         });
