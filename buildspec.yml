@@ -24,7 +24,7 @@ env:
   secrets-manager:
     #Pull in the default terraform cloud token
     TERRAFORM_TOKEN: 'CodeBuild/Default:terraform_token'
-    PAGERDUTY_TOKEN: 'CodeBuild/Default:pagerduty_token'
+    PAGERDUTY_TOKEN: 'CodeBuild/Default:mozilla_pagerduty_token'
     GITHUB_ACCESS_TOKEN: 'CodeBuild/Default:github_access_token'
 
 #All phases are ran within the pocket/pocket-build:prod docker image
