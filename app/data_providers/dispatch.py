@@ -9,6 +9,7 @@ from typing import List, Coroutine, Any, Tuple, Optional
 from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.cf_slate_provider import HybridCFSlateProvider
+from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.recommenders.item2item import Item2ItemRecommender, Item2ItemError, QdrantError, UnsupportedLanguage
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
@@ -20,7 +21,6 @@ from app.data_providers.snowplow.snowplow_corpus_recommendations_tracker import 
 from app.data_providers.topic_provider import TopicProvider
 from app.data_providers.unleash_provider import UnleashProvider
 from app.data_providers.user_impression_cap_provider import UserImpressionCapProvider
-from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.models.api_client import ApiClient
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
@@ -275,7 +275,7 @@ class HomeDispatch:
         return slates
 
     async def _get_preferred_topics(self, user: RequestUser) -> List[TopicModel]:
-        preferences = await self.preferences_provider.fetch(str(user.user_id))
+        preferences = await self.preferences_provider.fetch(str(user.hashed_user_id))
         if preferences and preferences.preferred_topics:
             return preferences.preferred_topics
         else:

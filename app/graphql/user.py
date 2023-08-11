@@ -3,7 +3,7 @@ from typing import Optional
 import strawberry
 
 from app.data_providers.topic_provider import TopicProvider
-from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProviderV2
+from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.graphql.user_recommendation_preferences import UserRecommendationPreferences
 from app.models.localemodel import LocaleModel
 from app.singletons import DiContainer
@@ -25,12 +25,12 @@ class User:
             translation_provider=di.translation_provider,
         )
 
-        recommendation_preferences_provider_v2 = UserRecommendationPreferencesProviderV2(
+        recommendation_preferences_provider = UserRecommendationPreferencesProvider(
             aioboto3_session=di.aioboto3_session,
             topic_provider=topic_provider
         )
 
-        preferences_model = await recommendation_preferences_provider_v2.fetch(id)
+        preferences_model = await recommendation_preferences_provider.fetch(id)
 
         return User(
             id=id,
