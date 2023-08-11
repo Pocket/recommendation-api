@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 from strawberry import argument
@@ -17,6 +18,9 @@ async def resolve_get_slate_lineup(
         recommendation_count: Annotated[Optional[int], argument(
             description='Maximum number of recommendations to return in Slate.recommendations, defaults to 10')] = 10,
 ) -> Optional[SlateLineup]:
+    logging.info(f'resolving getSlateLineup with slate_lineup_id={slate_lineup_id}, slate_count={slate_count}), '
+                 f'recommendation_count={recommendation_count}')
+
     slate_lineup_model = await SlateLineupModel.get_slate_lineup(
         slate_lineup_id=slate_lineup_id,
         user_id=info.context.get('request').headers.get('userId'),
