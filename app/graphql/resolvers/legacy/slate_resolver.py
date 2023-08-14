@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 from typing_extensions import Annotated
@@ -18,6 +19,8 @@ async def resolve_get_slate(
                 description='Maximum number of recommendations to return in Slate.recommendations, defaults to 10')
         ] = 10
 ) -> Optional[Slate]:
+    logging.info(f'resolving getSlate with slate_id={slate_id}, recommendation_count={recommendation_count}')
+
     slate_model = await SlateModel.get_slate(
         slate_id=slate_id,
         user_id=info.context.get('request').headers.get('userId'),
