@@ -1,9 +1,6 @@
 from fastapi.testclient import TestClient
 
-from app.data_providers.user_recommendation_preferences_provider import (
-    UserRecommendationPreferencesProvider,
-    UserRecommendationPreferencesProviderV2,
-)
+from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.main import app
 from app.models.request_user import RequestUser
 from tests.assets.topics import populate_topics, technology_topic, business_topic
@@ -22,8 +19,7 @@ class TestUpdateUserRecommendationPreferences(TestDynamoDBBase):
         )
 
     @patch.object(UserRecommendationPreferencesProvider, 'put')
-    @patch.object(UserRecommendationPreferencesProviderV2, 'put')
-    def test_update_user_recommendation_preferences(self, mock_data_provider_put_v2, mock_data_provider_put):
+    def test_update_user_recommendation_preferences(self, mock_data_provider_put):
         with TestClient(app) as client:
             data = client.post(
                 "/",
