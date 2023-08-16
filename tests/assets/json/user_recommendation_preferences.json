@@ -1,8 +1,8 @@
 [
   [
     {
-      "FeatureName": "user_id",
-      "ValueAsString": "12341234"
+      "FeatureName": "hashed_user_id",
+      "ValueAsString": "aaaaaaaaaaaaaaa123"
     },
     {
       "FeatureName": "updated_at",

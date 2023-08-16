@@ -2,10 +2,10 @@ from datetime import datetime
 
 from fastapi.testclient import TestClient
 
-from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProviderV2
+from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.main import app
 from app.models.request_user import RequestUser
-from app.models.user_recommendation_preferences import UserRecommendationPreferencesModelV2
+from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
 from tests.assets.topics import populate_topics, business_topic
 from tests.functional.test_dynamodb_base import TestDynamoDBBase
 
@@ -13,7 +13,7 @@ from tests.functional.test_dynamodb_base import TestDynamoDBBase
 from unittest.mock import patch
 
 
-mock_user_preferences = UserRecommendationPreferencesModelV2(
+mock_user_preferences = UserRecommendationPreferencesModel(
     hashed_user_id='1-hashed',
     updated_at=datetime(2022, 7, 14, 8, 30),
     preferred_topics=[business_topic],
@@ -30,8 +30,8 @@ class TestUserReferenceResolver(TestDynamoDBBase):
             hashed_user_id='1-hashed',
         )
 
-    @patch.object(UserRecommendationPreferencesProviderV2, 'fetch', return_value=mock_user_preferences)
-    def test_user_reference_resolver(self, mock_data_provider_fetch_v2):
+    @patch.object(UserRecommendationPreferencesProvider, 'fetch', return_value=mock_user_preferences)
+    def test_user_reference_resolver(self, mock_data_provider_fetch):
         with TestClient(app) as client:
             response = client.post(
                 "/",
