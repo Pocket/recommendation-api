@@ -37,6 +37,12 @@ class Query:
                     'The locale argument determines the UI and recommendation content language.'
     )
 
+    moz_social_slate: CorpusSlate = strawberry.field(
+        resolver=resolve_new_tab_slate,
+        description='----- In Development (2023-08-16) -----'
+                    'Get a slate of ranked recommendations for the MozSocial.'
+    )
+
     recommendation_preference_topics: List[Topic] = strawberry.field(
         resolver=resolve_recommendation_preference_topics,
         description='List all topics that the user can express a preference for.')
