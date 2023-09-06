@@ -5,11 +5,10 @@ from pydantic import BaseModel, Field
 
 from app.config import dynamodb as dynamodb_config
 from app.models.candidate_set import candidate_set_factory
-from app.models.metrics.firefox_new_tab_metrics_factory import FirefoxNewTabMetricsFactory
 from app.models.metrics.recommendation_metrics_factory import RecommendationMetricsFactory
 from app.models.item import ItemModel
 from app.models.slate_experiment import SlateExperimentModel
-from app.rankers import get_ranker, POCKET_THOMPSON_SAMPLING_RANKERS, FIREFOX_THOMPSON_SAMPLING_RANKERS
+from app.rankers import get_ranker, POCKET_THOMPSON_SAMPLING_RANKERS
 
 
 class RecommendationType(Enum):
@@ -87,11 +86,6 @@ class RecommendationModel(BaseModel):
                     'metrics': await RecommendationMetricsFactory(dynamodb_config["endpoint_url"]).get(
                         slate_id,
                         [recommendation.item.item_id for recommendation in recommendations])
-                }
-            elif ranker in FIREFOX_THOMPSON_SAMPLING_RANKERS:
-                # firefox Thompson sampling requires click/impression data from it's own data source
-                ranker_kwargs = {
-                    'metrics': await FirefoxNewTabMetricsFactory().get([rec.id for rec in recommendations])
                 }
             recommendations = get_ranker(ranker)(recommendations, **ranker_kwargs)
 
