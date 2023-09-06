@@ -35,8 +35,8 @@ class CorpusApiClient(CorpusFetchable):
             }
         """
 
-        # The date is supposed to progress at midnight CET (Central European Time).
-        today = datetime.now(tz=self.get_surface_timezone(scheduled_surface_id))
+        # The date is supposed to progress at 3am local time
+        today = datetime.now(tz=self.get_surface_timezone(scheduled_surface_id)) - timedelta(hours=3)
         yesterday = today - timedelta(days=1)
 
         body = {
