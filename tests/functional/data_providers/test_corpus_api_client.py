@@ -28,30 +28,43 @@ async def test_fetch(pocket_graph_server: TestServer):
 
 
 @pytest.mark.asyncio
-@freeze_time("2023-08-01 1:00:00", tz_offset=0)  # 1am Aug 1st, 2023 UTC was 9pm July 31st, 2023 EST
 @pytest.mark.parametrize(
-    ('surface_id', 'today', 'yesterday'),
+    ('surface_id', 'time_to_freeze', 'expected_today', 'expected_yesterday'),
     [
-        (RecommendationSurfaceId.NEW_TAB_EN_US, '2023-07-31', '2023-07-30'),
-        (RecommendationSurfaceId.NEW_TAB_EN_GB, '2023-08-01', '2023-07-31'),
-        (RecommendationSurfaceId.NEW_TAB_EN_INTL, '2023-08-01', '2023-07-31'),
-        (RecommendationSurfaceId.NEW_TAB_DE_DE, '2023-08-01', '2023-07-31'),
-        (RecommendationSurfaceId.NEW_TAB_ES_ES, '2023-08-01', '2023-07-31'),
-        (RecommendationSurfaceId.NEW_TAB_FR_FR, '2023-08-01', '2023-07-31'),
-        (RecommendationSurfaceId.NEW_TAB_IT_IT, '2023-08-01', '2023-07-31'),
+        # The publishing day rolls over at 3:00am local time. At 2:59am, content from the previous day is requested.
+        (RecommendationSurfaceId.NEW_TAB_EN_US, '2023-08-01 7:00:00', '2023-08-01', '2023-07-31'),  # 3:00am New York
+        (RecommendationSurfaceId.NEW_TAB_EN_US, '2023-08-01 6:59:00', '2023-07-31', '2023-07-30'),  # 2:59am New York
+        (RecommendationSurfaceId.NEW_TAB_EN_INTL, '2023-07-31 21:30:00', '2023-08-01', '2023-07-31'),  # 3:00am Kolkata
+        (RecommendationSurfaceId.NEW_TAB_EN_INTL, '2023-07-31 21:29:00', '2023-07-31', '2023-07-30'),  # 2:59am Kolkata
+        (RecommendationSurfaceId.NEW_TAB_EN_GB, '2023-08-01 2:00:00', '2023-08-01', '2023-07-31'),  # 3:00am London
+        (RecommendationSurfaceId.NEW_TAB_EN_GB, '2023-08-01 1:59:00', '2023-07-31', '2023-07-30'),  # 3:00am London
+        (RecommendationSurfaceId.NEW_TAB_DE_DE, '2023-08-01 1:00:00', '2023-08-01', '2023-07-31'),  # 3:00am Berlin
+        (RecommendationSurfaceId.NEW_TAB_DE_DE, '2023-08-01 0:59:00', '2023-07-31', '2023-07-30'),  # 2:59am Berlin
+        (RecommendationSurfaceId.NEW_TAB_ES_ES, '2023-08-01 1:00:00', '2023-08-01', '2023-07-31'),  # 3:00am Madrid
+        (RecommendationSurfaceId.NEW_TAB_ES_ES, '2023-08-01 0:59:00', '2023-07-31', '2023-07-30'),  # 2:59am Madrid
+        (RecommendationSurfaceId.NEW_TAB_FR_FR, '2023-08-01 1:00:00', '2023-08-01', '2023-07-31'),  # 3:00am Paris
+        (RecommendationSurfaceId.NEW_TAB_FR_FR, '2023-08-01 0:59:00', '2023-07-31', '2023-07-30'),  # 2:59am Paris
+        (RecommendationSurfaceId.NEW_TAB_IT_IT, '2023-08-01 1:00:00', '2023-08-01', '2023-07-31'),  # 3:00am Rome
+        (RecommendationSurfaceId.NEW_TAB_IT_IT, '2023-08-01 0:59:00', '2023-07-31', '2023-07-30'),  # 2:59am Rome
     ]
 )
 async def test_fetch_variables(
-        pocket_graph_server: TestServer, surface_id: RecommendationSurfaceId, today: str, yesterday: str):
-    async with PocketGraphClientSession(get_pocket_graph_config(pocket_graph_server)) as pocket_graph_client_session:
-        corpus_api_client = CorpusApiClient(pocket_graph_client_session)
-        await corpus_api_client.fetch(surface_id.value)
+        pocket_graph_server: TestServer,
+        surface_id: RecommendationSurfaceId,
+        time_to_freeze: str,
+        expected_today: str,
+        expected_yesterday: str,
+):
+    with freeze_time(time_to_freeze, tz_offset=0):
+        async with PocketGraphClientSession(get_pocket_graph_config(pocket_graph_server)) as pocket_graph_client_session:
+            corpus_api_client = CorpusApiClient(pocket_graph_client_session)
+            await corpus_api_client.fetch(surface_id.value)
 
     request_json = pocket_graph_server.app['request_jsons'][-1]
     graphql_variables = request_json['variables']
 
-    assert graphql_variables['date_today'] == today
-    assert graphql_variables['date_yesterday'] == yesterday
+    assert graphql_variables['date_today'] == expected_today
+    assert graphql_variables['date_yesterday'] == expected_yesterday
 
 
 @pytest.mark.asyncio
