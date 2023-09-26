@@ -35,8 +35,10 @@ class CorpusApiClient(CorpusFetchable):
             }
         """
 
-        # The date is supposed to progress at midnight CET (Central European Time).
-        today = datetime.now(tz=self.get_surface_timezone(scheduled_surface_id))
+        # The date is supposed to progress at 3am local time, where 'local time' is based on the timezone associated
+        # with the scheduled surface. This requirement is documented in the NewTab slate spec:
+        # https://getpocket.atlassian.net/wiki/spaces/PE/pages/2927100008/Fx+NewTab+Slate+spec
+        today = datetime.now(tz=self.get_surface_timezone(scheduled_surface_id)) - timedelta(hours=3)
         yesterday = today - timedelta(days=1)
 
         body = {
@@ -79,11 +81,13 @@ class CorpusApiClient(CorpusFetchable):
 
     @staticmethod
     def get_surface_timezone(scheduled_surface_id: str) -> pytz.timezone:
-        # TODO: Modify curated-corpus-api to get timezone from query. Timezones are already hardcoded there.
+        # TODO: Add a query to curated-corpus-api to get timezone by scheduled surface, and stop hardcoding them here.
+        # For a list of all scheduled surfaces and their corresponding timezone, see:
+        # https://getpocket.atlassian.net/wiki/spaces/PE/pages/2584150049/Pocket+Shared+Data#Source-of-Truth.5
         zones = {
             'NEW_TAB_EN_US': 'America/New_York',
             'NEW_TAB_EN_GB': 'Europe/London',
-            'NEW_TAB_EN_INTL': 'Asia/Kolkata',
+            'NEW_TAB_EN_INTL': 'Asia/Kolkata',  # Note: en-Intl is poorly named. Only India is currently eligible.
             'NEW_TAB_DE_DE': 'Europe/Berlin',
             'NEW_TAB_ES_ES': 'Europe/Madrid',
             'NEW_TAB_FR_FR': 'Europe/Paris',

@@ -4,8 +4,6 @@ def get_ranker(name):
 POCKET_THOMPSON_SAMPLING_RANKERS = {"thompson-sampling-1day", "thompson-sampling-7day",
                              "thompson-sampling-14day", "thompson-sampling-28day"}
 
-FIREFOX_THOMPSON_SAMPLING_RANKERS = {"firefox-thompson-sampling-1day"}
-
 
 def get_all_rankers():
     # Importing algorithms within the function here ensures that when rankers are imported
@@ -30,7 +28,6 @@ def get_all_rankers():
         thompson_sampling_7day,
         thompson_sampling_14day,
         thompson_sampling_28day,
-        firefox_thompson_sampling_1day,
         spread_publishers,
     )
 
@@ -47,6 +44,5 @@ def get_all_rankers():
         'thompson-sampling-7day': thompson_sampling_7day,
         'thompson-sampling-14day': thompson_sampling_14day,
         'thompson-sampling-28day': thompson_sampling_28day,
-        'firefox-thompson-sampling-1day': firefox_thompson_sampling_1day,
         'pubspread': spread_publishers,
     }

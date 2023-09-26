@@ -6,7 +6,6 @@ import json
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.metrics.corpus_item_engagement_model import CorpusItemEngagementModel
 from app.models.metrics.metrics_model import MetricsModel
-from app.models.metrics.firefox_new_tab_metrics_model import FirefoxNewTabMetricsModel
 
 from app.config import ROOT_DIR
 from typing import List, Dict, Optional, Union
@@ -67,7 +66,7 @@ def blocklist(recs: RecommendationListType, blocklist: Optional[List[str]] = Non
 
 def thompson_sampling(
         recs: RankableListType,
-        metrics: Dict[(int or str), Union['MetricsModel', 'FirefoxNewTabMetricsModel', 'CorpusItemEngagementModel']],
+        metrics: Dict[(int or str), Union['MetricsModel', 'CorpusItemEngagementModel']],
         trailing_period: int = 28,
         default_alpha_prior=DEFAULT_ALPHA_PRIOR,
         default_beta_prior=DEFAULT_BETA_PRIOR) -> RankableListType:
@@ -140,13 +139,6 @@ thompson_sampling_1day = partial(thompson_sampling, trailing_period=1)
 thompson_sampling_7day = partial(thompson_sampling, trailing_period=7)
 thompson_sampling_14day = partial(thompson_sampling, trailing_period=14)
 thompson_sampling_28day = partial(thompson_sampling, trailing_period=28)
-
-firefox_thompson_sampling_1day = partial(
-    thompson_sampling,
-    trailing_period=1,
-    default_alpha_prior=DEFAULT_FIREFOX_ALPHA_PRIOR,
-    default_beta_prior=DEFAULT_FIREFOX_BETA_PRIOR,
-)
 
 
 def rank_by_impression_caps(

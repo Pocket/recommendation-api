@@ -10,8 +10,6 @@ from tests.mocks.feature_store_mock import FeatureStoreMock
 @pytest.mark.asyncio  # This pytest-asyncio decorator allows us to use an async side_effect
 class TestCorpusFeatureGroupClient:
 
-    SLATE_ID = 'f99178fb-6bd0-4fa1-8109-cda181b697f6'  # Matches the slate_id in firefox_new_tab_engagement.json
-
     def setup(self):
         self.feature_store_mock = FeatureStoreMock(
             feature_group_name=CorpusFeatureGroupClient.get_feature_group_name(),
