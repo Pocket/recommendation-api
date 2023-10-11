@@ -23,7 +23,7 @@ export const config = {
   codePipeline: {
     githubConnectionArn,
     repository: 'pocket/recommendation-api',
-    branch
+    branch,
   },
   environment,
   domain,
@@ -35,10 +35,10 @@ export const config = {
   stateMachines: [
     'CuratedCandidatesFlow',
     'AlgorithmicCandidatesFlow',
-    'CoronavirusPageFlow'
+    'CoronavirusPageFlow',
   ],
   tags: {
     service: name,
-    environment
-  }
+    environment,
+  },
 };

@@ -1,15 +1,13 @@
-import {Resource} from "cdktf";
-import {Construct} from "constructs";
-import {config} from "./config";
-import {ApplicationDynamoDBTable} from "@pocket-tools/terraform-modules";
-import {dynamodb} from "@cdktf/provider-aws";
+import { Construct } from 'constructs';
+import { config } from './config';
+import { ApplicationDynamoDBTable } from '@pocket-tools/terraform-modules';
+import { DataAwsDynamodbTable } from '@cdktf/provider-aws/lib/data-aws-dynamodb-table';
 
-export class DynamoDB extends Resource {
-
-  public readonly candidatesTable: ApplicationDynamoDBTable
-  public readonly metadataTable: ApplicationDynamoDBTable
-  public readonly recommendationMetricsTable: dynamodb.DataAwsDynamodbTable
-  public readonly slateMetricsTable: dynamodb.DataAwsDynamodbTable
+export class DynamoDB extends Construct {
+  public readonly candidatesTable: ApplicationDynamoDBTable;
+  public readonly metadataTable: ApplicationDynamoDBTable;
+  public readonly recommendationMetricsTable: DataAwsDynamodbTable;
+  public readonly slateMetricsTable: DataAwsDynamodbTable;
   public readonly candidateSetsTable: ApplicationDynamoDBTable;
 
   constructor(scope: Construct, name: string) {
@@ -39,16 +37,16 @@ export class DynamoDB extends Resource {
         attribute: [
           {
             name: 'id',
-            type: 'S'
+            type: 'S',
           },
           {
             name: 'created_at',
-            type: 'S'
+            type: 'S',
           },
           {
             name: 'topic_id-type',
-            type: 'S'
-          }
+            type: 'S',
+          },
         ],
         globalSecondaryIndex: [
           {
@@ -58,23 +56,22 @@ export class DynamoDB extends Resource {
             projectionType: 'ALL',
             readCapacity: 5,
             writeCapacity: 5,
-          }
-        ]
+          },
+        ],
       },
       readCapacity: {
         tracking: 70,
         max: 100,
-        min: 5
+        min: 5,
       },
       writeCapacity: {
         tracking: 70,
         max: 100,
-        min: 5
+        min: 5,
       },
       preventDestroyTable: false,
     });
   }
-
 
   /**
    * Sets up the dynamodb table where the topics will live
@@ -91,12 +88,12 @@ export class DynamoDB extends Resource {
         attribute: [
           {
             name: 'id',
-            type: 'S'
+            type: 'S',
           },
           {
             name: 'slug',
-            type: 'S'
-          }
+            type: 'S',
+          },
         ],
         globalSecondaryIndex: [
           {
@@ -105,22 +102,21 @@ export class DynamoDB extends Resource {
             projectionType: 'ALL',
             readCapacity: 5,
             writeCapacity: 5,
-          }
-        ]
+          },
+        ],
       },
       readCapacity: {
         tracking: 70,
         max: 100,
-        min: 5
+        min: 5,
       },
       writeCapacity: {
         tracking: 70,
         max: 100,
-        min: 5
-      }
+        min: 5,
+      },
     });
   }
-
 
   /**
    * Sets up the dynamodb table where the candidate sets will live
@@ -137,36 +133,36 @@ export class DynamoDB extends Resource {
         attribute: [
           {
             name: 'id',
-            type: 'S'
-          }
+            type: 'S',
+          },
         ],
         ttl: {
           attributeName: 'expires_at',
-          enabled: true
+          enabled: true,
         },
         globalSecondaryIndex: [],
       },
       readCapacity: {
         tracking: 70,
         max: 100,
-        min: 5
+        min: 5,
       },
       writeCapacity: {
         tracking: 70,
         max: 100,
-        min: 5
-      }
+        min: 5,
+      },
     });
   }
 
   private getRecommendationMetricsTable() {
-    return new dynamodb.DataAwsDynamodbTable(this, `rec_metrics`, {
+    return new DataAwsDynamodbTable(this, `rec_metrics`, {
       name: config.recommendationMetricsDynamodbName,
     });
   }
 
   private getSlateMetricsTable() {
-    return new dynamodb.DataAwsDynamodbTable(this, `slate_metrics`, {
+    return new DataAwsDynamodbTable(this, `slate_metrics`, {
       name: config.slateMetricsDynamodbName,
     });
   }

@@ -1,14 +1,15 @@
-import {Resource} from "cdktf";
-import {Construct} from "constructs";
-import {config} from "./config";
-import {ApplicationDynamoDBTable, PocketVPC} from "@pocket-tools/terraform-modules";
-import {PocketSQSWithLambdaTarget} from "@pocket-tools/terraform-modules";
-import {LAMBDA_RUNTIMES} from "@pocket-tools/terraform-modules";
-import {ssm} from "@cdktf/provider-aws";
-import {PocketPagerDuty} from "@pocket-tools/terraform-modules";
+import { Construct } from 'constructs';
+import { config } from './config';
+import {
+  ApplicationDynamoDBTable,
+  PocketVPC,
+} from '@pocket-tools/terraform-modules';
+import { PocketSQSWithLambdaTarget } from '@pocket-tools/terraform-modules';
+import { LAMBDA_RUNTIMES } from '@pocket-tools/terraform-modules';
+import { DataAwsSsmParameter } from '@cdktf/provider-aws/lib/data-aws-ssm-parameter';
+import { PocketPagerDuty } from '@pocket-tools/terraform-modules';
 
-
-export class SqsLambda extends Resource {
+export class SqsLambda extends Construct {
   constructor(
     scope: Construct,
     private name: string,
@@ -19,7 +20,7 @@ export class SqsLambda extends Resource {
 
     const vpc = new PocketVPC(this, 'pocket-shared-vpc');
 
-    const {sentryDsn, gitSha} = this.getEnvVariableValues();
+    const { sentryDsn, gitSha } = this.getEnvVariableValues();
 
     new PocketSQSWithLambdaTarget(this, 'translation-sqs-lambda', {
       name: `${config.prefix}-Sqs-Translation`,
@@ -41,23 +42,25 @@ export class SqsLambda extends Resource {
               'dynamodb:BatchWriteItem',
               'dynamodb:PutItem',
               'dynamodb:DescribeTable',
-              'dynamodb:UpdateItem'
+              'dynamodb:UpdateItem',
             ],
             resources: [
               candidateSetsTable.dynamodb.arn,
-              `${candidateSetsTable.dynamodb.arn}/*`
-            ]
-          }
+              `${candidateSetsTable.dynamodb.arn}/*`,
+            ],
+          },
         ],
         environment: {
-          RECOMMENDATION_API_CANDIDATE_SETS_TABLE: candidateSetsTable.dynamodb.name,
+          RECOMMENDATION_API_CANDIDATE_SETS_TABLE:
+            candidateSetsTable.dynamodb.name,
           SENTRY_DSN: sentryDsn,
           GIT_SHA: gitSha,
-          ENVIRONMENT: config.environment === 'Prod' ? 'production' : 'development',
+          ENVIRONMENT:
+            config.environment === 'Prod' ? 'production' : 'development',
         },
         vpcConfig: {
-          securityGroupIds: vpc.defaultSecurityGroups.ids,
-          subnetIds: vpc.privateSubnetIds
+          securityGroupIds: vpc.internalSecurityGroups.ids,
+          subnetIds: vpc.privateSubnetIds,
         },
         codeDeploy: {
           region: vpc.region,
@@ -68,30 +71,34 @@ export class SqsLambda extends Resource {
             period: 10800, // 3 hours
             threshold: 1,
             comparisonOperator: 'LessThanThreshold',
-            actions: config.isDev ? [] : [pagerDuty!.snsNonCriticalAlarmTopic.arn],
-            treatMissingData: 'breaching'
+            actions: config.isDev
+              ? []
+              : [pagerDuty!.snsNonCriticalAlarmTopic.arn],
+            treatMissingData: 'breaching',
           },
           errors: {
             evaluationPeriods: 3,
             period: 3600, // 1 hour
             threshold: 20,
-            actions: config.isDev ? [] : [pagerDuty!.snsNonCriticalAlarmTopic.arn]
-          }
-        }
+            actions: config.isDev
+              ? []
+              : [pagerDuty!.snsNonCriticalAlarmTopic.arn],
+          },
+        },
       },
       tags: config.tags,
     });
   }
 
   private getEnvVariableValues() {
-    const sentryDsn = new ssm.DataAwsSsmParameter(this, 'sentry-dsn', {
-      name: `/${config.name}/${config.environment}/SENTRY_DSN`
+    const sentryDsn = new DataAwsSsmParameter(this, 'sentry-dsn', {
+      name: `/${config.name}/${config.environment}/SENTRY_DSN`,
     });
 
-    const serviceHash = new ssm.DataAwsSsmParameter(this, 'service-hash', {
-      name: `${config.circleCIPrefix}/SERVICE_HASH`
+    const serviceHash = new DataAwsSsmParameter(this, 'service-hash', {
+      name: `${config.circleCIPrefix}/SERVICE_HASH`,
     });
 
-    return {sentryDsn: sentryDsn.value, gitSha: serviceHash.value};
+    return { sentryDsn: sentryDsn.value, gitSha: serviceHash.value };
   }
 }
