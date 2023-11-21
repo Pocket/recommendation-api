@@ -32,6 +32,7 @@ services:
     image: localstack/localstack:0.12.11
     env_file:
       - .docker/local.env
+    platform: linux/amd64
     ports:
       - '4566-4599:4566-4599'
       - '8080:8080'
