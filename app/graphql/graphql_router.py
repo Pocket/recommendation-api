@@ -31,10 +31,6 @@ class Query:
     home_slate_lineup: CorpusSlateLineup = strawberry.field(
         resolver=resolve_home_slate_lineup,
         description='Get ranked corpus slates and recommendations to deliver a unified Home experience. '
-                    # TODO: When strawberry.argument supports a default value, the following description can be moved to
-                    #       the locale argument. Currently we can only have either a description or a default value.
-                    #       https://github.com/strawberry-graphql/strawberry/issues/2436
-                    'The locale argument determines the UI and recommendation content language.'
     )
 
     moz_social_slate: CorpusSlate = strawberry.field(
