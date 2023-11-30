@@ -1,3 +1,6 @@
+from typing_extensions import Annotated
+
+import strawberry
 from strawberry.types import Info
 
 from app.data_providers.PocketGraphClientSession import PocketGraphClientSession, PocketGraphConfig
@@ -26,7 +29,12 @@ from app.singletons import DiContainer
 # TODO: This method has reached the point where automatic dependency injection could greatly improve readability.
 #       'Dependency Injector' seems to be by far the most popular, actively-maintained library:
 #       https://python-dependency-injector.ets-labs.org/
-async def resolve_home_slate_lineup(root, info: Info, locale: str = 'en-US') -> CorpusSlateLineup:
+async def resolve_home_slate_lineup(root, info: Info,
+                                    locale: Annotated[str, strawberry.argument(description='The locale argument '
+                                                                                           'determines the UI and '
+                                                                                           'recommendation content '
+                                                                                           'language.')] = 'en-US') \
+        -> CorpusSlateLineup:
     di = DiContainer.get()
     user = get_request_user(info)
     api_client = get_pocket_client(info)
