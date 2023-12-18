@@ -12,7 +12,7 @@ from app.models.request_user import RequestUser
 from app.models.unleash_assignment import UnleashAssignmentModel
 
 _CORPUS_RECOMMENDATIONS_SEND_SCHEMA = 'iglu:com.pocket/corpus_recommendations_send/jsonschema/1-0-1'
-_CORPUS_SLATE_SCHEMA = 'iglu:com.pocket/corpus_slate/jsonschema/4-0-0'
+_CORPUS_SLATE_SCHEMA = 'iglu:com.pocket/corpus_slate/jsonschema/4-0-3'
 _CORPUS_SLATE_LINEUP_SCHEMA = 'iglu:com.pocket/corpus_slate_lineup/jsonschema/3-0-0'
 _USER_SCHEMA = 'iglu:com.pocket/user/jsonschema/1-0-0'
 _FEATURE_FLAG_SCHEMA = 'iglu:com.pocket/feature_flag/jsonschema/1-0-0'
@@ -87,6 +87,9 @@ def _get_corpus_recommendation_data(recommendation: CorpusRecommendationModel) -
 
     if recommendation.tile_id:
         data['corpus_recommendation_tile_id'] = recommendation.tile_id
+
+    if recommendation.scheduled_surface_item_id:
+        data['scheduled_surface_item_id'] = recommendation.scheduled_surface_item_id
 
     if recommendation.corpus_item.ranked_with_engagement_updated_at:
         data['ranked_with_engagement_updated_at'] = \
