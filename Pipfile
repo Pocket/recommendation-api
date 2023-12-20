@@ -49,6 +49,7 @@ opentelemetry-sdk-extension-aws = "*"
 opentelemetry-exporter-otlp-proto-grpc = "*"
 opentelemetry-instrumentation-aiohttp-client = "==0.41b0"
 opentelemetry-instrumentation-fastapi = "==0.41b0"
+pymoo = "*"
 
 [requires]
 python_version = "3.8"

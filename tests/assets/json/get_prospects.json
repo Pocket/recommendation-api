@@ -1,0 +1,2798 @@
+{
+  "data": {
+    "getProspects": [
+      {
+        "id": "ffba8b78-1b0a-4835-a224-682df208db94",
+        "prospectId": "05ba962e-5cbe-51d2-91bb-09b08f0ac638",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.vanityfair.com/hollywood/conan-obriens-wild-first-year-an-oral-history",
+        "createdAt": 1703095880,
+        "imageUrl": "https://media.vanityfair.com/photos/6579e0749adb7e7317b91d55/16:9/w_1280,c_limit/VF0224-Conan-Obrien.jpg",
+        "authors": "Andrew Buss",
+        "publisher": "Vanity Fair",
+        "domain": "vanityfair.com",
+        "title": "Conan O’Brien’s Wild First Year at ‘Late Night’",
+        "excerpt": "If you tuned in to NBC at 12:35 a.m. on September 13, 1993, you witnessed late-night history in the making. Jay Leno had inherited The Tonight Show from Johnny Carson in 1992, and a deeply pissed-off David Letterman had decamped to CBS. That meant a new host for Late Night had to be found.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.vanityfair.com/hollywood/conan-obriens-wild-first-year-an-oral-history",
+          "itemId": "3982855609",
+          "normalUrl": "http://vanityfair.com/hollywood/conan-obriens-wild-first-year-an-oral-history",
+          "datePublished": "2023-12-20 07:00:00",
+          "timeToRead": 27,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "a2472bfe-6bd5-4e7d-9320-d0206a086400",
+        "prospectId": "99b0edcc-425f-5962-b7a7-4883fd2cf058",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.npr.org/2023/12/20/1220559009/congolese-head-to-the-polls-to-elect-their-next-president",
+        "createdAt": 1703095880,
+        "imageUrl": "https://media.npr.org/include/images/facebook-default-wide-s1400-c100.jpg",
+        "authors": "Michel Martin,Emmanuel Akinwotu",
+        "publisher": "NPR",
+        "domain": "npr.org",
+        "title": "Congolese head to the polls to elect their next president",
+        "excerpt": "Millions of Congolese will vote for a new president Wednesday, with hopes for a peaceful election. The Democratic Republic of Congo has vast mineral wealth, but is impacted by poverty and conflict.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.npr.org/2023/12/20/1220559009/congolese-head-to-the-polls-to-elect-their-next-president",
+          "itemId": "3982793091",
+          "normalUrl": "http://npr.org/2023/12/20/1220559009/congolese-head-to-the-polls-to-elect-their-next-president",
+          "datePublished": "2023-12-20 00:00:00",
+          "timeToRead": null,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "d737ba90-3638-4db0-8245-cb7522c2db42",
+        "prospectId": "6a4115cc-96e5-5b6b-b7a0-9639def8d58c",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://nymag.com/intelligencer/2023/12/rudy-giuliani-is-really-really-broke.html",
+        "createdAt": 1703095880,
+        "imageUrl": "https://pyxis.nymag.com/v1/imgs/2c3/69b/304e99ff5f5885b27f354ee3341245ae94-giuliani.1x.rsocial.w1200.jpg",
+        "authors": "Nia Prater",
+        "publisher": "New York Magazine",
+        "domain": "nymag.com",
+        "title": "Rudy Is Really, Really Broke",
+        "excerpt": "In 2021, federal agents raided Rudy Giuliani’s home and office and seized his electronic devices as part of an inquiry into his dealings with Ukraine.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://nymag.com/intelligencer/2023/12/rudy-giuliani-is-really-really-broke.html",
+          "itemId": "3982967943",
+          "normalUrl": "http://nymag.com/intelligencer/2023/12/rudy-giuliani-is-really-really-broke.html",
+          "datePublished": "2023-12-20 11:06:33",
+          "timeToRead": 2,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "198d2c90-3adb-4f16-95de-85d0d1011796",
+        "prospectId": "9355b362-2715-53d3-ae5f-664935efc599",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.cntraveler.com/story/where-you-should-travel-in-2024-according-to-your-sign",
+        "createdAt": 1703095880,
+        "imageUrl": "https://media.cntraveler.com/photos/6582078d3ac3bbf39799b40f/16:9/w_1280,c_limit/Guatemala_GettyImages-522674810.jpg",
+        "authors": "Steph Koyfman",
+        "publisher": "Condé Nast Traveler",
+        "domain": "cntraveler.com",
+        "title": "Where You Should Travel in 2024, According to Your Sign",
+        "excerpt": "After the year of revenge travel (and flight costs rising with a similar vengeance), tourism might be settling into relative homeostasis in 2024. Then again, everything has changed, including the terrain of where you’ll want to go next, and maybe even the order of your bucket list.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.cntraveler.com/story/where-you-should-travel-in-2024-according-to-your-sign",
+          "itemId": "3982655474",
+          "normalUrl": "http://cntraveler.com/story/where-you-should-travel-in-2024-according-to-your-sign",
+          "datePublished": "2023-12-19 18:23:51",
+          "timeToRead": 14,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "2f4cc27f-371d-4f32-8cb8-d7d2304325c9",
+        "prospectId": "08d2cfab-046b-53b0-99f2-05e7b374ff7b",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://slate.com/human-interest/2023/12/dual-language-programs-admissions-outcomes.html",
+        "createdAt": 1703095880,
+        "imageUrl": "https://compote.slate.com/images/30d20a69-0acd-4dfe-a381-8d9b9f6fcea6.jpeg?crop=1560%2C1040%2Cx0%2Cy0&width=1560",
+        "authors": "Sarah Carr",
+        "publisher": "Slate",
+        "domain": "slate.com",
+        "title": "The New Gifted-and-Talented",
+        "excerpt": "This story about dual-language programs was produced by the Hechinger Report, a nonprofit, independent news organization focused on inequality and innovation in education. Sign up for the Hechinger newsletter.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": {
+          "externalId": "08eb8420-7157-4968-9977-e3baaff33e56",
+          "prospectId": "08d2cfab-046b-53b0-99f2-05e7b374ff7b",
+          "title": "The New Gifted-and-Talented",
+          "language": "EN",
+          "publisher": "Slate",
+          "authors": [
+            {
+              "name": "Sarah Carr",
+              "sortOrder": 0,
+              "__typename": "CorpusItemAuthor"
+            }
+          ],
+          "url": "https://slate.com/human-interest/2023/12/dual-language-programs-admissions-outcomes.html",
+          "imageUrl": "https://s3.us-east-1.amazonaws.com/pocket-curatedcorpusapi-prod-images/b64761e4-812d-4f4c-b139-92936d628dba.jpeg",
+          "excerpt": "For ambitious middle-class families, dual-language programs are the next big thing.",
+          "status": "RECOMMENDATION",
+          "source": "PROSPECT",
+          "topic": "EDUCATION",
+          "isCollection": false,
+          "isTimeSensitive": false,
+          "isSyndicated": false,
+          "createdBy": "ad|Mozilla-LDAP|amaoz2",
+          "createdAt": 1703003696,
+          "updatedBy": null,
+          "updatedAt": 1703003696,
+          "scheduledSurfaceHistory": [
+            {
+              "externalId": "76496d7f-9129-47f2-b031-9abba4183fc7",
+              "createdBy": "ad|Mozilla-LDAP|amaoz2",
+              "scheduledDate": "2023-12-21",
+              "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+              "__typename": "ApprovedCorpusItemScheduledSurfaceHistory"
+            }
+          ],
+          "__typename": "ApprovedCorpusItem"
+        },
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://slate.com/human-interest/2023/12/dual-language-programs-admissions-outcomes.html",
+          "itemId": "3982310056",
+          "normalUrl": "http://slate.com/human-interest/2023/12/dual-language-programs-admissions-outcomes.html",
+          "datePublished": "2023-12-19 04:45:00",
+          "timeToRead": 11,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "926fc369-2684-44a7-99ad-4cf5769369d6",
+        "prospectId": "a9524d79-26d4-569d-b801-d4f35f74dd99",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.texasmonthly.com/style/amanda-mccarty-clotheshorse-slow-fashion-advocate-holiday-shopping/",
+        "createdAt": 1703095880,
+        "imageUrl": "https://img.texasmonthly.com/2023/12/slow-fashion-guide-to-holiday-shopping.jpg?auto=compress&crop=faces&fit=fit&fm=pjpg&ixlib=php-3.3.1&q=45",
+        "authors": "Amanda O'Donnell",
+        "publisher": "Texas Monthly",
+        "domain": "texasmonthly.com",
+        "title": "How a Slow Fashion Advocate Gets Her Holiday Shopping Done",
+        "excerpt": "Like many before her, Amanda McCarty had a come-to-Jesus moment during an impromptu trip to furnishing-and-decor megastore HomeGoods.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": {
+          "externalId": "a6dd7613-1a60-4a0d-8ad2-0569a7f09efa",
+          "prospectId": "a9524d79-26d4-569d-b801-d4f35f74dd99",
+          "title": "How a Slow Fashion Advocate Gets Her Holiday Shopping Done",
+          "language": "EN",
+          "publisher": "Texas Monthly",
+          "authors": [
+            {
+              "name": "Amanda O'Donnell",
+              "sortOrder": 0,
+              "__typename": "CorpusItemAuthor"
+            }
+          ],
+          "url": "https://www.texasmonthly.com/style/amanda-mccarty-clotheshorse-slow-fashion-advocate-holiday-shopping/",
+          "imageUrl": "https://s3.us-east-1.amazonaws.com/pocket-curatedcorpusapi-prod-images/8d81f065-1c1e-44c4-b1a0-72e4f47b8c19.jpeg",
+          "excerpt": " Austin’s Amanda McCarty hosts the podcast “Clotheshorse,” which aims to demystify the fashion business and discourage overconsumption. ",
+          "status": "RECOMMENDATION",
+          "source": "PROSPECT",
+          "topic": "PERSONAL_FINANCE",
+          "isCollection": false,
+          "isTimeSensitive": true,
+          "isSyndicated": false,
+          "createdBy": "ad|Mozilla-LDAP|cevanoff",
+          "createdAt": 1703036012,
+          "updatedBy": "ad|Mozilla-LDAP|cevanoff",
+          "updatedAt": 1703047346,
+          "scheduledSurfaceHistory": [
+            {
+              "externalId": "683022e6-dec3-4be0-a37e-a74accd04909",
+              "createdBy": "ad|Mozilla-LDAP|cevanoff",
+              "scheduledDate": "2023-12-21",
+              "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+              "__typename": "ApprovedCorpusItemScheduledSurfaceHistory"
+            }
+          ],
+          "__typename": "ApprovedCorpusItem"
+        },
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.texasmonthly.com/style/amanda-mccarty-clotheshorse-slow-fashion-advocate-holiday-shopping/",
+          "itemId": "3982602580",
+          "normalUrl": "http://texasmonthly.com/style/amanda-mccarty-clotheshorse-slow-fashion-advocate-holiday-shopping",
+          "datePublished": "2023-12-19 11:53:34",
+          "timeToRead": 5,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "2b5eeb37-7cf5-4655-969e-9903565b32f2",
+        "prospectId": "15bf2c74-17e9-5a28-bf56-9af45a106ece",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.romper.com/entertainment/olivia-munn-son-malcolm-peeling-garlic-video",
+        "createdAt": 1703095880,
+        "imageUrl": "https://imgix.bustle.com/uploads/image/2023/12/19/58a5bf82-1e26-4956-9f21-a0d989d5942e-screen-shot-2023-12-19-at-11011-pm.jpg?w=1200&h=630&fit=crop&crop=faces&fm=jpg",
+        "authors": "Jen McGuire",
+        "publisher": "romper.com",
+        "domain": "romper.com",
+        "title": "Olivia Munn Says Her Son Malcolm Only Wants Garlic For Christmas In Adorable Video",
+        "excerpt": "If you were planning on buying any Christmas gifts for Olivia Munn’s 2-year-old son Malcolm, she has some advice for you. Go ahead and save your money for something else. Because all Malcolm wants is to peel garlic and lots of it.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.romper.com/entertainment/olivia-munn-son-malcolm-peeling-garlic-video",
+          "itemId": "3982602585",
+          "normalUrl": "http://romper.com/entertainment/olivia-munn-son-malcolm-peeling-garlic-video",
+          "datePublished": "2023-12-19 00:00:00",
+          "timeToRead": 2,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "fdadfc9c-3d0e-4cbe-8119-c3169af73655",
+        "prospectId": "7f29dc19-c4e9-56b8-aa18-dc3d85889f65",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.latimes.com/sports/ucla/story/2023-12-19/ucla-basketball-vs-cal-state-northridge-recap",
+        "createdAt": 1703095881,
+        "imageUrl": "https://ca-times.brightspotcdn.com/dims4/default/196efb4/2147483647/strip/true/crop/2452x1287+1+80/resize/1200x630!/quality/75/?url=https%3A%2F%2Fcalifornia-times-brightspot.s3.amazonaws.com%2Fac%2F48%2F3b2864854d5cafc0eccd5a7ee180%2Fncaa-gonzaga-ucla-basketball-20427.jpg",
+        "authors": "Ben Bolch",
+        "publisher": "Los Angeles Times",
+        "domain": "latimes.com",
+        "title": "UCLA’s home winning streak ends with loss to Cal State Northridge",
+        "excerpt": "The streak is over. The stink is spreading. Bullied on its home court by Cal State Northridge on Tuesday night, UCLA was softer and sloppier than a fearless opponent from the Big West Conference.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.latimes.com/sports/ucla/story/2023-12-19/ucla-basketball-vs-cal-state-northridge-recap",
+          "itemId": "3982795980",
+          "normalUrl": "http://latimes.com/sports/ucla/story/2023-12-19/ucla-basketball-vs-cal-state-northridge-recap",
+          "datePublished": "2023-12-20 05:34:29",
+          "timeToRead": 3,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "3d610952-0d8a-45ea-a46f-a9ccbabd7ef8",
+        "prospectId": "33ddb73a-bc1e-5cc5-895a-84b1093d17a6",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.gq.com/story/this-was-the-year-gay-sex-onscreen-got-really-good",
+        "createdAt": 1703095881,
+        "imageUrl": "https://media.gq.com/photos/6580b9e93b4faf42b37a2c4e/16:9/w_1280,c_limit/year_of_gaysex2.jpg",
+        "authors": "Raymond Ang",
+        "publisher": "GQ",
+        "domain": "gq.com",
+        "title": "This Was the Year Gay Sex Onscreen Got Really Good",
+        "excerpt": "I’m talking to Lopez via Zoom about the first gay sex scene he ever saw onscreen. And the usually articulate, quip-ready director and playwright seems absolutely stumped.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.gq.com/story/this-was-the-year-gay-sex-onscreen-got-really-good",
+          "itemId": "3982868255",
+          "normalUrl": "http://gq.com/story/this-was-the-year-gay-sex-onscreen-got-really-good",
+          "datePublished": "2023-12-20 07:05:00",
+          "timeToRead": 12,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "f197e3a5-5754-4cf5-ae9a-890dd8dbe43b",
+        "prospectId": "7c1cc9be-a2da-5380-a5c5-64a34653f4ee",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.washingtonpost.com/food/2023/12/20/christmas-breakfast-recipes/",
+        "createdAt": 1703095881,
+        "imageUrl": "https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/J2J4UUWIFHLVOMPHZDTGAWPWJE.jpg&w=1440",
+        "authors": "Anna Luisa Rodriguez",
+        "publisher": "The Washington Post",
+        "domain": "washingtonpost.com",
+        "title": "9 Christmas breakfast recipes that are quick and easy",
+        "excerpt": "Enjoy the holiday with your loved ones over a delicious low-effort breakfast.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.washingtonpost.com/food/2023/12/20/christmas-breakfast-recipes/",
+          "itemId": "3982965851",
+          "normalUrl": "http://washingtonpost.com/food/2023/12/20/christmas-breakfast-recipes",
+          "datePublished": "2023-12-20 11:00:59",
+          "timeToRead": null,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "9be9ec4b-b400-40ee-8ab5-0ce9ef5321d6",
+        "prospectId": "3f28769c-0c84-5d34-98ab-96dbbfab23ef",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.menshealth.com/entertainment/g46129075/best-bradley-cooper-movies/",
+        "createdAt": 1703095881,
+        "imageUrl": "https://hips.hearstapps.com/hmg-prod/images/mh-12-7-cooper-657b251ca4028.png?crop=1xw:1xh;center,top&resize=1200:*",
+        "authors": "Carrie Wittmer",
+        "publisher": "Men's Health",
+        "domain": "menshealth.com",
+        "title": "Bradley Cooper’s Best (and Worst) Movies, Ranked",
+        "excerpt": "'Maestro,' out today, marks the actor/director's latest film. But how does it compare to some of his very best? It all started because people realized smoking is bad for you.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.menshealth.com/entertainment/g46129075/best-bradley-cooper-movies/",
+          "itemId": "3982894941",
+          "normalUrl": "http://menshealth.com/entertainment/g46129075/best-bradley-cooper-movies",
+          "datePublished": "2023-12-20 08:00:00",
+          "timeToRead": 10,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "bd99924d-834f-44d1-8230-2e541c33249d",
+        "prospectId": "926de524-ff8b-55d2-bab8-3ac00f902da1",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.smithsonianmag.com/smithsonian-institution/lillian-vernons-catalog-empire-got-its-start-at-a-kitchen-table-180983440/",
+        "createdAt": 1703095881,
+        "imageUrl": "https://th-thumbnailer.cdn-si-edu.com/T1W71_AG95hd2Q6xQCuq0ED3zc4=/fit-in/1600x0/filters:focal(1500x1129:1501x1130)/https%3A%2F%2Ftf-cmsv2-smithsonianmag-media.s3.amazonaws.com%2Ffiler_public%2F5f%2F42%2F5f428475-c1b7-4da0-99be-63dcf0b32134%2Fkitchen-table-jn2020-00216.jpg",
+        "authors": "Alice George",
+        "publisher": "Smithsonian Magazine",
+        "domain": "smithsonianmag.com",
+        "title": "Lillian Vernon’s Catalog Empire Got Its Start at a Kitchen Table",
+        "excerpt": "Like many pieces of household furniture, this table bears the wear and tear caused by children making their mark on the world. Its small size says something about the compact apartment in Mount Vernon, New York, that once housed a family of four and a blossoming business.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": {
+          "externalId": "5550ee4f-f96a-46cc-b357-d796f2dbd3cb",
+          "prospectId": "926de524-ff8b-55d2-bab8-3ac00f902da1",
+          "title": "Lillian Vernon’s Catalog Empire Got Its Start at a Kitchen Table",
+          "language": "EN",
+          "publisher": "Smithsonian Magazine",
+          "authors": [
+            {
+              "name": "Alice George",
+              "sortOrder": 0,
+              "__typename": "CorpusItemAuthor"
+            }
+          ],
+          "url": "https://www.smithsonianmag.com/smithsonian-institution/lillian-vernons-catalog-empire-got-its-start-at-a-kitchen-table-180983440/",
+          "imageUrl": "https://s3.us-east-1.amazonaws.com/pocket-curatedcorpusapi-prod-images/c797c32c-a144-4cc6-90ed-1e680564db97.jpeg",
+          "excerpt": "A keen sense of what shoppers wanted made her eponymous company the first woman-owned business on the American Stock Exchange.",
+          "status": "CORPUS",
+          "source": "PROSPECT",
+          "topic": "BUSINESS",
+          "isCollection": false,
+          "isTimeSensitive": false,
+          "isSyndicated": false,
+          "createdBy": "ad|Mozilla-LDAP|kgoffe",
+          "createdAt": 1703018751,
+          "updatedBy": null,
+          "updatedAt": 1703018751,
+          "scheduledSurfaceHistory": [],
+          "__typename": "ApprovedCorpusItem"
+        },
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.smithsonianmag.com/smithsonian-institution/lillian-vernons-catalog-empire-got-its-start-at-a-kitchen-table-180983440/",
+          "itemId": "3982414213",
+          "normalUrl": "http://smithsonianmag.com/smithsonian-institution/lillian-vernons-catalog-empire-got-its-start-at-a-kitchen-table-180983440",
+          "datePublished": "2023-12-19 09:39:00",
+          "timeToRead": 8,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "78ca7a1d-3944-4a70-837f-b551593fba00",
+        "prospectId": "54785cf9-4b7c-5f01-bcf0-1acc13408291",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.vox.com/culture/24008240/2023-best-books-vaster-wild-lauren-groff-chain-gang-all-stars-nana-kwame-adjei-brenyah",
+        "createdAt": 1703095881,
+        "imageUrl": "https://cdn.vox-cdn.com/thumbor/u3zpa4dXjQgVIhl74lVAQcLLnL4=/0x38:1920x1043/fit-in/1200x630/cdn.vox-cdn.com/uploads/chorus_asset/file/25174394/Vox_BooksoftheYear_ConstanceGrady.png",
+        "authors": "Constance Grady",
+        "publisher": "Vox",
+        "domain": "vox.com",
+        "title": "The very best books of 2023",
+        "excerpt": "From buzzy novels to literary biographies, Vox’s book critic breaks down the year in reading. If you buy something from a Vox link, Vox Media may earn a commission. See our ethics statement.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.vox.com/culture/24008240/2023-best-books-vaster-wild-lauren-groff-chain-gang-all-stars-nana-kwame-adjei-brenyah",
+          "itemId": "3982841173",
+          "normalUrl": "http://vox.com/culture/24008240/2023-best-books-vaster-wild-lauren-groff-chain-gang-all-stars-nana-kwame-adjei-brenyah",
+          "datePublished": "2023-12-20 06:30:00",
+          "timeToRead": 17,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "f7978ea7-a5d5-4f02-91df-5cd5471ba526",
+        "prospectId": "e8ae8f78-a788-5ede-bfd9-c46d1391d8fd",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.theguardian.com/us-news/2023/dec/20/women-dressing-women-metropolitan-museum-fashion-exhibit",
+        "createdAt": 1703095881,
+        "imageUrl": "https://i.guim.co.uk/img/media/cc3c109f189ee09497dd1d6abd88e1dad280d9d8/669_1061_5389_3235/master/5389.jpg?width=1200&height=630&quality=85&auto=format&fit=crop&overlay-align=bottom%2Cleft&overlay-width=100p&overlay-base64=L2ltZy9zdGF0aWMvb3ZlcmxheXMvdGctZGVmYXVsdC5wbmc&enable=upscale&s=0e775112c4ee7f297b45067cc290ff4b",
+        "authors": "Alaina Demopoulos",
+        "publisher": "The Guardian",
+        "domain": "theguardian.com",
+        "title": "Women Dressing Women: this Met exhibit is comically overdue – but still won me over",
+        "excerpt": "There weren’t many men visiting Women Dressing Women, the Metropolitan Museum of Art’s new exhibit on female designers through modern history.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.theguardian.com/us-news/2023/dec/20/women-dressing-women-metropolitan-museum-fashion-exhibit",
+          "itemId": "3982860697",
+          "normalUrl": "http://theguardian.com/us-news/2023/dec/20/women-dressing-women-metropolitan-museum-fashion-exhibit",
+          "datePublished": "2023-12-20 07:00:12",
+          "timeToRead": 6,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "c045fc20-0a30-4cf0-aa32-39189b02375b",
+        "prospectId": "b2dfa52f-9276-5186-ba87-a34de9fea88c",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.outsideonline.com/outdoor-adventure/environment/eco-friendly-new-years-resolution/",
+        "createdAt": 1703095881,
+        "imageUrl": "https://cdn.outsideonline.com/wp-content/uploads/2023/12/plastic-bottle-climate-neutral-ish_h-1024x576.jpg?width=1200",
+        "authors": "Kristin Hostetter",
+        "publisher": "Outside Magazine",
+        "domain": "outsideonline.com",
+        "title": "Six Years Ago, I Swore Off One Thing That Changed My Life",
+        "excerpt": "Heading out the door? Read this article on the Outside app available now on iOS devices for members! Download the app. I’m sure I’ve made dozens of New Year’s resolutions in my life. I just can’t remember most of them because they didn’t stick. But one did, and it changed my life.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.outsideonline.com/outdoor-adventure/environment/eco-friendly-new-years-resolution/",
+          "itemId": "3982911035",
+          "normalUrl": "http://outsideonline.com/outdoor-adventure/environment/eco-friendly-new-years-resolution",
+          "datePublished": "2023-12-20 07:00:05",
+          "timeToRead": 5,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "8cfdcc1b-9a5b-4dc2-b76c-b5abd6499e40",
+        "prospectId": "af86c2f6-2c83-5657-878c-a144b4104f75",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.businessinsider.com/how-to-stay-sober-during-holidays-tips-advice-2023-12",
+        "createdAt": 1703095882,
+        "imageUrl": "https://i.insider.com/656dfda158e7c0c29a293cb3?width=1200&format=jpeg",
+        "authors": "Ashley Couto",
+        "publisher": "Business Insider",
+        "domain": "businessinsider.com",
+        "title": "Follow these tips for how to stay sober during the holidays, according to experts",
+        "excerpt": "Though sobriety is on the rise among Gen Zers, the holidays can be a minefield of temptation, especially when it seems like everyone around you is drinking. Sarah Rollins, a licensed social worker, said that staying sober during the holidays can be difficult for a few reasons.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.businessinsider.com/how-to-stay-sober-during-holidays-tips-advice-2023-12",
+          "itemId": "3982859624",
+          "normalUrl": "http://businessinsider.com/how-to-stay-sober-during-holidays-tips-advice-2023-12",
+          "datePublished": "2023-12-20 00:00:00",
+          "timeToRead": 3,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "62d29743-4c7e-4db4-8899-39df36747a27",
+        "prospectId": "93405072-9e77-599c-a343-331d0e9f8af2",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.hollywoodreporter.com/business/business-news/espn-josh-krulewitz-head-of-communications-1235766005/",
+        "createdAt": 1703095882,
+        "imageUrl": "https://www.hollywoodreporter.com/wp-content/uploads/2023/12/20120314_Leadership_Prem-1794-H-2023.jpg?w=1024",
+        "authors": "Alex Weprin",
+        "publisher": "The Hollywood Reporter",
+        "domain": "hollywoodreporter.com",
+        "title": "ESPN Promotes Josh Krulewitz to Head of Communications",
+        "excerpt": "Krulewitz succeeds Chris LaPlaca, who is retiring at the end of the year. ESPN has promoted Josh Krulewitz to lead its communications team.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.hollywoodreporter.com/business/business-news/espn-josh-krulewitz-head-of-communications-1235766005/",
+          "itemId": "3982602592",
+          "normalUrl": "http://hollywoodreporter.com/business/business-news/espn-josh-krulewitz-head-of-communications-1235766005",
+          "datePublished": "2023-12-19 12:32:47",
+          "timeToRead": null,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "6fe468ed-e917-402b-9933-785e44ca0a01",
+        "prospectId": "1c47a9a9-fcc5-5a73-b37c-76efd200dd9a",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.insider.com/lgbtq-celebrities-actors-reality-stars-who-came-out-in-2023",
+        "createdAt": 1703095883,
+        "imageUrl": "https://i.insider.com/64785632df2567001837f120?width=1200&format=jpeg",
+        "authors": "Ayomikun Adekaiyero",
+        "publisher": "insider.com",
+        "domain": "insider.com",
+        "title": "11 celebrities, actors, and reality stars who came out in 2023",
+        "excerpt": "The Netflix reality star Chloe Veitch came out as bisexual in April in an interview with The Sun. \"Because I've been on heterosexual dating shows, I'm just a bit anxious of public opinion,\" Veitch continued. \"But at the end of the day, if I'm happy, that's all that matters.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.insider.com/lgbtq-celebrities-actors-reality-stars-who-came-out-in-2023",
+          "itemId": "3881277888",
+          "normalUrl": "http://insider.com/lgbtq-celebrities-actors-reality-stars-who-came-out-in-2023",
+          "datePublished": "2023-06-01 00:00:00",
+          "timeToRead": 9,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "8d635f72-9ccb-458c-be05-ac4026ed7e2e",
+        "prospectId": "bda4e125-cbc6-58cd-ba79-39647de55fa9",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.dwell.com/article/before-and-after-bread-and-butter-best-practice-architecture-seattle-home-renovation-72b6e943",
+        "createdAt": 1703095884,
+        "imageUrl": "https://images.dwell.com/photos-6604448812773617664/7135342965907550208-large/the-garage-highlights-the-lubkes-structural-engineering-expertise-with-a-13-foot-concrete-wall-built-by-dolan-construction.jpg",
+        "authors": "Lauren Gallow",
+        "publisher": "dwell.com",
+        "domain": "dwell.com",
+        "title": "Before & After: Think Your Renovation Took Awhile? Try 14 Years",
+        "excerpt": "Best Practice Architecture tops off the lengthy transformation of a butter-yellow Seattle craftsman with an addition that resembles a loaf of bread.",
+        "language": null,
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.dwell.com/article/before-and-after-bread-and-butter-best-practice-architecture-seattle-home-renovation-72b6e943",
+          "itemId": "3982992184",
+          "normalUrl": "http://dwell.com/article/before-and-after-bread-and-butter-best-practice-architecture-seattle-home-renovation-72b6e943",
+          "datePublished": "2023-12-20 10:28:50",
+          "timeToRead": null,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "2a2160fb-6e5b-48d8-8fc4-a1f9abfcb9b1",
+        "prospectId": "00c4d776-0df2-5bf2-a0f8-c85c99ac1082",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.nytimes.com/2023/12/20/magazine/lonnie-mentor.html",
+        "createdAt": 1703095884,
+        "imageUrl": "https://static01.nyt.com/images/2023/12/24/magazine/24mag-Lonnie-images/24mag-Lonnie-images-facebookJumbo.jpg",
+        "authors": "Mitchell S. Jackson",
+        "publisher": "The New York Times",
+        "domain": "nytimes.com",
+        "title": "He Was My Role Model. My Mentor. My Supplier.",
+        "excerpt": "O.G. rings me in the a.m. to say he’s just touched down in Phoenix. It’s the day before he said he’d arrive, and while there was a time when I’d treat the seeming opacity of his plans as par, the call’s a minor surprise.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.nytimes.com/2023/12/20/magazine/lonnie-mentor.html",
+          "itemId": "3982784478",
+          "normalUrl": "http://nytimes.com/2023/12/20/magazine/lonnie-mentor.html",
+          "datePublished": "2023-12-20 04:03:19",
+          "timeToRead": 36,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "9e3e28ef-a190-4d5e-be86-8974fb917cd2",
+        "prospectId": "89b6e245-4e52-5c43-b7c7-6fac8794c319",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.atlasobscura.com/articles/explore-los-angeles-hidden-nightlife-scene",
+        "createdAt": 1703095884,
+        "imageUrl": "https://img.atlasobscura.com/L-UjHWOzjrPDDK9bHkCsbyeq4fuziQw2CR2mbzq6rOY/rt:fit/w:600/q:81/sm:1/scp:1/ar:1/aHR0cHM6Ly9hdGxh/cy1kZXYuczMuYW1h/em9uYXdzLmNvbS91/cGxvYWRzL2Fzc2V0/cy8zNTgyYjI5ZS02/NjhjLTQ1MDEtYWU0/Zi05ZmI1ZTY0ZGVl/ODk3NDc3N2ZjZmIw/YmQyYTUxNmJfYW9f/aG90ZWxpbmRpZ29f/Z3VpZGUyX2xldHNn/b2Rpc2NvNl9qYXJl/ZGNvd2FuLmpwZw.jpg",
+        "authors": "Hotel Indigo.",
+        "publisher": "Atlas Obscura",
+        "domain": "atlasobscura.com",
+        "title": "Your Guide to Downtown L.A.’s Hidden Nightlife Scene",
+        "excerpt": "architecture Where Beauty Meets History in Downtown L.A. Throughout Hotel Indigo, you’ll catch glimpses of L.A. history’s impact and inspiration.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.atlasobscura.com/articles/explore-los-angeles-hidden-nightlife-scene",
+          "itemId": "3982948730",
+          "normalUrl": "http://atlasobscura.com/articles/explore-los-angeles-hidden-nightlife-scene",
+          "datePublished": "2023-12-20 08:07:00",
+          "timeToRead": null,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "5b3c163d-2511-4ea5-8159-ce0b082cef8f",
+        "prospectId": "6b072cc9-d836-5da4-8295-8e1120706b2f",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://theweek.com/business/americas-most-in-demand-job",
+        "createdAt": 1703095884,
+        "imageUrl": "https://cdn.mos.cms.futurecdn.net/qrbjjvk9w26wRX3pkUPEiD-1200-80.jpg",
+        "authors": "The Week US",
+        "publisher": "The Week",
+        "domain": "theweek.com",
+        "title": "America’s most in-demand job",
+        "excerpt": "\"Wind-turbine service technician\" is the hottest job in the U.S., said Matthew Boyle in Bloomberg Businessweek.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://theweek.com/business/americas-most-in-demand-job",
+          "itemId": "3982832263",
+          "normalUrl": "http://theweek.com/business/americas-most-in-demand-job",
+          "datePublished": "2023-12-20 03:00:50",
+          "timeToRead": 2,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "a243cc0c-710d-4283-888c-cd9d2136dbd4",
+        "prospectId": "9631405f-9bba-5016-94c6-75aa13632c46",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.latimes.com/politics/story/2023-12-19/trump-colorado-supreme-court-rules-ineligible-for-ballot",
+        "createdAt": 1703095885,
+        "imageUrl": "https://ca-times.brightspotcdn.com/dims4/default/a829ba9/2147483647/strip/true/crop/2048x1075+0+175/resize/1200x630!/quality/75/?url=https%3A%2F%2Fwww.trbimg.com%2Fimg-59e51812%2Fturbine%2Fla-et-donald-trump-20171016",
+        "authors": "Mark Z. Barabak",
+        "publisher": "Los Angeles Times",
+        "domain": "latimes.com",
+        "title": "Column: Colorado decision striking Trump from ballot is a boon, not setback, for his campaign",
+        "excerpt": "Donald Trump received an early Christmas present Tuesday, courtesy of the Colorado Supreme Court. In a move without precedent, the justices ruled 4-3 Trump was ineligible for the state’s 2024 presidential ballot, owing to his role in the attempted Jan. 6 overthrow of the federal government.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.latimes.com/politics/story/2023-12-19/trump-colorado-supreme-court-rules-ineligible-for-ballot",
+          "itemId": "3982660449",
+          "normalUrl": "http://latimes.com/politics/story/2023-12-19/trump-colorado-supreme-court-rules-ineligible-for-ballot",
+          "datePublished": "2023-12-20 03:24:03",
+          "timeToRead": 3,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "5300cd73-725e-4675-906f-b2e729116d3d",
+        "prospectId": "639ca409-b39f-59c1-ad40-46677897bc79",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.mensjournal.com/adventure/ledlenser-hf8r-best-headlamp",
+        "createdAt": 1703095885,
+        "imageUrl": null,
+        "authors": "",
+        "publisher": "Men's Journal",
+        "domain": "mensjournal.com",
+        "title": "",
+        "excerpt": "",
+        "language": null,
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.mensjournal.com/adventure/ledlenser-hf8r-best-headlamp",
+          "itemId": "3982894970",
+          "normalUrl": "http://mensjournal.com/adventure/ledlenser-hf8r-best-headlamp",
+          "datePublished": null,
+          "timeToRead": null,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "b306cc2f-c54b-43eb-bfb0-a60a8a7b1ea4",
+        "prospectId": "1e58cc78-685c-5e84-b460-89f808227f25",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.bustle.com/wellness/each-zodiac-sign-sex-love-horoscope-2024",
+        "createdAt": 1703095885,
+        "imageUrl": "https://imgix.bustle.com/uploads/image/2023/12/18/1794dbf2-0b13-4ed1-8dfd-be8fa9a00183-1_general.jpg?w=1200&h=630&fit=crop&crop=faces&fm=jpg",
+        "authors": "Alexandria Lettman",
+        "publisher": "Bustle",
+        "domain": "bustle.com",
+        "title": "Your 2024 Love & Sex Horoscope",
+        "excerpt": "A new year is on the horizon, brimming with passionate and curious cosmic alignments to energize your love life. As you settle down for the holiday season, look to the future; what commitments you are ready to make or finally leave behind?",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.bustle.com/wellness/each-zodiac-sign-sex-love-horoscope-2024",
+          "itemId": "3982341162",
+          "normalUrl": "http://bustle.com/wellness/each-zodiac-sign-sex-love-horoscope-2024",
+          "datePublished": "2023-12-18 00:00:00",
+          "timeToRead": 7,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "52377e50-0085-4d79-87d7-6e822333a629",
+        "prospectId": "fe7dedc1-5dc7-54be-96e5-400b92fa1c0f",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.elle.com/culture/celebrities/a46188431/travis-kelce-taylor-swift-booed-football-game-response/",
+        "createdAt": 1703095885,
+        "imageUrl": "https://hips.hearstapps.com/hmg-prod/images/taylor-travis-6583130cc24be.jpg?crop=1.00xw:1.00xh;0,0&resize=1200:*",
+        "authors": "",
+        "publisher": "Elle",
+        "domain": "elle.com",
+        "title": "Travis Kelce Skillfully Addressed Taylor Swift Getting Booed at His Football Games",
+        "excerpt": "As good as Travis Kelce is on the football field, the tight end is proving himself to be just as skilled at navigating the spotlight that comes with being Taylor Swift’s boyfriend.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.elle.com/culture/celebrities/a46188431/travis-kelce-taylor-swift-booed-football-game-response/",
+          "itemId": "3982992197",
+          "normalUrl": "http://elle.com/culture/celebrities/a46188431/travis-kelce-taylor-swift-booed-football-game-response",
+          "datePublished": "2023-12-20 10:25:00",
+          "timeToRead": null,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "af21e081-65a2-4547-877a-81a727e83c7e",
+        "prospectId": "b57f4db7-f6c5-5dd4-8ad5-58122b158670",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://qz.com/commercial-real-estate-woes-are-a-bankruptcy-alarm-for-1851109651",
+        "createdAt": 1703095885,
+        "imageUrl": "https://i.kinja-img.com/image/upload/c_fill,h_675,pg_1,q_80,w_1200/bfc726f968a897c6d0577a01a9836882.jpg",
+        "authors": "Laura Bratton",
+        "publisher": "Quartz",
+        "domain": "qz.com",
+        "title": "Commercial real estate woes are a bankruptcy alarm for US regional banks",
+        "excerpt": "It’s no secret that the US commercial real estate industry is suffering. And its downturn could lead to bankruptcy for up to 385 American banks, most of them smaller, regional ones, according to a new report by the National Bureau of Economic Research (NBER).",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://qz.com/commercial-real-estate-woes-are-a-bankruptcy-alarm-for-1851109651",
+          "itemId": "3982494401",
+          "normalUrl": "http://qz.com/commercial-real-estate-woes-are-a-bankruptcy-alarm-for-1851109651",
+          "datePublished": "2023-12-19 12:44:54",
+          "timeToRead": 2,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "6fcbdd1a-faab-4b4f-8d1d-9cab872744c2",
+        "prospectId": "5c53692e-1001-5798-b5dd-1552bab1d29b",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.eater.com/23989864/zingermans-brad-hedeman-pasta-tuna-what-to-make-for-dinner",
+        "createdAt": 1703095886,
+        "imageUrl": "https://cdn.vox-cdn.com/thumbor/e7z5Z2sa9zP93COdiAPgAnXDZFA=/0x215:3000x1786/fit-in/1200x630/cdn.vox-cdn.com/uploads/chorus_asset/file/25144568/DJV_Brad_Hedeman_portait.jpg",
+        "authors": "Mayukh Sen,Ali Slagle",
+        "publisher": "Eater",
+        "domain": "eater.com",
+        "title": "What a Zingerman’s Mail Order Maven Makes for Dinner During the Busiest Time of Year",
+        "excerpt": "We all could use a little dinner inspiration — even Ali Slagle, who dreams of dinner. In “Dinner Is Served,” she asks colleagues about one night when they somehow transformed ingredients into dinner with all this life going on.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.eater.com/23989864/zingermans-brad-hedeman-pasta-tuna-what-to-make-for-dinner",
+          "itemId": "3982445824",
+          "normalUrl": "http://eater.com/23989864/zingermans-brad-hedeman-pasta-tuna-what-to-make-for-dinner",
+          "datePublished": "2023-12-19 09:00:00",
+          "timeToRead": 4,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "6d2757a9-ae23-411f-98d1-9820422e712b",
+        "prospectId": "b95714ac-384f-5e01-804a-d86b8fcb3d40",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.vanityfair.com/style/travis-kelce-trying-to-keep-it-cool-cant-help-gushing-about-amazing-taylor-swift",
+        "createdAt": 1703095886,
+        "imageUrl": "https://media.vanityfair.com/photos/658300fd69b1927e3c8e4dac/16:9/w_1280,c_limit/Travis-Kelce.jpg",
+        "authors": "Kase Wickman",
+        "publisher": "Vanity Fair",
+        "domain": "vanityfair.com",
+        "title": "Travis Kelce, Despite \"Trying to Keep It Cool,\" Can't Help Gushing About \"Amazing\" Taylor Swift",
+        "excerpt": "As Taylor Swift knows, haters gonna hate (hate, hate, hate, hate), and Travis Kelce, as a (football) player, did what he does best as well: play, play, play, play.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.vanityfair.com/style/travis-kelce-trying-to-keep-it-cool-cant-help-gushing-about-amazing-taylor-swift",
+          "itemId": "3982957365",
+          "normalUrl": "http://vanityfair.com/style/travis-kelce-trying-to-keep-it-cool-cant-help-gushing-about-amazing-taylor-swift",
+          "datePublished": "2023-12-20 10:32:34",
+          "timeToRead": 2,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "9f139551-1702-49c2-be85-4fe604c423a1",
+        "prospectId": "2d72d862-c36b-5ced-a3e4-e290ceb141b0",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.thecut.com/2023/12/celine-dion-stiff-person-syndrome-muscle-control.html",
+        "createdAt": 1703095886,
+        "imageUrl": "https://pyxis.nymag.com/v1/imgs/a69/2b0/c4a8058ee3bc99425b0d60ee2278dab929-celine-dion-1.1x.rsocial.w1200.jpg",
+        "authors": "Danielle Cohen",
+        "publisher": "The Cut",
+        "domain": "thecut.com",
+        "title": "Celine Dion’s Stiff-Person Syndrome Is Progressing",
+        "excerpt": "Last year, Celine Dion revealed she was diagnosed with stiff-person syndrome, a rare neurological condition that causes muscular stiffness and spasms. In a new interview, Dion’s sister Claudette told 7 Jours that the star’s disorder had progressed and she can no longer control her muscles.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.thecut.com/2023/12/celine-dion-stiff-person-syndrome-muscle-control.html",
+          "itemId": "3982504682",
+          "normalUrl": "http://thecut.com/2023/12/celine-dion-stiff-person-syndrome-muscle-control.html",
+          "datePublished": "2023-12-19 12:48:26",
+          "timeToRead": null,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "7d633a77-c0e9-46b1-b614-a2e34779dfad",
+        "prospectId": "85a8d519-f5d4-591c-a2da-2baf3c1bc5cc",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://time.com/6549027/time-appoints-kelly-conniff-as-deputy-editor/",
+        "createdAt": 1703095886,
+        "imageUrl": "https://api.time.com/wp-content/uploads/2023/12/KellyC-1.png",
+        "authors": "TIME PR",
+        "publisher": "Time",
+        "domain": "time.com",
+        "title": "TIME Appoints Kelly Conniff as Deputy Editor",
+        "excerpt": "I am delighted to announce that Kelly Conniff has been promoted to Deputy Editor. In this role, Kelly will be my partner in making the day-to-day and strategic decisions for our journalism and lead editorial relationships across the business.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://time.com/6549027/time-appoints-kelly-conniff-as-deputy-editor/",
+          "itemId": "3982443067",
+          "normalUrl": "http://time.com/6549027/time-appoints-kelly-conniff-as-deputy-editor",
+          "datePublished": "2023-12-19 10:07:14",
+          "timeToRead": 2,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "6e39b04b-bbdd-4480-92d6-d4667ea93a1d",
+        "prospectId": "aa705d14-0273-5979-8291-5ff7a6b38f0a",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.gq.com/story/danny-brown-bounces-back",
+        "createdAt": 1703095886,
+        "imageUrl": "https://media.gq.com/photos/658125c04683f88183b28576/16:9/w_1280,c_limit/Danny_Brown_GQ_Exclusive_5_PC_Pooneh%20Ghana.jpeg",
+        "authors": "Paul Thompson",
+        "publisher": "GQ",
+        "domain": "gq.com",
+        "title": "Danny Brown Bounces Back",
+        "excerpt": "For the moment, Danny Brown presents it as a physical problem, not an existential one. “These pants don’t bend,” the lanky rapper says, folding himself into right angles on the bright-purple paper backdrop he’s posing against.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.gq.com/story/danny-brown-bounces-back",
+          "itemId": "3982868241",
+          "normalUrl": "http://gq.com/story/danny-brown-bounces-back",
+          "datePublished": "2023-12-20 07:00:00",
+          "timeToRead": 19,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "adb92b09-825c-4bae-a069-c65c8b6ebb4b",
+        "prospectId": "07243932-6104-59bf-8032-0c22d72d7d41",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.menshealth.com/sex-women/g46163832/best-suction-cup-dildos/",
+        "createdAt": 1703095886,
+        "imageUrl": "https://hips.hearstapps.com/hmg-prod/images/mh-12-28-suction-6580a24ae138f.png?crop=1.00xw:1.00xh;0,0&resize=1200:*",
+        "authors": "Gabrielle B Kassel",
+        "publisher": "Men's Health",
+        "domain": "menshealth.com",
+        "title": "13 Best Suction Cup Dildos, Tested By Sex Experts",
+        "excerpt": "First, figure out which hole(s) you’re planning to use the toy to penetrate. If you’re going to use the toy anally, the suction cup is going to need to double as a flared base, says Queen.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": {
+          "externalId": "20e291dc-f273-40a1-bd6f-6c77119c8e77",
+          "prospectId": "07243932-6104-59bf-8032-0c22d72d7d41",
+          "url": "https://www.menshealth.com/sex-women/g46163832/best-suction-cup-dildos/",
+          "title": "13 Best Suction Cup Dildos, Tested By Sex Experts",
+          "topic": "",
+          "language": "EN",
+          "publisher": "Men's Health",
+          "reason": "OFFENSIVE_MATERIAL",
+          "createdBy": "ad|Mozilla-LDAP|cevanoff",
+          "createdAt": 1703036068,
+          "__typename": "RejectedCorpusItem"
+        },
+        "item": {
+          "givenUrl": "https://www.menshealth.com/sex-women/g46163832/best-suction-cup-dildos/",
+          "itemId": "3982444853",
+          "normalUrl": "http://menshealth.com/sex-women/g46163832/best-suction-cup-dildos",
+          "datePublished": "2023-12-19 09:57:00",
+          "timeToRead": 2,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "94c1dbf0-d345-48d9-832a-6712e1831aea",
+        "prospectId": "b198518e-7c9d-5aec-a114-6b1c92d993cf",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.washingtonpost.com/world/2023/12/20/baroness-michelle-mone-ppe-medpro-covid/",
+        "createdAt": 1703095886,
+        "imageUrl": "https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/JQOIMOJ6FUL2YQ2S2XILFVAO4M.jpg&w=1440",
+        "authors": "Leo Sands",
+        "publisher": "The Washington Post",
+        "domain": "washingtonpost.com",
+        "title": "A baroness’s lies bring Britain’s covid spending scandal to a boil",
+        "excerpt": "Baroness Michelle Mone admitted to lying about her family ties to PPE Medpro, which she helped win government contracts to supply protective gear during the pandemic.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.washingtonpost.com/world/2023/12/20/baroness-michelle-mone-ppe-medpro-covid/",
+          "itemId": "3982891851",
+          "normalUrl": "http://washingtonpost.com/world/2023/12/20/baroness-michelle-mone-ppe-medpro-covid",
+          "datePublished": "2023-12-20 08:21:31",
+          "timeToRead": null,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "d2d91c51-1d9e-4b2c-939c-628ac41a3dcf",
+        "prospectId": "1dd0a5bf-6a93-57e6-9208-0d10a65f5456",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://bigthink.com/videos/retirement/",
+        "createdAt": 1703095886,
+        "imageUrl": null,
+        "authors": "",
+        "publisher": "Big Think",
+        "domain": "bigthink.com",
+        "title": "",
+        "excerpt": "",
+        "language": null,
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://bigthink.com/videos/retirement/",
+          "itemId": "3982701245",
+          "normalUrl": "http://bigthink.com/videos/retirement",
+          "datePublished": null,
+          "timeToRead": null,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "af79305c-8ae5-42de-81cf-61fd37244ff4",
+        "prospectId": "a8abc8ee-f9df-5876-960c-a0f6a83d2984",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.theguardian.com/football/2023/dec/20/mls-european-transfer-window-almada-torres-bouanga",
+        "createdAt": 1703095886,
+        "imageUrl": "https://i.guim.co.uk/img/media/4361871ea47ee88e925ed887572bd4e8a6b02b88/0_35_3201_1922/master/3201.jpg?width=1200&height=630&quality=85&auto=format&fit=crop&overlay-align=bottom%2Cleft&overlay-width=100p&overlay-base64=L2ltZy9zdGF0aWMvb3ZlcmxheXMvdGctZGVmYXVsdC5wbmc&enable=upscale&s=880632adf02b78da4df3ef9f4ac3eb91",
+        "authors": "Ryan Baldi",
+        "publisher": "The Guardian",
+        "domain": "theguardian.com",
+        "title": "January transfer window: the MLS stars European clubs should target",
+        "excerpt": "In the last January transfer window, 33 players left Major League Soccer for Europe. Top European clubs are increasingly looking to US soccer in search of stars who, thanks to the American season finishing in December, are primed to hit the ground running upon arrival.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.theguardian.com/football/2023/dec/20/mls-european-transfer-window-almada-torres-bouanga",
+          "itemId": "3982902667",
+          "normalUrl": "http://theguardian.com/football/2023/dec/20/mls-european-transfer-window-almada-torres-bouanga",
+          "datePublished": "2023-12-20 08:24:57",
+          "timeToRead": 5,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "3b8f6909-961e-42a6-98a7-b85c7f01eb04",
+        "prospectId": "aade1da8-eba6-5979-a77b-a76dd072df76",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://nymag.com/intelligencer/article/damian-williams-attorney-sdny-eric-adams-profile.html",
+        "createdAt": 1703095886,
+        "imageUrl": "https://pyxis.nymag.com/v1/imgs/37d/507/969bd4dd0c343998c149d51e30cd2012d1-2023-1204-Damian-Williams-Portrait33738-.1x.rsocial.w1200.jpg",
+        "authors": "Errol Louis",
+        "publisher": "New York Magazine",
+        "domain": "nymag.com",
+        "title": "The Relentless Damian Williams",
+        "excerpt": "The SDNY U.S. Attorney is one of the country’s gutsiest prosecutors — and a potential headache for Eric Adams. When a jury found the cryptocurrency crook Sam Bankman-Fried guilty of money laundering and fraud in November, Damian Williams, the U.S.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://nymag.com/intelligencer/article/damian-williams-attorney-sdny-eric-adams-profile.html",
+          "itemId": "3982809568",
+          "normalUrl": "http://nymag.com/intelligencer/article/damian-williams-attorney-sdny-eric-adams-profile.html",
+          "datePublished": "2023-12-20 04:00:01",
+          "timeToRead": 6,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "a12184a1-ed89-443b-83ca-fe08d12546d3",
+        "prospectId": "7f6d5723-bb16-52f0-9dd4-00d0dc28e636",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.npr.org/2023/12/19/1220466034/acts-of-generosity-like-giving-gifts-brings-happiness-research-shows",
+        "createdAt": 1703095886,
+        "imageUrl": "https://media.npr.org/include/images/facebook-default-wide-s1400-c100.jpg",
+        "authors": "Allison Aubrey",
+        "publisher": "NPR",
+        "domain": "npr.org",
+        "title": "Acts of generosity — like giving gifts — brings happiness, research shows",
+        "excerpt": "Research shows that acts of generosity, like gift-giving, are contagious and increase happiness. Giving and receiving are also fundamental for good relationships.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.npr.org/2023/12/19/1220466034/acts-of-generosity-like-giving-gifts-brings-happiness-research-shows",
+          "itemId": "3982584469",
+          "normalUrl": "http://npr.org/2023/12/19/1220466034/acts-of-generosity-like-giving-gifts-brings-happiness-research-shows",
+          "datePublished": "2023-12-19 00:00:00",
+          "timeToRead": null,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "e174573e-b800-4afe-95f8-12a26401daea",
+        "prospectId": "3a76cc22-a48b-567b-be27-f26a1020c1b8",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.businessinsider.com/how-call-center-scams-work-hacker-scambaiter-2023-12",
+        "createdAt": 1703095886,
+        "imageUrl": "https://i.insider.com/656f5fe658e7c0c29a29c212?width=1200&format=jpeg",
+        "authors": "Nazar Risafi",
+        "publisher": "Business Insider",
+        "domain": "businessinsider.com",
+        "title": "How scam call centers work, according to a 'scambaiter'",
+        "excerpt": "Jim Browning is a software engineer and an expert on scam call centers. His YouTube channel baits scammers by gaining access to their computers, observing them through CCTV, and hacking into their networks. He then conveys this information to law enforcement.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.businessinsider.com/how-call-center-scams-work-hacker-scambaiter-2023-12",
+          "itemId": "3982947997",
+          "normalUrl": "http://businessinsider.com/how-call-center-scams-work-hacker-scambaiter-2023-12",
+          "datePublished": "2023-12-20 00:00:00",
+          "timeToRead": null,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "36d96ba2-b5b8-4fbc-a605-65f52df109c7",
+        "prospectId": "bf140de0-bb97-52bf-b715-32a925980cb0",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.insider.com/most-famous-local-dish-every-state-2020-9",
+        "createdAt": 1703095886,
+        "imageUrl": "https://i.insider.com/6126aef112b9cc001962e1f5?width=1200&format=jpeg",
+        "authors": "Erin McDowell",
+        "publisher": "insider.com",
+        "domain": "insider.com",
+        "title": "The most famous local dish from every state",
+        "excerpt": "Alabama's famous white barbecue sauce, which is made with mayonnaise, vinegar, salt, and ground black pepper, is described as both creamy and tangy.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.insider.com/most-famous-local-dish-every-state-2020-9",
+          "itemId": "3129885156",
+          "normalUrl": "http://insider.com/most-famous-local-dish-every-state-2020-9",
+          "datePublished": "2021-08-28 00:00:00",
+          "timeToRead": 12,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "a6930b20-04cc-46dc-8ab2-138730fa4c60",
+        "prospectId": "33cbfab3-e8f1-5f7e-9236-fb0412c787bf",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.nytimes.com/2023/12/20/world/europe/eu-migration-asylum.html",
+        "createdAt": 1703095887,
+        "imageUrl": "https://static01.nyt.com/images/2023/12/20/multimedia/20eu-migration-mfcz/20eu-migration-mfcz-facebookJumbo.jpg",
+        "authors": "Matina Stevis-Gridneff",
+        "publisher": "The New York Times",
+        "domain": "nytimes.com",
+        "title": "After Years of Wrangling, E.U. Countries Reach Major Deal on Migration",
+        "excerpt": "European countries struck a key deal on Wednesday to overhaul their joint migration system, an agreement years in the making and aimed at allaying mounting pressure from ascendant far-right political parties across the continent.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.nytimes.com/2023/12/20/world/europe/eu-migration-asylum.html",
+          "itemId": "3982767908",
+          "normalUrl": "http://nytimes.com/2023/12/20/world/europe/eu-migration-asylum.html",
+          "datePublished": "2023-12-20 03:24:34",
+          "timeToRead": 6,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "fafd12f2-6f67-4d85-aee2-52f5f689b5e4",
+        "prospectId": "dae552f4-714d-5b39-977d-ee39ee03203a",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.dwell.com/article/plant-filled-penthouse-apartment-lima-peru-real-estate-43f5f6b6",
+        "createdAt": 1703095887,
+        "imageUrl": "https://images.dwell.com/photos-6063391372700811264/7104804451909787648-large/located-in-the-capital-city-of-lima-this-9622-square-foot-penthouse-even-comes-with-a-sun-filled-greenhouse.png",
+        "authors": "Dwell Staff",
+        "publisher": "dwell.com",
+        "domain": "dwell.com",
+        "title": "Plant Obsessed? You’ll Love This $4.5M Peruvian Penthouse",
+        "excerpt": "Located in the capital city of Lima, the 9,622-square-foot home even comes with a sun-filled greenhouse.",
+        "language": null,
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.dwell.com/article/plant-filled-penthouse-apartment-lima-peru-real-estate-43f5f6b6",
+          "itemId": "3982480927",
+          "normalUrl": "http://dwell.com/article/plant-filled-penthouse-apartment-lima-peru-real-estate-43f5f6b6",
+          "datePublished": "2023-12-19 11:16:03",
+          "timeToRead": null,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "f3231437-f8a3-49be-8eb5-93dfd63a93e0",
+        "prospectId": "dd273166-dcd2-5576-b346-aa9b6951e8ce",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://slate.com/human-interest/2023/12/pope-francis-same-sex-relationships-blessing-backstory.html",
+        "createdAt": 1703095887,
+        "imageUrl": "https://compote.slate.com/images/e8041260-beb0-4453-8458-7d39ffa3e9fd.jpeg?crop=1299%2C866%2Cx261%2Cy0&width=1560",
+        "authors": "Molly Olmstead",
+        "publisher": "Slate",
+        "domain": "slate.com",
+        "title": "The Story Behind Pope Francis’ Shocking Reversal on Same-Sex Relationships",
+        "excerpt": "The Catholic Church, a 2,000-year-old institution, generally moves at a glacial pace. Changes are typically measured at the scale of generations.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://slate.com/human-interest/2023/12/pope-francis-same-sex-relationships-blessing-backstory.html",
+          "itemId": "3982578241",
+          "normalUrl": "http://slate.com/human-interest/2023/12/pope-francis-same-sex-relationships-blessing-backstory.html",
+          "datePublished": "2023-12-19 16:47:24",
+          "timeToRead": 6,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "bfd78f51-402b-42b5-915a-96543c9357e4",
+        "prospectId": "4a681f6b-5258-53b9-9532-d5e9e0e745d9",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.cnn.com/travel/article/badly-behaved-tourists-2023/index.html",
+        "createdAt": 1703095887,
+        "imageUrl": null,
+        "authors": "",
+        "publisher": "CNN",
+        "domain": "cnn.com",
+        "title": "",
+        "excerpt": "",
+        "language": null,
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.cnn.com/travel/article/badly-behaved-tourists-2023/index.html",
+          "itemId": "3982340626",
+          "normalUrl": "http://cnn.com/travel/article/badly-behaved-tourists-2023",
+          "datePublished": null,
+          "timeToRead": null,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "2b0da6ca-67b3-42e9-abe3-cb02820531c5",
+        "prospectId": "31d09ef7-b7b1-5d57-b3fb-9cdd84dd21ab",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.cntraveler.com/story/iceland-volcano-eruption-flights-travel-advice",
+        "createdAt": 1703095887,
+        "imageUrl": "https://media.cntraveler.com/photos/6581e1f3ce1ba8ab1ed3a95a/16:9/w_1280,c_limit/GettyImages-1370559554.jpeg",
+        "authors": "Jessica Puckett",
+        "publisher": "Condé Nast Traveler",
+        "domain": "cntraveler.com",
+        "title": "What Travelers Should Know About Iceland's Latest Volcanic Eruption",
+        "excerpt": "This is a developing story and will be updated with more information. The eruption began on December 18 at 10:17 p.m. local time, just northeast of the small fishing village of Grindavik, according to the Icelandic Meteorological Office.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.cntraveler.com/story/iceland-volcano-eruption-flights-travel-advice",
+          "itemId": "3982511517",
+          "normalUrl": "http://cntraveler.com/story/iceland-volcano-eruption-flights-travel-advice",
+          "datePublished": "2023-12-19 12:46:09",
+          "timeToRead": 4,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "f9685d3c-cff3-442a-af53-9fbbf8467ee8",
+        "prospectId": "3545d9c1-b6d3-5a6a-a14c-5fe1288f0aaf",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://lifehacker.com/money/atm-errors-and-scams",
+        "createdAt": 1703095887,
+        "imageUrl": "https://lifehacker.com/imagery/articles/01HHYZC8M0PY5AA726P3KTZY0N/hero-image.fill.size_1200x675.jpg",
+        "authors": "Jeff Somers",
+        "publisher": "Lifehacker",
+        "domain": "lifehacker.com",
+        "title": "Four Ways an ATM Can Ruin Your Day (and How to Protect Yourself)",
+        "excerpt": "Cash may increasingly seem like a relic of a bygone age (less than 10% of Americans use cash as their primary way of paying for stuff these days), but paper money is still useful.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": {
+          "externalId": "a075da50-adc4-4f2c-aa4c-67dd1ff082b1",
+          "prospectId": "3545d9c1-b6d3-5a6a-a14c-5fe1288f0aaf",
+          "title": "Four Ways an ATM Can Ruin Your Day (and How to Protect Yourself)",
+          "language": "EN",
+          "publisher": "Lifehacker",
+          "authors": [
+            {
+              "name": "Jeff Somers",
+              "sortOrder": 0,
+              "__typename": "CorpusItemAuthor"
+            }
+          ],
+          "url": "https://lifehacker.com/money/atm-errors-and-scams",
+          "imageUrl": "https://s3.us-east-1.amazonaws.com/pocket-curatedcorpusapi-prod-images/51953700-a609-4158-be63-f60c60648727.jpeg",
+          "excerpt": "ATMs are usually pretty safe—but when things go wrong, it can be a big headache.",
+          "status": "RECOMMENDATION",
+          "source": "PROSPECT",
+          "topic": "PERSONAL_FINANCE",
+          "isCollection": false,
+          "isTimeSensitive": false,
+          "isSyndicated": false,
+          "createdBy": "ad|Mozilla-LDAP|cevanoff",
+          "createdAt": 1703036164,
+          "updatedBy": null,
+          "updatedAt": 1703036164,
+          "scheduledSurfaceHistory": [
+            {
+              "externalId": "a8ff8a4b-13e2-4871-bee7-ac0f0e956c44",
+              "createdBy": "ad|Mozilla-LDAP|cevanoff",
+              "scheduledDate": "2023-12-21",
+              "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+              "__typename": "ApprovedCorpusItemScheduledSurfaceHistory"
+            }
+          ],
+          "__typename": "ApprovedCorpusItem"
+        },
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://lifehacker.com/money/atm-errors-and-scams",
+          "itemId": "3982008158",
+          "normalUrl": "http://lifehacker.com/money/atm-errors-and-scams",
+          "datePublished": "2023-12-18 12:30:00",
+          "timeToRead": 6,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "b296f80b-01a5-49bc-8de7-3a6c287384d5",
+        "prospectId": "8199a7ba-63de-5711-bd4d-3b3e94210dd9",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.vanityfair.com/style/meet-queen-camillas-children",
+        "createdAt": 1703095887,
+        "imageUrl": "https://media.vanityfair.com/photos/65777fca9cf0ab97a53565d1/16:9/w_1280,c_limit/vf1223-camilla-tom-bowles-laura-lopes.jpg",
+        "authors": "Hadley Hall Meares",
+        "publisher": "Vanity Fair",
+        "domain": "vanityfair.com",
+        "title": "Meet Queen Camilla’s Children",
+        "excerpt": "This Christmas there will be more place settings at the royal dinner table at Sandringham. For the first time, Queen Camilla’s children, Tom Parker Bowles and Laura Lopes, along with her five grandchildren, will reportedly join the royal family’s holiday festivities.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.vanityfair.com/style/meet-queen-camillas-children",
+          "itemId": "3982047097",
+          "normalUrl": "http://vanityfair.com/style/meet-queen-camillas-children",
+          "datePublished": "2023-12-18 12:41:47",
+          "timeToRead": 11,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "07fc5b04-514b-407f-81ef-453f9a823b94",
+        "prospectId": "5da7a9f8-7de1-59b9-919e-77d3caff4f6c",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.gq.com/story/best-watches-of-2023-according-to-experts",
+        "createdAt": 1703095887,
+        "imageUrl": "https://media.gq.com/photos/6581f3a9e005bed660f529ba/16:9/w_1280,c_limit/CORRECT%20-%202023%20Watch%20of%20the%20Year%20(1).jpg",
+        "authors": "Cam Wolf",
+        "publisher": "GQ",
+        "domain": "gq.com",
+        "title": "The Best Watch of 2023, According to the Watch Illuminati",
+        "excerpt": "On Friday, I shared the first part of GQ’s annual Watch Survey, in which our panel of 46 mega collectors, retailers, vintage dealers, auction-house specialists, journalists, and influencers weighed in on the best watch brands of 2023.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.gq.com/story/best-watches-of-2023-according-to-experts",
+          "itemId": "3982868186",
+          "normalUrl": "http://gq.com/story/best-watches-of-2023-according-to-experts",
+          "datePublished": "2023-12-20 06:55:00",
+          "timeToRead": 8,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "f2b73894-3f3e-4ca6-8820-fe5cfdc6449c",
+        "prospectId": "9de73a2f-5e5c-5af8-ac8f-38bf9bfa5433",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://omny.fm/shows/bloomberg-daybreak/tensions-rise-in-red-sea-apple-races-to-fix-smartw",
+        "createdAt": 1703095887,
+        "imageUrl": "https://omny.fm/shows/bloomberg-daybreak/tensions-rise-in-red-sea-apple-races-to-fix-smartw/image.jpg?t=1673277911&size=wideShare",
+        "authors": "",
+        "publisher": "omny.fm",
+        "domain": "omny.fm",
+        "title": "Tensions Rise in Red Sea; Apple Races to Fix SmartWatch",
+        "excerpt": "Bloomberg Daybreak: US Edition 807 clip(s)",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://omny.fm/shows/bloomberg-daybreak/tensions-rise-in-red-sea-apple-races-to-fix-smartw",
+          "itemId": "3982341165",
+          "normalUrl": "http://omny.fm/shows/bloomberg-daybreak/tensions-rise-in-red-sea-apple-races-to-fix-smartw",
+          "datePublished": null,
+          "timeToRead": null,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      },
+      {
+        "id": "5c57c25a-faa7-47d1-b548-b5dc342c6bb0",
+        "prospectId": "e30c9b76-fdb4-5611-97d3-6de7443be434",
+        "scheduledSurfaceGuid": "NEW_TAB_EN_US",
+        "topic": "",
+        "prospectType": "RSS_LOGISTIC_RECENT",
+        "url": "https://www.self.com/story/feeling-cranky-tips",
+        "createdAt": 1703095888,
+        "imageUrl": "https://media.self.com/photos/65809458875ae6ca80018655/2:1/w_1280,c_limit/Cranky%20tips.png",
+        "authors": "Julia Ries",
+        "publisher": "SELF",
+        "domain": "self.com",
+        "title": "What to Do When You’re Super Cranky and Hate Everyone",
+        "excerpt": "Once in a while, I wake up inexplicably cranky. There’s nothing specifically wrong, per se. It’s just that, for whatever reason, everyone around me gets on my nerves.",
+        "language": "EN",
+        "saveCount": 0,
+        "isSyndicated": false,
+        "isCollection": false,
+        "approvedCorpusItem": null,
+        "rejectedCorpusItem": null,
+        "item": {
+          "givenUrl": "https://www.self.com/story/feeling-cranky-tips",
+          "itemId": "3982887291",
+          "normalUrl": "http://self.com/story/feeling-cranky-tips",
+          "datePublished": "2023-12-20 08:00:00",
+          "timeToRead": 6,
+          "__typename": "Item"
+        },
+        "__typename": "Prospect"
+      }
+    ]
+  },
+  "extensions": {
+    "valueCompletion": [
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          0,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          0,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          1,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          1,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          2,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          2,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          3,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          3,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          4,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          5,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          6,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          6,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          7,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          7,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          8,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          8,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          9,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          9,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          10,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          10,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          11,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          12,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          12,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          13,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          13,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          14,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          14,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          15,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          15,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          16,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          16,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          17,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          17,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          18,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          18,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          19,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          19,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          20,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          20,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          21,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          21,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          22,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          22,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          23,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          23,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          24,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          24,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          25,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          25,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          26,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          26,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          27,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          27,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          28,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          28,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          29,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          29,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          30,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          30,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          31,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          31,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          32,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          33,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          33,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          34,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          34,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          35,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          35,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          36,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          36,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          37,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          37,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          38,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          38,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          39,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          39,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          40,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          40,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          41,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          41,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          42,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          42,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          43,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          43,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          44,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          44,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          45,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          46,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          46,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          47,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          47,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          48,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          48,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field ApprovedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          49,
+          "approvedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      },
+      {
+        "message": "Cannot return null for non-nullable field RejectedCorpusItem.externalId.",
+        "path": [
+          "getProspects",
+          49,
+          "rejectedCorpusItem",
+          "externalId"
+        ],
+        "extensions": {
+          "code": "INVALID_GRAPHQL"
+        }
+      }
+    ]
+  }
+}
