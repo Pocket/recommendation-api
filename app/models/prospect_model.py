@@ -6,3 +6,4 @@ class ProspectModel(BaseModel):
     topic: str
     publisher: str
     url: str
+    quality_score: float

@@ -1,31 +1,64 @@
-from pymoo.core.problem import ElementwiseProblem
+from typing import List
+
+import numpy as np
+from pymoo.algorithms.soo.nonconvex.ga import GA
+from pymoo.core.problem import Problem
+from pymoo.operators.crossover.pntx import TwoPointCrossover
+from pymoo.operators.mutation.bitflip import BitflipMutation
+from pymoo.operators.sampling.rnd import BinaryRandomSampling
+from pymoo.optimize import minimize
+
+from app.models.prospect_model import ProspectModel
 
 
-class ArticleSelectionProblem(ElementwiseProblem):
-    def __init__(self, articles, n_articles=30):
-        super().__init__(n_var=len(articles), n_obj=1, n_constr=1 + 2 * len(set([a.topic for a in articles])))
-        self.articles = articles
-        self.n_articles = n_articles
+DEFAULT_DUPLICATE_LIMIT = 2
+
+
+class ArticleSelectionProblem(Problem):
+    def __init__(self, articles: List[ProspectModel], n_articles=30):
+        n_items = len(articles)
+        self.P = np.array([a.quality_score for a in articles])
+
+        all_topics = sorted({a.topic for a in articles})
+        all_publishers = sorted({a.publisher for a in articles})
+
+        # Create topic matrix
+        topic_matrix = np.zeros((n_items, len(all_topics)))
+        for i, article in enumerate(articles):
+            topic_index = all_topics.index(article.topic)
+            topic_matrix[i, topic_index] = 1
+
+        # Create publisher matrix
+        publisher_matrix = np.zeros((n_items, len(all_publishers)))
+        for i, article in enumerate(articles):
+            publisher_index = all_publishers.index(article.publisher)
+            publisher_matrix[i, publisher_index] = 1
+
+        # Concatenate topic and publisher matrices
+        self.W = np.hstack((topic_matrix, publisher_matrix))
+        n_constraints = self.W.shape[1]  # equal to len(all_topics) + len(all_publishers)
+
+        self.duplicate_limit = DEFAULT_DUPLICATE_LIMIT  # Maximum duplicate topics and publishers
+
+        super().__init__(n_var=n_items, n_obj=1, n_ieq_constr=n_constraints, xl=0, xu=1, vtype=bool)
 
     def _evaluate(self, x, out, *args, **kwargs):
-        selected_articles = [article for article, flag in zip(self.articles, x) if flag == 1]
+        out["F"] = -np.sum(self.P * x, axis=1)
+        out["G"] = np.dot(x, self.W) - self.duplicate_limit
 
-        # Objective: Maximize total quality score
-        total_quality_score = sum(article.quality_score for article in selected_articles)
-        out["F"] = -total_quality_score  # Negative because we want to maximize
 
-        # Constraints
-        topic_count = {}
-        publisher_count = {}
-        for article in selected_articles:
-            topic_count[article.topic] = topic_count.get(article.topic, 0) + 1
-            publisher_count[article.publisher] = publisher_count.get(article.publisher, 0) + 1
+class ArticleSelectionAlgorithm(GA):
+    def __init__(self, articles):
+        super().__init__(
+            pop_size=len(articles),
+            sampling=BinaryRandomSampling(),
+            crossover=TwoPointCrossover(),
+            mutation=BitflipMutation(),
+            eliminate_duplicates=True)
 
-        # Constraint: No more than 2 articles from the same topic or publisher
-        topic_constraints = [count - 2 for count in topic_count.values()]
-        publisher_constraints = [count - 2 for count in publisher_count.values()]
 
-        # Constraint: Exactly 30 articles
-        article_count_constraint = [len(selected_articles) - self.n_articles]
-
-        out["G"] = topic_constraints + publisher_constraints + article_count_constraint
+def select_articles(prospects: List[ProspectModel], n_gen=100) -> List[ProspectModel]:
+    problem = ArticleSelectionProblem(prospects)
+    algorithm = ArticleSelectionAlgorithm(prospects)
+    res = minimize(problem, algorithm, verbose=True, termination=('n_gen', n_gen))
+    return [article for article, is_selected in zip(prospects, res.X) if is_selected]
