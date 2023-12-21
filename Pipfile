@@ -50,6 +50,7 @@ opentelemetry-exporter-otlp-proto-grpc = "*"
 opentelemetry-instrumentation-aiohttp-client = "==0.41b0"
 opentelemetry-instrumentation-fastapi = "==0.41b0"
 pymoo = "*"
+numpy = "*"
 
 [requires]
 python_version = "3.8"

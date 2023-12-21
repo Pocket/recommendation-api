@@ -11,13 +11,15 @@ from pymoo.optimize import minimize
 from app.models.prospect_model import ProspectModel
 
 
-DEFAULT_DUPLICATE_LIMIT = 2
-
-
 class ArticleSelectionProblem(Problem):
-    def __init__(self, articles: List[ProspectModel], n_articles=30):
+    def __init__(
+            self,
+            articles: List[ProspectModel],
+            topic_duplicate_limit: int,
+            publisher_duplicate_limit: int
+    ):
         n_items = len(articles)
-        self.P = np.array([a.quality_score for a in articles])
+        self.P = np.array([a.quality_score for a in articles])  # profit
 
         all_topics = sorted({a.topic for a in articles})
         all_publishers = sorted({a.publisher for a in articles})
@@ -38,7 +40,9 @@ class ArticleSelectionProblem(Problem):
         self.W = np.hstack((topic_matrix, publisher_matrix))
         n_constraints = self.W.shape[1]  # equal to len(all_topics) + len(all_publishers)
 
-        self.duplicate_limit = DEFAULT_DUPLICATE_LIMIT  # Maximum duplicate topics and publishers
+        # Create a vector for duplicate limits
+        self.duplicate_limit = np.array([topic_duplicate_limit] * len(all_topics) +
+                                        [publisher_duplicate_limit] * len(all_publishers))
 
         super().__init__(n_var=n_items, n_obj=1, n_ieq_constr=n_constraints, xl=0, xu=1, vtype=bool)
 
@@ -57,8 +61,24 @@ class ArticleSelectionAlgorithm(GA):
             eliminate_duplicates=True)
 
 
-def select_articles(prospects: List[ProspectModel], n_gen=100) -> List[ProspectModel]:
-    problem = ArticleSelectionProblem(prospects)
+def select_articles(
+        prospects: List[ProspectModel],
+        topic_duplicate_limit: int = 2,
+        publisher_duplicate_limit: int = 2,
+        n_gen: int = 100,
+) -> List[ProspectModel]:
+    """
+    @param topic_duplicate_limit: Maximum number of items to select with the same topic
+    @param publisher_duplicate_limit: Maximum number of items to select with the same publisher
+    @param prospects: List of all available candidate items
+    @param n_gen: Number of generations
+    @return: a subset of prospects optimized for quality_score sum, with constraints on duplicate topics and publishers.
+    """
+    problem = ArticleSelectionProblem(
+        prospects,
+        topic_duplicate_limit=topic_duplicate_limit,
+        publisher_duplicate_limit=publisher_duplicate_limit,
+    )
     algorithm = ArticleSelectionAlgorithm(prospects)
     res = minimize(problem, algorithm, verbose=True, termination=('n_gen', n_gen))
     return [article for article, is_selected in zip(prospects, res.X) if is_selected]
