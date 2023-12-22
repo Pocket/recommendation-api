@@ -17,6 +17,18 @@ def prospects_data():
         return json.load(fp)
 
 
+@pytest.fixture()
+def prospects(prospects_data):
+    prospects_list = prospects_data['data']['getProspects']
+    return [
+        ProspectModel(
+            quality_score=1 - (i / len(prospects_list)),  # dummy linear quality score based on ranking
+            **a
+        )
+        for i, a in enumerate(prospects_list)
+    ]
+
+
 @pytest.mark.parametrize('repeat', range(N_TEST_REPEATS))
 @pytest.mark.parametrize(
     'topic_duplicate_limits,'
@@ -26,15 +38,14 @@ def prospects_data():
     'optimal_total_score',
     [
         # Optimal length and total score were found by calling select_articles with n_gen=5000
-        (dict(), 2, 2, 17, 12.6),
-        (dict(), 1, 1, 10, 7.22),
-        (dict(), 3, 2, 21, 14.2),
+        (DEFAULT_TOPIC_LIMITS, 2, 2, 21, 13.94),  # Different limits per topic
+        (dict(), 3, 2, 21, 14.2),  # Fixed topic (3) and publisher (2) limits
+        (dict(), 1, 1, 10, 7.22),  # Fixed topic (1) and publisher (1) limits
         (dict(), 0, 0, 0, 0),  # No prospects are expected to be selected when limits are 0
         (dict(), 50, 50, 50, 25.5),  # All prospects are selected when limits are high
-        (DEFAULT_TOPIC_LIMITS, 2, 2, 21, 13.94),  # Default topic limits
     ])
 def test_new_tab_scheduler(
-        prospects_data,
+        prospects,
         repeat,
         topic_duplicate_limits,
         topic_duplicate_limit_fallback,
@@ -42,17 +53,8 @@ def test_new_tab_scheduler(
         optimal_length,
         optimal_total_score,
 ):
-    article_data = prospects_data['data']['getProspects']
-    articles = [
-        ProspectModel(
-            quality_score=1 - (i / len(article_data)),  # dummy linear quality score based on ranking
-            **a
-        )
-        for i, a in enumerate(article_data)
-    ]
-
     selection = select_articles(
-        articles,
+        prospects,
         topic_duplicate_limits=topic_duplicate_limits,
         topic_duplicate_limit_fallback=topic_duplicate_limit_fallback,
         publisher_duplicate_limit=publisher_duplicate_limit,

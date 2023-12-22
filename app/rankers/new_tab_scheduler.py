@@ -3,7 +3,7 @@ from typing import List, Dict
 import numpy as np
 from pymoo.algorithms.soo.nonconvex.ga import BGA
 from pymoo.core.problem import Problem
-from pymoo.operators.crossover.pntx import TwoPointCrossover, PointCrossover
+from pymoo.operators.crossover.pntx import PointCrossover
 from pymoo.optimize import minimize
 
 from app.models.prospect_model import ProspectModel
@@ -111,5 +111,5 @@ def select_articles(
         publisher_duplicate_limit=publisher_duplicate_limit,
     )
     algorithm = SchedulingGA()
-    res = minimize(problem, algorithm, verbose=True, termination=('n_gen', n_gen))
+    res = minimize(problem, algorithm, termination=('n_gen', n_gen))
     return [article for article, x in zip(prospects, res.X) if float(x) > 0.5]
