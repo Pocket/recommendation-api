@@ -65,6 +65,9 @@ class SchedulingGA(BGA):
         )
 
 
+"""
+Values below are the 75th percentile topic counts per day, scheduled on NEW_TAB_EN_US between 2023-06-01 and 2023-12-22.
+"""
 DEFAULT_TOPIC_LIMITS = {
     'ENTERTAINMENT': 5,
     'FOOD': 5,
