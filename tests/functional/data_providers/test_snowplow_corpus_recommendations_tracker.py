@@ -103,7 +103,7 @@ async def test_track_tile_id(snowplow_micro, snowplow_recs_tracker, slate_send_e
 
 @pytest.mark.asyncio
 async def test_track_scheduled_surface_item_id(snowplow_micro, snowplow_recs_tracker, slate_send_event):
-    # Add tile_id to recommendations.
+    # Add only scheduled_surface_item_id to recommendations.
     recommendations = slate_send_event.corpus_slate.recommendations
     for i, rec in enumerate(recommendations):
         rec.scheduled_surface_item_id = str(uuid.uuid4())
@@ -117,6 +117,7 @@ async def test_track_scheduled_surface_item_id(snowplow_micro, snowplow_recs_tra
     # Check that the optional tile id was sent to Snowplow. The assertion above confirms the event schema is valid.
     good_event = json.dumps(snowplow_micro.get_good_events()[0]['event'])
     assert good_event.count('"scheduled_surface_item_id"') == len(recommendations)
+    # tile_id is optional and it was not set in this test, so it should not be present.
     assert "corpus_recommendation_tile_id" not in good_event
 
 
