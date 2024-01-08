@@ -70,7 +70,8 @@ class NewTabSlateProvider(SlateProvider):
         return [
             CorpusRecommendationModel(
                 corpus_item=item,
-                tile_id=integer_hash(self._get_tile_id_key(item), start=MIN_TILE_ID, stop=MAX_TILE_ID + 1)
+                tile_id=integer_hash(self._get_tile_id_key(item), start=MIN_TILE_ID, stop=MAX_TILE_ID + 1),
+                scheduled_surface_item_id=self.corpus_api_client.get_scheduled_surface_item_id(item.id),
             ) for item in ranked_items
         ]
 

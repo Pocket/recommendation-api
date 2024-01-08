@@ -21,6 +21,9 @@ class CorpusRecommendationModel(BaseModel):
                     'tileId uniquely identifies the ScheduledSurface, CorpusItem, and scheduled_date. '
                     'tileId is greater than 0 and less than 2^53 to fit in a Javascript number (64-bit IEEE 754 float).'
                     ' The field type is a Float because a GraphQL Int is limited to 32 bit.')
+    scheduled_surface_item_id: Optional[str] = Field(
+        default=None,
+        description='An id that represents the scheduled entry of a CorpusItem')
 
     corpus_item: CorpusItemModel = Field(description='Content meta data.')
 

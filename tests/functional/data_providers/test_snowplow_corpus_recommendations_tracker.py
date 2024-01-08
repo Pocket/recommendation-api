@@ -1,4 +1,5 @@
 import json
+import uuid
 from datetime import datetime
 
 import pytest
@@ -97,6 +98,47 @@ async def test_track_tile_id(snowplow_micro, snowplow_recs_tracker, slate_send_e
     # Check that the optional tile id was sent to Snowplow. The assertion above confirms the event schema is valid.
     good_event = json.dumps(snowplow_micro.get_good_events()[0]['event'])
     assert good_event.count('"corpus_recommendation_tile_id"') == len(recommendations)
+    assert 'scheduled_surface_item_id' not in good_event
+
+
+@pytest.mark.asyncio
+async def test_track_scheduled_surface_item_id(snowplow_micro, snowplow_recs_tracker, slate_send_event):
+    # Add only scheduled_surface_item_id to recommendations.
+    recommendations = slate_send_event.corpus_slate.recommendations
+    for i, rec in enumerate(recommendations):
+        rec.scheduled_surface_item_id = str(uuid.uuid4())
+
+    await snowplow_recs_tracker.track(slate_send_event)
+
+    await wait_for_snowplow_events(snowplow_micro, n_expected_event=1)
+    all_snowplow_events = snowplow_micro.get_event_counts()
+    assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
+
+    # Check that the optional tile id was sent to Snowplow. The assertion above confirms the event schema is valid.
+    good_event = json.dumps(snowplow_micro.get_good_events()[0]['event'])
+    assert good_event.count('"scheduled_surface_item_id"') == len(recommendations)
+    # tile_id is optional and it was not set in this test, so it should not be present.
+    assert "corpus_recommendation_tile_id" not in good_event
+
+
+@pytest.mark.asyncio
+async def test_track_all_optional_ids(snowplow_micro, snowplow_recs_tracker, slate_send_event):
+    # Add tile_id to recommendations.
+    recommendations = slate_send_event.corpus_slate.recommendations
+    for i, rec in enumerate(recommendations):
+        rec.tile_id = 1000 + i
+        rec.scheduled_surface_item_id = str(uuid.uuid4())
+
+    await snowplow_recs_tracker.track(slate_send_event)
+
+    await wait_for_snowplow_events(snowplow_micro, n_expected_event=1)
+    all_snowplow_events = snowplow_micro.get_event_counts()
+    assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
+
+    # Check that the optional tile id was sent to Snowplow. The assertion above confirms the event schema is valid.
+    good_event = json.dumps(snowplow_micro.get_good_events()[0]['event'])
+    assert good_event.count('"corpus_recommendation_tile_id"') == len(recommendations)
+    assert good_event.count('"scheduled_surface_item_id"') == len(recommendations)
 
 
 @pytest.mark.asyncio

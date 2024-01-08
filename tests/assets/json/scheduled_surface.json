@@ -3,6 +3,7 @@
     "scheduledSurface": {
       "items_today": [
         {
+          "id": "14c31a4b-ddbc-490d-9eb1-57ef05244030",
           "corpusItem": {
             "id": "8435a8d6-7622-474d-9cbd-9dde57cc01e1",
             "publisher": "Atlas Obscura",
@@ -12,6 +13,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "5e024f3f-4514-4ae0-a9fd-75fbcfe892dc",
           "corpusItem": {
             "id": "1bfd87e9-570a-4b09-ad4d-182bd7935f3a",
             "publisher": "Pocket Collections",
@@ -21,6 +23,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "46834ca7-77dc-4291-9c1c-0e615ef7d1fe",
           "corpusItem": {
             "id": "204c93b1-01da-417e-92c3-07eec2b6d40c",
             "publisher": "The Conversation",
@@ -30,6 +33,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "7156c0ac-f21e-414c-b047-ba10f21a331b",
           "corpusItem": {
             "id": "23dad158-b060-4471-8590-32da43dc98d4",
             "publisher": "beside.media",
@@ -39,6 +43,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "2c586e2f-e9e5-40f7-97c8-d91335873571",
           "corpusItem": {
             "id": "ae6177a0-4913-4698-8ae3-037e004437d3",
             "publisher": "Harper's Bazaar",
@@ -48,6 +53,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "43b4722b-9258-4086-af47-e5f0235aa36e",
           "corpusItem": {
             "id": "4b72af8f-6a7e-4be3-8a94-7a8e69890df3",
             "publisher": "Stylist",
@@ -57,6 +63,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "1493ac8a-b760-460d-8943-db7567a9feae",
           "corpusItem": {
             "id": "c4f7091c-f96a-4942-a7b4-682ce9668a0f",
             "publisher": "Scientific American",
@@ -66,6 +73,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "05a7d7d2-17bc-4377-9744-c45362b65f54",
           "corpusItem": {
             "id": "c9e0099c-cc6c-41ba-8f94-a1b535178d0b",
             "publisher": "Collectors Weekly",
@@ -75,6 +83,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "ccbfb420-2ed5-4bec-89a0-35347099be41",
           "corpusItem": {
             "id": "72d33ad4-adb6-471f-ad35-c891b9a13b9b",
             "publisher": "Smithsonian Magazine",
@@ -84,6 +93,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "31eb1ef1-5a24-4afd-b2cc-e62e0704ba20",
           "corpusItem": {
             "id": "c68e2a79-185a-4470-b39e-b07f01f133f2",
             "publisher": "Popular Science",
@@ -93,6 +103,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "ea9e18ab-4d76-4dc1-9401-e36caeaf6cec",
           "corpusItem": {
             "id": "809e922f-af0c-4f2a-a041-7da9752ce3a3",
             "publisher": "Rolling Stone",
@@ -102,6 +113,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "76dbb460-ce47-434a-ac8d-61526224126d",
           "corpusItem": {
             "id": "03949f91-558d-4658-899a-55acbbf3a512",
             "publisher": "Prevention",
@@ -111,6 +123,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "cc219997-54af-48d0-927d-3bb6ce05f610",
           "corpusItem": {
             "id": "639948dd-bc59-4d50-8e01-151ac670f754",
             "publisher": "Esquire",
@@ -120,6 +133,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "b273611e-7df4-45a3-a2d5-69d353b34278",
           "corpusItem": {
             "id": "e308b1d5-c5b0-442c-bca7-54b19ff75b07",
             "publisher": "Vox",
@@ -129,6 +143,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "444ed4af-a983-42d6-8408-d2cf4db6c6fc",
           "corpusItem": {
             "id": "498eddbe-8ffd-4640-a1c6-927291edcb35",
             "publisher": "CNET",
@@ -138,6 +153,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "28165835-4347-4663-8643-88741d237903",
           "corpusItem": {
             "id": "5a43c468-4347-405e-8604-cee0f26030b7",
             "publisher": "themarginalian.org",
@@ -147,6 +163,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "7704c18d-3730-4d4d-bf10-3bdd5fd7c0b4",
           "corpusItem": {
             "id": "c1c0f967-0026-43f4-9e14-d5b2348aba3d",
             "publisher": "The Guardian",
@@ -156,6 +173,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "8ed7790e-62d2-438a-a6af-4721a8f57712",
           "corpusItem": {
             "id": "e0537c00-7e02-4179-90b9-b31475c435d2",
             "publisher": "The Atlantic",
@@ -165,6 +183,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "2aa852bf-661a-4086-80e7-dee4d8adedea",
           "corpusItem": {
             "id": "edc45b01-843e-44d1-a094-69241e7a3655",
             "publisher": "The Walrus",
@@ -174,6 +193,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "8acc8c4c-a8ef-4d92-8175-141c11dbd9d1",
           "corpusItem": {
             "id": "4e80b43d-45c2-430a-af37-21780445aae9",
             "publisher": "Nautilus",
@@ -183,6 +203,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "9be32bde-a4e4-4b2b-bbc3-deb7d0183399",
           "corpusItem": {
             "id": "18a4656f-eb93-498e-89d2-7dbcea68d3e2",
             "publisher": "Harvard Business Review",
@@ -192,6 +213,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "06a70f9c-5f32-4424-90d2-1bd965545242",
           "corpusItem": {
             "id": "c033cf71-d886-48de-ac23-482ce96bf045",
             "publisher": "The Verge",
@@ -201,6 +223,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "a6397aef-cc3a-4b61-b4e5-8674385bc08d",
           "corpusItem": {
             "id": "802d6243-c942-484b-a966-09baf0ef693b",
             "publisher": "Lifehacker",
@@ -210,6 +233,7 @@
           "scheduledDate": "2023-04-18"
         },
         {
+          "id": "08703fe6-235d-4010-927d-a0ee98083a31",
           "corpusItem": {
             "id": "4f771efd-a594-4db7-bcce-01f8debfe479",
             "publisher": "Pocket Collections",
@@ -221,6 +245,7 @@
       ],
       "items_yesterday": [
         {
+          "id": "dba0ed52-e1b8-42ec-941f-86f7a3f8cc22",
           "corpusItem": {
             "id": "b3f325a8-57d1-4a68-886e-4b021602041e",
             "publisher": "The Washington Post",
@@ -230,6 +255,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "9fc151d6-73bb-43cf-92c1-9afc6b8b0b6b",
           "corpusItem": {
             "id": "5bf122a4-471e-4276-85f9-d8a7d28b0aff",
             "publisher": "Pocket Collections",
@@ -239,6 +265,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "f6d7459c-88b5-4a99-97e6-ecf03871ed23",
           "corpusItem": {
             "id": "829ac403-6d25-43cb-8188-cc9ef22e147b",
             "publisher": "Pocket Collections",
@@ -248,6 +275,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "3f880d5a-2372-4ff0-b338-beb9c4e7c370",
           "corpusItem": {
             "id": "9456f491-edae-4ac2-8890-6cc9b2a704c6",
             "publisher": "Culture Study",
@@ -257,6 +285,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "44bbb88c-accc-4e8b-a81a-69d329da9475",
           "corpusItem": {
             "id": "d9fe95a2-7cb0-4fd5-89b6-25b593ced2a2",
             "publisher": "Nautilus",
@@ -266,6 +295,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "6fb6dab1-2cab-4ee7-8eb6-d84db123468a",
           "corpusItem": {
             "id": "0a40b419-e3c3-4d1f-b435-9eac6814a2df",
             "publisher": "Aeon",
@@ -275,6 +305,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "e1f67572-ad9f-4bf6-885b-ecc30c3f27fa",
           "corpusItem": {
             "id": "815727db-49b8-45e9-842d-fa9803102771",
             "publisher": "Truly*Adventurous",
@@ -284,6 +315,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "9268fd13-9e7d-4298-8c73-353bef66a17c",
           "corpusItem": {
             "id": "b26117a0-396a-4df9-b93b-18d327a8e5ee",
             "publisher": "The Marginalian (formerly Brain Pickings)",
@@ -293,6 +325,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "427eace1-cb2b-4ba4-8838-779639b3c907",
           "corpusItem": {
             "id": "8e71e1c0-c78f-441e-9759-84ae06187771",
             "publisher": "Mental Floss",
@@ -302,6 +335,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "672a377c-4103-41f3-9738-c7d254749c7a",
           "corpusItem": {
             "id": "fd6f2292-8b25-44af-baa9-b5ea703da5a5",
             "publisher": "Pocket Collections",
@@ -311,6 +345,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "f6ff017d-0f91-4d6a-80d4-c6ea4f7e7b53",
           "corpusItem": {
             "id": "11cb837e-862f-42ee-acf0-5882fd93252c",
             "publisher": "The Hollywood Reporter",
@@ -320,6 +355,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "d8a72c64-4d66-421c-9ff4-407d657c4999",
           "corpusItem": {
             "id": "6d1d61f6-c00e-4324-9e31-38e74becab1a",
             "publisher": "Architectural Digest",
@@ -329,6 +365,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "33a43ebf-c6a5-4fd0-827b-5b888cfe1b59",
           "corpusItem": {
             "id": "17dd78be-3dd1-4de9-9db5-ddcd3ec764fd",
             "publisher": "Atlas Obscura",
@@ -338,6 +375,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "f1db7368-fe0d-4560-94a5-8a6c8e65d39a",
           "corpusItem": {
             "id": "46242eda-8bcc-4f3c-b38f-e3746b65b9e5",
             "publisher": "The Guardian",
@@ -347,6 +385,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "01692265-b8d9-466d-b63e-27f6986c51cf",
           "corpusItem": {
             "id": "20b2ad91-a4e7-442e-951d-418be2749735",
             "publisher": "Harvard Business Review",
@@ -356,6 +395,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "0ae09e46-bdae-43b5-9b61-2c89a5e6253c",
           "corpusItem": {
             "id": "3fbfc442-72ee-45ae-baf8-488d9448b301",
             "publisher": "Stylist",
@@ -365,6 +405,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "6e05e3d6-8816-43d6-9dfc-9b7182258cac",
           "corpusItem": {
             "id": "61c39e85-685c-40bf-bfcb-4f9c58060999",
             "publisher": "Vox",
@@ -374,6 +415,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "3ac6d2e5-b3dc-446f-a958-0b824131bf9a",
           "corpusItem": {
             "id": "92e7f475-f31b-47d4-b6af-7df3a3397907",
             "publisher": "VICE",
@@ -383,6 +425,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "855b5c4c-7184-4be1-8328-776a31e0df36",
           "corpusItem": {
             "id": "3402251a-e7b9-4ece-8977-55da26f8253f",
             "publisher": "Knowable Magazine",
@@ -392,6 +435,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "52b7da66-fcf3-473c-a2e5-0d91d4cd5ae0",
           "corpusItem": {
             "id": "504d3cb9-ceba-4fbe-ad50-2565ddb88ef0",
             "publisher": "The New York Times",
@@ -401,6 +445,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "8af2de23-c0fa-4e85-a96b-2a865896e032",
           "corpusItem": {
             "id": "6ebec8ed-0ec6-4c24-9765-1f3b92e11e69",
             "publisher": "The Atlantic",
@@ -410,6 +455,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "e1bdb68b-3a58-46ea-afed-f310e9988f4d",
           "corpusItem": {
             "id": "2fb22959-f41d-49e3-bae6-1c2bb6e08059",
             "publisher": "Scientific American",
@@ -419,6 +465,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "681cdec9-7b05-47ae-9051-edd1eff148ef",
           "corpusItem": {
             "id": "d68e5182-aeb6-4978-b16d-dcf00e8effc9",
             "publisher": "Lifehacker",
@@ -428,6 +475,7 @@
           "scheduledDate": "2023-04-17"
         },
         {
+          "id": "734abf15-c339-4ab0-b569-21d77619a357",
           "corpusItem": {
             "id": "7b7fbbf9-4fed-435d-9c57-eb919a989127",
             "publisher": "MakeUseOf",

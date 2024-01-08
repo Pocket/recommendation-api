@@ -12,6 +12,7 @@ from app.models.corpus_item_model import CorpusItemModel
 
 class CorpusApiClient(CorpusFetchable):
     _corpus_item_scheduled_date: Dict[str, str] = {}  # Maps CorpusItem.id to scheduledDate
+    _corpus_item_scheduled_id: Dict[str, str] = {}  # Maps CorpusItem.id to ScheduledSurfaceItem.id
 
     def __init__(self, pocket_graph_client_session: PocketGraphClientSession):
         self.pocket_graph_client_session = pocket_graph_client_session
@@ -29,8 +30,8 @@ class CorpusApiClient(CorpusFetchable):
         query = """
             query ScheduledSurface($scheduledSurfaceId: ID!, $date_today: Date!, $date_yesterday: Date!) {
               scheduledSurface(id: $scheduledSurfaceId) {
-                items_today:     items(date: $date_today)     { corpusItem { id topic publisher url } scheduledDate }
-                items_yesterday: items(date: $date_yesterday) { corpusItem { id topic publisher url } scheduledDate }
+                items_today:     items(date: $date_today)     { id corpusItem { id topic publisher url } scheduledDate }
+                items_yesterday: items(date: $date_yesterday) { id corpusItem { id topic publisher url } scheduledDate }
               }
             }
         """
@@ -59,6 +60,7 @@ class CorpusApiClient(CorpusFetchable):
             for item in all_items:
                 corpus_item: CorpusItemModel = CorpusItemModel.parse_obj(item['corpusItem'])
                 corpus_items.append(corpus_item)
+                self._corpus_item_scheduled_id[corpus_item.id] = item['id']
                 self._corpus_item_scheduled_date[corpus_item.id] = item['scheduledDate']
 
         return corpus_items
@@ -76,6 +78,19 @@ class CorpusApiClient(CorpusFetchable):
         else:
             logging.error(
                 f'CorpusApiClient does not have a scheduledDate for {corpus_item_id}. Although this is not expected to '
+                f'happen, the caller should continue returning recommendations and gracefully degrade performance.')
+            return None
+
+    def get_scheduled_surface_item_id(self, corpus_item_id: str) -> Optional[str]:
+        """
+        After fetch() is called, this returns the scheduled surface item id for the given CorpusItem.id.
+        :return: Id of the scheduled surface item. This is unique for every time a CorpusItem is scheduled.
+        """
+        if corpus_item_id in self._corpus_item_scheduled_id:
+            return self._corpus_item_scheduled_id[corpus_item_id]
+        else:
+            logging.error(
+                f'CorpusApiClient does not have a scheduled id for {corpus_item_id}. Although this is not expected to '
                 f'happen, the caller should continue returning recommendations and gracefully degrade performance.')
             return None
 
