@@ -346,9 +346,11 @@ class NewTabDispatch:
                 return RecommendationSurfaceId.NEW_TAB_EN_US
             elif derived_region in ['GB', 'IE']:
                 return RecommendationSurfaceId.NEW_TAB_EN_GB
-            else:
-                # Default to the International New Tab if no 2-letter region can be derived from locale or region.
+            elif derived_region in ['IN']:
                 return RecommendationSurfaceId.NEW_TAB_EN_INTL
+            else:
+                # Default to the en-US New Tab if no 2-letter region can be derived from locale or region.
+                return RecommendationSurfaceId.NEW_TAB_EN_US
 
     @staticmethod
     def _extract_language(locale: str) -> Optional[str]:
