@@ -43,7 +43,7 @@ from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
 
         # The locale language primarily determines the market, even if it's not the most common language in the region.
         ('de', 'US', RecommendationSurfaceId.NEW_TAB_DE_DE),
-        ('en', 'FR', RecommendationSurfaceId.NEW_TAB_EN_INTL),
+        ('en', 'FR', RecommendationSurfaceId.NEW_TAB_EN_US),
         ('es', 'DE', RecommendationSurfaceId.NEW_TAB_ES_ES),
         ('fr', 'ES', RecommendationSurfaceId.NEW_TAB_FR_FR),
         ('it', 'CA', RecommendationSurfaceId.NEW_TAB_IT_IT),
@@ -65,14 +65,14 @@ from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
         ('en', 'in', RecommendationSurfaceId.NEW_TAB_EN_INTL),
 
         # Default to international NewTab when region is unknown.
-        ('en', 'XX', RecommendationSurfaceId.NEW_TAB_EN_INTL),
+        ('en', 'XX', RecommendationSurfaceId.NEW_TAB_EN_US),
 
         # Default to English when language is unknown.
         ('xx', 'US', RecommendationSurfaceId.NEW_TAB_EN_US),
         ('xx', 'CA', RecommendationSurfaceId.NEW_TAB_EN_US),
         ('xx', 'GB', RecommendationSurfaceId.NEW_TAB_EN_GB),
         ('xx', 'IE', RecommendationSurfaceId.NEW_TAB_EN_GB),
-        ('xx', 'YY', RecommendationSurfaceId.NEW_TAB_EN_INTL),
+        ('xx', 'YY', RecommendationSurfaceId.NEW_TAB_EN_US),
     ]
 )
 def test_get_recommendation_surface_id(locale: str, region: str, recommendation_surface_id: RecommendationSurfaceId):
