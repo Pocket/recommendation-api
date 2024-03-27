@@ -13,7 +13,6 @@ import {AwsProvider} from '@cdktf/provider-aws/lib/provider';
 import {DataAwsCallerIdentity} from '@cdktf/provider-aws/lib/data-aws-caller-identity';
 import {DataAwsKmsAlias} from '@cdktf/provider-aws/lib/data-aws-kms-alias';
 import {DataAwsRegion} from '@cdktf/provider-aws/lib/data-aws-region';
-import {DataAwsSnsTopic} from '@cdktf/provider-aws/lib/data-aws-sns-topic';
 import {LocalProvider} from '@cdktf/provider-local/lib/provider';
 import {NullProvider} from '@cdktf/provider-null/lib/provider';
 import {PagerdutyProvider} from '@cdktf/provider-pagerduty/lib/provider';
@@ -44,7 +43,6 @@ class RecommendationAPI extends TerraformStack {
         const pocketApp = this.createPocketAlbApplication({
             pagerDuty: pagerduty,
             secretsManagerKmsAlias: this.getSecretsManagerKmsAlias(),
-            snsTopic: this.getCodeDeploySnsTopic(),
             region,
             caller,
             elasticache: new Elasticache(this, 'elasticache'),
@@ -61,16 +59,6 @@ class RecommendationAPI extends TerraformStack {
         new SqsLambda(this, 'sqs-lambda', dynamodb.candidateSetsTable, pagerduty);
     }
 
-
-    /**
-     * Get the sns topic for code deploy
-     * @private
-     */
-    private getCodeDeploySnsTopic() {
-        return new DataAwsSnsTopic(this, 'backend_notifications', {
-            name: `DataAndLearning-${config.environment}-ChatBot`
-        });
-    }
 
     /**
      * Get secrets manager kms alias
@@ -143,12 +131,11 @@ class RecommendationAPI extends TerraformStack {
         region: DataAwsRegion;
         caller: DataAwsCallerIdentity;
         secretsManagerKmsAlias: DataAwsKmsAlias;
-        snsTopic: DataAwsSnsTopic;
         dynamodb: DynamoDB;
         elasticache: Elasticache;
     }) {
 
-        const {pagerDuty, region, caller, secretsManagerKmsAlias, snsTopic, dynamodb, elasticache} =
+        const {pagerDuty, region, caller, secretsManagerKmsAlias, dynamodb, elasticache} =
             dependencies;
         return new PocketALBApplication(this, 'application', {
             internal: true,
@@ -257,7 +244,6 @@ class RecommendationAPI extends TerraformStack {
             codeDeploy: {
                 useCodeDeploy: true,
                 useCodePipeline: true,
-                snsNotificationTopicArn: snsTopic.arn,
             },
             exposedContainer: {
                 name: 'app',
