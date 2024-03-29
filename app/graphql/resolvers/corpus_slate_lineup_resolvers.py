@@ -5,7 +5,6 @@ from strawberry.types import Info
 
 from app.data_providers.PocketGraphClientSession import PocketGraphClientSession, PocketGraphConfig
 from app.data_providers.dispatch import HomeDispatch
-from app.data_providers.slate_providers.cf_slate_provider import HybridCFSlateProvider
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
 from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
@@ -78,8 +77,6 @@ async def resolve_home_slate_lineup(root, info: Info,
             user_impression_cap_provider=di.user_impression_cap_provider,
             topic_provider=topic_provider,
             for_you_slate_provider=ForYouSlateProvider(**slate_provider_kwargs),
-            hybrid_cf_slate_provider=HybridCFSlateProvider(**slate_provider_kwargs,
-                                                           hybrid_cf_recommender=di.hybrid_cf_recommender),
             recommended_reads_slate_provider=RecommendedReadsSlateProvider(**slate_provider_kwargs),
             topic_slate_providers=TopicSlateProviderFactory(**slate_provider_kwargs),
             collection_slate_provider=CollectionSlateProvider(**slate_provider_kwargs),

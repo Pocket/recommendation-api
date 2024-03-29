@@ -1,6 +1,5 @@
 import asyncio
 import functools
-import logging
 import random
 import re
 from asyncio import gather
@@ -8,7 +7,6 @@ from typing import List, Coroutine, Any, Tuple, Optional
 
 from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
-from app.data_providers.slate_providers.cf_slate_provider import HybridCFSlateProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.recommenders.item2item import Item2ItemRecommender, Item2ItemError, QdrantError, UnsupportedLanguage
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
@@ -124,7 +122,6 @@ class HomeDispatch:
             user_impression_cap_provider: UserImpressionCapProvider,
             topic_provider: TopicProvider,
             for_you_slate_provider: ForYouSlateProvider,
-            hybrid_cf_slate_provider: HybridCFSlateProvider,
             recommended_reads_slate_provider: RecommendedReadsSlateProvider,
             topic_slate_providers: TopicSlateProviderFactory,
             collection_slate_provider: CollectionSlateProvider,
@@ -133,7 +130,6 @@ class HomeDispatch:
             unleash_provider: UnleashProvider,
             snowplow: SnowplowCorpusRecommendationsTracker
     ):
-        self.hybrid_cf_slate_provider = hybrid_cf_slate_provider
         self.snowplow = snowplow
         self.topic_provider = topic_provider
         self.corpus_client = corpus_client
@@ -187,34 +183,19 @@ class HomeDispatch:
             4. 'Life Hacks' slate
             5. Topic slates according to preferred topics if available, otherwise default topics.
         """
-        if self.hybrid_cf_slate_provider.can_recommend(user):
-            user.user_models.append('hybrid_cf')
-
         user_impression_capped_list, \
-        preferred_topics, \
-        unleash_asn = await gather(
+        preferred_topics = await gather(
             self.user_impression_cap_provider.get(user),
-            self._get_preferred_topics(user),
-            self.unleash_provider.get_assignments(['temp.web.recommendation-api.home.hybrid_cf_test'], user=user))
-
-        cf_asn = unleash_asn[0]
-        enable_hybrid_cf = cf_asn is not None and cf_asn.variant == 'treatment'
-
-        if not enable_hybrid_cf and self.hybrid_cf_slate_provider.can_recommend(user):
-            logging.error('The CF experiment should enroll 100% of eligible users.')
+            self._get_preferred_topics(user))
 
         slates = []
-        if enable_hybrid_cf and self.hybrid_cf_slate_provider.can_recommend(user):
-            slates += [self.hybrid_cf_slate_provider.get_slate(user=user,
-                                                               user_impression_capped_list=user_impression_capped_list)]
+        if preferred_topics:
+            slates += [self.for_you_slate_provider.get_slate(
+                preferred_topics=preferred_topics,
+                user_impression_capped_list=user_impression_capped_list
+            )]
         else:
-            if preferred_topics:
-                slates += [self.for_you_slate_provider.get_slate(
-                    preferred_topics=preferred_topics,
-                    user_impression_capped_list=user_impression_capped_list
-                )]
-            else:
-                slates += [self.recommended_reads_slate_provider.get_slate()]
+            slates += [self.recommended_reads_slate_provider.get_slate()]
 
         slates += [
             self.pocket_hits_slate_provider.get_slate(),
@@ -229,7 +210,7 @@ class HomeDispatch:
                 slates=list(await gather(*slates)),
                 recommendation_count=recommendation_count,
             ),
-        ), cf_asn
+        ), None
 
     async def get_de_de_slate_lineup(self, recommendation_count: int, locale: LocaleModel) -> \
             Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:

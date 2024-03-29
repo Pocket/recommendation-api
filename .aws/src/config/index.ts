@@ -29,7 +29,6 @@ export const config = {
   domain,
   recommendationMetricsDynamodbName: `MODELD-${environment}-RecMetrics`,
   slateMetricsDynamodbName: `MODELD-${environment}-SlateMetrics`,
-  modelsBucket: isDev ? 'pocket-data-learning-dev' : 'pocket-data-learning',
   cacheNodes,
   cacheSize,
   stateMachines: [

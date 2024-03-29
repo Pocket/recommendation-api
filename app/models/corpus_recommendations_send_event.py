@@ -6,7 +6,6 @@ from pydantic import BaseModel, Field, validator
 from app.models.api_client import ApiClient
 from app.models.corpus_slate_lineup_model import RecommendationSurfaceId, CorpusSlateLineupModel
 from app.models.corpus_slate_model import CorpusSlateModel
-from app.models.localemodel import LocaleModel
 from app.models.request_user import RequestUser
 from app.models.unleash_assignment import UnleashAssignmentModel
 
