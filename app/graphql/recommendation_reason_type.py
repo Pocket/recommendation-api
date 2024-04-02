@@ -22,8 +22,3 @@ class RecommendationReasonType(Enum):
         RecommendationReasonTypeModel.PREFERRED_TOPICS.value,
         description='Recommendations that match the user\'s topic preferences are ranked higher.'
     )
-
-    HYBRID_CF_RECOMMENDER = strawberry.enum_value(
-        RecommendationReasonTypeModel.HYBRID_CF_RECOMMENDER.value,
-        description='Recommendations based on hybrid collaborative filtering.'
-    )

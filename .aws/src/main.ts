@@ -174,10 +174,6 @@ class RecommendationAPI extends TerraformStack {
                             value: `https://dynamodb.${region.name}.amazonaws.com`,
                         },
                         {
-                            name: 'HYBRID_CF_MODEL_BUCKET',
-                            value: config.modelsBucket,
-                        },
-                        {
                             name: 'RECOMMENDATION_API_METADATA_TABLE',
                             value: dynamodb.metadataTable.dynamodb.name,
                         },
@@ -278,12 +274,6 @@ class RecommendationAPI extends TerraformStack {
                     }
                 ],
                 taskRolePolicyStatements: [
-                                // Give read access to a bucket with models
-                      {
-                        actions: ['s3:GetObject*', 's3:ListBucket*'],
-                        resources: [`arn:aws:s3:::${config.modelsBucket}`, `arn:aws:s3:::${config.modelsBucket}/*`],
-                        effect: 'Allow',
-                      },
                     {
                         actions: [
                             'dynamodb:BatchGet*',
@@ -332,7 +322,7 @@ class RecommendationAPI extends TerraformStack {
             },
 
             autoscalingConfig: {
-                targetMinCapacity: config.environment === 'Prod' ? 4 : 4,
+                targetMinCapacity: config.environment === 'Prod' ? 4 : 1,
                 targetMaxCapacity: config.environment === 'Prod' ? 10: 10,
             },
             alarms: {
