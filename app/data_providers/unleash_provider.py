@@ -84,13 +84,14 @@ class UnleashProvider:
                 'context': {
                     'appName': self.unleash_config.APP_NAME,
                     'environment': self.unleash_config.ENVIRONMENT,
-                    'userId': user.hashed_user_id,
-                    'properties': {
-                        'locale': user.locale
-                    }
                 }
             }
         }
+
+        if user is not None and user.hashed_user_id is not None:
+            body['variables']['context']['userId'] = user.hashed_user_id
+            body['variables']['context']['properties'] = {'locale':  user.locale}
+
 
         if user.user_models:
             # not related to recit anymore, but it's what the unleash strategy hasUserModel expects

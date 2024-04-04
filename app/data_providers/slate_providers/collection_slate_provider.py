@@ -5,6 +5,7 @@ from app.models.corpus_item_model import CorpusItemModel
 from app.models.link import LinkModel
 from app.models.localemodel import LocaleModel
 from app.rankers.algorithms import thompson_sampling
+from app.config import POCKET_HOME_V3_FEATURE_FLAG
 
 
 class CollectionSlateProvider(HomeSlateProvider):
@@ -30,6 +31,11 @@ class CollectionSlateProvider(HomeSlateProvider):
             *args,
             **kwargs,
     ) -> List[CorpusItemModel]:
+        assignment = await self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG)
+        if assignment.assigned:
+            # do not thompson sample iof they are in the v3 flag
+            return items
+
         """
         :param items: Candidate corpus items
         :return: Ranks items based on Thompson sampling.

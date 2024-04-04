@@ -24,8 +24,11 @@ class UserImpressionCapProvider:
         :param user: user ids for the corresponding list of impressed items
         :return: list of corpus item ids that should be filtered.
         """
-        if not user.hashed_user_id:
-            raise PersonalizationError("hashed_user_id must be provided for personalized impression filtering")
+        if user is None or not user.hashed_user_id:
+            # if we do not have a user, send no ids to filter out.
+            # this supports logged-out users
+            # If we wanted in the future we could change this to use guid if there is no user id
+            return []
 
         impressed_item_ids = await self._query_item_list(user)
         if not impressed_item_ids:

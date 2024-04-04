@@ -1,6 +1,7 @@
 import random
 from typing import List, Optional
 
+from app.config import POCKET_HOME_V3_FEATURE_FLAG
 from app.data_providers.slate_providers.candidate_sets import get_topic_candidate_set_id
 from app.data_providers.slate_providers.slate_provider import HomeSlateProvider
 from app.models.corpus_item_model import CorpusItemModel
@@ -40,5 +41,10 @@ class TopicSlateProvider(HomeSlateProvider):
         :param items: Candidate corpus items
         :return: Randomizes items.
         """
+        assignment = await self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG)
+        if assignment.assigned:
+            # do not thompson sample iof they are in the v3 flag
+            return items
+
         random.shuffle(items)
         return items

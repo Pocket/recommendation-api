@@ -1,5 +1,6 @@
 from typing import List
 
+from app.config import POCKET_HOME_V3_FEATURE_FLAG
 from app.data_providers.slate_providers.slate_provider import HomeSlateProvider
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.localemodel import LocaleModel
@@ -23,6 +24,10 @@ class RecommendedReadsSlateProvider(HomeSlateProvider):
             *args,
             **kwargs,
     ) -> List[CorpusItemModel]:
+        assignment = await self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG)
+        if assignment.assigned:
+            return items
+
         """
         :param items: Candidate corpus items
         :return: Ranks items based on Thompson sampling.

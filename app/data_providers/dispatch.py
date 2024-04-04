@@ -5,7 +5,7 @@ import re
 from asyncio import gather
 from typing import List, Coroutine, Any, Tuple, Optional
 
-from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS
+from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS, POCKET_HOME_V3_FEATURE_FLAG
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.recommenders.item2item import Item2ItemRecommender, Item2ItemError, QdrantError, UnsupportedLanguage
@@ -35,12 +35,14 @@ from app.data_providers.slate_providers.new_tab_slate_provider import NewTabSlat
 
 def _empty_on_error(func):
     """ Fallback to empty recommendations if Qdrant error occurred """
+
     @functools.wraps(func)
     async def wrapper(*args, **kwargs):
         try:
             return await func(*args, **kwargs)
         except QdrantError:
             return []
+
     return wrapper
 
 
@@ -152,9 +154,11 @@ class HomeDispatch:
                 recommendation_count=recommendation_count, user=user, locale=locale)
         elif locale == LocaleModel.de_DE:
             slate_lineup_model, experiment = await self.get_de_de_slate_lineup(
-                recommendation_count=recommendation_count, locale=locale)
+                recommendation_count=recommendation_count, user=user, locale=locale)
         else:
-            raise ValueError(f'Invalid locale {locale}')
+            # Default to en-US
+            slate_lineup_model, experiment = await self.get_en_us_slate_lineup(
+                recommendation_count=recommendation_count, user=user, locale=locale)
 
         asyncio.create_task(
             self.snowplow.track(CorpusRecommendationsSendEvent(
@@ -171,39 +175,49 @@ class HomeDispatch:
     async def get_en_us_slate_lineup(
             self, user: RequestUser, recommendation_count: int, locale: LocaleModel
     ) -> Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
-
         """
         :param user:
         :param recommendation_count: Maximum number of recommendations to return.
         :param locale:
         :return: Slate lineup for en-US Home:
-            1. 'For You' slate if preferred topics are available, or otherwise 'Recommended Reads'
-            2. Pocket Hits
-            3. Collection slate
-            4. 'Life Hacks' slate
-            5. Topic slates according to preferred topics if available, otherwise default topics.
+
+                If in the new v3 test
+                    1. Syndicated - Pocket Worthy
+                    2. Pocket Hits
+                    3. 'For You' slate if preferred topics are available, or otherwise 'Recommended Reads'
+                    4. 'Life Hacks' slate
+                Otherwise:
+                    1. 'For You' slate if preferred topics are available, or otherwise 'Recommended Reads'
+                    2. Pocket Hits
+                    3. Collection slate
+                    4. 'Life Hacks' slate
         """
+
         user_impression_capped_list, \
-        preferred_topics = await gather(
+            preferred_topics = await gather(
             self.user_impression_cap_provider.get(user),
             self._get_preferred_topics(user))
 
         slates = []
-        if preferred_topics:
-            slates += [self.for_you_slate_provider.get_slate(
-                preferred_topics=preferred_topics,
-                user_impression_capped_list=user_impression_capped_list
-            )]
+        assignment = await self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user)
+        if assignment.assigned:
+            slates = [
+                self.pocket_hits_slate_provider.get_slate(),
+                self.get_for_you_or_recommended_reads(preferred_topics=preferred_topics,
+                                                      user_impression_capped_list=user_impression_capped_list
+                                                      ),
+                self.life_hacks_slate_provider.get_slate(),
+            ]
         else:
-            slates += [self.recommended_reads_slate_provider.get_slate()]
-
-        slates += [
-            self.pocket_hits_slate_provider.get_slate(),
-            self.collection_slate_provider.get_slate(),
-            self.life_hacks_slate_provider.get_slate(),
-        ]
-
-        slates += await self._get_topic_slate_promises(preferred_topics=preferred_topics, default=DEFAULT_TOPICS)
+            slates = [
+                self.get_for_you_or_recommended_reads(preferred_topics=preferred_topics,
+                                                      user_impression_capped_list=user_impression_capped_list
+                                                      ),
+                self.pocket_hits_slate_provider.get_slate(),
+                self.collection_slate_provider.get_slate(),
+                self.life_hacks_slate_provider.get_slate(),
+            ]
+            slates += await self._get_topic_slate_promises(preferred_topics=preferred_topics, default=DEFAULT_TOPICS)
 
         return CorpusSlateLineupModel(
             slates=self._dedupe_and_limit(
@@ -212,20 +226,51 @@ class HomeDispatch:
             ),
         ), None
 
-    async def get_de_de_slate_lineup(self, recommendation_count: int, locale: LocaleModel) -> \
+    async def get_for_you_or_recommended_reads(self, preferred_topics: List[TopicModel],
+                                               user_impression_capped_list: List[CorpusItemModel]) -> CorpusSlateModel:
+        """"
+        :param preferred_topics:
+        :param user_impression_capped_list:
+
+        Gets a personalized slate of articles or a default one if no preferred topics are available.
+        """
+        if preferred_topics:
+            return await self.for_you_slate_provider.get_slate(
+                preferred_topics=preferred_topics,
+                user_impression_capped_list=user_impression_capped_list
+            )
+        else:
+            return await self.recommended_reads_slate_provider.get_slate()
+
+    async def get_de_de_slate_lineup(self, user: RequestUser, recommendation_count: int, locale: LocaleModel) -> \
             Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
         """
         :param recommendation_count:
         :param locale:
         :return: the Home slate lineup:
-            1. Recommended Reads
-            2. Collection slate
-            3. Topic slates according to defaults
+
+            If in the new v3 test
+                1. Collection slate
+                2. Recommended Reads
+                3. Topic slates according to defaults
+
+            Otherwise
+                1. Recommended Reads
+                2. Collection slate
+                3. Topic slates according to defaults
         """
-        slates = [
-            self.recommended_reads_slate_provider.get_slate(),
-            self.collection_slate_provider.get_slate(),
-        ]
+
+        assignment = await self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user)
+        if assignment.assigned:
+            slates = [
+                self.collection_slate_provider.get_slate(),
+                self.recommended_reads_slate_provider.get_slate(),
+            ]
+        else:
+            slates = [
+                self.recommended_reads_slate_provider.get_slate(),
+                self.collection_slate_provider.get_slate(),
+            ]
 
         slates += await self._get_topic_slate_promises(preferred_topics=[], default=GERMAN_HOME_TOPICS)
 
@@ -256,6 +301,8 @@ class HomeDispatch:
         return slates
 
     async def _get_preferred_topics(self, user: RequestUser) -> List[TopicModel]:
+        if user is None or user.hashed_user_id is None:
+            return []
         preferences = await self.preferences_provider.fetch(str(user.hashed_user_id))
         if preferences and preferences.preferred_topics:
             return preferences.preferred_topics
