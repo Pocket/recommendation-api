@@ -42,9 +42,7 @@ class ForYouSlateProvider(HomeSlateProvider):
         assert preferred_topics is not None
         assert user_impression_capped_list is not None
 
-        assignment = await self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG)
-        if assignment is None or assignment.assigned is False:
-            # if they are not in the V3 Feature Flag, thompson sample
+        if kwargs.get('enable_thompson_sampling'):
             metrics = await self.corpus_engagement_provider.get(
                 self.recommendation_surface_id, self.configuration_id, items)
 

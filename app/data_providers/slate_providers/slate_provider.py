@@ -150,14 +150,12 @@ class HomeSlateProvider(SlateProvider, ABC):
             corpus_engagement_provider: CorpusEngagementProvider,
             recommendation_surface_id: RecommendationSurfaceId,
             locale: LocaleModel,
-            translation_provider: TranslationProvider,
-            unleash_provider: UnleashProvider,
+            translation_provider: TranslationProvider
     ):
         super().__init__(corpus_fetchable, corpus_engagement_provider, recommendation_surface_id)
 
         self.locale = locale
         self.home_translations = translation_provider.get_translations(self.locale, filename='home.json')
-        self.unleash_provider = unleash_provider
 
     @property
     def headline(self) -> str:

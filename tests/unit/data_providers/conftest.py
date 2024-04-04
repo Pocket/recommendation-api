@@ -6,4 +6,3 @@ from tests.mocks.corpus_clients import *  # noqa
 from tests.mocks.translation_provider import translation_provider  # noqa
 from tests.mocks.topic_provider import topic_provider_en_us  # noqa
 from tests.mocks.pocket_graph import pocket_graph_server # noqa
-from tests.mocks.unleash import * # noqa

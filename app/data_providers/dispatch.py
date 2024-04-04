@@ -7,6 +7,7 @@ from typing import List, Coroutine, Any, Tuple, Optional
 
 from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS, POCKET_HOME_V3_FEATURE_FLAG
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
+from app.data_providers.slate_providers.pockety_worthy_provider import PocketWorthyProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.recommenders.item2item import Item2ItemRecommender, Item2ItemError, QdrantError, UnsupportedLanguage
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
@@ -130,7 +131,8 @@ class HomeDispatch:
             pocket_hits_slate_provider: PocketHitsSlateProvider,
             life_hacks_slate_provider: LifeHacksSlateProvider,
             unleash_provider: UnleashProvider,
-            snowplow: SnowplowCorpusRecommendationsTracker
+            snowplow: SnowplowCorpusRecommendationsTracker,
+            pocket_worthy_provider: PocketWorthyProvider,
     ):
         self.snowplow = snowplow
         self.topic_provider = topic_provider
@@ -144,6 +146,7 @@ class HomeDispatch:
         self.pocket_hits_slate_provider = pocket_hits_slate_provider
         self.life_hacks_slate_provider = life_hacks_slate_provider
         self.unleash_provider = unleash_provider
+        self.pocket_worthy_provider = pocket_worthy_provider
 
     async def get_slate_lineup(
             self, user: RequestUser, locale: LocaleModel, recommendation_count: int,
@@ -194,30 +197,33 @@ class HomeDispatch:
         """
 
         user_impression_capped_list, \
-            preferred_topics = await gather(
+            preferred_topics, \
+            home_v3_assignment = await gather(
             self.user_impression_cap_provider.get(user),
-            self._get_preferred_topics(user))
+            self._get_preferred_topics(user),
+            self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user)
+        )
 
         slates = []
-        assignment = await self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user)
-        if assignment is not None and assignment.assigned is True:
+        if home_v3_assignment is not None and home_v3_assignment.assigned is True:
             slates = [
-                # TODO: replace with pocket_worthy when ready.
-                self.collection_slate_provider.get_slate(),
+                self.pocket_worthy_provider.get_slate(enable_thompson_sampling=False),
                 self.pocket_hits_slate_provider.get_slate(),
                 self.get_for_you_or_recommended_reads(preferred_topics=preferred_topics,
-                                                      user_impression_capped_list=user_impression_capped_list
+                                                      user_impression_capped_list=user_impression_capped_list,
+                                                      enable_thompson_sampling=False
                                                       ),
                 self.life_hacks_slate_provider.get_slate(),
             ]
         else:
             slates = [
                 self.get_for_you_or_recommended_reads(preferred_topics=preferred_topics,
-                                                      user_impression_capped_list=user_impression_capped_list
+                                                      user_impression_capped_list=user_impression_capped_list,
+                                                      enable_thompson_sampling=True
                                                       ),
                 self.pocket_hits_slate_provider.get_slate(),
-                self.collection_slate_provider.get_slate(),
-                self.life_hacks_slate_provider.get_slate(),
+                self.collection_slate_provider.get_slate(enable_thompson_sampling=True),
+                self.life_hacks_slate_provider.get_slate(enable_thompson_sampling=True),
             ]
             slates += await self._get_topic_slate_promises(preferred_topics=preferred_topics, default=DEFAULT_TOPICS)
 
@@ -229,7 +235,7 @@ class HomeDispatch:
         ), None
 
     async def get_for_you_or_recommended_reads(self, preferred_topics: List[TopicModel],
-                                               user_impression_capped_list: List[CorpusItemModel]) -> CorpusSlateModel:
+                                               user_impression_capped_list: List[CorpusItemModel], enable_thompson_sampling: bool) -> CorpusSlateModel:
         """"
         :param preferred_topics:
         :param user_impression_capped_list:
@@ -239,10 +245,11 @@ class HomeDispatch:
         if preferred_topics:
             return await self.for_you_slate_provider.get_slate(
                 preferred_topics=preferred_topics,
-                user_impression_capped_list=user_impression_capped_list
+                user_impression_capped_list=user_impression_capped_list,
+                enable_thompson_sampling=enable_thompson_sampling
             )
         else:
-            return await self.recommended_reads_slate_provider.get_slate()
+            return await self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling=enable_thompson_sampling)
 
     async def get_de_de_slate_lineup(self, user: RequestUser, recommendation_count: int, locale: LocaleModel) -> \
             Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
@@ -265,16 +272,16 @@ class HomeDispatch:
         assignment = await self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user)
         if assignment is not None and assignment.assigned is True:
             slates = [
-                self.collection_slate_provider.get_slate(),
-                self.recommended_reads_slate_provider.get_slate(),
+                self.collection_slate_provider.get_slate(enable_thompson_sampling=False),
+                self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling=False),
             ]
+            slates += await self._get_topic_slate_promises(preferred_topics=[], default=GERMAN_HOME_TOPICS)
         else:
             slates = [
-                self.recommended_reads_slate_provider.get_slate(),
-                self.collection_slate_provider.get_slate(),
+                self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling=True),
+                self.collection_slate_provider.get_slate(enable_thompson_sampling=True),
             ]
-
-        slates += await self._get_topic_slate_promises(preferred_topics=[], default=GERMAN_HOME_TOPICS)
+            slates += await self._get_topic_slate_promises(preferred_topics=[], default=GERMAN_HOME_TOPICS)
 
         return CorpusSlateLineupModel(
             slates=self._dedupe_and_limit(

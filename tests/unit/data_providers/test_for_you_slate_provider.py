@@ -15,15 +15,12 @@ from tests.assets.topics import business_topic, all_topic_fixtures
 
 @pytest.fixture
 def for_you_slate_provider(corpus_feature_group_client, corpus_engagement_provider, translation_provider):
-    unleash_provider = MagicMock(UnleashProvider)
-    unleash_provider.get_assignment.return_value = None
     return ForYouSlateProvider(
         corpus_fetchable=corpus_feature_group_client,
         corpus_engagement_provider=corpus_engagement_provider,
         recommendation_surface_id=RecommendationSurfaceId.HOME,
         locale=LocaleModel.en_US,
-        translation_provider=translation_provider,
-        unleash_provider=unleash_provider
+        translation_provider=translation_provider
     )
 
 @pytest.fixture
@@ -128,16 +125,16 @@ class TestForYouSlateProvider:
         # Assert that the same item is not always ranked at the top.
         assert len(top_ranked_item_ids) > 1
 
-    async def test_pocket_home_v3_no_thompson_sampling(self, for_you_slate_pocket_home_v3_provider):
+    async def test_no_thompson_sampling(self, for_you_slate_provider):
         items = [CorpusItemModel(id=str(i), topic=all_topic_fixtures[i % 2].corpus_topic_id) for i in range(10)]
         preferred_topics = [all_topic_fixtures[0]]
         preferred_topic_items = [r for r in items if any(r.topic == p.corpus_topic_id for p in preferred_topics)]
         top_ranked_item_ids = set()
         n = 20  # With 5 preferred topic items the probability that the same item ranks on top is 1/5^19 = 10^-14
         for _ in range(n):
-            ranked_items = await for_you_slate_pocket_home_v3_provider.rank_corpus_items(
+            ranked_items = await for_you_slate_provider.rank_corpus_items(
                 items=items,
-                enable_thompson_sampling=True,
+                enable_thompson_sampling=False,
                 preferred_topics=preferred_topics,
                 user_impression_capped_list=[]
             )

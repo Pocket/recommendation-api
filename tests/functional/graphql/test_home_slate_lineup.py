@@ -15,7 +15,6 @@ from app.data_providers.user_recommendation_preferences_provider import UserReco
 from app.main import app
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.request_user import RequestUser
-from app.models.unleash_assignment import UnleashAssignmentModel
 from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
 from tests.functional.test_util.snowplow import wait_for_snowplow_events
 from tests.assets.topics import *

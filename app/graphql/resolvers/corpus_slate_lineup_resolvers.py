@@ -9,6 +9,7 @@ from app.data_providers.slate_providers.collection_slate_provider import Collect
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
 from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
 from app.data_providers.slate_providers.pocket_hits_slate_provider import PocketHitsSlateProvider
+from app.data_providers.slate_providers.pockety_worthy_provider import PocketWorthyProvider
 from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
 from app.data_providers.snowplow.config import create_snowplow_tracker, SnowplowConfig
@@ -70,7 +71,6 @@ async def resolve_home_slate_lineup(root, info: Info,
 
     async with PocketGraphClientSession(PocketGraphConfig()) as graph_client_session:
         unleash_provider = UnleashProvider(graph_client_session, unleash_config=UnleashConfig())
-        slate_provider_kwargs['unleash_provider'] = unleash_provider
         slate_lineup_model = await HomeDispatch(
             corpus_client=di.corpus_feature_group_client,
             preferences_provider=UserRecommendationPreferencesProvider(di.aioboto3_session, topic_provider),
@@ -84,7 +84,8 @@ async def resolve_home_slate_lineup(root, info: Info,
             life_hacks_slate_provider=LifeHacksSlateProvider(**slate_provider_kwargs),
             unleash_provider=unleash_provider,
             snowplow=SnowplowCorpusRecommendationsTracker(
-                tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
+                tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig()),
+            pocket_worthy_provider=PocketWorthyProvider(**slate_provider_kwargs),
         ).get_slate_lineup(
             user=user,
             locale=locale_model,
