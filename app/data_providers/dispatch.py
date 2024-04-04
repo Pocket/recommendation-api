@@ -202,6 +202,8 @@ class HomeDispatch:
         assignment = await self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user)
         if assignment.assigned:
             slates = [
+                # TODO: replace with pocket_worthy when ready.
+                self.collection_slate_provider.get_slate(),
                 self.pocket_hits_slate_provider.get_slate(),
                 self.get_for_you_or_recommended_reads(preferred_topics=preferred_topics,
                                                       user_impression_capped_list=user_impression_capped_list
