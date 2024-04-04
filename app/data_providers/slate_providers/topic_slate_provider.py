@@ -42,8 +42,8 @@ class TopicSlateProvider(HomeSlateProvider):
         :return: Randomizes items.
         """
         assignment = await self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG)
-        if assignment.assigned:
-            # do not thompson sample iof they are in the v3 flag
+        if assignment is not None and assignment.assigned is True:
+            # do not sample if they are in the v3 flag
             return items
 
         random.shuffle(items)

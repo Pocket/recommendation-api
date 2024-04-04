@@ -25,7 +25,7 @@ class RecommendedReadsSlateProvider(HomeSlateProvider):
             **kwargs,
     ) -> List[CorpusItemModel]:
         assignment = await self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG)
-        if assignment.assigned:
+        if assignment is not None and assignment.assigned is True:
             return items
 
         """

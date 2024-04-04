@@ -32,7 +32,7 @@ class CollectionSlateProvider(HomeSlateProvider):
             **kwargs,
     ) -> List[CorpusItemModel]:
         assignment = await self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG)
-        if assignment.assigned:
+        if assignment is not None and assignment.assigned is True:
             # do not thompson sample iof they are in the v3 flag
             return items
 

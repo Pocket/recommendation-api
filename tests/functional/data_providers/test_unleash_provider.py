@@ -21,13 +21,55 @@ async def test_get_assignments(pocket_graph_server: TestServer, user_1: RequestU
     # Assert the request to the Pocket Graph has the expected query and variables.
     request_json = pocket_graph_server.app['request_jsons'][-1]
     assert 'unleashAssignments' in request_json['query']
-    
+
     assert request_json['variables']['context'] == {
         'appName': unleash_config.APP_NAME,
         'environment': unleash_config.ENVIRONMENT,
         'userId': user_1.hashed_user_id,
         'properties': {'locale': user_1.locale}
-    } 
+    }
+
+    # pocket_graph_server returns data from `tests/assets/json/unleash_assignments.json`
+    assert unleash_assignments == [UnleashAssignmentModel(assigned=True, name='test.getstarted', variant='v0')]
+
+
+@pytest.mark.asyncio
+async def test_get_assignments_no_user(pocket_graph_server: TestServer):
+    unleash_config = UnleashConfig()
+
+    async with PocketGraphClientSession(get_pocket_graph_config(pocket_graph_server)) as pocket_graph_client_session:
+        unleash_provider = UnleashProvider(pocket_graph_client_session, unleash_config=unleash_config)
+        unleash_assignments = await unleash_provider.get_assignments(['test.getstarted'], user=None)
+
+    # Assert the request to the Pocket Graph has the expected query and variables.
+    request_json = pocket_graph_server.app['request_jsons'][-1]
+    assert 'unleashAssignments' in request_json['query']
+
+    assert request_json['variables']['context'] == {
+        'appName': unleash_config.APP_NAME,
+        'environment': unleash_config.ENVIRONMENT,
+    }
+
+    # pocket_graph_server returns data from `tests/assets/json/unleash_assignments.json`
+    assert unleash_assignments == [UnleashAssignmentModel(assigned=True, name='test.getstarted', variant='v0')]
+
+@pytest.mark.asyncio
+async def test_get_assignments_no_user_id(pocket_graph_server: TestServer, user_1: RequestUser):
+    unleash_config = UnleashConfig()
+
+    user_1.hashed_user_id = None
+    async with PocketGraphClientSession(get_pocket_graph_config(pocket_graph_server)) as pocket_graph_client_session:
+        unleash_provider = UnleashProvider(pocket_graph_client_session, unleash_config=unleash_config)
+        unleash_assignments = await unleash_provider.get_assignments(['test.getstarted'], user_1)
+
+    # Assert the request to the Pocket Graph has the expected query and variables.
+    request_json = pocket_graph_server.app['request_jsons'][-1]
+    assert 'unleashAssignments' in request_json['query']
+
+    assert request_json['variables']['context'] == {
+        'appName': unleash_config.APP_NAME,
+        'environment': unleash_config.ENVIRONMENT,
+    }
 
     # pocket_graph_server returns data from `tests/assets/json/unleash_assignments.json`
     assert unleash_assignments == [UnleashAssignmentModel(assigned=True, name='test.getstarted', variant='v0')]

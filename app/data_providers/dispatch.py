@@ -200,7 +200,7 @@ class HomeDispatch:
 
         slates = []
         assignment = await self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user)
-        if assignment.assigned:
+        if assignment is not None and assignment.assigned is True:
             slates = [
                 # TODO: replace with pocket_worthy when ready.
                 self.collection_slate_provider.get_slate(),
@@ -263,7 +263,7 @@ class HomeDispatch:
         """
 
         assignment = await self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user)
-        if assignment.assigned:
+        if assignment is not None and assignment.assigned is True:
             slates = [
                 self.collection_slate_provider.get_slate(),
                 self.recommended_reads_slate_provider.get_slate(),
