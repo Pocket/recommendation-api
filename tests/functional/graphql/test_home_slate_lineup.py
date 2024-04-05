@@ -15,7 +15,6 @@ from app.data_providers.user_recommendation_preferences_provider import UserReco
 from app.main import app
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.request_user import RequestUser
-from app.models.unleash_assignment import UnleashAssignmentModel
 from app.models.user_recommendation_preferences import UserRecommendationPreferencesModel
 from tests.functional.test_util.snowplow import wait_for_snowplow_events
 from tests.assets.topics import *
@@ -227,6 +226,53 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             assert slates[1]['moreLink']['text'] == 'Mehr Collections entdecken'
             assert slates[-1]['headline'] == 'Für ein glücklicheres Ich'
             assert slates[-1]['moreLink'] == None
+
+            await wait_for_snowplow_events(self.snowplow_micro, n_expected_event=2)
+            all_snowplow_events = self.snowplow_micro.get_event_counts()
+            assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
+
+    @patch.object(CorpusFeatureGroupClient, 'fetch')
+    @patch.object(UserRecommendationPreferencesProvider, 'fetch')
+    @patch.object(UserImpressionCapProvider, 'get')
+    @patch.object(UnleashProvider, '_get_all_assignments')
+    @patch.object(FeatureGroupClient, 'batch_get_records')
+    async def test_no_user_home_slate_lineup(
+            self,
+            mock_batch_get_records,
+            mock_get_all_assignments,
+            mock_get_user_impression_caps,
+            mock_fetch_user_recommendation_preferences,
+            mock_fetch_corpus_items
+    ):
+        corpus_items_fixture = _corpus_items_fixture(n=100)
+        mock_fetch_corpus_items.return_value = corpus_items_fixture
+        mock_fetch_user_recommendation_preferences.return_value = None  # User has does not have a preferences record
+        mock_get_user_impression_caps.return_value = []
+        mock_get_all_assignments.return_value = []
+
+        async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
+            response = await client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers={
+            'apiId': '94110',
+            'consumerKey': 'web-client-consumer-key',
+            'applicationName': 'Pocket web-client',
+            'applicationIsNative': 'true',
+            'applicationIsTrusted': 'true',
+        })
+            data = response.json()
+
+            assert not data.get('errors')
+            slates = data['data']['homeSlateLineup']['slates']
+
+            # First slate has an unpersonalized recommendations
+            assert slates[0]['headline'] == 'Recommended Reads'
+            assert slates[0]['recommendationReasonType'] is None
+            # Last slates have topic explore links
+            assert slates[-3]['moreLink']['url'] == 'https://getpocket.com/explore/technology'
+            assert slates[-2]['moreLink']['url'] == 'https://getpocket.com/explore/entertainment'
+            assert slates[-1]['moreLink']['url'] == 'https://getpocket.com/explore/self-improvement'
+
+            recommendation_counts = [len(slate['recommendations']) for slate in slates]
+            assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each
 
             await wait_for_snowplow_events(self.snowplow_micro, n_expected_event=2)
             all_snowplow_events = self.snowplow_micro.get_event_counts()

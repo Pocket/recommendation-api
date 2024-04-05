@@ -1,5 +1,6 @@
 from typing import List
 
+from app.config import POCKET_HOME_V3_FEATURE_FLAG
 from app.data_providers.slate_providers.slate_provider import HomeSlateProvider
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.localemodel import LocaleModel
@@ -27,15 +28,15 @@ class RecommendedReadsSlateProvider(HomeSlateProvider):
         :param items: Candidate corpus items
         :return: Ranks items based on Thompson sampling.
         """
+        if kwargs.get('enable_thompson_sampling'):
+            metrics = await self.corpus_engagement_provider.get(
+                self.recommendation_surface_id, self.configuration_id, items)
 
-        metrics = await self.corpus_engagement_provider.get(
-            self.recommendation_surface_id, self.configuration_id, items)
-
-        items = thompson_sampling(
-            recs=items,
-            metrics=metrics,
-            trailing_period=7,  # With few new items/day and relatively many impressions, a low period is sufficient
-            default_alpha_prior=12,   # beta * P95 item CTR for this slate (0.7%)
-            default_beta_prior=1700)  # 5% of average daily item impressions for this slate
+            items = thompson_sampling(
+                recs=items,
+                metrics=metrics,
+                trailing_period=7,  # With few new items/day and relatively many impressions, a low period is sufficient
+                default_alpha_prior=12,   # beta * P95 item CTR for this slate (0.7%)
+                default_beta_prior=1700)  # 5% of average daily item impressions for this slate
 
         return items

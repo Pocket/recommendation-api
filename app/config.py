@@ -88,3 +88,6 @@ GERMAN_HOME_TOPICS = [
     '058011b8-c70d-4a25-92e5-478e3ff0f0e6',  # Science
     '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
 ]
+
+# Changes the slate lineups for home and removes thompson sampling for a new version of home
+POCKET_HOME_V3_FEATURE_FLAG = 'temp.recomentation-api.pocket-home-v3'

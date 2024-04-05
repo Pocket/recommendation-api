@@ -9,5 +9,7 @@
   "CollectionsSlateProvider.more_link_text": "Explore more Collections",
   "LifeHacksSlateProvider.headline": "Life Hacks",
   "LifeHacksSlateProvider.subheadline": "Tips for better living",
-  "TopicSlateProvider.more_link_text": "Explore more {topic_name}"
+  "TopicSlateProvider.more_link_text": "Explore more {topic_name}",
+  "PocketWorthyProvider.headline": "Pocket Worthy Reads",
+  "PocketWorthyProvider.subheadline": "Stories to fuel your mind"
 }

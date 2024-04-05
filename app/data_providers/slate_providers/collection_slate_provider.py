@@ -5,6 +5,7 @@ from app.models.corpus_item_model import CorpusItemModel
 from app.models.link import LinkModel
 from app.models.localemodel import LocaleModel
 from app.rankers.algorithms import thompson_sampling
+from app.config import POCKET_HOME_V3_FEATURE_FLAG
 
 
 class CollectionSlateProvider(HomeSlateProvider):
@@ -30,18 +31,20 @@ class CollectionSlateProvider(HomeSlateProvider):
             *args,
             **kwargs,
     ) -> List[CorpusItemModel]:
-        """
-        :param items: Candidate corpus items
-        :return: Ranks items based on Thompson sampling.
-        """
-        metrics = await self.corpus_engagement_provider.get(
-            self.recommendation_surface_id, self.configuration_id, items)
 
-        items = thompson_sampling(
-            recs=items,
-            metrics=metrics,
-            trailing_period=14,  # With a low impression volume, a longer period should help find the best stories
-            default_alpha_prior=18,   # beta * P95 item CTR for this slate (1.5%)
-            default_beta_prior=1200)  # 20% of average daily item impressions for this slate
+        if kwargs.get('enable_thompson_sampling'):
+            """
+            :param items: Candidate corpus items
+            :return: Ranks items based on Thompson sampling.
+            """
+            metrics = await self.corpus_engagement_provider.get(
+                self.recommendation_surface_id, self.configuration_id, items)
+
+            items = thompson_sampling(
+                recs=items,
+                metrics=metrics,
+                trailing_period=14,  # With a low impression volume, a longer period should help find the best stories
+                default_alpha_prior=18,   # beta * P95 item CTR for this slate (1.5%)
+                default_beta_prior=1200)  # 20% of average daily item impressions for this slate
 
         return items

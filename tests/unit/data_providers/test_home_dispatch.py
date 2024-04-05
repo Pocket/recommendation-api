@@ -4,12 +4,14 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from app.config import POCKET_HOME_V3_FEATURE_FLAG
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.dispatch import HomeDispatch
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
 from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
 from app.data_providers.slate_providers.pocket_hits_slate_provider import PocketHitsSlateProvider
+from app.data_providers.slate_providers.pockety_worthy_provider import PocketWorthyProvider
 from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
 from app.data_providers.snowplow.config import create_snowplow_tracker, SnowplowConfig
@@ -71,18 +73,16 @@ class TestHomeDispatch:
             life_hacks_slate_provider=MagicMock(LifeHacksSlateProvider),
             unleash_provider=self.unleash_provider,
             snowplow=SnowplowCorpusRecommendationsTracker(
-                tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig())
+                tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig()),
+            pocket_worthy_provider=MagicMock(PocketWorthyProvider),
+
         )
 
     async def test_dedupe_and_limit(self):
         """
         Test that corpus recommendations are deduplicated across slates in the Home lineup.
         """
-        self.unleash_provider.get_assignments.return_value = [UnleashAssignmentModel(
-            assigned=True, name='content_v1', variant='control'),
-            UnleashAssignmentModel(
-                assigned=True, name='content_v2', variant='control')
-        ]
+        self.unleash_provider.get_assignment.return_value = UnleashAssignmentModel(assigned=False, name=POCKET_HOME_V3_FEATURE_FLAG)
         self.preferences_provider.fetch.return_value = None
         self.home_dispatch.recommended_reads_slate_provider.get_slate.return_value = _generate_slate(
             ['Tech2', 'Ent4'], headline='Collections')

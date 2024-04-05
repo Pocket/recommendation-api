@@ -36,7 +36,8 @@ class UserRecommendationPreferencesProvider:
         :return:
         """
         if hashed_user_id is None:
-            raise ValueError('hashed_user_id is required to fetch user recommendation preferences')
+            # no user id, so we can safely return no preferences
+            return None
 
         feature_store_record = await self._get_feature_store_record(hashed_user_id)
         if not feature_store_record:

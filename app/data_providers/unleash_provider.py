@@ -33,7 +33,7 @@ class UnleashProvider:
         self.pocket_graph_client_session = pocket_graph_client_session
         self.unleash_config = unleash_config
 
-    async def get_assignment(self, name: str, user: RequestUser) -> Optional[UnleashAssignmentModel]:
+    async def get_assignment(self, name: str, user: Optional[RequestUser] = None) -> Optional[UnleashAssignmentModel]:
         """
         :param name: name of the assignment
         :param user:
@@ -42,7 +42,7 @@ class UnleashProvider:
         assignments = await self.get_assignments([name], user=user)
         return assignments[0] if assignments else None
 
-    async def get_assignments(self, names: List[str], user: RequestUser) -> List[UnleashAssignmentModel]:
+    async def get_assignments(self, names: List[str], user: Optional[RequestUser] = None) -> List[UnleashAssignmentModel]:
         """
         Returns Unleash assignments with certain assignment names that the user is assigned to.
         :param names:
@@ -58,7 +58,7 @@ class UnleashProvider:
         return [assignments[name] if name in assignments and assignments[name].assigned else None
                 for name in names]
 
-    async def _get_all_assignments(self, user: RequestUser) -> List[UnleashAssignmentModel]:
+    async def _get_all_assignments(self, user: Optional[RequestUser] = None) -> List[UnleashAssignmentModel]:
         """
         Get all Unleash assignments for the given user/session.
         :param user:
@@ -84,17 +84,16 @@ class UnleashProvider:
                 'context': {
                     'appName': self.unleash_config.APP_NAME,
                     'environment': self.unleash_config.ENVIRONMENT,
-                    'userId': user.hashed_user_id,
-                    'properties': {
-                        'locale': user.locale
-                    }
                 }
             }
         }
 
-        if user.user_models:
-            # not related to recit anymore, but it's what the unleash strategy hasUserModel expects
-            body['variables']['context']['properties']['recItUserProfile'] = {'userModels': user.user_models}
+        if user is not None and user.hashed_user_id is not None:
+            body['variables']['context']['userId'] = user.hashed_user_id
+            body['variables']['context']['properties'] = {'locale':  user.locale}
+            if user.user_models:
+                # not related to recit anymore, but it's what the unleash strategy hasUserModel expects
+                body['variables']['context']['properties']['recItUserProfile'] = {'userModels': user.user_models}
 
         async with self.pocket_graph_client_session.post(url='/', json=body, raise_for_status=True) as resp:
             response_json = await resp.json()

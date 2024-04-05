@@ -7,6 +7,7 @@ from opentelemetry import trace
 from app.data_providers.corpus.corpus_fetchable import CorpusFetchable
 from app.data_providers.feature_group.corpus_engagement_provider import CorpusEngagementProvider
 from app.data_providers.translation import TranslationProvider
+from app.data_providers.unleash_provider import UnleashProvider
 from app.graphql.recommendation_reason_type import RecommendationReasonType
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_recommendation_model import CorpusRecommendationModel
@@ -149,7 +150,7 @@ class HomeSlateProvider(SlateProvider, ABC):
             corpus_engagement_provider: CorpusEngagementProvider,
             recommendation_surface_id: RecommendationSurfaceId,
             locale: LocaleModel,
-            translation_provider: TranslationProvider,
+            translation_provider: TranslationProvider
     ):
         super().__init__(corpus_fetchable, corpus_engagement_provider, recommendation_surface_id)
 
