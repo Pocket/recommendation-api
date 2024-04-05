@@ -95,6 +95,9 @@ class UnleashProvider:
                 # not related to recit anymore, but it's what the unleash strategy hasUserModel expects
                 body['variables']['context']['properties']['recItUserProfile'] = {'userModels': user.user_models}
 
+        if user is not None and user.hashed_guid is not None:
+            body['variables']['context']['sessionId'] = user.hashed_guid
+
         async with self.pocket_graph_client_session.post(url='/', json=body, raise_for_status=True) as resp:
             response_json = await resp.json()
             assignments_data = response_json['data']['unleashAssignments']['assignments']
