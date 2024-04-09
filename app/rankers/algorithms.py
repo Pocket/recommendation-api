@@ -98,7 +98,6 @@ def thompson_sampling(
 
     opens_column = f"trailing_{trailing_period}_day_opens"
     imprs_column = f"trailing_{trailing_period}_day_impressions"
-
     if any(not (hasattr(m, opens_column) and hasattr(m, opens_column)) for m in metrics.values()):
         raise ValueError(f"Missing attribute {opens_column} or {imprs_column} on some metrics: {metrics.values()}")
 

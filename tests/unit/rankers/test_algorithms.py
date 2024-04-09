@@ -279,8 +279,12 @@ class TestAlgorithmsThompsonSampling:
             c = 1
             for rec in sampled_recs:
                 # compute average positional rank over the trials
-                ranks[rec.item.item_id] = ranks.get(rec.item.item_id, 0) + (c / ntrials)
+                ranks[rec.item.item_id] = ranks.get(rec.item.item_id, 0) + c
                 c += 1
+
+        for rec in recs:
+            # compute average positional rank over the trials
+            ranks[rec.item.item_id] = ranks.get(rec.item.item_id, 0) / 99
 
         final_ranks = sorted(ranks.items(), key=itemgetter(1))
 
@@ -296,6 +300,51 @@ class TestAlgorithmsThompsonSampling:
         assert int(ranks['333333']) != ranks['333333']
         assert int(ranks['222222']) != ranks['222222']
 
+    @pytest.mark.parametrize("thompson_sampling_function,metrics", [
+        (thompson_sampling, generate_metrics(28)),  # 28 day is the default
+        # (thompson_sampling_1day, generate_metrics(1)),
+        # (thompson_sampling_7day, generate_metrics(7)),
+        # (thompson_sampling_14day, generate_metrics(14)),
+    ])
+    def test_rank_by_ctr_over_n_trials_seeded(self, thompson_sampling_function, metrics, ntrials = 99):
+        """
+        This routine tests the Thompson sampling ranker by
+        aggregating results over multiple trials.  In a single run of the
+        ranker results may not be ordered by CTR, but over multiple trials the
+        ranks converge to descending by CTR
+        :param ntrials is the number of trials for the aggregation
+        """
+
+        recs = generate_recommendations(["333333", "666666", "999999", "222222"])
+
+        # goal of test is to rank by CTR over ntrials
+        # order should be 999999, 666666, 333333
+        ranks = {}
+        for i in range(ntrials):
+            sampled_recs = thompson_sampling_function(recs, metrics, random_state=1)
+            c = 1
+            for rec in sampled_recs:
+                # compute average positional rank over the trials
+                ranks[rec.item.item_id] = ranks.get(rec.item.item_id, 0) + c
+                c += 1
+
+        for rec in recs:
+            # compute average positional rank over the trials
+            ranks[rec.item.item_id] = ranks.get(rec.item.item_id, 0) / 99
+
+        final_ranks = sorted(ranks.items(), key=itemgetter(1))
+
+        assert final_ranks[0][0] == '999999'
+        assert final_ranks[1][0] == '666666'
+        assert final_ranks[2][0] == '333333'
+        # click data here should sample from default prior a = 0.02 b = 1, mean = 0.019
+        assert final_ranks[3][0] == '222222'
+
+        # ranks are deterministic
+        assert int(ranks['999999']) == ranks['999999']
+        assert int(ranks['666666']) == ranks['666666']
+        assert int(ranks['333333']) == ranks['333333']
+        assert int(ranks['222222']) == ranks['222222']
 
 class TestAlgorithmsBoostSyndicated(unittest.TestCase):
 

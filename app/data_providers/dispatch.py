@@ -4,11 +4,13 @@ import random
 import re
 from asyncio import gather
 from typing import List, Coroutine, Any, Tuple, Optional
+from datetime import datetime
 
 from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS, POCKET_HOME_V3_FEATURE_FLAG
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.pockety_worthy_provider import PocketWorthyProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
+from app.data_providers.util import integer_hash
 from app.recommenders.item2item import Item2ItemRecommender, Item2ItemError, QdrantError, UnsupportedLanguage
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
@@ -204,26 +206,27 @@ class HomeDispatch:
             self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user)
         )
 
+        seed_id = self.get_seed_id(user=user)
         slates = []
         if home_v3_assignment is not None and home_v3_assignment.assigned is True:
             slates = [
-                self.pocket_worthy_provider.get_slate(enable_thompson_sampling=False),
+                self.pocket_worthy_provider.get_slate(seed_id=seed_id),
                 self.pocket_hits_slate_provider.get_slate(),
                 self.get_for_you_or_recommended_reads(preferred_topics=preferred_topics,
                                                       user_impression_capped_list=user_impression_capped_list,
-                                                      enable_thompson_sampling=False
+                                                      seed_id=seed_id
                                                       ),
-                self.life_hacks_slate_provider.get_slate(),
+                self.life_hacks_slate_provider.get_slate(seed_id=seed_id),
             ]
         else:
             slates = [
                 self.get_for_you_or_recommended_reads(preferred_topics=preferred_topics,
                                                       user_impression_capped_list=user_impression_capped_list,
-                                                      enable_thompson_sampling=True
+                                                      seed_id=seed_id
                                                       ),
                 self.pocket_hits_slate_provider.get_slate(),
-                self.collection_slate_provider.get_slate(enable_thompson_sampling=True),
-                self.life_hacks_slate_provider.get_slate(enable_thompson_sampling=True),
+                self.collection_slate_provider.get_slate(seed_id=seed_id),
+                self.life_hacks_slate_provider.get_slate(seed_id=seed_id),
             ]
             slates += await self._get_topic_slate_promises(preferred_topics=preferred_topics, default=DEFAULT_TOPICS)
 
@@ -235,8 +238,9 @@ class HomeDispatch:
         ), None
 
     async def get_for_you_or_recommended_reads(self, preferred_topics: List[TopicModel],
-                                               user_impression_capped_list: List[CorpusItemModel], enable_thompson_sampling: bool) -> CorpusSlateModel:
-        """"
+                                               user_impression_capped_list: List[CorpusItemModel],
+                                               seed_id: int) -> CorpusSlateModel:
+        """
         :param preferred_topics:
         :param user_impression_capped_list:
 
@@ -246,10 +250,10 @@ class HomeDispatch:
             return await self.for_you_slate_provider.get_slate(
                 preferred_topics=preferred_topics,
                 user_impression_capped_list=user_impression_capped_list,
-                enable_thompson_sampling=enable_thompson_sampling
+                seed_id=seed_id
             )
         else:
-            return await self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling=enable_thompson_sampling)
+            return await self.recommended_reads_slate_provider.get_slate(seed_id=seed_id)
 
     async def get_de_de_slate_lineup(self, user: RequestUser, recommendation_count: int, locale: LocaleModel) -> \
             Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
@@ -269,17 +273,18 @@ class HomeDispatch:
                 3. Topic slates according to defaults
         """
 
+        seed_id = self.get_seed_id(user=user)
         assignment = await self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user)
         if assignment is not None and assignment.assigned is True:
             slates = [
-                self.collection_slate_provider.get_slate(enable_thompson_sampling=False),
-                self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling=False),
+                self.collection_slate_provider.get_slate(seed_id=seed_id),
+                self.recommended_reads_slate_provider.get_slate(seed_id=seed_id),
             ]
             slates += await self._get_topic_slate_promises(preferred_topics=[], default=GERMAN_HOME_TOPICS)
         else:
             slates = [
-                self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling=True),
-                self.collection_slate_provider.get_slate(enable_thompson_sampling=True),
+                self.recommended_reads_slate_provider.get_slate(seed_id=seed_id),
+                self.collection_slate_provider.get_slate(seed_id=seed_id),
             ]
             slates += await self._get_topic_slate_promises(preferred_topics=[], default=GERMAN_HOME_TOPICS)
 
@@ -289,6 +294,16 @@ class HomeDispatch:
                 recommendation_count=recommendation_count,
             ),
         ), None
+
+    def get_seed_id(self, user: RequestUser) -> Optional[int]:
+        # Create a deterministic seed for thompson sampling if we can
+        current_date = datetime.now().strftime("%Y-%m-%d")
+        seed_id = None
+        if user is not None and user.hashed_user_id is not None:
+            seed_id = integer_hash(f"{user.hashed_user_id}{current_date}", 0, 2 ** 32)
+        elif user is not None and user.hashed_guid is not None:
+            seed_id = integer_hash(f"{user.hashed_guid}{current_date}", 0, 2 ** 32)
+        return seed_id
 
     @staticmethod
     def _dedupe_and_limit(slates: List[CorpusSlateModel], recommendation_count: int) -> List[CorpusSlateModel]:
