@@ -122,8 +122,8 @@ class TestForYouSlateProvider:
             assert set(r.id for r in ranked_items[:len(preferred_topic_items)]) == set(
                 r.id for r in preferred_topic_items)
 
-        # Assert that the same item is not always ranked at the top.
-        assert len(top_ranked_item_ids) > 1
+        # Assert that the same item is always ranked at the top for the same user.
+        assert len(top_ranked_item_ids) == 1
 
     async def test_no_thompson_sampling(self, for_you_slate_provider):
         items = [CorpusItemModel(id=str(i), topic=all_topic_fixtures[i % 2].corpus_topic_id) for i in range(10)]

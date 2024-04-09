@@ -69,7 +69,9 @@ def thompson_sampling(
         metrics: Dict[(int or str), Union['MetricsModel', 'CorpusItemEngagementModel']],
         trailing_period: int = 28,
         default_alpha_prior=DEFAULT_ALPHA_PRIOR,
-        default_beta_prior=DEFAULT_BETA_PRIOR) -> RankableListType:
+        default_beta_prior=DEFAULT_BETA_PRIOR,
+        random_state: int = None,
+) -> RankableListType:
     """
     Re-rank items using Thompson sampling which combines exploitation of known item CTR
     with exploration of new items with unknown CTR modeled by a prior
@@ -81,6 +83,12 @@ def thompson_sampling(
     :param recs: a list of recommendations in the desired order (pre-publisher spread)
     :param metrics: a dict with item_id as key and dynamodb row modeled as ClickDataModel
     :param trailing_period: the number of days that impressions and opens are aggregated for sampling
+    :param random_state: (optional) Random seed used to initialize the pseudo-random number generator.
+      Can be any integer between 0 and 2**32 - 1 inclusive. This can be used to give a user a consistent
+      experience for a set period of time, by hashing the user id and date into a 32-bit integer:
+      ```python
+      random_seed = integer_hash(f"{user_id}{current_date}", 0, 2**32)
+      ```
     :return: a re-ordered version of recs satisfying the spread as best as possible
     """
 
@@ -90,7 +98,6 @@ def thompson_sampling(
 
     opens_column = f"trailing_{trailing_period}_day_opens"
     imprs_column = f"trailing_{trailing_period}_day_impressions"
-
     if any(not (hasattr(m, opens_column) and hasattr(m, opens_column)) for m in metrics.values()):
         raise ValueError(f"Missing attribute {opens_column} or {imprs_column} on some metrics: {metrics.values()}")
 
@@ -123,13 +130,13 @@ def thompson_sampling(
             # posterior combines click data with prior (also a beta distribution)
             no_opens = max(imprs_metric - open_metric + beta_prior, 1e-18)
             # sample from posterior for CTR given click data
-            score = beta.rvs(opens, no_opens)
+            score = beta.rvs(opens, no_opens, random_state=random_state)
             scores.append((rec, score))
 
             if hasattr(rec, 'ranked_with_engagement_updated_at') and hasattr(metrics_model, 'updated_at'):
                 rec.ranked_with_engagement_updated_at = metrics_model.updated_at
         else:  # no click data, sample from module prior
-            scores.append((rec, prior.rvs()))
+            scores.append((rec, prior.rvs(random_state=random_state)))
 
     scores.sort(key=itemgetter(1), reverse=True)
     return [x[0] for x in scores]
