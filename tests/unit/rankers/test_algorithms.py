@@ -256,9 +256,9 @@ class TestAlgorithmsThompsonSampling:
 
     @pytest.mark.parametrize("thompson_sampling_function,metrics", [
         (thompson_sampling, generate_metrics(28)),  # 28 day is the default
-        # (thompson_sampling_1day, generate_metrics(1)),
-        # (thompson_sampling_7day, generate_metrics(7)),
-        # (thompson_sampling_14day, generate_metrics(14)),
+        (thompson_sampling_1day, generate_metrics(1)),
+        (thompson_sampling_7day, generate_metrics(7)),
+        (thompson_sampling_14day, generate_metrics(14)),
     ])
     def test_rank_by_ctr_over_n_trials(self, thompson_sampling_function, metrics, ntrials = 99):
         """
@@ -284,7 +284,7 @@ class TestAlgorithmsThompsonSampling:
 
         for rec in recs:
             # compute average positional rank over the trials
-            ranks[rec.item.item_id] = ranks.get(rec.item.item_id, 0) / 99
+            ranks[rec.item.item_id] = ranks.get(rec.item.item_id, 0) / ntrials
 
         final_ranks = sorted(ranks.items(), key=itemgetter(1))
 
@@ -330,7 +330,7 @@ class TestAlgorithmsThompsonSampling:
 
         for rec in recs:
             # compute average positional rank over the trials
-            ranks[rec.item.item_id] = ranks.get(rec.item.item_id, 0) / 99
+            ranks[rec.item.item_id] = ranks.get(rec.item.item_id, 0) / ntrials
 
         final_ranks = sorted(ranks.items(), key=itemgetter(1))
 

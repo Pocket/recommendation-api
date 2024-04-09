@@ -42,13 +42,13 @@ class ForYouSlateProvider(HomeSlateProvider):
         assert preferred_topics is not None
         assert user_impression_capped_list is not None
 
-        if kwargs.get('seed_id'):
+        if kwargs.get('enable_thompson_sampling_with_seed'):
             metrics = await self.corpus_engagement_provider.get(
                 self.recommendation_surface_id, self.configuration_id, items)
 
             items = thompson_sampling(
                 recs=items,
-                random_state=kwargs['seed_id'],
+                random_state=kwargs['enable_thompson_sampling_with_seed'],
                 metrics=metrics,
                 trailing_period=14,  # A long period might work better given that some topics get few impressions
                 default_alpha_prior=20,  # beta * P95 item CTR for this slate (1.6%)

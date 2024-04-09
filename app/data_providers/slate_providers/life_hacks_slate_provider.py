@@ -18,7 +18,7 @@ class LifeHacksSlateProvider(HomeSlateProvider):
             **kwargs,
     ) -> List[CorpusItemModel]:
 
-        if kwargs.get('seed_id'):
+        if kwargs.get('enable_thompson_sampling_with_seed'):
             """
             :param items: Candidate corpus items
             :return: Ranks items based on Thompson sampling.
@@ -29,9 +29,9 @@ class LifeHacksSlateProvider(HomeSlateProvider):
             items = thompson_sampling(
                 recs=items,
                 metrics=metrics,
-                random_state=kwargs['seed_id'],
+                random_state=kwargs['enable_thompson_sampling_with_seed'],
                 trailing_period=14,  # With a low impression volume, a longer period should help find the best stories
-                default_alpha_prior=18,   # beta * P95 item CTR for this slate (1.5%)
-                default_beta_prior=1200)  # 20% of average daily item impressions for this slate
+                default_alpha_prior=18,   # copied from CollectionSlateProvider
+                default_beta_prior=1200)  # copied from CollectionSlateProvider
 
         return items

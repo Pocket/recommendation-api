@@ -210,13 +210,13 @@ class HomeDispatch:
         slates = []
         if home_v3_assignment is not None and home_v3_assignment.assigned is True:
             slates = [
-                self.pocket_worthy_provider.get_slate(seed_id=seed_id),
+                self.pocket_worthy_provider.get_slate(enable_thompson_sampling_with_seed=seed_id),
                 self.pocket_hits_slate_provider.get_slate(),
                 self.get_for_you_or_recommended_reads(preferred_topics=preferred_topics,
                                                       user_impression_capped_list=user_impression_capped_list,
                                                       seed_id=seed_id
                                                       ),
-                self.life_hacks_slate_provider.get_slate(seed_id=seed_id),
+                self.life_hacks_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id),
             ]
         else:
             slates = [
@@ -225,8 +225,8 @@ class HomeDispatch:
                                                       seed_id=seed_id
                                                       ),
                 self.pocket_hits_slate_provider.get_slate(),
-                self.collection_slate_provider.get_slate(seed_id=seed_id),
-                self.life_hacks_slate_provider.get_slate(seed_id=seed_id),
+                self.collection_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id),
+                self.life_hacks_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id),
             ]
             slates += await self._get_topic_slate_promises(preferred_topics=preferred_topics, default=DEFAULT_TOPICS)
 
@@ -250,10 +250,10 @@ class HomeDispatch:
             return await self.for_you_slate_provider.get_slate(
                 preferred_topics=preferred_topics,
                 user_impression_capped_list=user_impression_capped_list,
-                seed_id=seed_id
+                enable_thompson_sampling_with_seed=seed_id
             )
         else:
-            return await self.recommended_reads_slate_provider.get_slate(seed_id=seed_id)
+            return await self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id)
 
     async def get_de_de_slate_lineup(self, user: RequestUser, recommendation_count: int, locale: LocaleModel) -> \
             Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
@@ -277,14 +277,14 @@ class HomeDispatch:
         assignment = await self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user)
         if assignment is not None and assignment.assigned is True:
             slates = [
-                self.collection_slate_provider.get_slate(seed_id=seed_id),
-                self.recommended_reads_slate_provider.get_slate(seed_id=seed_id),
+                self.collection_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id),
+                self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id),
             ]
             slates += await self._get_topic_slate_promises(preferred_topics=[], default=GERMAN_HOME_TOPICS)
         else:
             slates = [
-                self.recommended_reads_slate_provider.get_slate(seed_id=seed_id),
-                self.collection_slate_provider.get_slate(seed_id=seed_id),
+                self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id),
+                self.collection_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id),
             ]
             slates += await self._get_topic_slate_promises(preferred_topics=[], default=GERMAN_HOME_TOPICS)
 
