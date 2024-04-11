@@ -4,7 +4,7 @@ from app.data_providers.slate_providers.slate_provider import HomeSlateProvider
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.link import LinkModel
 from app.models.localemodel import LocaleModel
-from app.rankers.algorithms import thompson_sampling
+from app.rankers.algorithms import thompson_sampling, rank_by_impression_caps
 from app.config import POCKET_HOME_V3_FEATURE_FLAG
 
 
@@ -28,6 +28,7 @@ class CollectionSlateProvider(HomeSlateProvider):
     async def rank_corpus_items(
             self,
             items: List[CorpusItemModel],
+            user_impression_capped_list: List[CorpusItemModel] = None,
             *args,
             **kwargs,
     ) -> List[CorpusItemModel]:
@@ -47,5 +48,8 @@ class CollectionSlateProvider(HomeSlateProvider):
                 trailing_period=14,  # With a low impression volume, a longer period should help find the best stories
                 default_alpha_prior=18,   # beta * P95 item CTR for this slate (1.5%)
                 default_beta_prior=1200)  # 20% of average daily item impressions for this slate
+
+        if user_impression_capped_list is not None:
+            items = rank_by_impression_caps(items, user_impression_capped_list)
 
         return items

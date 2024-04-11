@@ -1,10 +1,9 @@
 from typing import List
 
-from app.config import POCKET_HOME_V3_FEATURE_FLAG
 from app.data_providers.slate_providers.slate_provider import HomeSlateProvider
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.localemodel import LocaleModel
-from app.rankers.algorithms import thompson_sampling
+from app.rankers.algorithms import thompson_sampling, rank_by_impression_caps
 
 
 class RecommendedReadsSlateProvider(HomeSlateProvider):
@@ -21,6 +20,7 @@ class RecommendedReadsSlateProvider(HomeSlateProvider):
     async def rank_corpus_items(
             self,
             items: List[CorpusItemModel],
+            user_impression_capped_list: List[CorpusItemModel] = None,
             *args,
             **kwargs,
     ) -> List[CorpusItemModel]:
@@ -39,5 +39,8 @@ class RecommendedReadsSlateProvider(HomeSlateProvider):
                 trailing_period=7,  # With few new items/day and relatively many impressions, a low period is sufficient
                 default_alpha_prior=12,   # beta * P95 item CTR for this slate (0.7%)
                 default_beta_prior=1700)  # 5% of average daily item impressions for this slate
+
+        if user_impression_capped_list is not None:
+            items = rank_by_impression_caps(items, user_impression_capped_list)
 
         return items
