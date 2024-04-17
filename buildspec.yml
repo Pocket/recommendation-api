@@ -47,7 +47,7 @@ phases:
       # synthesize the js into terraform json with the proper node environment
       - 'if [ "$GIT_BRANCH" = "$DEV_BRANCH" ]; then NODE_ENV=development npm run synth; else npm run synth; fi'
       - cd cdktf.out/stacks/recommendation-api
-      - terraform init
+      - 'if [ "$GIT_BRANCH" = "$DEV_BRANCH" ]; then TF_WORKSPACE=$TF_DEV_WORKSPACE terraform init; else terraform init; fi'
   build:
     run-as: circleci
     commands:
