@@ -1,5 +1,5 @@
 import {Construct} from 'constructs';
-import {App, DataTerraformRemoteState, RemoteBackend, TerraformStack} from 'cdktf';
+import {App, DataTerraformRemoteState, S3Backend, TerraformStack} from 'cdktf';
 
 import {config} from './config';
 import {DynamoDB} from "./dynamodb";
@@ -28,10 +28,11 @@ class RecommendationAPI extends TerraformStack {
         new NullProvider(this, 'null_provider');
         new ArchiveProvider(this, 'archive_provider');
 
-        new RemoteBackend(this, {
-            hostname: 'app.terraform.io',
-            organization: 'Pocket',
-            workspaces: [{prefix: `${config.name}-`}]
+        new S3Backend(this, {
+          bucket: `mozilla-content-team-${config.environment.toLowerCase()}-terraform-state`,
+          dynamodbTable: `mozilla-content-team-${config.environment.toLowerCase()}-terraform-state`,
+          key: config.name,
+          region: 'us-east-1',
         });
 
         const region = new DataAwsRegion(this, 'region');
