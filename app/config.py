@@ -91,3 +91,4 @@ GERMAN_HOME_TOPICS = [
 
 # Changes the slate lineups for home and removes thompson sampling for a new version of home
 POCKET_HOME_V3_FEATURE_FLAG = 'temp.recomentation-api.pocket-home-v3'
+POCKET_HOME_THEMED_FEATURE_FLAG = 'temp.recommendation-api.themed-month'

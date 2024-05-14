@@ -7,12 +7,14 @@ import pytest
 from app.config import POCKET_HOME_V3_FEATURE_FLAG
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.dispatch import HomeDispatch
+from app.data_providers.slate_providers.author_faves_slate_provider import AuthorFavesSlateProvider
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
 from app.data_providers.slate_providers.life_hacks_slate_provider import LifeHacksSlateProvider
 from app.data_providers.slate_providers.pocket_hits_slate_provider import PocketHitsSlateProvider
 from app.data_providers.slate_providers.pockety_worthy_provider import PocketWorthyProvider
 from app.data_providers.slate_providers.recommended_reads_slate_provider import RecommendedReadsSlateProvider
+from app.data_providers.slate_providers.top_saved_slate_provider import TopSavedSlateProvider
 from app.data_providers.slate_providers.topic_slate_provider_factory import TopicSlateProviderFactory
 from app.data_providers.snowplow.config import create_snowplow_tracker, SnowplowConfig
 from app.data_providers.snowplow.snowplow_corpus_recommendations_tracker import SnowplowCorpusRecommendationsTracker
@@ -75,7 +77,8 @@ class TestHomeDispatch:
             snowplow=SnowplowCorpusRecommendationsTracker(
                 tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig()),
             pocket_worthy_provider=MagicMock(PocketWorthyProvider),
-
+            top_saved_provider=MagicMock(TopSavedSlateProvider),
+            author_faves_provider=MagicMock(AuthorFavesSlateProvider),
         )
 
     async def test_dedupe_and_limit(self):

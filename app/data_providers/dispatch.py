@@ -6,9 +6,11 @@ from asyncio import gather
 from typing import List, Coroutine, Any, Tuple, Optional
 from datetime import datetime
 
-from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS, POCKET_HOME_V3_FEATURE_FLAG
+from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS, POCKET_HOME_V3_FEATURE_FLAG, POCKET_HOME_THEMED_FEATURE_FLAG
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
+from app.data_providers.slate_providers.author_faves_slate_provider import AuthorFavesSlateProvider
 from app.data_providers.slate_providers.pockety_worthy_provider import PocketWorthyProvider
+from app.data_providers.slate_providers.top_saved_slate_provider import TopSavedSlateProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.data_providers.util import integer_hash
 from app.recommenders.item2item import Item2ItemRecommender, Item2ItemError, QdrantError, UnsupportedLanguage
@@ -135,6 +137,8 @@ class HomeDispatch:
             unleash_provider: UnleashProvider,
             snowplow: SnowplowCorpusRecommendationsTracker,
             pocket_worthy_provider: PocketWorthyProvider,
+            top_saved_provider: TopSavedSlateProvider,
+            author_faves_provider: AuthorFavesSlateProvider,
     ):
         self.snowplow = snowplow
         self.topic_provider = topic_provider
@@ -149,6 +153,8 @@ class HomeDispatch:
         self.life_hacks_slate_provider = life_hacks_slate_provider
         self.unleash_provider = unleash_provider
         self.pocket_worthy_provider = pocket_worthy_provider
+        self.top_saved_provider = top_saved_provider
+        self.author_faves_provider = author_faves_provider
 
     async def get_slate_lineup(
             self, user: RequestUser, locale: LocaleModel, recommendation_count: int,
@@ -200,15 +206,32 @@ class HomeDispatch:
 
         user_impression_capped_list, \
             preferred_topics, \
-            home_v3_assignment = await gather(
+            home_v3_assignment, \
+            themed_month_assignment = await gather(
             self.user_impression_cap_provider.get(user),
             self._get_preferred_topics(user),
-            self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user)
+            self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user),
+            self.unleash_provider.get_assignment(POCKET_HOME_THEMED_FEATURE_FLAG, user=user)
         )
 
         seed_id = self.get_seed_id(user=user)
         slates = []
-        if home_v3_assignment is not None and home_v3_assignment.assigned is True:
+
+        if themed_month_assignment is not None and themed_month_assignment.assigned is True:
+            slates = [
+                self.pocket_worthy_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
+                                                      user_impression_capped_list=user_impression_capped_list),
+                self.pocket_worthy_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
+                                                      user_impression_capped_list=user_impression_capped_list),
+                self.pocket_hits_slate_provider.get_slate(),
+                self.get_for_you_or_recommended_reads(preferred_topics=preferred_topics,
+                                                      user_impression_capped_list=user_impression_capped_list,
+                                                      seed_id=seed_id
+                                                      ),
+                self.life_hacks_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
+                                                         user_impression_capped_list=user_impression_capped_list),
+            ]
+        elif home_v3_assignment is not None and home_v3_assignment.assigned is True:
             slates = [
                 self.pocket_worthy_provider.get_slate(enable_thompson_sampling_with_seed=seed_id, user_impression_capped_list=user_impression_capped_list),
                 self.pocket_hits_slate_provider.get_slate(),
