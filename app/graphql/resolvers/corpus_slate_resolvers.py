@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 import strawberry
@@ -31,8 +32,18 @@ async def resolve_new_tab_slate(
             description="The geographic region, for example 'FR' or 'IT', or null if unavailable. This is currently not"
                         " used, but will be used in the future to decide which scheduled surface to return when we"
                         " serve multiple markets with the same language.")],
+        enable_ranking_by_region: Annotated[Optional[bool], strawberry.argument(
+            description="Experimental parameter that when enabled, adjusts the ranking of items based on the region."
+                        " By default this is off. Firefox Desktop will enable it by setting the pref "
+                        " browser.newtabpage.activity-stream.discoverystream.pocket-feed-parameters to \"&enableRankingByRegion=1\""
+                        " for the treatment branch of a Nimbus experiment."
+        )] = False,
 ) -> CorpusSlate:
     di = DiContainer.get()
+    if enable_ranking_by_region:
+        # Log a message to indicate region-specific ranking is enabled.
+        # The region-specific ranker will be implemented in MC-1036.
+        logging.info(f"Results will soon be ranked for the {region} region")
 
     async with PocketGraphClientSession(CorpusApiGraphConfig()) as graph_client_session:
         slate_model = await NewTabDispatch(

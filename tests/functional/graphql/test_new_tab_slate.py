@@ -1,3 +1,4 @@
+import logging
 from typing import Dict
 
 import pytest
@@ -9,10 +10,14 @@ from app.main import app
 from tests.functional.test_util.snowplow import wait_for_snowplow_events
 
 
-def _format_new_tab_query(locale, region, count=50):
+def _format_new_tab_query(locale, region, count=50, enable_ranking_by_region=None):
+    ranking_by_region_param = ""
+    if enable_ranking_by_region is not None:
+        ranking_by_region_param = ", enableRankingByRegion: " + str(enable_ranking_by_region).lower()
+
     return '''
         query {
-          newTabSlate(locale: "%(locale)s", region: %(region)s) {
+          newTabSlate(locale: "%(locale)s", region: %(region)s%(ranking_by_region_param)s) {
             recommendations(count: %(count)d) {
               tileId
               corpusItem {
@@ -21,7 +26,12 @@ def _format_new_tab_query(locale, region, count=50):
             }
           }
         }
-    ''' % {'locale': locale, 'region': f'"{region}"' if region else 'null', 'count': count}
+    ''' % {
+        'locale': locale,
+        'region': f'"{region}"' if region else 'null',
+        'ranking_by_region_param': ranking_by_region_param,
+        'count': count,
+    }
 
 
 @pytest.fixture
@@ -79,3 +89,36 @@ async def test_new_tab_slate(locale, region, snowplow_micro, pocket_graph_reques
         await wait_for_snowplow_events(snowplow_micro, n_expected_event=1)
         all_snowplow_events = snowplow_micro.get_event_counts()
         assert all_snowplow_events == {'total': 1, 'good': 1, 'bad': 0}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "locale,region,enable_ranking_by_region",
+    [
+        ('en-US', 'US', True),
+        ('en-CA', 'CA', True),
+        ('en-US', 'US', False),
+        ('en-CA', 'CA', False),
+    ])
+async def test_new_tab_slate_ranked_by_region(
+        locale, region, enable_ranking_by_region, snowplow_micro, pocket_graph_request_headers, caplog):
+    async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
+        with caplog.at_level(logging.INFO):
+            requested_recommendation_count = 30
+            query = _format_new_tab_query(
+                locale=locale,
+                region=region,
+                enable_ranking_by_region=enable_ranking_by_region,
+                count=requested_recommendation_count)
+            response = await client.post('/', json={'query': query}, headers=pocket_graph_request_headers)
+            data = response.json()
+
+            assert not data.get('errors')
+            recommendations = data['data']['newTabSlate']['recommendations']
+            assert len(recommendations) == requested_recommendation_count
+
+            # Assert an info message was logged if and only if enable_ranking_by_region is True
+            assert enable_ranking_by_region == any(
+                r.levelname == 'INFO' and f'Results will soon be ranked for the {region} region' in r.message
+                for r in caplog.records
+            ), f'Expected log record not found in {caplog.records}'
