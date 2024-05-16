@@ -9,5 +9,7 @@
   "CollectionsSlateProvider.more_link_text" : "Mehr Collections entdecken",
   "LifeHacksSlateProvider.headline" : "Life Hacks",
   "LifeHacksSlateProvider.subheadline" : "Tips for better living",
-  "TopicSlateProvider.more_link_text" : "Explore more {topic_name}"
+  "TopicSlateProvider.more_link_text" : "Explore more {topic_name}",
+  "PrideSlateProvider.headline": "Im Rampenlicht: LGBTQ+-Stimmen",
+  "PrideSlateProvider.subheadline": ""
 }

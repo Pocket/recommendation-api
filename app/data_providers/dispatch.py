@@ -6,10 +6,11 @@ from asyncio import gather
 from typing import List, Coroutine, Any, Tuple, Optional
 from datetime import datetime
 
-from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS, POCKET_HOME_V3_FEATURE_FLAG, POCKET_HOME_THEMED_FEATURE_FLAG
+from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS, POCKET_HOME_V3_FEATURE_FLAG, POCKET_HOME_PRIDE_FEATURE_FLAG
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.author_faves_slate_provider import AuthorFavesSlateProvider
 from app.data_providers.slate_providers.pockety_worthy_provider import PocketWorthyProvider
+from app.data_providers.slate_providers.pride_slate_provider import PrideSlateProvider
 from app.data_providers.slate_providers.top_saved_slate_provider import TopSavedSlateProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.data_providers.util import integer_hash
@@ -137,8 +138,7 @@ class HomeDispatch:
             unleash_provider: UnleashProvider,
             snowplow: SnowplowCorpusRecommendationsTracker,
             pocket_worthy_provider: PocketWorthyProvider,
-            top_saved_provider: TopSavedSlateProvider,
-            author_faves_provider: AuthorFavesSlateProvider,
+            pride_provider: PrideSlateProvider,
     ):
         self.snowplow = snowplow
         self.topic_provider = topic_provider
@@ -153,8 +153,7 @@ class HomeDispatch:
         self.life_hacks_slate_provider = life_hacks_slate_provider
         self.unleash_provider = unleash_provider
         self.pocket_worthy_provider = pocket_worthy_provider
-        self.top_saved_provider = top_saved_provider
-        self.author_faves_provider = author_faves_provider
+        self.pride_provider = pride_provider
 
     async def get_slate_lineup(
             self, user: RequestUser, locale: LocaleModel, recommendation_count: int,
@@ -207,19 +206,19 @@ class HomeDispatch:
         user_impression_capped_list, \
             preferred_topics, \
             home_v3_assignment, \
-            themed_month_assignment = await gather(
+            pride_assignment = await gather(
             self.user_impression_cap_provider.get(user),
             self._get_preferred_topics(user),
             self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user),
-            self.unleash_provider.get_assignment(POCKET_HOME_THEMED_FEATURE_FLAG, user=user)
+            self.unleash_provider.get_assignment(POCKET_HOME_PRIDE_FEATURE_FLAG, user=user)
         )
 
         seed_id = self.get_seed_id(user=user)
         slates = []
 
-        if themed_month_assignment is not None and themed_month_assignment.assigned is True:
+        if pride_assignment is not None and pride_assignment.assigned is True:
             slates = [
-                self.pocket_worthy_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
+                self.pride_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
                                                       user_impression_capped_list=user_impression_capped_list),
                 self.pocket_worthy_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
                                                       user_impression_capped_list=user_impression_capped_list),
@@ -297,13 +296,25 @@ class HomeDispatch:
         """
 
         user_impression_capped_list, \
-            home_v3_assignment = await gather(
+            home_v3_assignment, \
+            pride_assignment = await gather(
             self.user_impression_cap_provider.get(user),
-            self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user)
+            self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user),
+            self.unleash_provider.get_assignment(POCKET_HOME_PRIDE_FEATURE_FLAG, user=user)
         )
 
         seed_id = self.get_seed_id(user=user)
-        if home_v3_assignment is not None and home_v3_assignment.assigned is True:
+        if pride_assignment is not None and pride_assignment.assigned is True:
+            slates = [
+                self.pride_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
+                                              user_impression_capped_list=user_impression_capped_list),
+                self.collection_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
+                                                         user_impression_capped_list=user_impression_capped_list),
+                self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
+                                                                user_impression_capped_list=user_impression_capped_list),
+            ]
+            slates += await self._get_topic_slate_promises(preferred_topics=[], default=GERMAN_HOME_TOPICS)
+        elif home_v3_assignment is not None and home_v3_assignment.assigned is True:
             slates = [
                 self.collection_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id, user_impression_capped_list=user_impression_capped_list),
                 self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id, user_impression_capped_list=user_impression_capped_list),

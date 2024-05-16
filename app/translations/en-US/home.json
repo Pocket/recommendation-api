@@ -12,8 +12,6 @@
   "TopicSlateProvider.more_link_text": "Explore more {topic_name}",
   "PocketWorthyProvider.headline": "Pocket-Worthy Reads",
   "PocketWorthyProvider.subheadline": "Stories to fuel your mind",
-  "AuthorFavesSlateProvider.headline": "Our Curators Favorites",
-  "AuthorFavesSlateProvider.subheadline": "Here's whats trending with our curators",
-  "TopSavedSlateProvider.headline": "Top-Saved in Pocket",
-  "TopSavedSlateProvider.subheadline": "Stories other users in Pocket are saving"
+  "PrideSlateProvider.headline": "Spotlight on LGBTQ+ Voices",
+  "PrideSlateProvider.subheadline": ""
 }
