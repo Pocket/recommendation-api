@@ -3,7 +3,7 @@ import {App, DataTerraformRemoteState, S3Backend, TerraformStack} from 'cdktf';
 
 import {config} from './config';
 import {DynamoDB} from "./dynamodb";
-import {PocketALBApplication, PocketECSCodePipeline, PocketPagerDuty} from "@pocket-tools/terraform-modules";
+import {PocketALBApplication, PocketECSCodePipeline} from "@pocket-tools/terraform-modules";
 import {SqsLambda} from "./sqsLambda";
 import {Elasticache} from "./elasticache";
 import {RecommendationApiSynthetics} from './monitoring';
@@ -15,7 +15,6 @@ import {DataAwsKmsAlias} from '@cdktf/provider-aws/lib/data-aws-kms-alias';
 import {DataAwsRegion} from '@cdktf/provider-aws/lib/data-aws-region';
 import {LocalProvider} from '@cdktf/provider-local/lib/provider';
 import {NullProvider} from '@cdktf/provider-null/lib/provider';
-import {PagerdutyProvider} from '@cdktf/provider-pagerduty/lib/provider';
 
 class RecommendationAPI extends TerraformStack {
     constructor(scope: Construct, name: string) {
@@ -23,7 +22,6 @@ class RecommendationAPI extends TerraformStack {
 
         // Create providers
         new AwsProvider(this, 'aws', {region: 'us-east-1'});
-        new PagerdutyProvider(this, 'pagerduty_provider', {token: undefined});
         new LocalProvider(this, 'local_provider');
         new NullProvider(this, 'null_provider');
         new ArchiveProvider(this, 'archive_provider');
@@ -38,11 +36,9 @@ class RecommendationAPI extends TerraformStack {
         const region = new DataAwsRegion(this, 'region');
         const caller = new DataAwsCallerIdentity(this, 'caller');
 
-        const pagerduty = this.createPagerDuty();
         const dynamodb = new DynamoDB(this, 'dynamodb');
 
         const pocketApp = this.createPocketAlbApplication({
-            pagerDuty: pagerduty,
             secretsManagerKmsAlias: this.getSecretsManagerKmsAlias(),
             region,
             caller,
@@ -53,11 +49,9 @@ class RecommendationAPI extends TerraformStack {
         this.createApplicationCodePipeline(pocketApp);
 
         const synthetic = new RecommendationApiSynthetics(this, 'synthetics');
-        synthetic.createSyntheticCheck(
-          config.environment === 'Prod' ? [pagerduty.snsNonCriticalAlarmTopic.arn] : []
-        );
+        synthetic.createSyntheticCheck([]);
 
-        new SqsLambda(this, 'sqs-lambda', dynamodb.candidateSetsTable, pagerduty);
+        new SqsLambda(this, 'sqs-lambda', dynamodb.candidateSetsTable);
     }
 
 
@@ -88,47 +82,11 @@ class RecommendationAPI extends TerraformStack {
     }
 
     /**
-     * Create PagerDuty service for alerts
-     * @private
-     */
-    private createPagerDuty(): PocketPagerDuty | undefined {
-        if (config.isDev) {
-            //Dont create pagerduty services for a dev service.
-            return null;
-        }
-
-
-        const incidentManagement = new DataTerraformRemoteState(
-            this,
-            'incident_management',
-            {
-                organization: 'Pocket',
-                workspaces: {
-                    name: 'incident-management'
-                }
-            }
-        );
-
-        return new PocketPagerDuty(this, 'pagerduty', {
-            prefix: config.prefix,
-            service: {
-                criticalEscalationPolicyId: incidentManagement.get(
-                    'policy_generation_critical_id'
-                ).toString(),
-                nonCriticalEscalationPolicyId: incidentManagement.get(
-                    'policy_generation_non_critical_id'
-                ).toString()
-            }
-        });
-    }
-
-    /**
      * Create ECS Application
      * @param dependencies
      * @private
      */
     private createPocketAlbApplication(dependencies: {
-        pagerDuty?: PocketPagerDuty;
         region: DataAwsRegion;
         caller: DataAwsCallerIdentity;
         secretsManagerKmsAlias: DataAwsKmsAlias;
@@ -136,7 +94,7 @@ class RecommendationAPI extends TerraformStack {
         elasticache: Elasticache;
     }) {
 
-        const {pagerDuty, region, caller, secretsManagerKmsAlias, dynamodb, elasticache} =
+        const {region, caller, secretsManagerKmsAlias, dynamodb, elasticache} =
             dependencies;
         return new PocketALBApplication(this, 'application', {
             internal: true,
@@ -333,7 +291,6 @@ class RecommendationAPI extends TerraformStack {
                     threshold: 25, // This is a percentage
                     evaluationPeriods: 4,
                     period: 300, // 5 mins
-                    actions: config.isDev ? [] : [pagerDuty!.snsCriticalAlarmTopic.arn],
                     alarmDescription: 'Runbook: https://getpocket.atlassian.net/l/c/sfMGntZ0'
                 },
                 httpLatency: {
@@ -343,7 +300,6 @@ class RecommendationAPI extends TerraformStack {
                     period: 900,
                     evaluationPeriods: 4,
                     threshold: 0.5, // 500ms
-                    actions: config.isDev ? [] : [pagerDuty!.snsNonCriticalAlarmTopic.arn],
                     alarmDescription: 'Runbook: https://getpocket.atlassian.net/l/c/dChZ24T1',
                 },
             }
