@@ -7,14 +7,12 @@ import {
 import { PocketSQSWithLambdaTarget } from '@pocket-tools/terraform-modules';
 import { LAMBDA_RUNTIMES } from '@pocket-tools/terraform-modules';
 import { DataAwsSsmParameter } from '@cdktf/provider-aws/lib/data-aws-ssm-parameter';
-import { PocketPagerDuty } from '@pocket-tools/terraform-modules';
 
 export class SqsLambda extends Construct {
   constructor(
     scope: Construct,
     private name: string,
     candidateSetsTable: ApplicationDynamoDBTable,
-    pagerDuty?: PocketPagerDuty
   ) {
     super(scope, name);
 
@@ -65,25 +63,6 @@ export class SqsLambda extends Construct {
         codeDeploy: {
           region: vpc.region,
           accountId: vpc.accountId,
-        },
-        alarms: {
-          invocations: {
-            period: 10800, // 3 hours
-            threshold: 1,
-            comparisonOperator: 'LessThanThreshold',
-            actions: config.isDev
-              ? []
-              : [pagerDuty!.snsNonCriticalAlarmTopic.arn],
-            treatMissingData: 'breaching',
-          },
-          errors: {
-            evaluationPeriods: 3,
-            period: 3600, // 1 hour
-            threshold: 20,
-            actions: config.isDev
-              ? []
-              : [pagerDuty!.snsNonCriticalAlarmTopic.arn],
-          },
         },
       },
       tags: config.tags,
