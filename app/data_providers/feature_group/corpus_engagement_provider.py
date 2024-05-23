@@ -24,15 +24,21 @@ class CorpusEngagementProvider:
             recommendation_surface_id: RecommendationSurfaceId,
             corpus_slate_configuration_id: str,
             items: List[CorpusItemModel],
+            country: str = None,
     ) -> Dict[str, CorpusItemEngagementModel]:
         """
         :param recommendation_surface_id: Identifies where recommendations are surfaced. Currently only 'HOME'.
         :param corpus_slate_configuration_id: Identifies the slate configuration, e.g. a UUID for the 'For You' slate.
         :param items: A list of Corpus Item ids.
+        :param country: The country code for the corpus. Currently, engagement is only aggregated for CA.
+                        By default, the value is None, in which case engagement is aggregated across all countries.
         :return: Corpus engagement models keyed on corpus item id.
         """
-        engagement = await self._get_engagement_by_keys(
-            [f'{recommendation_surface_id.value}/{corpus_slate_configuration_id}/{item.id}' for item in items])
+        keys = [
+            '/'.join(filter(None, [recommendation_surface_id.value, corpus_slate_configuration_id, item.id, country]))
+            for item in items
+        ]
+        engagement = await self._get_engagement_by_keys(keys)
 
         return {m.corpus_item_id: m for m in engagement.values() if m is not self.MissingRecord}
 

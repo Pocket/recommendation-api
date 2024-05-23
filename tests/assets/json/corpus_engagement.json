@@ -60,5 +60,129 @@
       "FeatureName": "TRAILING_28_DAY_OPENS",
       "ValueAsString": "0"
     }
+  ],
+  [
+    {
+      "FeatureName": "KEY",
+      "ValueAsString": "NEW_TAB_EN_US/edc5571f-7adb-537a-afd8-5612155d54da/6/CA"
+    },
+    {
+      "FeatureName": "UPDATED_AT",
+      "ValueAsString": "2023-05-01T12:00:00Z"
+    },
+    {
+      "FeatureName": "RECOMMENDATION_SURFACE_ID",
+      "ValueAsString": "NEW_TAB_EN_US"
+    },
+    {
+      "FeatureName": "CORPUS_SLATE_CONFIGURATION_ID",
+      "ValueAsString": "edc5571f-7adb-537a-afd8-5612155d54da"
+    },
+    {
+      "FeatureName": "CORPUS_ITEM_ID",
+      "ValueAsString": "6"
+    },
+    {
+      "FeatureName": "TRAILING_1_DAY_IMPRESSIONS",
+      "ValueAsString": "100000"
+    },
+    {
+      "FeatureName": "TRAILING_1_DAY_OPENS",
+      "ValueAsString": "10000"
+    },
+    {
+      "FeatureName": "TRAILING_7_DAY_IMPRESSIONS",
+      "ValueAsString": "0"
+    },
+    {
+      "FeatureName": "TRAILING_7_DAY_OPENS",
+      "ValueAsString": "0"
+    },
+    {
+      "FeatureName": "TRAILING_14_DAY_IMPRESSIONS",
+      "ValueAsString": "0"
+    },
+    {
+      "FeatureName": "TRAILING_14_DAY_OPENS",
+      "ValueAsString": "0"
+    },
+    {
+      "FeatureName": "TRAILING_21_DAY_IMPRESSIONS",
+      "ValueAsString": "0"
+    },
+    {
+      "FeatureName": "TRAILING_21_DAY_OPENS",
+      "ValueAsString": "0"
+    },
+    {
+      "FeatureName": "TRAILING_28_DAY_IMPRESSIONS",
+      "ValueAsString": "0"
+    },
+    {
+      "FeatureName": "TRAILING_28_DAY_OPENS",
+      "ValueAsString": "0"
+    }
+  ],
+  [
+    {
+      "FeatureName": "KEY",
+      "ValueAsString": "NEW_TAB_EN_US/edc5571f-7adb-537a-afd8-5612155d54da/6"
+    },
+    {
+      "FeatureName": "UPDATED_AT",
+      "ValueAsString": "2023-05-01T12:00:00Z"
+    },
+    {
+      "FeatureName": "RECOMMENDATION_SURFACE_ID",
+      "ValueAsString": "NEW_TAB_EN_US"
+    },
+    {
+      "FeatureName": "CORPUS_SLATE_CONFIGURATION_ID",
+      "ValueAsString": "edc5571f-7adb-537a-afd8-5612155d54da"
+    },
+    {
+      "FeatureName": "CORPUS_ITEM_ID",
+      "ValueAsString": "6"
+    },
+    {
+      "FeatureName": "TRAILING_1_DAY_IMPRESSIONS",
+      "ValueAsString": "300000"
+    },
+    {
+      "FeatureName": "TRAILING_1_DAY_OPENS",
+      "ValueAsString": "5000"
+    },
+    {
+      "FeatureName": "TRAILING_7_DAY_IMPRESSIONS",
+      "ValueAsString": "0"
+    },
+    {
+      "FeatureName": "TRAILING_7_DAY_OPENS",
+      "ValueAsString": "0"
+    },
+    {
+      "FeatureName": "TRAILING_14_DAY_IMPRESSIONS",
+      "ValueAsString": "0"
+    },
+    {
+      "FeatureName": "TRAILING_14_DAY_OPENS",
+      "ValueAsString": "0"
+    },
+    {
+      "FeatureName": "TRAILING_21_DAY_IMPRESSIONS",
+      "ValueAsString": "0"
+    },
+    {
+      "FeatureName": "TRAILING_21_DAY_OPENS",
+      "ValueAsString": "0"
+    },
+    {
+      "FeatureName": "TRAILING_28_DAY_IMPRESSIONS",
+      "ValueAsString": "0"
+    },
+    {
+      "FeatureName": "TRAILING_28_DAY_OPENS",
+      "ValueAsString": "0"
+    }
   ]
 ]
