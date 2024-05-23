@@ -8,10 +8,8 @@ from datetime import datetime
 
 from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS, POCKET_HOME_V3_FEATURE_FLAG, POCKET_HOME_PRIDE_FEATURE_FLAG
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
-from app.data_providers.slate_providers.author_faves_slate_provider import AuthorFavesSlateProvider
 from app.data_providers.slate_providers.pockety_worthy_provider import PocketWorthyProvider
 from app.data_providers.slate_providers.pride_slate_provider import PrideSlateProvider
-from app.data_providers.slate_providers.top_saved_slate_provider import TopSavedSlateProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.data_providers.util import integer_hash
 from app.recommenders.item2item import Item2ItemRecommender, Item2ItemError, QdrantError, UnsupportedLanguage
