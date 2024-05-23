@@ -254,13 +254,14 @@ class TestAlgorithmsThompsonSampling:
                 trailing_period=123  # Model does not have 123 day trailing metrics
             )
 
+    @pytest.mark.parametrize("repeat", range(10))  # Increase 100x when changing thompson_sampling to avoid a flaky test
     @pytest.mark.parametrize("thompson_sampling_function,metrics", [
         (thompson_sampling, generate_metrics(28)),  # 28 day is the default
         (thompson_sampling_1day, generate_metrics(1)),
         (thompson_sampling_7day, generate_metrics(7)),
         (thompson_sampling_14day, generate_metrics(14)),
     ])
-    def test_rank_by_ctr_over_n_trials(self, thompson_sampling_function, metrics, ntrials = 99):
+    def test_rank_by_ctr_over_n_trials(self, thompson_sampling_function, metrics, repeat, ntrials = 200):
         """
         This routine tests the Thompson sampling ranker by
         aggregating results over multiple trials.  In a single run of the
@@ -274,12 +275,17 @@ class TestAlgorithmsThompsonSampling:
         # goal of test is to rank by CTR over ntrials
         # order should be 999999, 666666, 333333
         ranks = {}
+        min_ranks = {}
+        max_ranks = {}
         for i in range(ntrials):
             sampled_recs = thompson_sampling_function(recs, metrics)
             c = 1
             for rec in sampled_recs:
+                item_id = rec.item.item_id
                 # compute average positional rank over the trials
-                ranks[rec.item.item_id] = ranks.get(rec.item.item_id, 0) + c
+                ranks[item_id] = ranks.get(item_id, 0) + c
+                min_ranks[item_id] = min(c, min_ranks.get(item_id, c))
+                max_ranks[item_id] = max(c, max_ranks.get(item_id, c))
                 c += 1
 
         for rec in recs:
@@ -295,10 +301,10 @@ class TestAlgorithmsThompsonSampling:
         assert final_ranks[3][0] == '222222'
 
         # ranks are not deterministic
-        assert int(ranks['999999']) != ranks['999999']
-        assert int(ranks['666666']) != ranks['666666']
-        assert int(ranks['333333']) != ranks['333333']
-        assert int(ranks['222222']) != ranks['222222']
+        assert min_ranks['999999'] != max_ranks['999999']
+        assert min_ranks['666666'] != max_ranks['666666']
+        assert min_ranks['333333'] != max_ranks['333333']
+        assert min_ranks['222222'] != max_ranks['222222']
 
     @pytest.mark.parametrize("thompson_sampling_function,metrics", [
         (thompson_sampling, generate_metrics(28)),  # 28 day is the default
