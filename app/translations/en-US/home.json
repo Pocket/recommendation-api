@@ -11,5 +11,7 @@
   "LifeHacksSlateProvider.subheadline": "Tips for better living",
   "TopicSlateProvider.more_link_text": "Explore more {topic_name}",
   "PocketWorthyProvider.headline": "Pocket-Worthy Reads",
-  "PocketWorthyProvider.subheadline": "Stories to fuel your mind"
+  "PocketWorthyProvider.subheadline": "Stories to fuel your mind",
+  "PrideSlateProvider.headline": "Spotlight on LGBTQ+ Voices",
+  "PrideSlateProvider.subheadline": "Explore fascinating reads by LGBTQ+ writers"
 }
