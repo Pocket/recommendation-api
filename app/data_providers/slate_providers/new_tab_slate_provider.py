@@ -26,6 +26,9 @@ PUBLISHER_SPREAD_DISTANCE = 6
 # For the purpose of experimentation a constant weight probably suffices. If the
 # experiment is success, we could derive this weight from actual impressions.
 REGION_METRICS_WEIGHT = 0.95
+# CA gets about 1/10th of the overall engagement for New Tab en-US, so the prior
+# needs to be lowered to prevent Thompson sampling from producing a random order.
+REGION_PRIOR_MULTIPLIER = 0.1
 
 
 class NewTabSlateProvider(SlateProvider):
@@ -101,9 +104,15 @@ class NewTabSlateProvider(SlateProvider):
         metrics = await self.corpus_engagement_provider.get(
             self.recommendation_surface_id, self.configuration_id, items)
 
+        alpha_prior = 188  # beta * P99 German NewTab CTR for 2023-03-28 to 2023-04-05 (1.5%)
+        beta_prior = 12500  # 0.5% of median German NewTab item impressions for 2023-03-28 to 2023-04-05.
+
         if kwargs.get('enable_ranking_by_region') and kwargs.get('region'):
             region_metrics = await self.corpus_engagement_provider.get(
                 self.recommendation_surface_id, self.configuration_id, items, kwargs['region'])
+
+            alpha_prior *= REGION_PRIOR_MULTIPLIER
+            beta_prior *= REGION_PRIOR_MULTIPLIER
 
             for item_id in metrics:
                 if item_id in region_metrics:
@@ -122,8 +131,8 @@ class NewTabSlateProvider(SlateProvider):
             recs=items,
             metrics=metrics,
             trailing_period=1,  # Currently, Prefect only loads the 1-day trailing window for Firefox New Tab.
-            default_alpha_prior=188,  # beta * P99 German NewTab CTR for 2023-03-28 to 2023-04-05 (1.5%)
-            default_beta_prior=12500)  # 0.5% of median German NewTab item impressions for 2023-03-28 to 2023-04-05.
+            default_alpha_prior=alpha_prior,
+            default_beta_prior=beta_prior)
 
         # 2. Secondary sort order is recency.
         items.sort(key=lambda item: str(self.corpus_api_client.get_scheduled_date(item.id)), reverse=True)
