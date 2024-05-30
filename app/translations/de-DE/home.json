@@ -10,6 +10,7 @@
   "LifeHacksSlateProvider.headline" : "Life Hacks",
   "LifeHacksSlateProvider.subheadline" : "Tips for better living",
   "TopicSlateProvider.more_link_text" : "Explore more {topic_name}",
-  "PrideSlateProvider.headline": "Im Rampenlicht: LGBTQ+-Stimmen",
-  "PrideSlateProvider.subheadline": "Entdecken Sie faszinierende Werke von LGBTQ+-Schriftsteller:innen"
+  "PrideSlateProvider.headline": "LGBTQIA+ Storys im Rampenlicht",
+  "PrideSlateProvider.subheadline": "Entdecken Sie faszinierende Werke von LGBTQA+-Schriftsteller:innen",
+  "PrideSlateProvider.more_link_text": "Alles sehen"
 }
