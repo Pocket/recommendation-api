@@ -1,7 +1,8 @@
-from typing import List
+from typing import List, Optional
 
 from app.data_providers.slate_providers.slate_provider import HomeSlateProvider
 from app.models.corpus_item_model import CorpusItemModel
+from app.models.link import LinkModel
 from app.models.localemodel import LocaleModel
 from app.rankers.algorithms import thompson_sampling, rank_by_impression_caps
 
@@ -15,6 +16,18 @@ class PrideSlateProvider(HomeSlateProvider):
         else:
             # fall back to en
             return '33cd5817-cbc4-4d01-b9be-7dbcf4e26d2e'
+
+    @property
+    def more_link(self) -> Optional[LinkModel]:
+        if self.locale == LocaleModel.de_DE:
+            return LinkModel(
+                text=self.home_translations['PrideSlateProvider.more_link_text'],
+                url='https://getpocket.com/de/collections/pocket-pride-geschichten')
+        else:
+            return LinkModel(
+                text=self.home_translations['PrideSlateProvider.more_link_text'],
+                url='https://getpocket.com/collections/pocket-pride-reads')
+
 
     async def rank_corpus_items(
             self,
