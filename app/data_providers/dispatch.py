@@ -390,11 +390,17 @@ class NewTabDispatch:
         self.new_tab_slate_provider = new_tab_slate_provider
         self.snowplow = snowplow
 
-    async def get_slate(self, api_client: ApiClient, locale: str) -> CorpusSlateModel:
+    async def get_slate(
+            self,
+            api_client: ApiClient,
+            locale: str,
+            region: Optional[str],
+            enable_ranking_by_region: Optional[bool] = False
+    ) -> CorpusSlateModel:
         """
         :return: the New Tab slate
         """
-        corpus_slate = await self.new_tab_slate_provider.get_slate()
+        corpus_slate = await self.new_tab_slate_provider.get_slate(region=region, enable_ranking_by_region=enable_ranking_by_region)
 
         asyncio.create_task(
             self.snowplow.track(event=CorpusRecommendationsSendEvent(

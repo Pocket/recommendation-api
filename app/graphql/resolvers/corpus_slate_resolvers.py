@@ -56,7 +56,12 @@ async def resolve_new_tab_slate(
                 tracker=create_snowplow_tracker(),
                 snowplow_config=SnowplowConfig(),
             ),
-        ).get_slate(api_client=get_pocket_client(info), locale=locale)
+        ).get_slate(
+            api_client=get_pocket_client(info),
+            locale=locale,
+            region=region,
+            enable_ranking_by_region=enable_ranking_by_region,
+        )
 
     slate = CorpusSlate.from_pydantic(slate_model)
     slate.recommendations = slate_model.recommendations
