@@ -24,7 +24,7 @@ services:
       memcached:
         condition: service_started
       snowplow:
-        condition: service_healthy  # snowplow needs to be healthy before tests can start.
+        condition: service_started
       qdrant:
         condition: service_started
 
@@ -57,12 +57,6 @@ services:
     platform: linux/amd64
     ports:
       - '9090:9090'
-    healthcheck:
-      test: ["CMD", "curl", "-sf", "http://localhost:9090/micro/all"]
-      interval: 5s
-      timeout: 10s
-      retries: 3
-      start_period: 5s
 
   qdrant:
    image: qdrant/qdrant:v0.11.6
