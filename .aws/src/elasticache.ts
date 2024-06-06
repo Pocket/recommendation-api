@@ -34,7 +34,6 @@ export class Elasticache extends Construct {
         size: config.cacheSize,
       },
       subnetIds: pocketVPC.privateSubnetIds,
-      tags: config.tags,
       vpcId: pocketVPC.vpc.id,
       prefix: config.prefix,
     });

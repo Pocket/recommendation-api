@@ -28,7 +28,6 @@ export class DynamoDB extends Construct {
    */
   private setupCandidatesTable() {
     return new ApplicationDynamoDBTable(this, `candidates`, {
-      tags: config.tags,
       prefix: `${config.shortName}-${config.environment}-Candidates`,
       tableConfig: {
         hashKey: 'id',
@@ -79,7 +78,6 @@ export class DynamoDB extends Construct {
    */
   private setupTopicsMetadataTable() {
     return new ApplicationDynamoDBTable(this, `topic_metadata`, {
-      tags: config.tags,
       prefix: `${config.shortName}-${config.environment}-TopicMetadata`,
       tableConfig: {
         hashKey: 'id',
@@ -124,7 +122,6 @@ export class DynamoDB extends Construct {
    */
   private setupCandidateSetsTable() {
     return new ApplicationDynamoDBTable(this, `candidate_sets`, {
-      tags: config.tags,
       prefix: `${config.shortName}-${config.environment}-CandidateSets`,
       tableConfig: {
         hashKey: 'id',

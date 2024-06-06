@@ -78,7 +78,6 @@ export class RecommendationApiSynthetics extends Construct {
       name: `pocket-${config.prefix.toLowerCase()}-synthetic-check`,
 
       assumeRolePolicy: dataSyncheckAssume.json,
-      tags: config.tags,
     });
 
     // puts artifacts into s3, stores logs, pushes metrics to Cloudwatch

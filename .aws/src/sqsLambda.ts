@@ -65,7 +65,6 @@ export class SqsLambda extends Construct {
           accountId: vpc.accountId,
         },
       },
-      tags: config.tags,
     });
   }
 
