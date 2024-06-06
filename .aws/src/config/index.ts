@@ -39,5 +39,8 @@ export const config = {
   tags: {
     service: name,
     environment,
+    app_code: 'pocket-content-shared',
+    component_code: `pocket-content-shared-${name.toLowerCase()}`,
+    env_code: isDev ? 'dev' : 'prod',
   },
 };
