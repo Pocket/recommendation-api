@@ -5,7 +5,6 @@ from app.models.corpus_item_model import CorpusItemModel
 from app.models.link import LinkModel
 from app.models.localemodel import LocaleModel
 from app.rankers.algorithms import thompson_sampling, rank_by_impression_caps
-from app.config import POCKET_HOME_V3_FEATURE_FLAG
 
 
 class CollectionSlateProvider(HomeSlateProvider):
