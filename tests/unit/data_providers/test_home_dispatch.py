@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from app.config import POCKET_HOME_V3_FEATURE_FLAG
+from app.config import POCKET_HOME_V4_FEATURE_FLAG
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.dispatch import HomeDispatch
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
@@ -74,7 +74,7 @@ class TestHomeDispatch:
             life_hacks_slate_provider=MagicMock(LifeHacksSlateProvider),
             unleash_provider=self.unleash_provider,
             snowplow=SnowplowCorpusRecommendationsTracker(
-                tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig()),
+            tracker=create_snowplow_tracker(), snowplow_config=SnowplowConfig()),
             pocket_worthy_provider=MagicMock(PocketWorthyProvider),
             pride_provider=MagicMock(PrideSlateProvider),
         )
@@ -83,27 +83,21 @@ class TestHomeDispatch:
         """
         Test that corpus recommendations are deduplicated across slates in the Home lineup.
         """
-        self.unleash_provider.get_assignment.return_value = UnleashAssignmentModel(assigned=False, name=POCKET_HOME_V3_FEATURE_FLAG)
+        self.unleash_provider.get_assignment.return_value = UnleashAssignmentModel(assigned=False, name=POCKET_HOME_V4_FEATURE_FLAG)
         self.preferences_provider.fetch.return_value = None
-        self.home_dispatch.recommended_reads_slate_provider.get_slate.return_value = _generate_slate(
-            ['Tech2', 'Ent4'], headline='Collections')
+        self.home_dispatch.pocket_worthy_provider.get_slate.return_value = _generate_slate(
+            ['Tech2', 'Ent4', 'Ent2'], headline='Collections')
         self.home_dispatch.pocket_hits_slate_provider.get_slate.return_value = _generate_slate(
             ['PH1', 'PH2', 'PH3'], headline='Pocket Hits')
-        self.home_dispatch.collection_slate_provider.get_slate.return_value = _generate_slate(
-            ['Tech1', 'Ent2', 'Self1'], headline='Collections')
+        self.home_dispatch.recommended_reads_slate_provider.get_slate.return_value = _generate_slate(
+            ['Tech1', 'Ent2'], headline='Collections')
         self.home_dispatch.life_hacks_slate_provider.get_slate.return_value = _generate_slate(
-            ['LifeHack1', 'LifeHack2'], headline='Life Hacks')
-        self.home_dispatch.topic_provider.get_topics.return_value = [
-            technology_topic, entertainment_topic, self_improvement_topic
-        ]
-        self.home_dispatch.topic_slate_providers.__getitem__.side_effect = [
-            MockSlateProvider(_generate_slate(['Tech1', 'Tech2', 'Tech3', 'Tech4'], headline='Technology')),
-            MockSlateProvider(_generate_slate(['Ent1', 'Ent2', 'Ent3'], headline='Entertainment')),
-            MockSlateProvider(_generate_slate(['Self1'], headline='Self-improvement')),
-        ]
+            ['LifeHack1', 'LifeHack2', 'PH3'], headline='Life Hacks')
 
         lineup = await self.home_dispatch.get_slate_lineup(
-            user=self.request_user, locale=LocaleModel.en_US, recommendation_count=2,
+            user=self.request_user,
+            locale=LocaleModel.en_US,
+            recommendation_count=4,
             api_client=ApiClient(
                 consumer_key='web-client-consumer-key',
                 api_id='94110',
@@ -113,11 +107,8 @@ class TestHomeDispatch:
             ))
 
         assert [
-                   ['Tech2', 'Ent4'],
-                   ['PH1', 'PH2'],
-                   ['Tech1', 'Ent2'],
-                   ['LifeHack1', 'LifeHack2'],
-                   ['Tech3', 'Tech4'],
-                   ['Ent1', 'Ent3'],  # 'Ent2' is removed because it occurs in the Collection slate.
-                   ['Self1'],  # 'Self1' is not removed because it's outside the top 2 of the Collection slate.
+                   ['Tech2', 'Ent4', 'Ent2'],
+                   ['PH1', 'PH2', 'PH3'],
+                   ['Tech1'], # 'PH3' is removed because it occurs in the Pocket Hits slate.
+                   ['LifeHack1', 'LifeHack2']
                ] == [[rec.corpus_item.id for rec in slate.recommendations] for slate in lineup.slates]

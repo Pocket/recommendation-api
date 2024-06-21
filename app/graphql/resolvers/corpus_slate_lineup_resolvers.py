@@ -72,6 +72,7 @@ async def resolve_home_slate_lineup(root, info: Info,
 
     async with PocketGraphClientSession(PocketGraphConfig()) as graph_client_session:
         unleash_provider = UnleashProvider(graph_client_session, unleash_config=UnleashConfig())
+
         slate_lineup_model = await HomeDispatch(
             corpus_client=di.corpus_feature_group_client,
             preferences_provider=UserRecommendationPreferencesProvider(di.aioboto3_session, topic_provider),

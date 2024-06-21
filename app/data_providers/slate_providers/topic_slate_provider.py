@@ -1,7 +1,6 @@
 import random
 from typing import List, Optional
 
-from app.config import POCKET_HOME_V3_FEATURE_FLAG
 from app.data_providers.slate_providers.candidate_sets import get_topic_candidate_set_id
 from app.data_providers.slate_providers.slate_provider import HomeSlateProvider
 from app.models.corpus_item_model import CorpusItemModel
