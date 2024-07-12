@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from app.config import POCKET_HOME_V3_FEATURE_FLAG
+from app.config import POCKET_HOME_V4_FEATURE_FLAG
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
 from app.data_providers.unleash_provider import UnleashProvider
 from app.models.corpus_item_model import CorpusItemModel
@@ -26,7 +26,7 @@ def for_you_slate_provider(corpus_feature_group_client, corpus_engagement_provid
 @pytest.fixture
 def for_you_slate_pocket_home_v3_provider(corpus_feature_group_client, corpus_engagement_provider, translation_provider):
     unleash_provider = MagicMock(UnleashProvider)
-    unleash_provider.get_assignment.return_value = UnleashAssignmentModel(assigned=True, name=POCKET_HOME_V3_FEATURE_FLAG)
+    unleash_provider.get_assignment.return_value = UnleashAssignmentModel(assigned=True, name=POCKET_HOME_V4_FEATURE_FLAG)
     return ForYouSlateProvider(
         corpus_fetchable=corpus_feature_group_client,
         corpus_engagement_provider=corpus_engagement_provider,

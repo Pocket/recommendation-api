@@ -131,19 +131,17 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             slates = data['data']['homeSlateLineup']['slates']
 
             # Assert that the expected number of slates is being returned.
-            assert len(slates) == 6
-            # First slate is personalized
-            assert slates[0]['headline'] == 'For You'
-            assert slates[0]['recommendationReasonType'] == 'PREFERRED_TOPICS'
-            # Second slate is Pocket Hits
-            assert slates[1]['headline'] == 'Today’s Pocket Hits'
-            # Third slate has a link to the collections page
-            assert slates[2]['moreLink']['url'] == 'https://getpocket.com/collections'
-            # Fourth slate has a link to the collections page
-            assert slates[3]['headline'] == 'Life Hacks'
-            # Last slates match preferred topics
-            assert slates[4]['moreLink']['url'] == f'https://getpocket.com/explore/{preferred_topics[0].slug}'
-            assert slates[5]['moreLink']['url'] == f'https://getpocket.com/explore/{preferred_topics[1].slug}'
+            assert len(slates) == 5
+            # First slate is Pocket Worthy
+            assert slates[0]['headline'] == 'Pocket-Worthy Reads'
+            # Second slate is Collections
+            assert slates[1]['headline'] == 'Popular Collections'
+            # Third slate is Pocket Hits
+            assert slates[2]['headline'] == 'Today’s Pocket Hits'
+            # Fourth slate is For You
+            assert slates[3]['headline'] == 'For You'
+            # Fifth slate is Life Hacks
+            assert slates[4]['headline'] == 'Life Hacks'
 
             recommendation_counts = [len(slate['recommendations']) for slate in slates]
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each
@@ -178,13 +176,8 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             assert not data.get('errors')
             slates = data['data']['homeSlateLineup']['slates']
 
-            # First slate has an unpersonalized recommendations
-            assert slates[0]['headline'] == 'Recommended Reads'
-            assert slates[0]['recommendationReasonType'] is None
-            # Last slates have topic explore links
-            assert slates[-3]['moreLink']['url'] == 'https://getpocket.com/explore/technology'
-            assert slates[-2]['moreLink']['url'] == 'https://getpocket.com/explore/entertainment'
-            assert slates[-1]['moreLink']['url'] == 'https://getpocket.com/explore/self-improvement'
+            # First slate has Worthy Reads
+            assert slates[0]['headline'] == 'Pocket-Worthy Reads'
 
             recommendation_counts = [len(slate['recommendations']) for slate in slates]
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each
@@ -219,11 +212,11 @@ class TestHomeSlateLineup(TestDynamoDBBase):
 
             assert not data.get('errors')
             slates = data['data']['homeSlateLineup']['slates']
-            assert slates[0]['headline'] == 'Empfohlene Artikel'
-            assert slates[0]['subheadline'] == 'Von Pocket kuratiert'
-            assert slates[1]['headline'] == 'Beliebte Collections'
-            assert slates[1]['moreLink']['url'] == 'https://getpocket.com/collections'
-            assert slates[1]['moreLink']['text'] == 'Mehr Collections entdecken'
+            assert slates[0]['headline'] == 'Beliebte Collections'
+            assert slates[0]['moreLink']['url'] == 'https://getpocket.com/collections'
+            assert slates[0]['moreLink']['text'] == 'Mehr Collections entdecken'
+            assert slates[1]['headline'] == 'Empfohlene Artikel'
+            assert slates[1]['subheadline'] == 'Von Pocket kuratiert'
             assert slates[-1]['headline'] == 'Für ein glücklicheres Ich'
             assert slates[-1]['moreLink'] == None
 
@@ -264,12 +257,8 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             slates = data['data']['homeSlateLineup']['slates']
 
             # First slate has an unpersonalized recommendations
-            assert slates[0]['headline'] == 'Recommended Reads'
+            assert slates[0]['headline'] == 'Pocket-Worthy Reads'
             assert slates[0]['recommendationReasonType'] is None
-            # Last slates have topic explore links
-            assert slates[-3]['moreLink']['url'] == 'https://getpocket.com/explore/technology'
-            assert slates[-2]['moreLink']['url'] == 'https://getpocket.com/explore/entertainment'
-            assert slates[-1]['moreLink']['url'] == 'https://getpocket.com/explore/self-improvement'
 
             recommendation_counts = [len(slate['recommendations']) for slate in slates]
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each

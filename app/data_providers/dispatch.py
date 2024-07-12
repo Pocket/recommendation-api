@@ -6,12 +6,13 @@ from asyncio import gather
 from typing import List, Coroutine, Any, Tuple, Optional
 from datetime import datetime
 
-from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS, POCKET_HOME_V3_FEATURE_FLAG, POCKET_HOME_PRIDE_FEATURE_FLAG
+from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS, POCKET_HOME_PRIDE_FEATURE_FLAG, POCKET_HOME_V4_FEATURE_FLAG
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.pockety_worthy_provider import PocketWorthyProvider
 from app.data_providers.slate_providers.pride_slate_provider import PrideSlateProvider
 from app.data_providers.user_recommendation_preferences_provider import UserRecommendationPreferencesProvider
 from app.data_providers.util import integer_hash
+from app.graphql.util import get_pocket_client
 from app.recommenders.item2item import Item2ItemRecommender, Item2ItemError, QdrantError, UnsupportedLanguage
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
@@ -159,14 +160,14 @@ class HomeDispatch:
     ) -> CorpusSlateLineupModel:
         if locale == LocaleModel.en_US:
             slate_lineup_model, experiment = await self.get_en_us_slate_lineup(
-                recommendation_count=recommendation_count, user=user, locale=locale)
+                recommendation_count=recommendation_count, user=user)
         elif locale == LocaleModel.de_DE:
             slate_lineup_model, experiment = await self.get_de_de_slate_lineup(
-                recommendation_count=recommendation_count, user=user, locale=locale)
+                recommendation_count=recommendation_count, user=user)
         else:
             # Default to en-US
             slate_lineup_model, experiment = await self.get_en_us_slate_lineup(
-                recommendation_count=recommendation_count, user=user, locale=locale)
+                recommendation_count=recommendation_count, user=user)
 
         asyncio.create_task(
             self.snowplow.track(CorpusRecommendationsSendEvent(
@@ -181,74 +182,38 @@ class HomeDispatch:
         return slate_lineup_model
 
     async def get_en_us_slate_lineup(
-            self, user: RequestUser, recommendation_count: int, locale: LocaleModel
-    ) -> Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
+            self, user: RequestUser, recommendation_count: int) -> Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
         """
         :param user:
         :param recommendation_count: Maximum number of recommendations to return.
         :param locale:
         :return: Slate lineup for en-US Home:
-
-                If in the new v3 test
-                    1. Syndicated - Pocket Worthy
-                    2. Pocket Hits
-                    3. 'For You' slate if preferred topics are available, or otherwise 'Recommended Reads'
-                    4. 'Life Hacks' slate
-                Otherwise:
-                    1. 'For You' slate if preferred topics are available, or otherwise 'Recommended Reads'
-                    2. Pocket Hits
-                    3. Collection slate
-                    4. 'Life Hacks' slate
+            1. Syndicated - Pocket Worthy
+            2. Collections
+            2. Pocket Hits
+            3. 'For You' slate if preferred topics are available, or otherwise 'Recommended Reads'
+            4. 'Life Hacks' slate
         """
-
         user_impression_capped_list, \
-            preferred_topics, \
-            home_v3_assignment, \
-            pride_assignment = await gather(
+            preferred_topics = await gather(
             self.user_impression_cap_provider.get(user),
-            self._get_preferred_topics(user),
-            self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user),
-            self.unleash_provider.get_assignment(POCKET_HOME_PRIDE_FEATURE_FLAG, user=user)
+            self._get_preferred_topics(user)
         )
 
         seed_id = self.get_seed_id(user=user)
-        slates = []
-
-        if pride_assignment is not None and pride_assignment.assigned is True:
-            slates = [
-                self.pride_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
-                                                      user_impression_capped_list=user_impression_capped_list),
-                self.pocket_worthy_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
-                                                      user_impression_capped_list=user_impression_capped_list),
-                self.pocket_hits_slate_provider.get_slate(),
-                self.get_for_you_or_recommended_reads(preferred_topics=preferred_topics,
-                                                      user_impression_capped_list=user_impression_capped_list,
-                                                      seed_id=seed_id
-                                                      ),
-                self.life_hacks_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
-                                                         user_impression_capped_list=user_impression_capped_list),
-            ]
-        elif home_v3_assignment is not None and home_v3_assignment.assigned is True:
-            slates = [
-                self.pocket_worthy_provider.get_slate(enable_thompson_sampling_with_seed=seed_id, user_impression_capped_list=user_impression_capped_list),
-                self.pocket_hits_slate_provider.get_slate(),
-                self.get_for_you_or_recommended_reads(preferred_topics=preferred_topics,
-                                                      user_impression_capped_list=user_impression_capped_list,
-                                                      seed_id=seed_id
-                                                      ),
-                self.life_hacks_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id, user_impression_capped_list=user_impression_capped_list),
-            ]
-        else:
-            slates = [
-                self.get_for_you_or_recommended_reads(preferred_topics=preferred_topics,
-                                                      user_impression_capped_list=user_impression_capped_list,
-                                                      seed_id=seed_id
-                                                      ),
-                self.pocket_hits_slate_provider.get_slate(),
-                self.collection_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id, user_impression_capped_list=user_impression_capped_list),
-                self.life_hacks_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id, user_impression_capped_list=user_impression_capped_list),
-            ]
-            slates += await self._get_topic_slate_promises(preferred_topics=preferred_topics, default=DEFAULT_TOPICS)
+        slates = [
+            self.pocket_worthy_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
+                                                  user_impression_capped_list=user_impression_capped_list),
+            self.collection_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
+                                                     user_impression_capped_list=user_impression_capped_list),
+            self.pocket_hits_slate_provider.get_slate(),
+            self.get_for_you_or_recommended_reads(preferred_topics=preferred_topics,
+                                                  user_impression_capped_list=user_impression_capped_list,
+                                                  seed_id=seed_id
+                                                  ),
+            self.life_hacks_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
+                                                     user_impression_capped_list=user_impression_capped_list),
+        ]
 
         return CorpusSlateLineupModel(
             slates=self._dedupe_and_limit(
@@ -275,55 +240,27 @@ class HomeDispatch:
         else:
             return await self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id, user_impression_capped_list=user_impression_capped_list)
 
-    async def get_de_de_slate_lineup(self, user: RequestUser, recommendation_count: int, locale: LocaleModel) -> \
+    async def get_de_de_slate_lineup(self, user: RequestUser, recommendation_count: int) -> \
             Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
         """
         :param recommendation_count:
         :param locale:
         :return: the Home slate lineup:
-
-            If in the new v3 test
-                1. Collection slate
-                2. Recommended Reads
-                3. Topic slates according to defaults
-
-            Otherwise
                 1. Recommended Reads
                 2. Collection slate
                 3. Topic slates according to defaults
         """
 
-        user_impression_capped_list, \
-            home_v3_assignment, \
-            pride_assignment = await gather(
-            self.user_impression_cap_provider.get(user),
-            self.unleash_provider.get_assignment(POCKET_HOME_V3_FEATURE_FLAG, user=user),
-            self.unleash_provider.get_assignment(POCKET_HOME_PRIDE_FEATURE_FLAG, user=user)
-        )
+        user_impression_capped_list = await self.user_impression_cap_provider.get(user)
 
         seed_id = self.get_seed_id(user=user)
-        if pride_assignment is not None and pride_assignment.assigned is True:
-            slates = [
-                self.pride_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
-                                              user_impression_capped_list=user_impression_capped_list),
-                self.collection_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
-                                                         user_impression_capped_list=user_impression_capped_list),
-                self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
-                                                                user_impression_capped_list=user_impression_capped_list),
-            ]
-            slates += await self._get_topic_slate_promises(preferred_topics=[], default=GERMAN_HOME_TOPICS)
-        elif home_v3_assignment is not None and home_v3_assignment.assigned is True:
-            slates = [
-                self.collection_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id, user_impression_capped_list=user_impression_capped_list),
-                self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id, user_impression_capped_list=user_impression_capped_list),
-            ]
-            slates += await self._get_topic_slate_promises(preferred_topics=[], default=GERMAN_HOME_TOPICS)
-        else:
-            slates = [
-                self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id, user_impression_capped_list=user_impression_capped_list),
-                self.collection_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id, user_impression_capped_list=user_impression_capped_list),
-            ]
-            slates += await self._get_topic_slate_promises(preferred_topics=[], default=GERMAN_HOME_TOPICS)
+        slates = [
+            self.collection_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
+                                                     user_impression_capped_list=user_impression_capped_list),
+            self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
+                                                            user_impression_capped_list=user_impression_capped_list),
+        ]
+        slates += await self._get_topic_slate_promises(preferred_topics=[], default=GERMAN_HOME_TOPICS)
 
         return CorpusSlateLineupModel(
             slates=self._dedupe_and_limit(
