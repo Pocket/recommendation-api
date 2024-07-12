@@ -131,15 +131,17 @@ class TestHomeSlateLineup(TestDynamoDBBase):
             slates = data['data']['homeSlateLineup']['slates']
 
             # Assert that the expected number of slates is being returned.
-            assert len(slates) == 4
+            assert len(slates) == 5
             # First slate is Pocket Worthy
             assert slates[0]['headline'] == 'Pocket-Worthy Reads'
-            # Second slate is Pocket Hits
-            assert slates[1]['headline'] == 'Today’s Pocket Hits'
-            # Third slate is For You
-            assert slates[2]['headline'] == 'For You'
-            # Fourth slate is Life Hacks
-            assert slates[3]['headline'] == 'Life Hacks'
+            # Second slate is Collections
+            assert slates[1]['headline'] == 'Popular Collections'
+            # Third slate is Pocket Hits
+            assert slates[2]['headline'] == 'Today’s Pocket Hits'
+            # Fourth slate is For You
+            assert slates[3]['headline'] == 'For You'
+            # Fifth slate is Life Hacks
+            assert slates[4]['headline'] == 'Life Hacks'
 
             recommendation_counts = [len(slate['recommendations']) for slate in slates]
             assert recommendation_counts == len(slates)*[5]  # Each slates has 5 recs each

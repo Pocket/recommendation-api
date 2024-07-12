@@ -83,8 +83,9 @@ class TestHomeDispatch:
         """
         Test that corpus recommendations are deduplicated across slates in the Home lineup.
         """
-        self.unleash_provider.get_assignment.return_value = UnleashAssignmentModel(assigned=False, name=POCKET_HOME_V4_FEATURE_FLAG)
         self.preferences_provider.fetch.return_value = None
+        self.home_dispatch.collection_slate_provider.get_slate.return_value = _generate_slate(
+            ['Coll1', 'Coll2', 'Coll3'], headline='Collections')
         self.home_dispatch.pocket_worthy_provider.get_slate.return_value = _generate_slate(
             ['Tech2', 'Ent4', 'Ent2'], headline='Collections')
         self.home_dispatch.pocket_hits_slate_provider.get_slate.return_value = _generate_slate(
@@ -108,6 +109,7 @@ class TestHomeDispatch:
 
         assert [
                    ['Tech2', 'Ent4', 'Ent2'],
+                   ['Coll1', 'Coll2', 'Coll3'],
                    ['PH1', 'PH2', 'PH3'],
                    ['Tech1'], # 'PH3' is removed because it occurs in the Pocket Hits slate.
                    ['LifeHack1', 'LifeHack2']
