@@ -13,7 +13,7 @@ from app.rankers.algorithms import thompson_sampling, spread_publishers, boost_s
 
 # Maximum tileId that Firefox can support. Firefox uses Javascript to store this value. The max value of a Javascript
 # number can be found using `Number.MAX_SAFE_INTEGER`. which is 2^53 - 1 because it uses a 64-bit IEEE 754 float.
-MAX_TILE_ID = 1 << 53 - 1
+MAX_TILE_ID = (1 << 53) - 1
 # Generate tile_ids well out of the range of the MySQL-based system, which has a max tile_id of 99,999 as of 2023-03-13.
 # This is done to make it easy for engineers/analysts to see which system generated the identifier.
 MIN_TILE_ID = 100 * 100000
@@ -79,7 +79,7 @@ class NewTabSlateProvider(SlateProvider):
         return [
             CorpusRecommendationModel(
                 corpus_item=item,
-                tile_id=integer_hash(self._get_tile_id_key(item), start=MIN_TILE_ID, stop=MAX_TILE_ID + 1),
+                tile_id=integer_hash(self._get_tile_id_key(item), start=MIN_TILE_ID, stop=MAX_TILE_ID),
                 scheduled_surface_item_id=self.corpus_api_client.get_scheduled_surface_item_id(item.id),
             ) for item in ranked_items
         ]
@@ -93,7 +93,7 @@ class NewTabSlateProvider(SlateProvider):
             logging.error(f'scheduled_date is None for {item.id}. We will gracefully degrade performance by continuing'
                           f' to return recommendations with a different `tile_id` value.')
 
-        return f'{self.recommendation_surface_id}/{item.id}/{scheduled_date}'
+        return self.corpus_api_client.get_scheduled_surface_item_id(item.id)
 
     async def rank_corpus_items(self, items: List[CorpusItemModel], *args, **kwargs) -> List[CorpusItemModel]:
         """

@@ -1,6 +1,6 @@
 import random
 import string
-from datetime import datetime, timezone
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -9,7 +9,6 @@ from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
 from tests.mocks.corpus_clients import CORPUS_API_CLIENT_FIXTURE_ITEM_COUNT
 from tests.assets.topics import all_topic_fixtures, business_topic
-
 
 @pytest.fixture
 def new_tab_slate_provider(corpus_api_client, corpus_engagement_provider):
@@ -42,11 +41,37 @@ def corpus_items_10():
         ) for i in range(10)
     ]
 
-
 @pytest.mark.asyncio
 class TestNewTabSlateProvider:
+    @pytest.mark.parametrize(
+        "scheduled_surface_item_id, expected, index",
+        [
+            # Test random inputs. Boundary cases are not covered because sha256 is hard to reverse.
+            ("550e8400-e29b-41d4-a716-446655440000", 367820988390657, 0),
+            ("6ba7b810-9dad-11d1-80b4-00c04fd430c8", 1754091520067902, 1),
+            ("123e4567-e89b-12d3-a456-426614174000", 1021785982574447, 2),
+            ("a3bb189e-8bf9-3888-9912-ace4e6543002", 4390412044299399, 3),
+            ("c1a5fc62-9a4e-43f3-b748-2106a12e8151", 8630494423250594, 4),
+        ],
+    )
+    async def test_get_recommendations_tile_id_generation(self, scheduled_surface_item_id, expected, index, corpus_items_10, new_tab_slate_provider):
+        # simulate corpus_api_client to mock one of its methods
+        corpus_api_client = MagicMock()
+        new_tab_slate_provider.corpus_api_client = corpus_api_client
+        # Mock to return the scheduled_surface_item_id
+        corpus_api_client.get_scheduled_surface_item_id.return_value = scheduled_surface_item_id
 
-    async def test_get_slate(self, new_tab_slate_provider, corpus_items_10, caplog, aiocache_functions_fixture):
+        # Call get_recommendations method to generate 5 recommendations
+        recommendations = await new_tab_slate_provider.get_recommendations([corpus_items_10[index]])
+
+        # Assertions
+        for recommendation in recommendations:
+            # assert scheduled_surface_item_id
+            assert recommendation.scheduled_surface_item_id == scheduled_surface_item_id
+            # assert tile_id generation
+            assert recommendation.tile_id == expected
+
+    async def test_get_slate(self, new_tab_slate_provider, corpus_items_10, caplog, aiocache_functions_fixture, corpus_api_client):
         slate = await new_tab_slate_provider.get_slate()
 
         assert CORPUS_API_CLIENT_FIXTURE_ITEM_COUNT == len(slate.recommendations)
