@@ -89,6 +89,34 @@ GERMAN_HOME_TOPICS = [
     '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
 ]
 
+EN_GB_HOME_TOPICS = [
+    'b0d0c28b-a2b4-4142-ac5b-8f2ac69766eb',  # Technology
+    'f24c8da6-11d1-40de-9bf7-27dfde0bed9f',  # Business
+    '963d5c09-052a-4649-8d36-097766de068f',  # Science
+    '5d8e5764-77d7-4686-887e-84aaddcf482c',  # Self-improvement
+]
+
+FR_FR_HOME_TOPICS = [
+    '19a95471-02b4-4133-81e6-21a7e66b247d',  # Technology
+    'd2a31a31-3498-4f0a-8ca3-fbd29ed7c6c2',  # Business
+    'c8e5f613-161f-411b-bb13-b3a590cae80c',  # Science
+    'd77168b1-68a9-4942-91ea-bed18defca02',  # Self-improvement
+]
+
+IT_IT_HOME_TOPICS = [
+    '052eb916-b15e-480e-b9f8-b06bc8070b15',  # Technology
+    'ce8b6f8e-e5cc-4c1f-a280-32556a6ab902',  # Business
+    'dbc6fbd2-6c2e-4bb2-98f5-fccc3b05835a',  # Science
+    'a91654c2-b78d-4377-90ea-4f1252ff60c9',  # Self-improvement
+]
+
+ES_ES_HOME_TOPICS = [
+    '177d3d8d-7733-402d-bf76-39eb9c2e24cd',  # Technology
+    'e6e1696e-571a-49a6-ac27-1de508fc1f31',  # Business
+    'bd983eba-0b4a-4916-82dd-d3a212ce934b',  # Science
+    'b3c241b0-3651-4460-977c-568cbfbef2c3',  # Self-improvement
+]
+
 # Changes the slate lineups for home and removes thompson sampling for a new version of home
 POCKET_HOME_PRIDE_FEATURE_FLAG = 'temp.recommendation-api.pride'
 POCKET_HOME_V4_FEATURE_FLAG = 'temp.recommendation-api.pocket-home-v4'

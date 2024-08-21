@@ -3,22 +3,22 @@
     "name" : "Für ein glücklicheres Ich"
   },
   "POLITICS" : {
-    "name" : "Politics"
+    "name" : "Politischen"
   },
   "BUSINESS" : {
-    "name" : "Business"
+    "name" : "Geschäft"
   },
   "HEALTH_FITNESS" : {
-    "name" : "Health & Fitness"
+    "name" : "Gesundheit & Fitness"
   },
   "SCIENCE" : {
     "name" : "Wissenschaft"
   },
   "PARENTING" : {
-    "name" : "Parenting"
+    "name" : "Erziehung"
   },
   "EDUCATION" : {
-    "name" : "Education"
+    "name" : "Bildungswesen"
   },
   "CORONAVIRUS" : {
     "name" : "Coronavirus"
@@ -27,10 +27,10 @@
     "name" : "Technologie"
   },
   "FOOD" : {
-    "name" : "Food"
+    "name" : "Nahrungsmittel"
   },
   "ENTERTAINMENT" : {
-    "name" : "Entertainment"
+    "name" : "Unterhaltung"
   },
   "PERSONAL_FINANCE" : {
     "name" : "Personal Finance"
