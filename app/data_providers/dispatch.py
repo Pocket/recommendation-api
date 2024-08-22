@@ -6,8 +6,9 @@ from asyncio import gather
 from typing import List, Coroutine, Any, Tuple, Optional
 from datetime import datetime
 
-from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS, FR_FR_HOME_TOPICS, EN_GB_HOME_TOPICS, IT_IT_HOME_TOPICS, ES_ES_HOME_TOPICS, \
-    POCKET_HOME_NO_SYNDICATION_FEATURE_FLAG
+from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS, FR_FR_HOME_TOPICS, EN_GB_HOME_TOPICS, IT_IT_HOME_TOPICS, \
+    ES_ES_HOME_TOPICS, \
+    POCKET_HOME_NO_SYNDICATION_FEATURE_FLAG, POCKET_HOME_MORE_LOCALES
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.pockety_worthy_provider import PocketWorthyProvider
 from app.data_providers.slate_providers.pride_slate_provider import PrideSlateProvider
@@ -163,22 +164,23 @@ class HomeDispatch:
             self, user: RequestUser, locale: LocaleModel, recommendation_count: int,
             api_client: ApiClient
     ) -> CorpusSlateLineupModel:
+        more_locales_assignment = await self.unleash_provider.get_assignment(POCKET_HOME_MORE_LOCALES, user=user)
         if locale == LocaleModel.en_US:
             slate_lineup_model, experiment = await self.get_en_us_slate_lineup(
                 recommendation_count=recommendation_count, user=user)
         elif locale == LocaleModel.de_DE:
             slate_lineup_model, experiment = await self.get_de_de_slate_lineup(
                 recommendation_count=recommendation_count, user=user)
-        elif locale == LocaleModel.en_GB:
+        elif locale == LocaleModel.en_GB and more_locales_assignment is not None and more_locales_assignment.variant == 'treatment':
             slate_lineup_model, experiment = await self.get_en_gb_slate_lineup(
                 recommendation_count=recommendation_count, user=user)
-        elif locale == LocaleModel.fr_FR:
+        elif locale == LocaleModel.fr_FR and more_locales_assignment is not None and more_locales_assignment.variant == 'treatment':
             slate_lineup_model, experiment = await self.get_fr_fr_slate_lineup(
                 recommendation_count=recommendation_count, user=user)
-        elif locale == LocaleModel.it_IT:
+        elif locale == LocaleModel.it_IT and more_locales_assignment is not None and more_locales_assignment.variant == 'treatment':
             slate_lineup_model, experiment = await self.get_it_it_slate_lineup(
                 recommendation_count=recommendation_count, user=user)
-        elif locale == LocaleModel.es_ES:
+        elif locale == LocaleModel.es_ES and more_locales_assignment is not None and more_locales_assignment.variant == 'treatment':
             slate_lineup_model, experiment = await self.get_es_es_slate_lineup(
                 recommendation_count=recommendation_count, user=user)
         else:
@@ -186,15 +188,28 @@ class HomeDispatch:
             slate_lineup_model, experiment = await self.get_en_us_slate_lineup(
                 recommendation_count=recommendation_count, user=user)
 
-        asyncio.create_task(
-            self.snowplow.track(CorpusRecommendationsSendEvent(
-                corpus_slate_lineup=slate_lineup_model,
-                recommendation_surface_id=RecommendationSurfaceId.HOME,
-                locale=locale.value,
-                user=user,
-                api_client=api_client,
-                experiment=experiment
-            )))
+        if more_locales_assignment is not None and experiment is None:
+            asyncio.create_task(
+                self.snowplow.track(CorpusRecommendationsSendEvent(
+                    corpus_slate_lineup=slate_lineup_model,
+                    recommendation_surface_id=RecommendationSurfaceId.HOME,
+                    locale=locale.value,
+                    user=user,
+                    api_client=api_client,
+                    experiment=more_locales_assignment
+                )))
+        else:
+            asyncio.create_task(
+                self.snowplow.track(CorpusRecommendationsSendEvent(
+                    corpus_slate_lineup=slate_lineup_model,
+                    recommendation_surface_id=RecommendationSurfaceId.HOME,
+                    locale=locale.value,
+                    user=user,
+                    api_client=api_client,
+                    experiment=experiment
+                )))
+
+
 
         return slate_lineup_model
 
