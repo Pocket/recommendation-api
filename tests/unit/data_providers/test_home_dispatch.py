@@ -4,7 +4,6 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from app.config import POCKET_HOME_V4_FEATURE_FLAG
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.dispatch import HomeDispatch
 from app.data_providers.slate_providers.collection_slate_provider import CollectionSlateProvider
@@ -84,6 +83,7 @@ class TestHomeDispatch:
         Test that corpus recommendations are deduplicated across slates in the Home lineup.
         """
         self.preferences_provider.fetch.return_value = None
+        self.unleash_provider.get_assignment.return_value = None
         self.home_dispatch.collection_slate_provider.get_slate.return_value = _generate_slate(
             ['Coll1', 'Coll2', 'Coll3'], headline='Collections')
         self.home_dispatch.pocket_worthy_provider.get_slate.return_value = _generate_slate(

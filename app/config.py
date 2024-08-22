@@ -89,6 +89,7 @@ GERMAN_HOME_TOPICS = [
     '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
 ]
 
+
 EN_GB_HOME_TOPICS = [
     'b0d0c28b-a2b4-4142-ac5b-8f2ac69766eb',  # Technology
     'f24c8da6-11d1-40de-9bf7-27dfde0bed9f',  # Business
@@ -117,6 +118,5 @@ ES_ES_HOME_TOPICS = [
     'b3c241b0-3651-4460-977c-568cbfbef2c3',  # Self-improvement
 ]
 
-# Changes the slate lineups for home and removes thompson sampling for a new version of home
-POCKET_HOME_PRIDE_FEATURE_FLAG = 'temp.recommendation-api.pride'
-POCKET_HOME_V4_FEATURE_FLAG = 'temp.recommendation-api.pocket-home-v4'
+# Changes the slate lineups for home and removes syndication as a a/b test
+POCKET_HOME_NO_SYNDICATION_FEATURE_FLAG = 'temp.recommendation-api.pocket-home-no-syndication'

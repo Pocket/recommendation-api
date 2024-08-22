@@ -2,14 +2,11 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from app.config import POCKET_HOME_V4_FEATURE_FLAG
 from app.data_providers.slate_providers.for_you_slate_provider import ForYouSlateProvider
-from app.data_providers.unleash_provider import UnleashProvider
 from app.models.corpus_item_model import CorpusItemModel
 from app.models.corpus_slate_lineup_model import RecommendationSurfaceId
 from app.models.localemodel import LocaleModel
 from app.models.recommendation_reason_type import RecommendationReasonType
-from app.models.unleash_assignment import UnleashAssignmentModel
 from tests.assets.topics import business_topic, all_topic_fixtures
 
 
@@ -25,15 +22,12 @@ def for_you_slate_provider(corpus_feature_group_client, corpus_engagement_provid
 
 @pytest.fixture
 def for_you_slate_pocket_home_v3_provider(corpus_feature_group_client, corpus_engagement_provider, translation_provider):
-    unleash_provider = MagicMock(UnleashProvider)
-    unleash_provider.get_assignment.return_value = UnleashAssignmentModel(assigned=True, name=POCKET_HOME_V4_FEATURE_FLAG)
     return ForYouSlateProvider(
         corpus_fetchable=corpus_feature_group_client,
         corpus_engagement_provider=corpus_engagement_provider,
         recommendation_surface_id=RecommendationSurfaceId.HOME,
         locale=LocaleModel.en_US,
         translation_provider=translation_provider,
-        unleash_provider=unleash_provider
     )
 
 @pytest.mark.asyncio
