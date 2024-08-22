@@ -75,51 +75,12 @@ qa_slate_map = {
 # For running Open Telemetry locally, set `OTEL_DAEMON_ADDRESS`, otherwise defaults to production value.
 otel_daemon_address = os.getenv('OTEL_DAEMON_ADDRESS', 'http://127.0.0.1:4317')
 
-# Note: All the topics here use the English version of the Candidate Set Ids.
-# They then get merged with the metadata from DynamoDB, TopicMetadata table and our translation files in this repository.
-# From there it is then mapped to the real candidate set id for that language from the _TOPIC_CANDIDATE_SETS variable based on the locale model
-
-DEFAULT_TOPICS = [
-    '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
-    'c6242e35-4ef7-494f-ae9f-51f95b836424',  # Entertainment
-    '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
-]
-
 # German Home shows different topics by default
-GERMAN_HOME_TOPICS = [
-    '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
-    '1bf756c0-632f-49e8-9cce-324f38f4cc71',  # Business
-    '058011b8-c70d-4a25-92e5-478e3ff0f0e6',  # Science
-    '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
-]
-
-
-EN_GB_HOME_TOPICS = [
-    '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
-    '1bf756c0-632f-49e8-9cce-324f38f4cc71',  # Business
-    '058011b8-c70d-4a25-92e5-478e3ff0f0e6',  # Science
-    '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
-]
-
-FR_FR_HOME_TOPICS = [
-    '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
-    '1bf756c0-632f-49e8-9cce-324f38f4cc71',  # Business
-    '058011b8-c70d-4a25-92e5-478e3ff0f0e6',  # Science
-    '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
-]
-
-IT_IT_HOME_TOPICS = [
-    '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
-    '1bf756c0-632f-49e8-9cce-324f38f4cc71',  # Business
-    '058011b8-c70d-4a25-92e5-478e3ff0f0e6',  # Science
-    '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
-]
-
-ES_ES_HOME_TOPICS = [
-    '25c716f1-e1b2-43db-bf52-1a5553d9fb74',  # Technology
-    '1bf756c0-632f-49e8-9cce-324f38f4cc71',  # Business
-    '058011b8-c70d-4a25-92e5-478e3ff0f0e6',  # Science
-    '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
+NON_EN_US_HOME_TOPICS = [
+    'TECHNOLOGY',
+    'BUSINESS',
+    'SCIENCE',
+    'SELF_IMPROVEMENT',
 ]
 
 # Changes the slate lineups for home and removes syndication as a a/b test

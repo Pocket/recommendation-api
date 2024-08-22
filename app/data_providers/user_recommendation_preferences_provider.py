@@ -92,7 +92,7 @@ class UserRecommendationPreferencesProvider:
         return UserRecommendationPreferencesModel(
             hashed_user_id=record[self._FEATURE_ID_NAME],
             updated_at=dateutil.parser.isoparse(record['updated_at']),
-            preferred_topics=await self.topic_provider.get_topics([t['id'] for t in preferred_topics])
+            preferred_topics=await self.topic_provider.get_topics_by_legacy_id([t['id'] for t in preferred_topics])
         )
 
     @classmethod
