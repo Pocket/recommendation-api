@@ -233,7 +233,7 @@ class HomeDispatch:
             self.life_hacks_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
                                                      user_impression_capped_list=user_impression_capped_list),
         ]
-        if no_syndication_assignment is not None and no_syndication_assignment.variant == 'treatment' is True:
+        if no_syndication_assignment is not None and no_syndication_assignment.variant == 'treatment':
             del slates[0]
 
         return CorpusSlateLineupModel(
