@@ -1,0 +1,18 @@
+{
+  "SELF_IMPROVEMENT": {"name": "Développement personnel"},
+  "POLITICS": {"name": "Politique"},
+  "BUSINESS": {"name": "Affaires"},
+  "HEALTH_FITNESS": {"name": "Santé & Fitness"},
+  "SCIENCE": {"name": "Science"},
+  "PARENTING": {"name": "Parentalité"},
+  "EDUCATION": {"name": "Éducation"},
+  "CORONAVIRUS": {"name": "Coronavirus"},
+  "TECHNOLOGY": {"name": "Technologie"},
+  "FOOD": {"name": "Cuisine"},
+  "ENTERTAINMENT": {"name": "Divertissement"},
+  "PERSONAL_FINANCE": {"name": "Finances personnelles"},
+  "CAREER": {"name": "Carrière"},
+  "TRAVEL": {"name": "Voyage"},
+  "SPORTS": {"name": "Sports"},
+  "GAMING": {"name": "Jeux vidéo"}
+}

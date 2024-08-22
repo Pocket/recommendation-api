@@ -1,0 +1,9 @@
+{
+  "ForYouSlateProvider.headline": "For You",
+  "ForYouSlateProvider.subheadline": "Recommended for your interests",
+  "RecommendedReadsSlateProvider.headline": "Recommended Reads",
+  "RecommendedReadsSlateProvider.subheadline": "Curated by Pocket",
+  "LifeHacksSlateProvider.headline": "Life Hacks",
+  "LifeHacksSlateProvider.subheadline": "Tips for better living",
+  "TopicSlateProvider.more_link_text": "Explore more {topic_name}"
+}

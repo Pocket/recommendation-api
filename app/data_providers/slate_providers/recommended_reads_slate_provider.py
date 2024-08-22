@@ -14,6 +14,14 @@ class RecommendedReadsSlateProvider(HomeSlateProvider):
             return '5f0dae93-a5a8-439a-a2e2-5d418c04bc98'
         elif self.locale == LocaleModel.de_DE:
             return '92013292-bc4b-4ee1-815a-0e51c5953ff2'
+        elif self.locale == LocaleModel.en_GB:
+            return '43637b16-1572-4f9b-ba5b-cb686d665633'
+        elif self.locale == LocaleModel.fr_FR:
+            return '70c4dffe-dd0b-4d97-ba76-69778b921b21'
+        elif self.locale == LocaleModel.it_IT:
+            return 'bbf0dccb-d1a2-45bd-a0fd-7d8b8f61bb7a'
+        elif self.locale == LocaleModel.es_ES:
+            return '62b47b84-c32b-4798-8599-e75d61f8c21b'
         else:
             raise ValueError(f'Unexpected locale {self.locale} for {self.provider_name}')
 
