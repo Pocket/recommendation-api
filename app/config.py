@@ -89,6 +89,5 @@ GERMAN_HOME_TOPICS = [
     '45f8e740-42e0-4f54-8363-21310a084f1f',  # Self-improvement
 ]
 
-# Changes the slate lineups for home and removes thompson sampling for a new version of home
-POCKET_HOME_PRIDE_FEATURE_FLAG = 'temp.recommendation-api.pride'
-POCKET_HOME_V4_FEATURE_FLAG = 'temp.recommendation-api.pocket-home-v4'
+# Changes the slate lineups for home and removes syndication as a a/b test
+POCKET_HOME_NO_SYNDICATION_FEATURE_FLAG = 'temp.recommendation-api.pocket-home-no-syndication'
