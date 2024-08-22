@@ -1,9 +1,9 @@
 {
   "ForYouSlateProvider.headline": "Per te",
-  "ForYouSlateProvider.subheadline": "Consigliato per i tuoi interessi",
+  "ForYouSlateProvider.subheadline": "Raccomandati per i tuoi interessi",
   "RecommendedReadsSlateProvider.headline": "Letture consigliate",
-  "RecommendedReadsSlateProvider.subheadline": "Curato da Pocket",
-  "LifeHacksSlateProvider.headline": "Trucchi di vita",
-  "LifeHacksSlateProvider.subheadline": "Consigli per vivere meglio",
-  "TopicSlateProvider.more_link_text": "Esplora di più {topic_name}"
+  "RecommendedReadsSlateProvider.subheadline": "Redatte da Pocket",
+  "LifeHacksSlateProvider.headline": "Lifestyle",
+  "LifeHacksSlateProvider.subheadline": "Suggerimenti e idee per vivere al meglio",
+  "TopicSlateProvider.more_link_text": "Scopri di più {topic_name}"
 }
