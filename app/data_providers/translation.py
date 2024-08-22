@@ -17,5 +17,16 @@ class TranslationProvider:
         :param filename: Filename (e.g. home.json)
         :return: Dict mapping translation keys to translated strings
         """
-        with open(path.join(self.translations_dir, locale.value, filename), 'r') as fp:
-            return json.load(fp)
+
+
+        # Load the en-US file as our fallback
+        with open(path.join(self.translations_dir, 'en-US', filename), 'r') as fallback_file:
+            fallback_data = json.load(fallback_file)
+
+        # Load the file for our translations
+        with open(path.join(self.translations_dir, locale.value, filename), 'r') as translated_file:
+            translated_data = json.load(translated_file)
+
+        # Merge the two dictionaries
+        # If there are overlapping keys, translated_data will override fallback_data
+        return {**fallback_data, **translated_data}
