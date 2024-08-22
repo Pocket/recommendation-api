@@ -78,12 +78,16 @@ class SnowplowCorpusRecommendationsTracker:
         :param user: The user that the slate was recommended to.
         :param api_client: The client that originated the request.
         """
+        context = [
+            get_feature_flag_entity(assignment),
+        ]
+        if user:
+            context.append(get_user_entity(user))
+
+        if api_client:
+            context.append(get_api_user_entity(api_client))
         await self.tracker.track_self_describing_event(
             event_json=get_variant_enroll_event(),
             event_subject=get_subject(user) if user else None,
-            context=[
-                get_feature_flag_entity(assignment),
-                get_user_entity(user),
-                get_api_user_entity(api_client),
-            ],
+            context=context,
         )
