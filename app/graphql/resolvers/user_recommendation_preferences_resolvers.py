@@ -27,7 +27,7 @@ async def update_user_recommendation_preferences(
         topic_provider=topic_provider
     )
 
-    preferred_topics = await topic_provider.get_topics([t.id for t in input.preferred_topics])
+    preferred_topics = await topic_provider.get_topics_by_legacy_id([t.id for t in input.preferred_topics])
     request_user = get_request_user(info)
 
     model = UserRecommendationPreferencesModel(

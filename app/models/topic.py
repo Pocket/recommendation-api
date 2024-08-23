@@ -16,7 +16,7 @@ class TopicModel(BaseModel):
     """
     Models a topic, e.g. Technology, Gaming.
     """
-    id: str = Field(description='The id of the topic')
+    id: str = Field(description='The legacy UUID id of the topic')
     corpus_topic_id: str = Field(description='Corpus API topic identifier')
     name: str = Field(description='The name of the topic to show to the user')
     display_name: str = Field(description='The name of the topic to show to the user')

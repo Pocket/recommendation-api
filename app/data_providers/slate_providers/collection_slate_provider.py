@@ -11,12 +11,11 @@ class CollectionSlateProvider(HomeSlateProvider):
 
     @property
     def candidate_set_id(self) -> str:
-        if self.locale == LocaleModel.en_US:
-            return '92af3dae-25c9-46c3-bf05-18082aacc7e1'
-        elif self.locale == LocaleModel.de_DE:
+        if self.locale == LocaleModel.de_DE:
             return 'ce0e010b-d73d-45e2-a4cd-4abbff74d168'
         else:
-            raise ValueError(f'Unexpected locale {self.locale} for {self.provider_name}')
+            # Default to en-US for the rest of the world
+            return '92af3dae-25c9-46c3-bf05-18082aacc7e1'
 
     @property
     def more_link(self) -> Optional[LinkModel]:

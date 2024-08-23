@@ -6,8 +6,11 @@ from asyncio import gather
 from typing import List, Coroutine, Any, Tuple, Optional
 from datetime import datetime
 
-from app.config import DEFAULT_TOPICS, GERMAN_HOME_TOPICS, FR_FR_HOME_TOPICS, EN_GB_HOME_TOPICS, IT_IT_HOME_TOPICS, ES_ES_HOME_TOPICS, \
-    POCKET_HOME_NO_SYNDICATION_FEATURE_FLAG
+from app.config import (
+    NON_EN_US_HOME_TOPICS,
+    POCKET_HOME_NO_SYNDICATION_FEATURE_FLAG,
+    POCKET_HOME_MORE_LOCALES,
+)
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.pockety_worthy_provider import PocketWorthyProvider
 from app.data_providers.slate_providers.pride_slate_provider import PrideSlateProvider
@@ -163,38 +166,44 @@ class HomeDispatch:
             self, user: RequestUser, locale: LocaleModel, recommendation_count: int,
             api_client: ApiClient
     ) -> CorpusSlateLineupModel:
+        more_locales_assignment = await self.unleash_provider.get_assignment(POCKET_HOME_MORE_LOCALES, user=user)
         if locale == LocaleModel.en_US:
             slate_lineup_model, experiment = await self.get_en_us_slate_lineup(
                 recommendation_count=recommendation_count, user=user)
         elif locale == LocaleModel.de_DE:
             slate_lineup_model, experiment = await self.get_de_de_slate_lineup(
                 recommendation_count=recommendation_count, user=user)
-        elif locale == LocaleModel.en_GB:
-            slate_lineup_model, experiment = await self.get_en_gb_slate_lineup(
-                recommendation_count=recommendation_count, user=user)
-        elif locale == LocaleModel.fr_FR:
-            slate_lineup_model, experiment = await self.get_fr_fr_slate_lineup(
-                recommendation_count=recommendation_count, user=user)
-        elif locale == LocaleModel.it_IT:
-            slate_lineup_model, experiment = await self.get_it_it_slate_lineup(
-                recommendation_count=recommendation_count, user=user)
-        elif locale == LocaleModel.es_ES:
-            slate_lineup_model, experiment = await self.get_es_es_slate_lineup(
+        elif (locale in (LocaleModel.en_GB, LocaleModel.fr_FR, LocaleModel.it_IT, LocaleModel.es_ES)
+              and more_locales_assignment is not None and more_locales_assignment.variant == 'treatment'):
+            slate_lineup_model, experiment = await self.get_other_world_slate_lineup(
                 recommendation_count=recommendation_count, user=user)
         else:
             # Default to en-US
             slate_lineup_model, experiment = await self.get_en_us_slate_lineup(
                 recommendation_count=recommendation_count, user=user)
 
-        asyncio.create_task(
-            self.snowplow.track(CorpusRecommendationsSendEvent(
-                corpus_slate_lineup=slate_lineup_model,
-                recommendation_surface_id=RecommendationSurfaceId.HOME,
-                locale=locale.value,
-                user=user,
-                api_client=api_client,
-                experiment=experiment
-            )))
+        if more_locales_assignment is not None and experiment is None:
+            asyncio.create_task(
+                self.snowplow.track(CorpusRecommendationsSendEvent(
+                    corpus_slate_lineup=slate_lineup_model,
+                    recommendation_surface_id=RecommendationSurfaceId.HOME,
+                    locale=locale.value,
+                    user=user,
+                    api_client=api_client,
+                    experiment=more_locales_assignment
+                )))
+        else:
+            asyncio.create_task(
+                self.snowplow.track(CorpusRecommendationsSendEvent(
+                    corpus_slate_lineup=slate_lineup_model,
+                    recommendation_surface_id=RecommendationSurfaceId.HOME,
+                    locale=locale.value,
+                    user=user,
+                    api_client=api_client,
+                    experiment=experiment
+                )))
+
+
 
         return slate_lineup_model
 
@@ -233,7 +242,7 @@ class HomeDispatch:
             self.life_hacks_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
                                                      user_impression_capped_list=user_impression_capped_list),
         ]
-        if no_syndication_assignment is not None and no_syndication_assignment.variant == 'treatment' is True:
+        if no_syndication_assignment is not None and no_syndication_assignment.variant == 'treatment':
             del slates[0]
 
         return CorpusSlateLineupModel(
@@ -281,7 +290,7 @@ class HomeDispatch:
             self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
                                                             user_impression_capped_list=user_impression_capped_list),
         ]
-        slates += await self._get_topic_slate_promises(preferred_topics=[], default=GERMAN_HOME_TOPICS)
+        slates += await self._get_topic_slate_promises(preferred_topics=[], default=NON_EN_US_HOME_TOPICS)
 
         return CorpusSlateLineupModel(
             slates=self._dedupe_and_limit(
@@ -290,7 +299,7 @@ class HomeDispatch:
             ),
         ), None
 
-    async def get_en_gb_slate_lineup(self, user: RequestUser, recommendation_count: int) -> \
+    async def get_other_world_slate_lineup(self, user: RequestUser, recommendation_count: int) -> \
             Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
         """
         :param recommendation_count:
@@ -310,94 +319,7 @@ class HomeDispatch:
             self.life_hacks_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
                                                      user_impression_capped_list=user_impression_capped_list),
         ]
-        slates += await self._get_topic_slate_promises(preferred_topics=[], default=EN_GB_HOME_TOPICS)
-
-        return CorpusSlateLineupModel(
-            slates=self._dedupe_and_limit(
-                slates=list(await gather(*slates)),
-                recommendation_count=recommendation_count,
-            ),
-        ), None
-
-    async def get_fr_fr_slate_lineup(self, user: RequestUser, recommendation_count: int) -> \
-            Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
-        """
-        :param recommendation_count:
-        :param locale:
-        :return: the Home slate lineup:
-                1. Recommended Reads
-                2. Life Hacks
-                3. Topic slates according to defaults
-        """
-
-        user_impression_capped_list = await self.user_impression_cap_provider.get(user)
-
-        seed_id = self.get_seed_id(user=user)
-        slates = [
-            self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
-                                                            user_impression_capped_list=user_impression_capped_list),
-            self.life_hacks_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
-                                                     user_impression_capped_list=user_impression_capped_list),
-        ]
-        slates += await self._get_topic_slate_promises(preferred_topics=[], default=FR_FR_HOME_TOPICS)
-
-        return CorpusSlateLineupModel(
-            slates=self._dedupe_and_limit(
-                slates=list(await gather(*slates)),
-                recommendation_count=recommendation_count,
-            ),
-        ), None
-
-    async def get_it_it_slate_lineup(self, user: RequestUser, recommendation_count: int) -> \
-            Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
-        """
-        :param recommendation_count:
-        :param locale:
-        :return: the Home slate lineup:
-                1. Recommended Reads
-                2. Life Hacks
-                3. Topic slates according to defaults
-        """
-
-        user_impression_capped_list = await self.user_impression_cap_provider.get(user)
-
-        seed_id = self.get_seed_id(user=user)
-        slates = [
-            self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
-                                                            user_impression_capped_list=user_impression_capped_list),
-            self.life_hacks_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
-                                                     user_impression_capped_list=user_impression_capped_list),
-        ]
-        slates += await self._get_topic_slate_promises(preferred_topics=[], default=IT_IT_HOME_TOPICS)
-
-        return CorpusSlateLineupModel(
-            slates=self._dedupe_and_limit(
-                slates=list(await gather(*slates)),
-                recommendation_count=recommendation_count,
-            ),
-        ), None
-
-    async def get_es_es_slate_lineup(self, user: RequestUser, recommendation_count: int) -> \
-            Tuple[CorpusSlateLineupModel, Optional[UnleashAssignmentModel]]:
-        """
-        :param recommendation_count:
-        :param locale:
-        :return: the Home slate lineup:
-                1. Recommended Reads
-                2. Life Hacks
-                3. Topic slates according to defaults
-        """
-
-        user_impression_capped_list = await self.user_impression_cap_provider.get(user)
-
-        seed_id = self.get_seed_id(user=user)
-        slates = [
-            self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
-                                                            user_impression_capped_list=user_impression_capped_list),
-            self.life_hacks_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
-                                                     user_impression_capped_list=user_impression_capped_list),
-        ]
-        slates += await self._get_topic_slate_promises(preferred_topics=[], default=ES_ES_HOME_TOPICS)
+        slates += await self._get_topic_slate_promises(preferred_topics=[], default=NON_EN_US_HOME_TOPICS)
 
         return CorpusSlateLineupModel(
             slates=self._dedupe_and_limit(
@@ -455,7 +377,7 @@ class HomeDispatch:
         :return: List of callables/promises that return topic slates when awaited.
         """
         preferred_topic_ids = [t.id for t in preferred_topics]
-        topics = await self.topic_provider.get_topics(preferred_topic_ids or default)
+        topics = await self.topic_provider.get_topics_by_corpus_topic_id(preferred_topic_ids or default)
         return [self.topic_slate_providers[topic].get_slate() for topic in topics]
 
 

@@ -42,11 +42,20 @@ class TopicProvider:
             response = await table.scan()
             return response['Items']
 
-    async def get_topics(self, topics_ids: Sequence[str]) -> List[TopicModel]:
+    async def get_topics_by_legacy_id(self, topics_ids: Sequence[str]) -> List[TopicModel]:
         """
-        :param topics_ids: List or tuple of topic ids. Invalid ids are ignored.
+        :param topics_ids: List or tuple of legacy UUID topic ids. Invalid ids are ignored.
         :return: A list of TopicModel objects for the given topic_ids.
         """
         all_topics = await self.get_all()
         topics_by_id = {topic.id: topic for topic in all_topics}
+        return [topics_by_id[topic_id] for topic_id in topics_ids if topic_id in topics_by_id]
+
+    async def get_topics_by_corpus_topic_id(self, topics_ids: Sequence[str]) -> List[TopicModel]:
+        """
+        :param topics_ids: List or tuple of corpus topic ids. Invalid ids are ignored.
+        :return: A list of TopicModel objects for the given topic_ids.
+        """
+        all_topics = await self.get_all()
+        topics_by_id = {topic.corpus_topic_id: topic for topic in all_topics}
         return [topics_by_id[topic_id] for topic_id in topics_ids if topic_id in topics_by_id]
