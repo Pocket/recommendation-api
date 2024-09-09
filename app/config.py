@@ -80,7 +80,6 @@ NON_EN_US_HOME_TOPICS = [
     'TECHNOLOGY',
     'BUSINESS',
     'SCIENCE',
-    'SELF_IMPROVEMENT',
 ]
 
 # Changes the slate lineups for home and removes syndication as a a/b test
