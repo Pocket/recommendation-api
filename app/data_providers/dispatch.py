@@ -182,7 +182,10 @@ class HomeDispatch:
             slate_lineup_model, experiment = await self.get_en_us_slate_lineup(
                 recommendation_count=recommendation_count, user=user)
 
-        if more_locales_assignment is not None and experiment is None:
+        # If we are in our custom locale group, and the flag is turned on, and we are assigned it. (control or treatement)
+        # Then we need to emit an enrollment
+        if (locale in (LocaleModel.en_GB, LocaleModel.fr_FR, LocaleModel.it_IT, LocaleModel.es_ES)
+              and more_locales_assignment is not None and more_locales_assignment.assigned == True):
             asyncio.create_task(
                 self.snowplow.track(CorpusRecommendationsSendEvent(
                     corpus_slate_lineup=slate_lineup_model,
@@ -192,7 +195,9 @@ class HomeDispatch:
                     api_client=api_client,
                     experiment=more_locales_assignment
                 )))
-        else:
+
+        ## No matter what, if we have an experiment from the slate lineup, we need to emit an enrollment of it.
+        if experiment is not None:
             asyncio.create_task(
                 self.snowplow.track(CorpusRecommendationsSendEvent(
                     corpus_slate_lineup=slate_lineup_model,
