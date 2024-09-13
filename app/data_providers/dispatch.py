@@ -195,9 +195,7 @@ class HomeDispatch:
                     api_client=api_client,
                     experiment=more_locales_assignment
                 )))
-
-        ## No matter what, if we have an experiment from the slate lineup, we need to emit an enrollment of it.
-        if experiment is not None:
+        else:
             asyncio.create_task(
                 self.snowplow.track(CorpusRecommendationsSendEvent(
                     corpus_slate_lineup=slate_lineup_model,
