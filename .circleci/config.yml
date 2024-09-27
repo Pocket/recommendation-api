@@ -142,10 +142,11 @@ jobs:
                       aws-region: << parameters.aws-region >>
                 checkout: false
                 repo: << parameters.repo-name >>
-                path: << parameters.path >>
+                path: << parameters.path >>        # Path to the Dockerfile
+                build_path: << parameters.path >>  # Build context
                 tag: << parameters.tag >>
                 extra_build_args: << parameters.extra-build-args >>
-                platform: 'linux/amd64,linux/arm64'  # Specify platforms if needed
+                platform: 'linux/amd64,linux/arm64'
       - unless:
           condition: << parameters.push >>
           steps:
@@ -159,7 +160,8 @@ jobs:
             - aws-ecr/build_image:
                 account_id: << parameters.aws-account-id >>
                 repo: << parameters.repo-name >>
-                path: << parameters.path >>
+                path: << parameters.path >>        # Path to the Dockerfile
+                build_path: << parameters.path >>  # Build context
                 tag: << parameters.tag >>
                 extra_build_args: << parameters.extra-build-args >>
                 platform: 'linux/amd64,linux/arm64'
