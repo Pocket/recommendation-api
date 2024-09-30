@@ -115,6 +115,7 @@ jobs:
           aws-access-key-id: << parameters.aws-access-key-id >>
           aws-secret-access-key: << parameters.aws-secret-access-key >>
           aws-region: << parameters.aws-region >>
+          profile-name: default  # Explicitly set the profile name
       - run:
           name: Setup Environment Variables
           command: |
@@ -135,18 +136,16 @@ jobs:
                   echo "Running CodeBuild for ECR..."
             - aws-ecr/build_and_push_image:
                 account_id: << parameters.aws-account-id >>
-                auth:
-                  - aws-cli/setup:
-                      aws-access-key-id: << parameters.aws-access-key-id >>
-                      aws-secret-access-key: << parameters.aws-secret-access-key >>
-                      aws-region: << parameters.aws-region >>
                 checkout: false
                 repo: << parameters.repo-name >>
-                path: << parameters.path >>        # Path to the Dockerfile
-                build_path: << parameters.path >>  # Build context
+                path: << parameters.path >>
+                build_path: << parameters.path >>
                 tag: << parameters.tag >>
                 extra_build_args: << parameters.extra-build-args >>
                 platform: 'linux/amd64,linux/arm64'
+                use-credentials-helper: false
+                region: << parameters.aws-region >>
+                profile_name: default  # Explicitly set the profile name
       - unless:
           condition: << parameters.push >>
           steps:
@@ -157,15 +156,18 @@ jobs:
                 aws-access-key-id: << parameters.aws-access-key-id >>
                 aws-secret-access-key: << parameters.aws-secret-access-key >>
                 aws-region: << parameters.aws-region >>
+                profile-name: default  # Explicitly set the profile name
             - aws-ecr/build_image:
                 account_id: << parameters.aws-account-id >>
                 repo: << parameters.repo-name >>
-                path: << parameters.path >>        # Path to the Dockerfile
-                build_path: << parameters.path >>  # Build context
+                path: << parameters.path >>
+                build_path: << parameters.path >>
                 tag: << parameters.tag >>
                 extra_build_args: << parameters.extra-build-args >>
                 platform: 'linux/amd64,linux/arm64'
-
+                use-credentials-helper: false
+                region: << parameters.aws-region >>
+                profile_name: default  # Explicitly set the profile name
 
 # -----------------------------------------------------------------------
 # recommendation-api jobs
