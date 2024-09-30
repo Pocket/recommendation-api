@@ -112,9 +112,9 @@ jobs:
       - image: << parameters.docker-image >>
     steps:
       - aws-cli/setup:
-          aws-access-key-id: << parameters.aws-access-key-id >>
-          aws-secret-access-key: << parameters.aws-secret-access-key >>
-          aws-region: << parameters.aws-region >>
+          aws_access_key_id: << parameters.aws-access-key-id >>
+          aws_secret_access_key: << parameters.aws-secret-access-key >>
+          region: << parameters.aws-region >>
       - run:
           name: Setup Environment Variables
           command: |
@@ -137,9 +137,9 @@ jobs:
                 account_id: << parameters.aws-account-id >>
                 auth:
                   - aws-cli/setup:
-                      aws-access-key-id: << parameters.aws-access-key-id >>
-                      aws-secret-access-key: << parameters.aws-secret-access-key >>
-                      aws-region: << parameters.aws-region >>
+                      aws_access_key_id: << parameters.aws-access-key-id >>
+                      aws_secret_access_key: << parameters.aws-secret-access-key >>
+                      region: << parameters.aws-region >>
                 checkout: false
                 repo: << parameters.repo-name >>
                 path: << parameters.path >>
@@ -156,9 +156,9 @@ jobs:
                 version: << parameters.remote-docker-version >>
                 docker_layer_caching: << parameters.remote-docker-layer-caching >>
             - aws-cli/setup:
-                aws-access-key-id: << parameters.aws-access-key-id >>
-                aws-secret-access-key: << parameters.aws-secret-access-key >>
-                aws-region: << parameters.aws-region >>
+                aws_access_key_id: << parameters.aws-access-key-id >>
+                aws_secret_access_key: << parameters.aws-secret-access-key >>
+                region: << parameters.aws-region >>
             - aws-ecr/build_image:
                 account_id: << parameters.aws-account-id >>
                 repo: << parameters.repo-name >>
@@ -169,7 +169,6 @@ jobs:
                 platform: 'linux/amd64,linux/arm64'
                 use-credentials-helper: false
                 region: << parameters.aws-region >>
-
 # -----------------------------------------------------------------------
 # recommendation-api jobs
 
