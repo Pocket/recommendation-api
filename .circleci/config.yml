@@ -4,8 +4,8 @@ orbs:
   aws-ecs: circleci/aws-ecs@2.0.0
   pocket: pocket/circleci-orbs@2.1.2
 
-  aws-cli: circleci/aws-cli@5.1.0  # Update to the latest version
-  aws-ecr: circleci/aws-ecr@9.3.3  # Update to a version newer than 9.0.1
+  aws-cli: circleci/aws-cli@5.1.0
+  aws-ecr: circleci/aws-ecr@9.3.4
 
 
 # Workflow shortcuts
@@ -41,7 +41,9 @@ only_dev: &only_dev
         - dev
 
 
-
+# ------------------------------------------------------------------------------
+# docker_build_new is based on the following Pocket orb, and works with the latest aws-ecr orb.
+# https://github.com/Pocket/circleci-orbs/blob/main/src/jobs/docker_build.yml
 
 jobs:
   docker_build_new:
@@ -116,10 +118,6 @@ jobs:
           aws_secret_access_key: << parameters.aws-secret-access-key >>
           region: "${<< parameters.aws-region >>}"
       - run:
-          name: Log AWS region
-          command: |
-            echo "AWS Region value passed: ${<< parameters.aws-region >>}"  # Print the aws-region
-      - run:
           name: Setup Environment Variables
           command: |
             echo 'export AWS_ECR_ACCOUNT_URL="<< parameters.ecr-url >>"' >> $BASH_ENV
@@ -165,9 +163,6 @@ jobs:
                 aws_access_key_id: << parameters.aws-access-key-id >>
                 aws_secret_access_key: << parameters.aws-secret-access-key >>
                 region: << parameters.aws-region >>
-            - aws-ecr/ecr_login:
-                account_id: << parameters.aws-account-id >>
-                region: "${<< parameters.aws-region >>}"
             - aws-ecr/build_image:
                 account_id: << parameters.aws-account-id >>
                 repo: << parameters.repo-name >>
