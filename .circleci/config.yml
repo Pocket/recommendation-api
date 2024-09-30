@@ -137,6 +137,9 @@ jobs:
                 command: |
                   # Your script or commands to run CodeBuild if necessary
                   echo "Running CodeBuild for ECR..."
+            - setup_remote_docker:
+                version: << parameters.remote-docker-version >>
+                docker_layer_caching: << parameters.remote-docker-layer-caching >>
             - aws-ecr/build_and_push_image:
                 account_id: << parameters.aws-account-id >>
                 auth:
