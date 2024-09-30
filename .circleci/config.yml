@@ -116,6 +116,10 @@ jobs:
           aws_secret_access_key: << parameters.aws-secret-access-key >>
           region: "${<< parameters.aws-region >>}"
       - run:
+          name: Log AWS region
+          command: |
+            echo "AWS Region value passed: ${<< parameters.aws-region >>}"  # Print the aws-region
+      - run:
           name: Setup Environment Variables
           command: |
             echo 'export AWS_ECR_ACCOUNT_URL="<< parameters.ecr-url >>"' >> $BASH_ENV
@@ -158,15 +162,18 @@ jobs:
                 aws_access_key_id: << parameters.aws-access-key-id >>
                 aws_secret_access_key: << parameters.aws-secret-access-key >>
                 region: << parameters.aws-region >>
-            - aws-ecr/build_image:
+            - aws-ecr/ecr_login:
                 account_id: << parameters.aws-account-id >>
-                repo: << parameters.repo-name >>
-                path: << parameters.path >>
-                build_path: << parameters.path >>
-                tag: << parameters.tag >>
-                extra_build_args: << parameters.extra-build-args >>
-                platform: 'linux/amd64,linux/arm64'
                 region: "${<< parameters.aws-region >>}"
+#            - aws-ecr/build_image:
+#                account_id: << parameters.aws-account-id >>
+#                repo: << parameters.repo-name >>
+#                path: << parameters.path >>
+#                build_path: << parameters.path >>
+#                tag: << parameters.tag >>
+#                extra_build_args: << parameters.extra-build-args >>
+#                platform: 'linux/amd64,linux/arm64'
+#                region: "${<< parameters.aws-region >>}"
 
 # -----------------------------------------------------------------------
 # recommendation-api jobs
