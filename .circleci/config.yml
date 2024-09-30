@@ -165,15 +165,15 @@ jobs:
             - aws-ecr/ecr_login:
                 account_id: << parameters.aws-account-id >>
                 region: "${<< parameters.aws-region >>}"
-#            - aws-ecr/build_image:
-#                account_id: << parameters.aws-account-id >>
-#                repo: << parameters.repo-name >>
-#                path: << parameters.path >>
-#                build_path: << parameters.path >>
-#                tag: << parameters.tag >>
-#                extra_build_args: << parameters.extra-build-args >>
-#                platform: 'linux/amd64,linux/arm64'
-#                region: "${<< parameters.aws-region >>}"
+            - aws-ecr/build_image:
+                account_id: << parameters.aws-account-id >>
+                repo: << parameters.repo-name >>
+                path: << parameters.path >>
+                build_path: << parameters.path >>
+                tag: << parameters.tag >>
+                extra_build_args: << parameters.extra-build-args >>
+                platform: 'linux/amd64,linux/arm64'
+                region: "${<< parameters.aws-region >>}"
 
 # -----------------------------------------------------------------------
 # recommendation-api jobs
