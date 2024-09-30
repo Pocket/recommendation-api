@@ -114,7 +114,7 @@ jobs:
       - aws-cli/setup:
           aws_access_key_id: << parameters.aws-access-key-id >>
           aws_secret_access_key: << parameters.aws-secret-access-key >>
-          region: << parameters.aws-region >>
+          region: "${<< parameters.aws-region >>}"
       - run:
           name: Setup Environment Variables
           command: |
@@ -147,7 +147,7 @@ jobs:
                 tag: << parameters.tag >>
                 extra_build_args: << parameters.extra-build-args >>
                 platform: 'linux/amd64,linux/arm64'
-                region: << parameters.aws-region >>
+                region: "${<< parameters.aws-region >>}"
       - unless:
           condition: << parameters.push >>
           steps:
@@ -166,7 +166,7 @@ jobs:
                 tag: << parameters.tag >>
                 extra_build_args: << parameters.extra-build-args >>
                 platform: 'linux/amd64,linux/arm64'
-                region: << parameters.aws-region >>
+                region: "${<< parameters.aws-region >>}"
 
 # -----------------------------------------------------------------------
 # recommendation-api jobs
