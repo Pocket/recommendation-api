@@ -4,7 +4,7 @@ orbs:
   aws-ecs: circleci/aws-ecs@2.0.0
   pocket: pocket/circleci-orbs@2.1.2
 
-  aws-cli: circleci/aws-cli@3.1.2  # Update to the latest version
+  aws-cli: circleci/aws-cli@5.1.0  # Update to the latest version
   aws-ecr: circleci/aws-ecr@9.3.3  # Update to a version newer than 9.0.1
 
 
@@ -115,7 +115,6 @@ jobs:
           aws-access-key-id: << parameters.aws-access-key-id >>
           aws-secret-access-key: << parameters.aws-secret-access-key >>
           aws-region: << parameters.aws-region >>
-          profile-name: default  # Explicitly set the profile name
       - run:
           name: Setup Environment Variables
           command: |
@@ -136,6 +135,11 @@ jobs:
                   echo "Running CodeBuild for ECR..."
             - aws-ecr/build_and_push_image:
                 account_id: << parameters.aws-account-id >>
+                auth:
+                  - aws-cli/setup:
+                      aws-access-key-id: << parameters.aws-access-key-id >>
+                      aws-secret-access-key: << parameters.aws-secret-access-key >>
+                      aws-region: << parameters.aws-region >>
                 checkout: false
                 repo: << parameters.repo-name >>
                 path: << parameters.path >>
@@ -145,7 +149,6 @@ jobs:
                 platform: 'linux/amd64,linux/arm64'
                 use-credentials-helper: false
                 region: << parameters.aws-region >>
-                profile_name: default  # Explicitly set the profile name
       - unless:
           condition: << parameters.push >>
           steps:
@@ -156,7 +159,6 @@ jobs:
                 aws-access-key-id: << parameters.aws-access-key-id >>
                 aws-secret-access-key: << parameters.aws-secret-access-key >>
                 aws-region: << parameters.aws-region >>
-                profile-name: default  # Explicitly set the profile name
             - aws-ecr/build_image:
                 account_id: << parameters.aws-account-id >>
                 repo: << parameters.repo-name >>
@@ -167,7 +169,6 @@ jobs:
                 platform: 'linux/amd64,linux/arm64'
                 use-credentials-helper: false
                 region: << parameters.aws-region >>
-                profile_name: default  # Explicitly set the profile name
 
 # -----------------------------------------------------------------------
 # recommendation-api jobs
