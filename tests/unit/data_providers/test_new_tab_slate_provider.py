@@ -212,13 +212,13 @@ class TestNewTabSlateProvider:
     @pytest.mark.parametrize(
         ('recommendation_surface_id', 'expected_utm_source'),
         [
-            (RecommendationSurfaceId.NEW_TAB_EN_US, 'pocket-newtab-en-us'),
-            (RecommendationSurfaceId.NEW_TAB_EN_GB, 'pocket-newtab-en-gb'),
-            (RecommendationSurfaceId.NEW_TAB_EN_INTL, 'pocket-newtab-en-intl'),
-            (RecommendationSurfaceId.NEW_TAB_DE_DE, 'pocket-newtab-de-de'),
-            (RecommendationSurfaceId.NEW_TAB_ES_ES, 'pocket-newtab-es-es'),
-            (RecommendationSurfaceId.NEW_TAB_FR_FR, 'pocket-newtab-fr-fr'),
-            (RecommendationSurfaceId.NEW_TAB_IT_IT, 'pocket-newtab-it-it'),
+            (RecommendationSurfaceId.NEW_TAB_EN_US, 'firefox-newtab-en-us'),
+            (RecommendationSurfaceId.NEW_TAB_EN_GB, 'firefox-newtab-en-gb'),
+            (RecommendationSurfaceId.NEW_TAB_EN_INTL, 'firefox-newtab-en-intl'),
+            (RecommendationSurfaceId.NEW_TAB_DE_DE, 'firefox-newtab-de-de'),
+            (RecommendationSurfaceId.NEW_TAB_ES_ES, 'firefox-newtab-es-es'),
+            (RecommendationSurfaceId.NEW_TAB_FR_FR, 'firefox-newtab-fr-fr'),
+            (RecommendationSurfaceId.NEW_TAB_IT_IT, 'firefox-newtab-it-it'),
         ]
     )
     async def test_rank_corpus_items(

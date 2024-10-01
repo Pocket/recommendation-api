@@ -97,7 +97,7 @@ class SlateProvider(ABC):
         :return: utm_source value to attribute recommendations to, based on the recommendation_surface_id.
         """
         utm_source_surface = self.recommendation_surface_id.value.lower().replace('_', '-').replace('new-tab', 'newtab')
-        return f'pocket-{utm_source_surface}'
+        return f'firefox-{utm_source_surface}'
 
     async def get_candidate_corpus_items(self, *args, **kwargs) -> List[CorpusItemModel]:
         """

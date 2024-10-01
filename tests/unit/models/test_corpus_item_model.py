@@ -9,7 +9,7 @@ from tests.assets.topics import business_topic
     ('http://getpocket.com/explore/item/8-natural-ways-to-repel-insects-without-bug-spray', True),
     ('https://www.getpocket.com/explore/item/8-natural-ways-to-repel-insects-without-bug-spray', True),
     ('https://pocket.com/explore/item/8-natural-ways-to-repel-insects-without-bug-spray', True),  # pocket.com redirect
-    ('https://getpocket.com/explore/item/the-secrets-of-real-life-wedding-crashers?utm_source=pocket-newtab', True),
+    ('https://getpocket.com/explore/item/the-secrets-of-real-life-wedding-crashers?utm_source=firefox-newtab', True),
     ('https://getpocket.com/collections/the-unexpected-flavor-combos-too-delicious-not-to-try', False),  # collection
     ('https://getpocket.com/explore/entertainment', False),  # topic page
     ('https://www.harpersbazaar.com/beauty/hair/a44284121/hair-braiders-harlem-injuries-protections/', False),
