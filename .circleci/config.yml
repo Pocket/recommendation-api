@@ -3,7 +3,7 @@ version: 2.1
 orbs:
   pocket: pocket/circleci-orbs@2.1.2
 
-  aws-cli: circleci/aws-cli@5.1.0
+  aws-cli: circleci/aws-cli@2.0.6
   aws-ecr: circleci/aws-ecr@9.3.4
 
 
@@ -115,7 +115,7 @@ jobs:
       - aws-cli/setup:
           aws_access_key_id: << parameters.aws-access-key-id >>
           aws_secret_access_key: << parameters.aws-secret-access-key >>
-          region: "${<< parameters.aws-region >>}"
+          aws-region: "${<< parameters.aws-region >>}"
       - run:
           name: Setup Environment Variables
           command: |
@@ -143,7 +143,7 @@ jobs:
                   - aws-cli/setup:
                       aws_access_key_id: << parameters.aws-access-key-id >>
                       aws_secret_access_key: << parameters.aws-secret-access-key >>
-                      region: << parameters.aws-region >>
+                      aws-region: << parameters.aws-region >>
                 checkout: false
                 repo: << parameters.repo-name >>
                 path: << parameters.path >>
@@ -161,7 +161,7 @@ jobs:
             - aws-cli/setup:
                 aws_access_key_id: << parameters.aws-access-key-id >>
                 aws_secret_access_key: << parameters.aws-secret-access-key >>
-                region: << parameters.aws-region >>
+                aws-region: << parameters.aws-region >>
             - aws-ecr/build_image:
                 account_id: << parameters.aws-account-id >>
                 repo: << parameters.repo-name >>
