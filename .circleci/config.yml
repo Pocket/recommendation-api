@@ -328,7 +328,7 @@ jobs:
             - aws-cli/setup:
                 aws_access_key_id: << parameters.env_capital_name >>_AWS_ACCESS_KEY
                 aws_secret_access_key: << parameters.env_capital_name >>_AWS_SECRET_ACCESS_KEY
-                region: ${<< parameters.env_capital_name >>_AWS_DEFAULT_REGION}
+                aws-region: ${<< parameters.env_capital_name >>_AWS_DEFAULT_REGION}
             - run:
                 name: Package Lambda
                 # We bundle our code in a way that lambda can understand and execute
