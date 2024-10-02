@@ -150,7 +150,6 @@ jobs:
                 build_path: << parameters.path >>
                 tag: << parameters.tag >>
                 extra_build_args: << parameters.extra-build-args >>
-                platform: 'linux/amd64,linux/arm64'
                 region: "${<< parameters.aws-region >>}"
       - unless:
           condition: << parameters.push >>
@@ -169,7 +168,6 @@ jobs:
                 build_path: << parameters.path >>
                 tag: << parameters.tag >>
                 extra_build_args: << parameters.extra-build-args >>
-                platform: 'linux/amd64,linux/arm64'
                 region: "${<< parameters.aws-region >>}"
                 push_image: false
 
