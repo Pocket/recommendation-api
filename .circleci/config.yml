@@ -102,7 +102,7 @@ jobs:
         default: '/tmp/workspace'
       remote-docker-version:
         type: string
-        default: '20.10.24'
+        default: 'docker24'
         description: 'Specific remote docker version'
       remote-docker-layer-caching:
         type: boolean
