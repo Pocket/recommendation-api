@@ -1,11 +1,9 @@
 version: 2.1
 
 orbs:
-  pocket: pocket/circleci-orbs@2.1.2
+  pocket: pocket/circleci-orbs@2.3.0
 
-  aws-cli: circleci/aws-cli@5.1.0
-  aws-ecr: circleci/aws-ecr@9.3.4
-
+  aws-cli: circleci/aws-cli@2.0.6
 
 # Workflow shortcuts
 not_main: &not_main
@@ -40,142 +38,7 @@ only_dev: &only_dev
         - dev
 
 
-# ------------------------------------------------------------------------------
-# docker_build_new is based on the following Pocket orb, and works with the latest aws-ecr orb.
-# https://github.com/Pocket/circleci-orbs/blob/main/src/jobs/docker_build.yml
-
 jobs:
-  docker_build_new:
-    description: >
-      Build and/or push docker image to ECR. Runs codebuild if specified ECR does not exist to create it
-    parameters:
-      aws-access-key-id:
-        description: 'AWS access key id environment variable'
-        type: string
-      aws-region:
-        description: 'AWS region environment variable'
-        type: env_var_name  # Use env_var_name to fetch the value dynamically
-        default: AWS_DEFAULT_REGION
-      aws-secret-access-key:
-        description: 'AWS secret access key environment variable'
-        type: string
-      aws-account-id:
-        description: 'AWS Account ID'
-        type: string
-      codebuild-project-name:
-        description: 'The CodeBuild project name'
-        type: string
-        default: ''
-      codebuild-project-branch:
-        description: 'The git branch to build'
-        type: string
-        default: ''
-      docker-image:
-        description: 'Docker image to use for the job'
-        type: string
-        default: cimg/base:stable
-      ecr-url:
-        description: 'The ECR URL'
-        type: string
-      extra-build-args:
-        description: 'Extra flags to pass to docker build'
-        type: string
-        default: '--build-arg GIT_SHA=${CIRCLE_SHA1}'
-      path:
-        description: 'Path to the directory containing your Dockerfile and build context.'
-        type: string
-        default: '/tmp/workspace/app_prod'
-      push:
-        description: 'Whether or not to push the code'
-        type: boolean
-        default: false
-      repo-name:
-        description: 'The ECR repo name'
-        type: string
-      tag:
-        description: 'The docker tag name'
-        type: string
-        default: 'latest,${CIRCLE_SHA1}'
-      workspace:
-        description: 'Path to CircleCI workspace to attach for the build'
-        type: string
-        default: '/tmp/workspace'
-      remote-docker-version:
-        type: string
-        default: '20.10.24'
-        description: 'Specific remote docker version'
-      remote-docker-layer-caching:
-        type: boolean
-        default: false
-        description: 'Enable Docker layer caching if using remote Docker engine.'
-
-    docker:
-      - image: << parameters.docker-image >>
-    steps:
-      - aws-cli/setup:
-          aws_access_key_id: << parameters.aws-access-key-id >>
-          aws_secret_access_key: << parameters.aws-secret-access-key >>
-          region: "${<< parameters.aws-region >>}"
-      - run:
-          name: Setup Environment Variables
-          command: |
-            echo 'export AWS_ECR_ACCOUNT_URL="<< parameters.ecr-url >>"' >> $BASH_ENV
-            echo 'export AWS_REGION="<< parameters.aws-region >>"' >> $BASH_ENV
-            echo 'export REPO_NAME="<< parameters.repo-name >>"' >> $BASH_ENV
-            echo 'export CODEBUILD_PROJECT_NAME="<< parameters.codebuild-project-name >>"' >> $BASH_ENV
-            echo 'export CODEBUILD_PROJECT_BRANCH="<< parameters.codebuild-project-branch >>"' >> $BASH_ENV
-      - attach_workspace:
-          at: << parameters.workspace >>
-      - when:
-          condition: << parameters.push >>
-          steps:
-            - run:
-                name: Run CodeBuild for ECR
-                command: |
-                  # Your script or commands to run CodeBuild if necessary
-                  echo "Running CodeBuild for ECR..."
-            - setup_remote_docker:
-                version: << parameters.remote-docker-version >>
-                docker_layer_caching: << parameters.remote-docker-layer-caching >>
-            - aws-ecr/build_and_push_image:
-                account_id: << parameters.aws-account-id >>
-                auth:
-                  - aws-cli/setup:
-                      aws_access_key_id: << parameters.aws-access-key-id >>
-                      aws_secret_access_key: << parameters.aws-secret-access-key >>
-                      region: << parameters.aws-region >>
-                checkout: false
-                repo: << parameters.repo-name >>
-                path: << parameters.path >>
-                build_path: << parameters.path >>
-                tag: << parameters.tag >>
-                extra_build_args: << parameters.extra-build-args >>
-                platform: 'linux/amd64,linux/arm64'
-                region: "${<< parameters.aws-region >>}"
-      - unless:
-          condition: << parameters.push >>
-          steps:
-            - setup_remote_docker:
-                version: << parameters.remote-docker-version >>
-                docker_layer_caching: << parameters.remote-docker-layer-caching >>
-            - aws-cli/setup:
-                aws_access_key_id: << parameters.aws-access-key-id >>
-                aws_secret_access_key: << parameters.aws-secret-access-key >>
-                region: << parameters.aws-region >>
-            - aws-ecr/build_image:
-                account_id: << parameters.aws-account-id >>
-                repo: << parameters.repo-name >>
-                path: << parameters.path >>
-                build_path: << parameters.path >>
-                tag: << parameters.tag >>
-                extra_build_args: << parameters.extra-build-args >>
-                platform: 'linux/amd64,linux/arm64'
-                region: "${<< parameters.aws-region >>}"
-                push_image: false
-
-# -----------------------------------------------------------------------
-# recommendation-api jobs
-
   apollo:
     machine:
       image: ubuntu-2404:2024.05.1
@@ -326,9 +189,9 @@ jobs:
           condition: << parameters.deploy >>
           steps:
             - aws-cli/setup:
-                aws_access_key_id: << parameters.env_capital_name >>_AWS_ACCESS_KEY
-                aws_secret_access_key: << parameters.env_capital_name >>_AWS_SECRET_ACCESS_KEY
-                region: ${<< parameters.env_capital_name >>_AWS_DEFAULT_REGION}
+                aws-access-key-id: << parameters.env_capital_name >>_AWS_ACCESS_KEY
+                aws-secret-access-key: << parameters.env_capital_name >>_AWS_SECRET_ACCESS_KEY
+                aws-region: << parameters.env_capital_name >>_AWS_DEFAULT_REGION
             - run:
                 name: Package Lambda
                 # We bundle our code in a way that lambda can understand and execute
@@ -403,7 +266,7 @@ workflows:
             - setup-deploy-params-prod
 
       # Try building the ECS docker image on each branch
-      - docker_build_new:
+      - pocket/docker_build:
           <<: *not_dev_main
           context: pocket
           name: build_docker
@@ -419,7 +282,7 @@ workflows:
             - build
 
       # Build & Deploy the Dev Docker Image
-      - docker_build_new:
+      - pocket/docker_build:
           <<: *only_dev
           context: pocket
           name: build_docker_dev
@@ -452,7 +315,7 @@ workflows:
             - build_docker_dev
 
       # Build & Deploy the Prod Docker Image
-      - docker_build_new:
+      - pocket/docker_build:
           <<: *only_main
           context: pocket
           name: build_docker_prod
