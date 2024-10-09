@@ -20,6 +20,6 @@ class Recommendation:
     feed_item_id: Optional[strawberry.ID] = strawberry.field(deprecation_reason="Use `id`")
     feed_id: auto
     item_id: strawberry.ID
-    item: Item = strawberry.federation.field(shareable=True)
+    item: Item = strawberry.federation
     rec_src: str
     publisher: auto

@@ -14,7 +14,8 @@ async def test_verify_candidate_set(candidate_sets_dynamodb_table, aiocache_fixt
             {
                 "feed_id": 1,
                 "item_id": 3208490410,
-                "publisher": "hbr.org"
+                "publisher": "hbr.org",
+                "url": "https://hbr.org"
             }
         ]
     })
@@ -32,7 +33,8 @@ async def test_get_candidate_set(candidate_sets_dynamodb_table, aiocache_fixture
             {
                 "feed_id": 1,
                 "item_id": 3208490410,
-                "publisher": "hbr.org"
+                "publisher": "hbr.org",
+                "url": "https://hbr.org"
             }
         ]
     })
@@ -54,7 +56,8 @@ async def test_get_cached_candidate_set(candidate_sets_dynamodb_table, aiocache_
             {
                 "feed_id": 1,
                 "item_id": 3208490410,
-                "publisher": "hbr.org"
+                "publisher": "hbr.org",
+                "url": "https://hbr.org"
             }
         ]
     })

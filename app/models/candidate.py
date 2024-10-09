@@ -5,3 +5,4 @@ class Candidate(BaseModel):
     item_id: int
     publisher: str
     feed_id: Optional[int]
+    url: str
