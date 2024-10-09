@@ -10,22 +10,26 @@ candidates = [
     {
         'feed_id': 1,
         'item_id': 3208490410,
-        'publisher': 'hbr.org'
+        'publisher': 'hbr.org',
+        "url": "https://hbr.org/12"
     },
     {
         'feed_id': 1,
         'item_id': 32087704190,
-        'publisher': 'hbr.org'
+        'publisher': 'hbr.org',
+        "url": "https://hbr.org/16"
     },
     {
         'feed_id': 12,
         'item_id': 32087904100,
-        'publisher': 'hbr.org'
+        'publisher': 'hbr.org',
+        "url": "https://hbr.org/18"
     },
     {
         'feed_id': 2,
         'item_id': 32087904870,
-        'publisher': 'hbr.org'
+        'publisher': 'hbr.org',
+        "url": "https://hbr.org/17"
     }
 ]
 

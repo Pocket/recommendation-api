@@ -18,7 +18,8 @@ test_candidate = {
         {
             "feed_id": 1,
             "item_id": 3208490410,
-            "publisher": "hbr.org"
+            "publisher": "hbr.org",
+            "url": "https://hbr.org"
         }
     ]
 }
@@ -31,12 +32,14 @@ test_candidate_2 = {
         {
             "feed_id": 1,
             "item_id": 11,
-            "publisher": "getpocket.com"
+            "publisher": "getpocket.com",
+            "url": "https://getpocket.com"
         },
         {
             "feed_id": 1,
             "item_id": 12,
-            "publisher": "getpocket.com"
+            "publisher": "getpocket.com",
+            "url": "https://getpocket.com/item/test"
         }
     ]
 }
@@ -119,17 +122,20 @@ class TestSlateLineupModel(TestDynamoDBBase):
                 {
                     "feed_id": 1,
                     "item_id": 3208490410,
-                    "publisher": "hbr.org"
+                    "publisher": "hbr.org",
+                    "url": "https://hbr.org"
                 },
                 {
                     "feed_id": 1,
                     "item_id": 3208650410,
-                    "publisher": "hbr.org"
+                    "publisher": "hbr.org",
+                    "url": "https://hbr.org/2"
                 },
                 {
                     "feed_id": 1,
                     "item_id": 32084925410,
-                    "publisher": "hbr.org"
+                    "publisher": "hbr.org",
+                    "url": "https://hbr.org/4"
                 }
             ]
         })
@@ -156,12 +162,14 @@ class TestSlateLineupModel(TestDynamoDBBase):
                 {
                     "feed_id": 1,
                     "item_id": 10,
-                    "publisher": "hbr.org"
+                    "publisher": "hbr.org",
+                    "url": "https://hbr.org/3"
                 },
                 {
                     "feed_id": 1,
                     "item_id": 11,
-                    "publisher": "hbr.org"
+                    "publisher": "hbr.org",
+                    "url": "https://hbr.org/123"
                 },
             ]
         })

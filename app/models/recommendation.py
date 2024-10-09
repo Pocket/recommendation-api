@@ -52,7 +52,7 @@ class RecommendationModel(BaseModel):
             feed_id=candidate.get('feed_id'),
             publisher=candidate.get('publisher'),
             item_id=candidate.get('item_id'),
-            item=ItemModel(item_id=candidate.get('item_id'))
+            item=ItemModel(item_id=candidate.get('item_id'), url=candidate.get('url')),
         )
         recommendation.feed_item_id = recommendation.id
         return recommendation
