@@ -10,7 +10,7 @@ from tests.mocks.feature_store_mock import FeatureStoreMock
 @pytest.mark.asyncio  # This pytest-asyncio decorator allows us to use an async side_effect
 class TestCorpusFeatureGroupClient:
 
-    def setup(self):
+    def setup_method(self):
         self.feature_store_mock = FeatureStoreMock(
             feature_group_name=CorpusFeatureGroupClient.get_feature_group_name(),
             records_json_path=os.path.join(app.config.ROOT_DIR, 'tests/assets/json/corpus_candidate_sets.json')
