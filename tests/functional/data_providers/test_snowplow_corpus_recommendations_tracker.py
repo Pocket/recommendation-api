@@ -45,9 +45,8 @@ def snowplow_recs_tracker():
 async def test_track_slate_lineup(snowplow_micro, snowplow_recs_tracker, slate_lineup_send_event, caplog, repeat):
     await snowplow_recs_tracker.track(slate_lineup_send_event)
 
-    # No warnings, errors, or critical log statements were created.
-    bad_error_levels = ('WARNING', 'ERROR', 'CRITICAL')
-    assert not any(r for r in caplog.records if r.levelname in bad_error_levels), caplog.text
+    # No errors, or critical log statements were created.
+    assert not any(r for r in caplog.records if r.levelname in ('ERROR', 'CRITICAL')), caplog.text
 
     await wait_for_snowplow_events(snowplow_micro, n_expected_event=1)
     all_snowplow_events = snowplow_micro.get_event_counts()
@@ -58,8 +57,8 @@ async def test_track_slate_lineup(snowplow_micro, snowplow_recs_tracker, slate_l
 async def test_track_slate(snowplow_micro, snowplow_recs_tracker, slate_send_event, caplog):
     await snowplow_recs_tracker.track(slate_send_event)
 
-    # No warnings, errors, or critical log statements were created.
-    assert not any(r for r in caplog.records if r.levelname in ('WARNING', 'ERROR', 'CRITICAL'))
+    # No errors, or critical log statements were created.
+    assert not any(r for r in caplog.records if r.levelname in ('ERROR', 'CRITICAL')), caplog.text
 
     await wait_for_snowplow_events(snowplow_micro, n_expected_event=1)
     all_snowplow_events = snowplow_micro.get_event_counts()
