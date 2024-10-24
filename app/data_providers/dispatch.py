@@ -8,8 +8,6 @@ from datetime import datetime
 
 from app.config import (
     NON_EN_US_HOME_TOPICS,
-    POCKET_HOME_NO_SYNDICATION_FEATURE_FLAG,
-    POCKET_HOME_MORE_LOCALES,
 )
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.slate_providers.pockety_worthy_provider import PocketWorthyProvider
@@ -166,15 +164,13 @@ class HomeDispatch:
             self, user: RequestUser, locale: LocaleModel, recommendation_count: int,
             api_client: ApiClient
     ) -> CorpusSlateLineupModel:
-        more_locales_assignment = await self.unleash_provider.get_assignment(POCKET_HOME_MORE_LOCALES, user=user)
         if locale == LocaleModel.en_US:
             slate_lineup_model, experiment = await self.get_en_us_slate_lineup(
                 recommendation_count=recommendation_count, user=user)
         elif locale == LocaleModel.de_DE:
             slate_lineup_model, experiment = await self.get_de_de_slate_lineup(
                 recommendation_count=recommendation_count, user=user)
-        elif (locale in (LocaleModel.en_GB, LocaleModel.fr_FR, LocaleModel.it_IT, LocaleModel.es_ES)
-              and more_locales_assignment is not None and more_locales_assignment.variant == 'treatment'):
+        elif (locale in (LocaleModel.en_GB, LocaleModel.fr_FR, LocaleModel.it_IT, LocaleModel.es_ES)):
             slate_lineup_model, experiment = await self.get_other_world_slate_lineup(
                 recommendation_count=recommendation_count, user=user)
         else:
@@ -182,29 +178,15 @@ class HomeDispatch:
             slate_lineup_model, experiment = await self.get_en_us_slate_lineup(
                 recommendation_count=recommendation_count, user=user)
 
-        # If we are in our custom locale group, and the flag is turned on, and we are assigned it. (control or treatement)
-        # Then we need to emit an enrollment
-        if (locale in (LocaleModel.en_GB, LocaleModel.fr_FR, LocaleModel.it_IT, LocaleModel.es_ES)
-              and more_locales_assignment is not None and more_locales_assignment.assigned == True):
-            asyncio.create_task(
-                self.snowplow.track(CorpusRecommendationsSendEvent(
-                    corpus_slate_lineup=slate_lineup_model,
-                    recommendation_surface_id=RecommendationSurfaceId.HOME,
-                    locale=locale.value,
-                    user=user,
-                    api_client=api_client,
-                    experiment=more_locales_assignment
-                )))
-        else:
-            asyncio.create_task(
-                self.snowplow.track(CorpusRecommendationsSendEvent(
-                    corpus_slate_lineup=slate_lineup_model,
-                    recommendation_surface_id=RecommendationSurfaceId.HOME,
-                    locale=locale.value,
-                    user=user,
-                    api_client=api_client,
-                    experiment=experiment
-                )))
+        asyncio.create_task(
+            self.snowplow.track(CorpusRecommendationsSendEvent(
+                corpus_slate_lineup=slate_lineup_model,
+                recommendation_surface_id=RecommendationSurfaceId.HOME,
+                locale=locale.value,
+                user=user,
+                api_client=api_client,
+                experiment=experiment
+            )))
 
 
 
@@ -224,11 +206,9 @@ class HomeDispatch:
             4. 'Life Hacks' slate
         """
         user_impression_capped_list, \
-            preferred_topics, \
-            no_syndication_assignment = await gather(
+            preferred_topics = await gather(
             self.user_impression_cap_provider.get(user),
-            self._get_preferred_topics(user),
-            self.unleash_provider.get_assignment(POCKET_HOME_NO_SYNDICATION_FEATURE_FLAG, user=user),
+            self._get_preferred_topics(user)
         )
 
         seed_id = self.get_seed_id(user=user)
@@ -245,15 +225,13 @@ class HomeDispatch:
             self.life_hacks_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
                                                      user_impression_capped_list=user_impression_capped_list),
         ]
-        if no_syndication_assignment is not None and no_syndication_assignment.variant == 'treatment':
-            del slates[0]
 
         return CorpusSlateLineupModel(
             slates=self._dedupe_and_limit(
                 slates=list(await gather(*slates)),
                 recommendation_count=recommendation_count,
             ),
-        ), no_syndication_assignment
+        ), None
 
     async def get_for_you_or_recommended_reads(self, preferred_topics: List[TopicModel],
                                                user_impression_capped_list: List[CorpusItemModel],

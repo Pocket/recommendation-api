@@ -81,7 +81,3 @@ NON_EN_US_HOME_TOPICS = [
     'BUSINESS',
     'SCIENCE',
 ]
-
-# Changes the slate lineups for home and removes syndication as a a/b test
-POCKET_HOME_NO_SYNDICATION_FEATURE_FLAG = 'temp.recommendation-api.pocket-home-no-syndication'
-POCKET_HOME_MORE_LOCALES = 'temp.recommendation-api.home.more-locales-v2'
