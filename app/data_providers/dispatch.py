@@ -293,7 +293,7 @@ class HomeDispatch:
             self.recommended_reads_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
                                                             user_impression_capped_list=user_impression_capped_list),
         ]
-        slates += await self._get_topic_slate_promises(preferred_topics=[], default=NON_EN_US_HOME_TOPICS)
+        slates += self._get_topic_slate_promises(preferred_topics=[], default=NON_EN_US_HOME_TOPICS)
 
         return CorpusSlateLineupModel(
             slates=self._dedupe_and_limit(
@@ -322,7 +322,7 @@ class HomeDispatch:
             self.life_hacks_slate_provider.get_slate(enable_thompson_sampling_with_seed=seed_id,
                                                      user_impression_capped_list=user_impression_capped_list),
         ]
-        slates += await self._get_topic_slate_promises(preferred_topics=[], default=NON_EN_US_HOME_TOPICS)
+        slates += self._get_topic_slate_promises(preferred_topics=[], default=NON_EN_US_HOME_TOPICS)
 
         return CorpusSlateLineupModel(
             slates=self._dedupe_and_limit(
