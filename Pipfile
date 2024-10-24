@@ -13,8 +13,7 @@ requests = "*"
 mypy_boto3_dynamodb = "*"
 pytest-mock = "*"
 aws_secretsmanager_caching = "*"
-# We define the essential stubs
-boto3-stubs = {extras = ["essential"], version = "==1.21.46"}
+boto3-stubs = {extras = ["essential"], version = "*"}
 aioresponses = "*"
 pytest-asyncio = "*"
 pytest-aiohttp = "*"
@@ -28,15 +27,12 @@ aioboto3 = "*"
 aiohttp = "*"
 gunicorn = "*"
 uvicorn = {extras = ["standard"], version = "*"}
-fastapi = "*"
+fastapi = {extras = ["standard"], version = "*"}
 gql = "*"
 scipy = "*"
 jsonschema = "*"
 aiocache = {extras = ["memcached"], version = "*"}
-# aiocache depends on aiomcache, but our stack isn't compatible with version >= 0.7:
-#   TypeError: __init__() got an unexpected keyword argument 'loop'
-aiomcache = "==0.6.*"
-# aiocache will automatically use ujson when available. ujson supports decimal types, and json does not.
+aiomcache = "*"
 ujson = "*"
 httptools = "*"
 aio-snowplow-tracker = "*"
@@ -51,4 +47,4 @@ opentelemetry-instrumentation-aiohttp-client = "==0.41b0"
 opentelemetry-instrumentation-fastapi = "==0.41b0"
 
 [requires]
-python_version = "3.8"
+python_version = "3.12"

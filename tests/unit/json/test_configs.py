@@ -4,7 +4,7 @@ from app.json.utils import parse_to_dict
 
 class TestConfigs():
 
-    def setup(self):
+    def setup_method(self):
         self.lineups = parse_to_dict("./app/json/slate_lineup_configs.json",
                                      "./app/json/slate_lineup_config.schema.json")
 
