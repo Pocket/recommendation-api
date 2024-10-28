@@ -30,7 +30,7 @@ export class SqsLambda extends Construct {
         visibilityTimeoutSeconds: 300,
       },
       lambda: {
-        runtime: 'python3.12' as LAMBDA_RUNTIMES,
+        runtime: 'python3.11' as LAMBDA_RUNTIMES,
         handler: 'aws_lambda.sqs_handler.handler',
         timeout: 120,
         executionPolicyStatements: [
