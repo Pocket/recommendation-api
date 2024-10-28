@@ -31,7 +31,7 @@ def preferences_provider(feature_store_mock, topic_provider_en_us) -> UserRecomm
 @pytest.mark.asyncio  # This pytest-asyncio decorator allows us to use an async side_effect
 class TestUserRecommendationPreferencesProvider:
 
-    def setup(self):
+    def setup_method(self):
         self.existing_user_id = 'aaaaaaaaaaaaaaa123'  # Defined in the above JSON fixture
 
     async def test_feature_group_name(self, preferences_provider):

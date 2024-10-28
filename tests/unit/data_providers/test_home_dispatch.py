@@ -50,7 +50,7 @@ class MockSlateProvider:
 @pytest.mark.asyncio
 class TestHomeDispatch:
 
-    def setup(self):
+    def setup_method(self):
         self.request_user = RequestUser(
             user_id=1,
             hashed_user_id='1-hashed',

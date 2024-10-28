@@ -12,7 +12,7 @@ class TestUserImpressionCapProvider:
 
     HASHED_USER_ID = 'aaaaaaaaaaaaaaa123'
 
-    def setup(self):
+    def setup_method(self):
         self.feature_store_mock = FeatureStoreMock(
             feature_group_name=UserImpressionCapProvider.get_feature_group_name(),
             records_json_path=os.path.join(app.config.ROOT_DIR, 'tests/assets/json/user_impressions_v2.json')
