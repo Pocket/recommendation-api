@@ -136,7 +136,7 @@ jobs:
         default: "aws_lambda/"
         type: string
     docker:
-      - image: python:3.8
+      - image: python:3.9
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
@@ -179,7 +179,7 @@ jobs:
         type: boolean
         default: true
     docker:
-      - image: python:3.8
+      - image: python:3.9
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD

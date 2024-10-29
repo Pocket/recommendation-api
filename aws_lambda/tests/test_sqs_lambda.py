@@ -7,7 +7,7 @@ import time
 import pytest
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 import boto3
-from moto import mock_dynamodb2
+from moto import mock_aws
 
 from aws_lambda.tests.fixtures.lambda_sqs_event import event, body, body2
 from aws_lambda.tests.fixtures.lambda_sqs_event_without_id import event_without_id
@@ -20,7 +20,7 @@ DYNAMODB_LOCALSTACK_DIR = os.path.join(ROOT_DIR, '.docker/localstack/dynamodb/')
 
 @pytest.fixture(scope='function')
 def mock_dynamodb_resource():
-    with mock_dynamodb2():
+    with mock_aws():
         yield boto3.resource('dynamodb')
 
 

@@ -167,7 +167,7 @@ export class RecommendationApiSynthetics extends Construct {
               'RECOMMENDATION_API_DOMAIN': config.domain,
           }
         },
-        runtimeVersion: 'syn-python-selenium-1.3',
+        runtimeVersion: 'syn-python-selenium-4.1',
         schedule: {
           expression: 'rate(5 minutes)', // run every 5 minutes
         },
