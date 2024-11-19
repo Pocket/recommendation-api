@@ -1,9 +1,9 @@
 version: 2.1
 
 orbs:
-  aws-cli: circleci/aws-cli@1.2.1
-  aws-ecs: circleci/aws-ecs@2.0.0
-  pocket: pocket/circleci-orbs@2.1.2
+  pocket: pocket/circleci-orbs@2.3.0
+
+  aws-cli: circleci/aws-cli@2.0.6
 
 # Workflow shortcuts
 not_main: &not_main
@@ -37,10 +37,11 @@ only_dev: &only_dev
       only:
         - dev
 
+
 jobs:
   apollo:
     machine:
-      image: ubuntu-2004:2023.02.1
+      image: ubuntu-2404:2024.05.1
       docker_layer_caching: true
     steps:
       - checkout
@@ -88,7 +89,7 @@ jobs:
     #Sets up the code for the docker image to build in
     #Other repos at Pocket use this to install modules and or compile the code.
     docker:
-      - image: python:3.8
+      - image: python:3.12
     steps:
       - checkout
       # Define the working directory for this job
@@ -110,7 +111,7 @@ jobs:
 
   test_app:
     machine:
-      image: ubuntu-2004:2023.02.1
+      image: ubuntu-2404:2024.05.1
       #docker_layer_caching: true  # This prevents the latest snowplow-micro image from being pulled.
     steps:
       - checkout
@@ -135,7 +136,7 @@ jobs:
         default: "aws_lambda/"
         type: string
     docker:
-      - image: python:3.8
+      - image: python:3.9
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
@@ -178,7 +179,7 @@ jobs:
         type: boolean
         default: true
     docker:
-      - image: python:3.8
+      - image: python:3.9
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
@@ -272,6 +273,7 @@ workflows:
           aws-access-key-id: Dev_AWS_ACCESS_KEY
           aws-secret-access-key: Dev_AWS_SECRET_ACCESS_KEY
           aws-region: Dev_AWS_DEFAULT_REGION
+          aws-account-id: '410318598490'
           repo-name: recommendationapi-dev-app
           ecr-url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
           extra-build-args: --build-arg GIT_SHA=${CIRCLE_SHA1}
@@ -289,6 +291,7 @@ workflows:
           aws-region: Dev_AWS_DEFAULT_REGION
           codebuild-project-name: RecommendationAPI-Dev
           codebuild-project-branch: dev
+          aws-account-id: '410318598490'
           repo-name: recommendationapi-dev-app
           ecr-url: 410318598490.dkr.ecr.us-east-1.amazonaws.com
           extra-build-args: --build-arg GIT_SHA=${CIRCLE_SHA1}
@@ -319,6 +322,7 @@ workflows:
           aws-access-key-id: Prod_AWS_ACCESS_KEY
           aws-secret-access-key: Prod_AWS_SECRET_ACCESS_KEY
           aws-region: Prod_AWS_DEFAULT_REGION
+          aws-account-id: '996905175585'
           codebuild-project-name: RecommendationAPI-Prod
           codebuild-project-branch: main
           repo-name: recommendationapi-prod-app

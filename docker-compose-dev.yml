@@ -1,7 +1,5 @@
 # This config connects with the Pocket-Dev environment for local development.
 
-version: '3.8'
-
 services:
   app_dev:
     build:

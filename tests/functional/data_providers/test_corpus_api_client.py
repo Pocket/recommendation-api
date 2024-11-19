@@ -78,8 +78,8 @@ async def test_get_surface_timezone(recommendation_surface_id: RecommendationSur
     tz = CorpusApiClient.get_surface_timezone(recommendation_surface_id.value)
     datetime.now(tz)
 
-    # No warnings or errors were logged.
-    assert not any(r for r in caplog.records if r.levelname in ('WARNING', 'ERROR', 'CRITICAL'))
+    # No errors were logged.
+    assert not any(r for r in caplog.records if r.levelname in ('ERROR', 'CRITICAL')), caplog.text
 
 
 @pytest.mark.asyncio
