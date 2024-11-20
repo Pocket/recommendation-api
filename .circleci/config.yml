@@ -166,7 +166,7 @@ jobs:
           path: test-reports
 
   lambda:
-    description: Builds and Optionaly deploys all the associated lambdas
+    description: Builds and Optionally deploys associated lambdas
     parameters:
       env_lower_name:
         type: string
@@ -178,6 +178,10 @@ jobs:
       deploy:
         type: boolean
         default: true
+      lambda_path:
+        type: string
+        description: Path to the lambda directory
+        default: "aws_lambda/"
     docker:
       - image: python:3.9
         auth:
@@ -194,24 +198,17 @@ jobs:
                 aws-region: << parameters.env_capital_name >>_AWS_DEFAULT_REGION
             - run:
                 name: Package Lambda
-                # We bundle our code in a way that lambda can understand and execute
-                # - pipenv requirements > requirements.txt - output a requirements.txt file from Pipfile
-                # - pip install -r requirements.txt --no-deps -t package | installs the requirements into a "package" directory
-                # - change dir into the "package" dir and add all the packages to a zip file as /tmp
-                # - change dir into the "aws_lambda" dir and remove all files and folder we want to exclude from the build
-                # - change dir into the root of the application and add the "aws_lambda" dir to the zip file excluding the Pipfile and Pipfile.lock
-                # - copy the zip file to /tmp/build.zip and store as a CI artifact for quick inspection of the build
                 command: |
                   apt-get update && apt-get install zip
                   pip install pipenv==2022.8.15
-                  cd aws_lambda
+                  cd <<parameters.lambda_path>>
                   pipenv requirements > requirements.txt
                   pip install -r requirements.txt --no-deps -t package
                   cd package
                   mkdir -p /tmp
                   zip -r9 "/tmp/$CIRCLE_SHA1.zip" . -x \*__pycache__\* \.git\*
                   cd .. && rm -rf package __pycache__ requirements.txt && cd ..
-                  zip -gr "/tmp/$CIRCLE_SHA1.zip" aws_lambda -x aws_lambda/Pipfile*
+                  zip -gr "/tmp/$CIRCLE_SHA1.zip" <<parameters.lambda_path>> -x <<parameters.lambda_path>>/Pipfile*
                   cp "/tmp/$CIRCLE_SHA1.zip" /tmp/build.zip
             - run:
                 name: Upload Package
@@ -221,9 +218,9 @@ jobs:
                 aws-access-key-id: << parameters.env_capital_name >>_AWS_ACCESS_KEY
                 aws-secret-access-key: << parameters.env_capital_name >>_AWS_SECRET_ACCESS_KEY
                 aws-region: << parameters.env_capital_name >>_AWS_DEFAULT_REGION
-                codedeploy-application-name: RecommendationAPI-<< parameters.env_capital_name >>-Sqs-Translation-Lambda
-                codedeploy-deployment-group-name: RecommendationAPI-<< parameters.env_capital_name >>-Sqs-Translation-Lambda
-                function-name: RecommendationAPI-<< parameters.env_capital_name >>-Sqs-Translation-Function
+                codedeploy-application-name: RecommendationAPI-<< parameters.env_capital_name >>-<< parameters.lambda_path >>-Lambda
+                codedeploy-deployment-group-name: RecommendationAPI-<< parameters.env_capital_name >>-<< parameters.lambda_path >>-Lambda
+                function-name: RecommendationAPI-<< parameters.env_capital_name >>-<< parameters.lambda_path >>-Function
 
       - store_artifacts:
           path: /tmp/build.zip
@@ -247,9 +244,21 @@ workflows:
       - lambda:
           <<: *only_dev
           context: pocket
-          name: deploy_lambdas_dev
+          name: deploy_lambda_dev_aws
           env_lower_name: dev
           env_capital_name: Dev
+          lambda_path: "aws_lambda/"
+          deploy: true
+          requires:
+            - setup-deploy-params-dev
+
+      - lambda:
+          <<: *only_dev
+          context: pocket
+          name: deploy_lambda_dev_remove_item
+          env_lower_name: dev
+          env_capital_name: Dev
+          lambda_path: "remove_item_lambda/"
           deploy: true
           requires:
             - setup-deploy-params-dev
@@ -258,9 +267,21 @@ workflows:
       - lambda:
           <<: *only_main
           context: pocket
-          name: deploy_lambdas_prod
+          name: deploy_lambda_prod_aws
           env_lower_name: prod
           env_capital_name: Prod
+          lambda_path: "aws_lambda/"
+          deploy: true
+          requires:
+            - setup-deploy-params-prod
+
+      - lambda:
+          <<: *only_main
+          context: pocket
+          name: deploy_lambda_prod_remove_item
+          env_lower_name: prod
+          env_capital_name: Prod
+          lambda_path: "remove_item_lambda/"
           deploy: true
           requires:
             - setup-deploy-params-prod

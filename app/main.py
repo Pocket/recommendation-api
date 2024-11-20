@@ -2,7 +2,7 @@ import logging
 
 import sentry_sdk
 import uvicorn
-from fastapi import FastAPI, Response, status
+from fastapi import FastAPI, Request, Response, status
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
@@ -27,6 +27,7 @@ from app.models.slate_lineup_experiment import SlateLineupExperimentModel
 from app.singletons import DiContainer
 
 logging.getLogger().setLevel(log_level)
+logger = logging.getLogger(__name__)
 
 sentry_sdk.init(
     dsn=sentry_config['dsn'],
@@ -103,6 +104,21 @@ async def load_slate_configs():
 @app.on_event("startup")
 async def startup_event():
     DiContainer.init()
+
+@app.post("/remove")
+async def remove_event(request: Request, response: Response):
+    """
+    Handles remove events triggered by EventBridge.
+    Logs the event details for debugging or processing.
+    """
+    try:
+        body = await request.json()
+        logger.info("Received remove event: %s", body)
+        return {"status": "success", "message": "Event logged successfully."}
+    except Exception as e:
+        logger.error("Error processing remove event: %s", str(e))
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"status": "error", "message": "Failed to process event."}
 
 
 if __name__ == "__main__":
