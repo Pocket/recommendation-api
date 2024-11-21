@@ -55,7 +55,7 @@ export class RemoveItemLambda extends Construct {
       description: 'Event rule for REMOVE_ITEM events to SQS',
       eventPattern: JSON.stringify({
         source: ['curation-migration-datasync'],
-        detailType: ['REMOVE_ITEM'],
+        "detail-type": ['REMOVE_ITEM'],
       }),
       eventBusName: 'default',
     });
