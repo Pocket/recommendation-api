@@ -24,7 +24,7 @@ export class RemoveItemLambda extends Construct {
       },
       lambda: {
         runtime: 'python3.9' as LAMBDA_RUNTIMES,
-        handler: 'remove_handler.lambda_handler',
+        handler: 'remove_item_lambda.sqs_handler.handler',
         timeout: 120,
         executionPolicyStatements: [
           {
