@@ -170,18 +170,23 @@ jobs:
     parameters:
       env_lower_name:
         type: string
-        description: The lower case env name
+        description: The lower case environment name (e.g., dev or prod)
       env_capital_name:
-        default: Env Name
-        description: The env capital name
         type: string
+        description: The capitalized environment name (e.g., Dev or Prod)
+      lambda_lower_name:
+        type: string
+        description: Lowercase part of the Lambda name (e.g., sqs-removeeventhandler or sqs-translation)
+      lambda_capital_name:
+        type: string
+        description: Capitalized part of the Lambda name (e.g., SqsRemoveeventhandler or SqsTranslation)
+      lambda_path:
+        type: string
+        description: Path to the Lambda source code (e.g., aws_lambda/ or remove_item_lambda/)
+        default: "aws_lambda/"
       deploy:
         type: boolean
         default: true
-      lambda_path:
-        type: string
-        description: Path to the lambda directory
-        default: "aws_lambda/"
     docker:
       - image: python:3.9
         auth:
@@ -211,16 +216,17 @@ jobs:
                   zip -gr "/tmp/$CIRCLE_SHA1.zip" <<parameters.lambda_path>> -x <<parameters.lambda_path>>/Pipfile*
                   cp "/tmp/$CIRCLE_SHA1.zip" /tmp/build.zip
             - run:
-                name: Upload Package
-                command: aws s3 cp "/tmp/$CIRCLE_SHA1.zip" s3://pocket-recommendationapi-<< parameters.env_lower_name >>-sqs-translation/
+                name: Upload Package to S3
+                command: |
+                  aws s3 cp "/tmp/$CIRCLE_SHA1.zip" s3://pocket-recommendationapi-<< parameters.env_lower_name >>-<< parameters.lambda_lower_name >>/
             - pocket/deploy_lambda:
-                s3-bucket: pocket-recommendationapi-<< parameters.env_lower_name >>-sqs-translation
+                s3-bucket: pocket-recommendationapi-<< parameters.env_lower_name >>-<< parameters.lambda_lower_name >>
                 aws-access-key-id: << parameters.env_capital_name >>_AWS_ACCESS_KEY
                 aws-secret-access-key: << parameters.env_capital_name >>_AWS_SECRET_ACCESS_KEY
                 aws-region: << parameters.env_capital_name >>_AWS_DEFAULT_REGION
-                codedeploy-application-name: RecommendationAPI-<< parameters.env_capital_name >>-<< parameters.lambda_path >>-Lambda
-                codedeploy-deployment-group-name: RecommendationAPI-<< parameters.env_capital_name >>-<< parameters.lambda_path >>-Lambda
-                function-name: RecommendationAPI-<< parameters.env_capital_name >>-<< parameters.lambda_path >>-Function
+                codedeploy-application-name: RecommendationAPI-<< parameters.env_capital_name >>-<< parameters.lambda_capital_name >>-Lambda
+                codedeploy-deployment-group-name: RecommendationAPI-<< parameters.env_capital_name >>-<< parameters.lambda_capital_name >>-Lambda
+                function-name: RecommendationAPI-<< parameters.env_capital_name >>-<< parameters.lambda_capital_name >>-Function
 
       - store_artifacts:
           path: /tmp/build.zip
@@ -240,51 +246,51 @@ workflows:
 
       - build
 
-      # Build & Deploy Development Lambdas
-      - lambda:
-          <<: *only_dev
-          context: pocket
-          name: deploy_lambda_dev_aws
-          env_lower_name: dev
-          env_capital_name: Dev
-          lambda_path: "aws_lambda/"
-          deploy: true
-          requires:
-            - setup-deploy-params-dev
-
+      # Deploy Dev Lambdas
       - lambda:
           <<: *only_dev
           context: pocket
           name: deploy_lambda_dev_remove_item
           env_lower_name: dev
           env_capital_name: Dev
+          lambda_lower_name: sqs-removeeventhandler
+          lambda_capital_name: Sqs-RemoveEventHandler
           lambda_path: "remove_item_lambda/"
           deploy: true
-          requires:
-            - setup-deploy-params-dev
 
-      # Build & Deploy Production Lambdas
       - lambda:
-          <<: *only_main
+          <<: *only_dev
           context: pocket
-          name: deploy_lambda_prod_aws
-          env_lower_name: prod
-          env_capital_name: Prod
+          name: deploy_lambda_dev_translation
+          env_lower_name: dev
+          env_capital_name: Dev
+          lambda_lower_name: sqs-translation
+          lambda_capital_name: Sqs-Translation
           lambda_path: "aws_lambda/"
           deploy: true
-          requires:
-            - setup-deploy-params-prod
 
+      # Deploy Prod Lambdas
       - lambda:
           <<: *only_main
           context: pocket
           name: deploy_lambda_prod_remove_item
           env_lower_name: prod
           env_capital_name: Prod
+          lambda_lower_name: sqs-removeeventhandler
+          lambda_capital_name: Sqs-RemoveEventHandler
           lambda_path: "remove_item_lambda/"
           deploy: true
-          requires:
-            - setup-deploy-params-prod
+
+      - lambda:
+          <<: *only_main
+          context: pocket
+          name: deploy_lambda_prod_translation
+          env_lower_name: prod
+          env_capital_name: Prod
+          lambda_lower_name: sqs-translation
+          lambda_capital_name: Sqs-Translation
+          lambda_path: "aws_lambda/"
+          deploy: true
 
       # Try building the ECS docker image on each branch
       - pocket/docker_build:
