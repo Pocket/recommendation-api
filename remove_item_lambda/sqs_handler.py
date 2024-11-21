@@ -6,7 +6,7 @@ from typing import Dict, Any
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-def lambda_handler(event: Dict[str, Any], context=None):
+def handler(event: Dict[str, Any], context=None):
     """
     Handles SQS messages triggered by REMOVE_ITEM EventBridge events.
     :param event: Event with one or multiple 'Records', where each record's 'body' contains the event payload.
