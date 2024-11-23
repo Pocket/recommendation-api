@@ -1,11 +1,15 @@
-import { Construct } from 'constructs';
-import { config } from './config';
-import { PocketSQSWithLambdaTarget, PocketVPC } from '@pocket-tools/terraform-modules';
-import { LAMBDA_RUNTIMES } from '@pocket-tools/terraform-modules';
-import { CloudwatchEventRule } from '@cdktf/provider-aws/lib/cloudwatch-event-rule';
-import { CloudwatchEventTarget } from '@cdktf/provider-aws/lib/cloudwatch-event-target';
-import { DataAwsSsmParameter } from '@cdktf/provider-aws/lib/data-aws-ssm-parameter';
-import { Elasticache } from './elasticache';
+import {Construct} from 'constructs';
+import {config} from './config';
+import {
+  LAMBDA_RUNTIMES,
+  PocketSQSWithLambdaTarget,
+  PocketVPC
+} from '@pocket-tools/terraform-modules';
+import {CloudwatchEventRule} from '@cdktf/provider-aws/lib/cloudwatch-event-rule';
+import {CloudwatchEventTarget} from '@cdktf/provider-aws/lib/cloudwatch-event-target';
+import {DataAwsSsmParameter} from '@cdktf/provider-aws/lib/data-aws-ssm-parameter';
+import {Elasticache} from './elasticache';
+import {SqsQueuePolicy} from '@cdktf/provider-aws/lib/sqs-queue-policy';
 
 export class RemoveItemLambda extends Construct {
   constructor(scope: Construct, name: string, elasticache: Elasticache) {
@@ -15,7 +19,7 @@ export class RemoveItemLambda extends Construct {
 
     const { sentryDsn, gitSha } = this.getEnvVariableValues();
 
-    const sqsWithLambda =  new PocketSQSWithLambdaTarget(this, 'remove-sqs-lambda', {
+    const sqsWithLambda = new PocketSQSWithLambdaTarget(this, 'remove-sqs-lambda', {
       name: `${config.prefix}-Sqs-RemoveEventHandler`,
       batchSize: 1,
       sqsQueue: {
@@ -53,6 +57,8 @@ export class RemoveItemLambda extends Construct {
     const eventRule = new CloudwatchEventRule(this, 'remove-event-rule', {
       name: `${config.prefix}-RemoveEventRule`,
       description: 'Event rule for REMOVE_ITEM events to SQS',
+      // source and detail-type are defined in:
+      // https://github.com/Pocket/content-monorepo/blob/main/servers/curated-corpus-api/src/config/index.ts
       eventPattern: JSON.stringify({
         source: ['curation-migration-datasync'],
         'detail-type': ['remove-approved-item'],
@@ -63,6 +69,23 @@ export class RemoveItemLambda extends Construct {
     new CloudwatchEventTarget(this, 'remove-event-target', {
       rule: eventRule.name,
       arn: sqsWithLambda.sqsQueueResource.arn,
+    });
+
+    // Allow the EventRule to invoke the SQS Queue
+    new SqsQueuePolicy(this, 'sqs-queue-policy', {
+      queueUrl: sqsWithLambda.sqsQueueResource.url,
+      policy: JSON.stringify({
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: { Service: 'events.amazonaws.com' },
+            Action: 'sqs:SendMessage',
+            Resource: sqsWithLambda.sqsQueueResource.arn,
+            Condition: { ArnEquals: { 'aws:SourceArn': eventRule.arn } },
+          },
+        ],
+      }),
     });
   }
 
