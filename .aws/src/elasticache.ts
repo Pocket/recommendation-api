@@ -26,6 +26,11 @@ export class Elasticache extends Construct {
     const pocketVPC = new PocketVPC(scope, 'pocket-shared-vpc');
 
     const elasticache = new ApplicationMemcache(scope, 'memcached', {
+      //Usually we would set the security group ids of the service that needs to hit this.
+      //However we don't have the necessary security group because it gets created in PocketALBApplication
+      //So instead we set it to null and allow anything within the vpc to access it.
+      //This is not ideal..
+      //Ideally we need to be able to add security groups to the ALB application.
       allowedIngressSecurityGroupIds: undefined,
       node: {
         count: config.cacheNodes,
@@ -36,9 +41,16 @@ export class Elasticache extends Construct {
       prefix: config.prefix,
     });
 
-    const nodeList: string[] = [];
+    let nodeList: string[] = [];
     for (let i = 0; i < config.cacheNodes; i++) {
-      nodeList.push(`${elasticache.elasticacheCluster.cacheNodes.get(i).address}:11211`);
+      // ${elasticache.elasticacheClister.cacheNodes(i.toString()).port} has a bug and is not rendering the proper terraform address
+      // its rendering -1.8881545897087503e+289 for some weird reason...
+      // For now we just hardcode to 11211 which is the default memcache port.
+      nodeList.push(
+          `${
+              elasticache.elasticacheCluster.cacheNodes.get(i).address
+          }:11211`
+      );
     }
 
     const clusterArn = elasticache.elasticacheCluster.arn;

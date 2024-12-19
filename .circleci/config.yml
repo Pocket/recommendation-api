@@ -203,6 +203,13 @@ jobs:
                 aws-region: << parameters.env_capital_name >>_AWS_DEFAULT_REGION
             - run:
                 name: Package Lambda
+                # We bundle our code in a way that lambda can understand and execute
+                # - pipenv requirements > requirements.txt - output a requirements.txt file from Pipfile
+                # - pip install -r requirements.txt --no-deps -t package | installs the requirements into a "package" directory
+                # - change dir into the "package" dir and add all the packages to a zip file as /tmp
+                # - change dir into the "aws_lambda" dir and remove all files and folder we want to exclude from the build
+                # - change dir into the root of the application and add the "aws_lambda" dir to the zip file excluding the Pipfile and Pipfile.lock
+                # - copy the zip file to /tmp/build.zip and store as a CI artifact for quick inspection of the build
                 command: |
                   apt-get update && apt-get install zip
                   pip install pipenv==2022.8.15
@@ -280,6 +287,8 @@ workflows:
           lambda_capital_name: Sqs-RemoveEventHandler
           lambda_path: "remove_item_lambda/"
           deploy: true
+          requires:
+            - setup-deploy-params-prod
 
       - lambda:
           <<: *only_main
@@ -291,6 +300,8 @@ workflows:
           lambda_capital_name: Sqs-Translation
           lambda_path: "aws_lambda/"
           deploy: true
+          requires:
+            - setup-deploy-params-prod
 
       # Try building the ECS docker image on each branch
       - pocket/docker_build:
