@@ -6,6 +6,7 @@ import {DynamoDB} from "./dynamodb";
 import {PocketALBApplication, PocketECSCodePipeline} from "@pocket-tools/terraform-modules";
 import {SqsLambda} from "./sqsLambda";
 import {Elasticache} from "./elasticache";
+import {RemoveItemLambda} from "./removeItemLambda";
 import {RecommendationApiSynthetics} from './monitoring';
 
 import {ArchiveProvider} from '@cdktf/provider-archive/lib/provider';
@@ -40,12 +41,13 @@ class RecommendationAPI extends TerraformStack {
         const caller = new DataAwsCallerIdentity(this, 'caller');
 
         const dynamodb = new DynamoDB(this, 'dynamodb');
+        const elasticache = new Elasticache(this, 'elasticache');
 
         const pocketApp = this.createPocketAlbApplication({
             secretsManagerKmsAlias: this.getSecretsManagerKmsAlias(),
             region,
             caller,
-            elasticache: new Elasticache(this, 'elasticache'),
+            elasticache,
             dynamodb: dynamodb
         });
 
@@ -54,7 +56,11 @@ class RecommendationAPI extends TerraformStack {
         const synthetic = new RecommendationApiSynthetics(this, 'synthetics');
         synthetic.createSyntheticCheck([]);
 
+        // Lambda for storing candidate sets for Pocket Explore & Topic pages in DynamoDB.
         new SqsLambda(this, 'sqs-lambda', dynamodb.candidateSetsTable);
+
+        // Lambda for caching removed items, to avoid sending them to Pocket Home.
+        new RemoveItemLambda(this, 'remove-item-lambda', elasticache);
     }
 
 
