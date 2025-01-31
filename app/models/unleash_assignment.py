@@ -8,5 +8,5 @@ class UnleashAssignmentModel(BaseModel):
     """
     assigned: bool
     name: str
-    payload: str = None
-    variant: str = None
+    payload: str | None = None
+    variant: str | None = None
