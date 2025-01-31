@@ -101,4 +101,6 @@ class UnleashProvider:
         async with self.pocket_graph_client_session.post(url='/', json=body, raise_for_status=True) as resp:
             response_json = await resp.json()
             assignments_data = response_json['data']['unleashAssignments']['assignments']
-            return [UnleashAssignmentModel.parse_obj(assignment) for assignment in assignments_data]
+            return [
+                UnleashAssignmentModel.model_validate(assignment) for assignment in assignments_data
+            ]
