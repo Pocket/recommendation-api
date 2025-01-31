@@ -44,4 +44,4 @@ class TopicModel(BaseModel):
     @staticmethod
     def from_dict(item: Dict) -> 'TopicModel':
         # Map display_name to name. display_name is being deprecated, but still present in the database.
-        return TopicModel.model_validate(dict({'name': item['display_name']}, **item))
+        return TopicModel.parse_obj(dict({'name': item['display_name']}, **item))
