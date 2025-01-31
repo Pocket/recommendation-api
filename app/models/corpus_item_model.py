@@ -7,9 +7,9 @@ from pydantic import BaseModel, Field
 
 class CorpusItemModel(BaseModel):
     id: str
-    topic: str | None = None
-    publisher: str | None = None
-    url: str | None = None
+    topic: str = None
+    publisher: str = None
+    url: str = None
 
     ranked_with_engagement_updated_at: Optional[datetime] = Field(
         default=None,
