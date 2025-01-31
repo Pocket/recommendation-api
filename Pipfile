@@ -37,7 +37,7 @@ ujson = "*"
 httptools = "*"
 aio-snowplow-tracker = "*"
 strawberry-graphql = {extras = ["fastapi", "opentelemetry", "cli"], version = "*"}
-qdrant-client = "~=1.0"
+qdrant-client = "==0.11.6"
 pytz = "*"
 opentelemetry-api = "*"
 opentelemetry-sdk = "*"

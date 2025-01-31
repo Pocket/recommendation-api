@@ -4,7 +4,7 @@ import uuid
 from typing import Sequence
 
 from asgi_lifespan import LifespanManager
-from httpx import AsyncClient, ASGITransport
+from httpx import AsyncClient
 
 from app.data_providers.corpus.corpus_feature_group_client import CorpusFeatureGroupClient
 from app.data_providers.feature_group.feature_group_client import FeatureGroupClient
@@ -123,7 +123,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         mock_get_user_impression_caps.return_value = corpus_items_fixture[:6]
         mock_get_all_assignments.return_value = []
 
-        async with AsyncClient(transport=ASGITransport(app), base_url="http://test") as client, LifespanManager(app):
+        async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
             response = await client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers=self.headers)
             data = response.json()
 
@@ -169,7 +169,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         mock_get_user_impression_caps.return_value = corpus_items_fixture[:6]
         mock_get_all_assignments.return_value = []
 
-        async with AsyncClient(transport=ASGITransport(app), base_url="http://test") as client, LifespanManager(app):
+        async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
             response = await client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers=self.headers)
             data = response.json()
 
@@ -206,7 +206,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         mock_get_all_assignments.return_value = []
         mock_batch_get_records.return_value = []
 
-        async with AsyncClient(transport=ASGITransport(app), base_url="http://test") as client, LifespanManager(app):
+        async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
             response = await client.post('/', json={'query': _get_home_query('de-DE')}, headers=self.headers)
             data = response.json()
 
@@ -241,7 +241,7 @@ class TestHomeSlateLineup(TestDynamoDBBase):
         mock_get_user_impression_caps.return_value = []
         mock_get_all_assignments.return_value = []
 
-        async with AsyncClient(transport=ASGITransport(app), base_url="http://test") as client, LifespanManager(app):
+        async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
             response = await client.post('/', json={'query': HOME_SLATE_LINEUP_QUERY}, headers={
             'apiId': '94110',
             'consumerKey': 'web-client-consumer-key',
