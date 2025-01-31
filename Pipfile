@@ -45,6 +45,7 @@ opentelemetry-sdk-extension-aws = "*"
 opentelemetry-exporter-otlp-proto-grpc = "*"
 opentelemetry-instrumentation-aiohttp-client = "==0.41b0"
 opentelemetry-instrumentation-fastapi = "==0.41b0"
+pydantic = "==1.*"  # v2 causes a validation error when custom_feed_id is set to a Decimal for logged-in users.
 
 [requires]
 python_version = "3.12"
