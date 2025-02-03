@@ -1,7 +1,7 @@
 import uuid
 
 from asyncio import gather
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 
 from app.models.recommendation import RecommendationModel
@@ -14,6 +14,8 @@ class SlateModel(BaseModel):
     """
     Models a slate
     """
+    model_config = ConfigDict(coerce_numbers_to_str=True)
+
     id: str
     requestId: str | None = Field(
         default=None,

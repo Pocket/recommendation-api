@@ -1,7 +1,7 @@
 from asyncio import gather
 
 from enum import Enum
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from app.config import dynamodb as dynamodb_config
 from app.models.candidate_set import candidate_set_factory
@@ -25,6 +25,8 @@ class RecommendationModel(BaseModel):
     A recommendation models a single article. The properties here are the bare minimum necessary to represent an
     article. The `item` property contains all article details, e.g. title, excerpt, image, etc.
     """
+    model_config = ConfigDict(coerce_numbers_to_str=True)
+
     id: str = Field(
         description='A generated id from the Data and Learning team that represents the Recommendation')
     feed_item_id: str | None = Field(

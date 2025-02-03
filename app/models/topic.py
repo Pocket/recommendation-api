@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Dict, Optional
 
 
@@ -16,6 +16,8 @@ class TopicModel(BaseModel):
     """
     Models a topic, e.g. Technology, Gaming.
     """
+    model_config = ConfigDict(coerce_numbers_to_str=True)
+
     id: str = Field(description='The legacy UUID id of the topic')
     corpus_topic_id: str = Field(description='Corpus API topic identifier')
     name: str = Field(description='The name of the topic to show to the user')
