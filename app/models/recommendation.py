@@ -27,10 +27,10 @@ class RecommendationModel(BaseModel):
     """
     id: str = Field(
         description='A generated id from the Data and Learning team that represents the Recommendation')
-    feed_item_id: str = Field(
+    feed_item_id: str | None = Field(
         default=None,
         description='A generated id from the Data and Learning team that represents the Recommendation - Deprecated')
-    feed_id: int = Field(
+    feed_id: int | None = Field(
         default=None,
         description='The feed id from mysql that this item was curated from (if it was curated)')
     item_id: str = Field(
@@ -38,7 +38,7 @@ class RecommendationModel(BaseModel):
                     'TODO: Use apollo federation to turn this into an Item type.')
     item: ItemModel = Field(description='The Item that is resolved by apollo federation using the itemId')
     rec_src: str = Field(default='RecommendationAPI', description='The source of the recommendation')
-    publisher: str = Field(default=None, description='The publisher of the item')
+    publisher: str | None = Field(default=None, description='The publisher of the item')
 
     @staticmethod
     def candidate_dict_to_recommendation(candidate: dict):
@@ -51,8 +51,8 @@ class RecommendationModel(BaseModel):
             id=f'RecommendationAPI/{candidate.get("item_id")}',
             feed_id=candidate.get('feed_id'),
             publisher=candidate.get('publisher'),
-            item_id=candidate.get('item_id'),
-            item=ItemModel(item_id=candidate.get('item_id'))
+            item_id=str(candidate.get('item_id')),
+            item=ItemModel(item_id=str(candidate.get('item_id')))
         )
         recommendation.feed_item_id = recommendation.id
         return recommendation

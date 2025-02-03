@@ -50,4 +50,4 @@ class TestSlateModel(unittest.IsolatedAsyncioTestCase):
         recommendations = [
             RecommendationModel.candidate_dict_to_recommendation({'item_id': item_id}) for item_id in item_ids
         ]
-        return SlateModel(id=1, recommendations=recommendations)
+        return SlateModel(id="1", recommendations=recommendations)

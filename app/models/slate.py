@@ -15,16 +15,16 @@ class SlateModel(BaseModel):
     Models a slate
     """
     id: str
-    requestId: str = Field(
+    requestId: str | None = Field(
         default=None,
         description='A guid that is unique to every API request that returned slates, such as `getSlateLineup` or '
                     '`getSlate`. The API will provide a new request id every time apps hit the API.')
-    experimentId: str = Field(
+    experimentId: str | None = Field(
         default=None,
         description='A unique guid/slug, provided by the Data & Learning team that can identify a specific experiment. '
                     'Production apps typically won\'t request a specific one, but can for QA or during a/b testing.')
-    display_name: str = Field(default=None, description='The name to show to the user for this set of recommendations')
-    description: str = Field(default=None, description='The description of the the slate')
+    display_name: str | None = Field(default=None, description='The name to show to the user for this set of recommendations')
+    description: str | None = Field(default=None, description='The description of the the slate')
     recommendations: List[RecommendationModel] = Field(
         default=None, description='An ordered list of the recommendations to show to the user')
 
