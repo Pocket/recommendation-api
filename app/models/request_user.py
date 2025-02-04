@@ -1,6 +1,6 @@
 from typing import List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class RequestUser(BaseModel):
@@ -12,10 +12,11 @@ class RequestUser(BaseModel):
     - hashed_user_id: hashed (encoded) guid.
     - user_models: models to use in hasUserModel Unleash strategy
     """
+    model_config = ConfigDict(coerce_numbers_to_str=True)
 
-    user_id: int = None
-    hashed_user_id: str = None
-    guid: int = None
-    hashed_guid: str = None
-    locale: str = None  # e.g. en-US
+    user_id: int | None = None
+    hashed_user_id: str | None = None
+    guid: int | None = None
+    hashed_guid: str | None = None
+    locale: str | None = None  # e.g. en-US
     user_models: List[str] = []

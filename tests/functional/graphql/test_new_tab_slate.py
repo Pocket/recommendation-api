@@ -3,7 +3,7 @@ from typing import Dict
 
 import pytest
 from asgi_lifespan import LifespanManager
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 
 from app.data_providers.slate_providers.new_tab_slate_provider import MIN_TILE_ID, MAX_TILE_ID
 from app.main import app
@@ -69,7 +69,7 @@ async def test_new_tab_slate(locale, region, snowplow_micro, pocket_graph_reques
     2. Assuming AWS credentials are unavailable, FeatureGroupClient.batch_get_records will fail and no engagement will
         be available for Thompson sampling. The query should succeed even when access to the feature group is denied.
     """
-    async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
+    async with AsyncClient(transport=ASGITransport(app), base_url="http://test") as client, LifespanManager(app):
         requested_recommendation_count = 30
         query = _format_new_tab_query(locale=locale, region=region, count=requested_recommendation_count)
         response = await client.post('/', json={'query': query}, headers=pocket_graph_request_headers)
@@ -102,7 +102,7 @@ async def test_new_tab_slate(locale, region, snowplow_micro, pocket_graph_reques
     ])
 async def test_new_tab_slate_ranked_by_region(
         locale, region, enable_ranking_by_region, snowplow_micro, pocket_graph_request_headers, caplog):
-    async with AsyncClient(app=app, base_url="http://test") as client, LifespanManager(app):
+    async with AsyncClient(transport=ASGITransport(app), base_url="http://test") as client, LifespanManager(app):
         with caplog.at_level(logging.INFO):
             requested_recommendation_count = 30
             query = _format_new_tab_query(

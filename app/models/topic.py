@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Dict, Optional
 
 
@@ -16,6 +16,8 @@ class TopicModel(BaseModel):
     """
     Models a topic, e.g. Technology, Gaming.
     """
+    model_config = ConfigDict(coerce_numbers_to_str=True)
+
     id: str = Field(description='The legacy UUID id of the topic')
     corpus_topic_id: str = Field(description='Corpus API topic identifier')
     name: str = Field(description='The name of the topic to show to the user')
@@ -27,16 +29,21 @@ class TopicModel(BaseModel):
     is_displayed: bool = Field(description='Whether or not clients should show this topic ot users')
     is_promoted: bool = Field(
         description='Whether or not this topic should be visiblly promoted (prominent on the page)')
-    display_note: Optional[str] = Field(description='If returned a note to show to the user about the topic')
+    display_note: Optional[str] = Field(
+        default=None, description='If returned a note to show to the user about the topic')
     social_title: Optional[str] = Field(
+        default=None,
         description='The title to use in the HTML markup for SEO and social media sharing')
     social_description: Optional[str] = Field(
+        default=None,
         description='The description to use in the HTML markup for SEO and social media sharing')
     social_image: Optional[str] = Field(
+        default=None,
         description='The image to use in the HTML markup for SEO and social media sharing')
-    custom_feed_id: Optional[str] = Field(description='The internal feed id that this topic will pull from if set')
+    custom_feed_id: Optional[str] = Field(
+        default=None, description='The internal feed id that this topic will pull from if set')
 
     @staticmethod
     def from_dict(item: Dict) -> 'TopicModel':
         # Map display_name to name. display_name is being deprecated, but still present in the database.
-        return TopicModel.parse_obj(dict({'name': item['display_name']}, **item))
+        return TopicModel.model_validate(dict({'name': item['display_name']}, **item))

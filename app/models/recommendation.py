@@ -1,7 +1,7 @@
 from asyncio import gather
 
 from enum import Enum
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from app.config import dynamodb as dynamodb_config
 from app.models.candidate_set import candidate_set_factory
@@ -25,12 +25,14 @@ class RecommendationModel(BaseModel):
     A recommendation models a single article. The properties here are the bare minimum necessary to represent an
     article. The `item` property contains all article details, e.g. title, excerpt, image, etc.
     """
+    model_config = ConfigDict(coerce_numbers_to_str=True)
+
     id: str = Field(
         description='A generated id from the Data and Learning team that represents the Recommendation')
-    feed_item_id: str = Field(
+    feed_item_id: str | None = Field(
         default=None,
         description='A generated id from the Data and Learning team that represents the Recommendation - Deprecated')
-    feed_id: int = Field(
+    feed_id: int | None = Field(
         default=None,
         description='The feed id from mysql that this item was curated from (if it was curated)')
     item_id: str = Field(
@@ -38,7 +40,7 @@ class RecommendationModel(BaseModel):
                     'TODO: Use apollo federation to turn this into an Item type.')
     item: ItemModel = Field(description='The Item that is resolved by apollo federation using the itemId')
     rec_src: str = Field(default='RecommendationAPI', description='The source of the recommendation')
-    publisher: str = Field(default=None, description='The publisher of the item')
+    publisher: str | None = Field(default=None, description='The publisher of the item')
 
     @staticmethod
     def candidate_dict_to_recommendation(candidate: dict):
@@ -51,8 +53,8 @@ class RecommendationModel(BaseModel):
             id=f'RecommendationAPI/{candidate.get("item_id")}',
             feed_id=candidate.get('feed_id'),
             publisher=candidate.get('publisher'),
-            item_id=candidate.get('item_id'),
-            item=ItemModel(item_id=candidate.get('item_id'))
+            item_id=str(candidate.get('item_id')),
+            item=ItemModel(item_id=str(candidate.get('item_id')))
         )
         recommendation.feed_item_id = recommendation.id
         return recommendation
