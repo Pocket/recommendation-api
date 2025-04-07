@@ -7,19 +7,22 @@ import {
 
 export class Elasticache extends Construct {
   public readonly nodeList: string[];
+  public readonly clusterArn: string;
 
   constructor(scope: Construct, name: string) {
     super(scope, name);
 
-    this.nodeList = Elasticache.createElasticache(scope);
+    const { nodeList, clusterArn } = Elasticache.createElasticache(scope);
+    this.nodeList = nodeList;
+    this.clusterArn = clusterArn;
   }
 
   /**
-   * Creates the elasticache and returns the node address list
+   * Creates the Elasticache cluster and returns the node list and cluster ARN.
    * @param scope
    * @private
    */
-  private static createElasticache(scope: Construct): string[] {
+  private static createElasticache(scope: Construct): { nodeList: string[]; clusterArn: string } {
     const pocketVPC = new PocketVPC(scope, 'pocket-shared-vpc');
 
     const elasticache = new ApplicationMemcache(scope, 'memcached', {
@@ -44,11 +47,14 @@ export class Elasticache extends Construct {
       // its rendering -1.8881545897087503e+289 for some weird reason...
       // For now we just hardcode to 11211 which is the default memcache port.
       nodeList.push(
-        `${
-            elasticache.elasticacheCluster.cacheNodes.get(i).address
-        }:11211`
+          `${
+              elasticache.elasticacheCluster.cacheNodes.get(i).address
+          }:11211`
       );
     }
-    return nodeList;
+
+    const clusterArn = elasticache.elasticacheCluster.arn;
+
+    return { nodeList, clusterArn };
   }
 }
